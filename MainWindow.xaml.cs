@@ -1,5 +1,4 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.DirectoryServices.ActiveDirectory;
@@ -25,15 +24,18 @@ namespace FSInputMapper
 {
     public partial class MainWindow : Window
     {
-        const int WM_USER_SIMCONNECT = 0x0402;
-
         private readonly FSIMViewModel _viewModel;
 
-        private SimConnect simconnect = null;
         public MainWindow()
         {
             InitializeComponent();
             DataContext = _viewModel = new FSIMViewModel();
+        }
+
+        protected override void OnSourceInitialized(EventArgs e)
+        {
+            base.OnSourceInitialized(e);
+            _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this));
         }
 
         private void Push_Click(object sender, RoutedEventArgs e)

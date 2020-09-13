@@ -6,6 +6,14 @@
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
     <StartupObject>FSInputMapper.App</StartupObject>
+    <Version>0.0.1</Version>
+    <Authors>Dave Gymer</Authors>
+    <Company>DaveGymer.org</Company>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutputPath></OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,8 +22,12 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)SimConnect.cfg&quot; &quot;.&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;.&quot; /Y&#xD;&#xA;" />
+    <Exec Command="xcopy &quot;$(ProjectDir)SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;" />
   </Target>
 
 </Project>
