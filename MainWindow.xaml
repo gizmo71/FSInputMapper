@@ -14,5 +14,7 @@
         <Button Content="+100" HorizontalAlignment="Left" Margin="181,62,0,0" VerticalAlignment="Top" Width="32" Click="Up100_Click"/>
         <Button Content="-100" HorizontalAlignment="Left" Margin="181,110,0,0" VerticalAlignment="Top" Width="32" Click="Down100_Click"/>
         <Button Content="-1000" HorizontalAlignment="Left" Margin="131,110,0,0" VerticalAlignment="Top" Width="40" Click="Down1000_Click"/>
+        <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="514,87,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
+                  IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}"/>
     </Grid>
 </Window>

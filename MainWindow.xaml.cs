@@ -35,7 +35,7 @@ namespace FSInputMapper
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this));
+            _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this), _viewModel);
         }
 
         private void Push_Click(object sender, RoutedEventArgs e)
