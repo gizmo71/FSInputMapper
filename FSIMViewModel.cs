@@ -6,11 +6,11 @@ namespace FSInputMapper
 {
     public class FSIMViewModel : INotifyPropertyChanged
     {
-        private Int32 altitude = 0;
-        public Int32 Altitude
+        private Int32 apAltitude = 0;
+        public Int32 AutopilotAltitude
         {
-            get { return altitude; }
-            set { if (altitude != value) { altitude = value; OnPropertyChange(); } }
+            get { return apAltitude; }
+            set { if (apAltitude != value) { apAltitude = value; OnPropertyChange(); } }
         }
 
         bool altitudeManaged = true;

@@ -6,11 +6,11 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
 {
-    enum DATA_DEFINITIONS { AUTOPILOT_DATA = 69, }
-    enum REQUESTS { AUTOPILOT_DATA = 71, }
+    enum DATA_DEFINITIONS { AUTOPILOT_DATA = 69, SPOILER_DATA }
+    enum REQUESTS { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct ApDataStruct
+    struct AutopilotData
     {
         public double apSpeed;
         public double apSpeedSlot;
@@ -20,14 +20,19 @@ namespace FSInputMapper
         public double apAltitudeSlot;
     };
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    struct SpoilerData
+    {
+        public double spoilersHandlePosition;
+        public double spoilersArmed;
+    };
+
     class SimConnectAdapter {
         const int WM_USER_SIMCONNECT = 0x0402;
 
         private readonly IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
-
-        ApDataStruct ApData;
 
         public SimConnectAdapter([DisallowNull] HwndSource hWndSource, FSIMViewModel viewModel)
         {
@@ -81,6 +86,8 @@ namespace FSInputMapper
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
+            // Autopilot
+
             simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
@@ -98,16 +105,43 @@ namespace FSInputMapper
 
             //TODO: add vertical speed, "AUTOPILOT VERTICAL HOLD VAR" in "feet/minute", and maybe "AUTOPILOT VERTICAL HOLD"
 
-            simConnect.RegisterDataDefineStruct<ApDataStruct>(DATA_DEFINITIONS.AUTOPILOT_DATA);
+            simConnect.RegisterDataDefineStruct<AutopilotData>(DATA_DEFINITIONS.AUTOPILOT_DATA);
             simConnect.RequestDataOnSimObject(REQUESTS.AUTOPILOT_DATA, DATA_DEFINITIONS.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+
+            // Spoilers
+
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.SPOILER_DATA, "SPOILERS HANDLE POSITION", "percent",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.SPOILER_DATA, "SPOILERS ARMED", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.RegisterDataDefineStruct<SpoilerData>(DATA_DEFINITIONS.SPOILER_DATA);
+
+/*TODO:
+            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_ARM_SPOILER, "SPOILERS_ARM_ON");
+            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_DISARM_SPOILER, "SPOILERS_ARM_OFF");
+
+            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_MORE_SPOILER, "SPOILERS_TOGGLE");
+            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
+
+            hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_SPOILERS, EVENT_MORE_SPOILER, TRUE);
+            hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_SPOILERS, EVENT_LESS_SPOILER, TRUE);
+            hr = SimConnect_SetNotificationGroupPriority(hSimConnect, GROUP_SPOILERS, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+
+            ... and all the event handling that goes along with it.
+*/
         }
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            ApDataStruct apData = (ApDataStruct)data.dwData[0];
-            viewModel.Altitude = (int)apData.apAltitude;
+            switch ((REQUESTS)data.dwRequestID)
+            {
+                case REQUESTS.AUTOPILOT_DATA:
+                    AutopilotData autopilotData = (AutopilotData)data.dwData[0];
+                    viewModel.AutopilotAltitude = (int)autopilotData.apAltitude;
+                    break;
+            }
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)

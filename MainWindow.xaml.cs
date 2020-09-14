@@ -23,11 +23,11 @@ using System.Globalization;
 
 namespace FSInputMapper
 {
-    public class AltitudePullBackgroundConverter : IValueConverter
+    public class ModeBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value == true ? "Green" : "Transparent";
+            return (bool)value == (bool)parameter ? "Green" : "Transparent";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -52,34 +52,34 @@ namespace FSInputMapper
             _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this), _viewModel);
         }
 
-        private void Push_Click(object sender, RoutedEventArgs e)
+        private void Altitude_Push(object sender, RoutedEventArgs e)
         {
             _viewModel.AltitudeManaged = true;
         }
 
-        private void Pull_Click(object sender, RoutedEventArgs e)
+        private void Altitude_Pull(object sender, RoutedEventArgs e)
         {
             _viewModel.AltitudeManaged = false;
         }
 
         private void Up1000_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude += 1000;
+            _viewModel.AutopilotAltitude += 1000;
         }
 
         private void Up100_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude += 100;
+            _viewModel.AutopilotAltitude += 100;
         }
 
         private void Down1000_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude -= 1000;
+            _viewModel.AutopilotAltitude -= 1000;
         }
 
         private void Down100_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude -= 100;
+            _viewModel.AutopilotAltitude -= 100;
         }
     }
 }
