@@ -12,8 +12,12 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct ApDataStruct
     {
-        //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
+        public double apSpeed;
+        public double apSpeedSlot;
+        public double apHeading;
+        public double apHeadingSlot;
         public double apAltitude;
+        public double apAltitudeSlot;
     };
 
     class SimConnectAdapter {
@@ -77,9 +81,26 @@ namespace FSInputMapper
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
-            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees", SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
+                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
+                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
+                SIMCONNECT_DATATYPE.FLOAT64, 100f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+
+            //TODO: add vertical speed, "AUTOPILOT VERTICAL HOLD VAR" in "feet/minute", and maybe "AUTOPILOT VERTICAL HOLD"
+
             simConnect.RegisterDataDefineStruct<ApDataStruct>(DATA_DEFINITIONS.AUTOPILOT_DATA);
-            simConnect.RequestDataOnSimObject(REQUESTS.AUTOPILOT_DATA, DATA_DEFINITIONS.AUTOPILOT_DATA, SimConnect.SIMCONNECT_OBJECT_ID_USER,
+            simConnect.RequestDataOnSimObject(REQUESTS.AUTOPILOT_DATA, DATA_DEFINITIONS.AUTOPILOT_DATA,
+                SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
         }
 

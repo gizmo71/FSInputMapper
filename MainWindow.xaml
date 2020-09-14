@@ -6,15 +6,18 @@
         xmlns:local="clr-namespace:FSInputMapper"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local:AltitudePullBackgroundConverter x:Key="AltitudePullBackgroundConverter" />
+    </Window.Resources>
     <Grid>
-        <TextBox HorizontalAlignment="Left" Margin="120,87,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Altitude}" IsReadOnly="True"/>
-        <Button Content="Push" HorizontalAlignment="Left" Margin="259,86,0,0" VerticalAlignment="Top" Click="Push_Click"/>
-        <Button Content="Pull" HorizontalAlignment="Left" Margin="316,86,0,0" VerticalAlignment="Top" Click="Pull_Click"/>
-        <Button Content="+1000" HorizontalAlignment="Left" Margin="131,62,0,0" VerticalAlignment="Top" Width="40" Click="Up1000_Click"/>
-        <Button Content="+100" HorizontalAlignment="Left" Margin="181,62,0,0" VerticalAlignment="Top" Width="32" Click="Up100_Click"/>
-        <Button Content="-100" HorizontalAlignment="Left" Margin="181,110,0,0" VerticalAlignment="Top" Width="32" Click="Down100_Click"/>
-        <Button Content="-1000" HorizontalAlignment="Left" Margin="131,110,0,0" VerticalAlignment="Top" Width="40" Click="Down1000_Click"/>
-        <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="514,87,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
+        <TextBox HorizontalAlignment="Left" Margin="400,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Altitude}" IsReadOnly="True"/>
+        <Button Content="Push" HorizontalAlignment="Left" Margin="491,57,0,0" VerticalAlignment="Top" Width="29" Background="{Binding AltitudeManaged,Converter={StaticResource AltitudePullBackgroundConverter}}" Click="Push_Click"/>
+        <Button Content="Pull" HorizontalAlignment="Left" Margin="491,105,0,0" VerticalAlignment="Top" Width="29" Background="Transparent" Click="Pull_Click"/>
+        <Button Content="+1000" HorizontalAlignment="Left" Margin="400,57,0,0" VerticalAlignment="Top" Width="40" Click="Up1000_Click"/>
+        <Button Content="+100" HorizontalAlignment="Left" Margin="445,57,0,0" VerticalAlignment="Top" Width="32" Click="Up100_Click"/>
+        <Button Content="-100" HorizontalAlignment="Left" Margin="445,105,0,0" VerticalAlignment="Top" Width="32" Click="Down100_Click"/>
+        <Button Content="-1000" HorizontalAlignment="Left" Margin="400,105,0,0" VerticalAlignment="Top" Width="40" Click="Down1000_Click"/>
+        <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="703,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}"/>
     </Grid>
 </Window>

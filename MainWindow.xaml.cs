@@ -17,11 +17,25 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Runtime.CompilerServices;
+using System.Globalization;
 
 // https://docs.microsoft.com/en-us/dotnet/desktop/wpf/getting-started/walkthrough-my-first-wpf-desktop-application?view=netframeworkdesktop-4.8
 
 namespace FSInputMapper
 {
+    public class AltitudePullBackgroundConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (bool)value == true ? "Green" : "Transparent";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class MainWindow : Window
     {
         private readonly FSIMViewModel _viewModel;
@@ -40,12 +54,12 @@ namespace FSInputMapper
 
         private void Push_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude = 10000;
+            _viewModel.AltitudeManaged = true;
         }
 
         private void Pull_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.Altitude = 66600;
+            _viewModel.AltitudeManaged = false;
         }
 
         private void Up1000_Click(object sender, RoutedEventArgs e)
