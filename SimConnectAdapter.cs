@@ -6,8 +6,10 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
 {
-    enum DATA_DEFINITIONS { AUTOPILOT_DATA = 69, SPOILER_DATA }
-    enum REQUESTS { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER }
+    enum DATA_DEFINITIONS { AUTOPILOT_DATA = 69, SPOILER_DATA, SPOILER_HANDLE, }
+    enum REQUESTS { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
+    enum EVENTS { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER, }
+    enum GROUPS { SPOILERS = 13, }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct AutopilotData
@@ -77,6 +79,7 @@ namespace FSInputMapper
             simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(OnRecvOpen);
             simConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(OnRecvQuit);
             simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(OnRecvSimobjectData);
+            simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(OnRecvEvent);
         }
 
         private void OnRecvQuit(SimConnect simConnect, SIMCONNECT_RECV data)
@@ -112,25 +115,40 @@ namespace FSInputMapper
 
             // Spoilers
 
+            simConnect.AddToDataDefinition(DATA_DEFINITIONS.SPOILER_HANDLE, "SPOILERS HANDLE POSITION", "percent",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+
             simConnect.AddToDataDefinition(DATA_DEFINITIONS.SPOILER_DATA, "SPOILERS HANDLE POSITION", "percent",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA_DEFINITIONS.SPOILER_DATA, "SPOILERS ARMED", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<SpoilerData>(DATA_DEFINITIONS.SPOILER_DATA);
 
-/*TODO:
-            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_ARM_SPOILER, "SPOILERS_ARM_ON");
-            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_DISARM_SPOILER, "SPOILERS_ARM_OFF");
+            simConnect.MapClientEventToSimEvent(EVENTS.MORE_SPOILER, "SPOILERS_TOGGLE");
+            simConnect.MapClientEventToSimEvent(EVENTS.LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
 
-            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_MORE_SPOILER, "SPOILERS_TOGGLE");
-            hr = SimConnect_MapClientEventToSimEvent(hSimConnect, EVENT_LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
+            simConnect.MapClientEventToSimEvent(EVENTS.ARM_SPOILER, "SPOILERS_ARM_ON");
+            simConnect.MapClientEventToSimEvent(EVENTS.DISARM_SPOILER, "SPOILERS_ARM_OFF");
 
-            hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_SPOILERS, EVENT_MORE_SPOILER, TRUE);
-            hr = SimConnect_AddClientEventToNotificationGroup(hSimConnect, GROUP_SPOILERS, EVENT_LESS_SPOILER, TRUE);
-            hr = SimConnect_SetNotificationGroupPriority(hSimConnect, GROUP_SPOILERS, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+            simConnect.AddClientEventToNotificationGroup(GROUPS.SPOILERS, EVENTS.MORE_SPOILER, true);
+            simConnect.AddClientEventToNotificationGroup(GROUPS.SPOILERS, EVENTS.LESS_SPOILER, true);
+            simConnect.SetNotificationGroupPriority(GROUPS.SPOILERS, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+        }
 
-            ... and all the event handling that goes along with it.
-*/
+        private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        {
+            switch ((EVENTS)data.uEventID) {
+                case EVENTS.LESS_SPOILER:
+                    simConnect.RequestDataOnSimObject(REQUESTS.LESS_SPOILER, DATA_DEFINITIONS.SPOILER_DATA,
+                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                    break;
+                case EVENTS.MORE_SPOILER:
+                    simConnect.RequestDataOnSimObject(REQUESTS.MORE_SPOILER, DATA_DEFINITIONS.SPOILER_DATA,
+                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                    break;
+            }
         }
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
@@ -140,8 +158,31 @@ namespace FSInputMapper
                 case REQUESTS.AUTOPILOT_DATA:
                     AutopilotData autopilotData = (AutopilotData)data.dwData[0];
                     viewModel.AutopilotAltitude = (int)autopilotData.apAltitude;
+                    viewModel.AltitudeManaged = autopilotData.apAltitudeSlot == 2;
+                    break;
+                case REQUESTS.MORE_SPOILER:
+                    SpoilerData spoilerData = (SpoilerData)data.dwData[0];
+                    if (spoilerData.spoilersArmed != 0)
+                        SendEvent(GROUPS.SPOILERS, EVENTS.DISARM_SPOILER);
+                    else
+                        SetSpoilerHandlePosition(Math.Min(spoilerData.spoilersHandlePosition + 25.0, 100.0));
+                    break;
+                case REQUESTS.LESS_SPOILER:
+                    spoilerData = (SpoilerData)data.dwData[0];
+                    if (spoilerData.spoilersHandlePosition > 0.0)
+                        SetSpoilerHandlePosition(Math.Max(spoilerData.spoilersHandlePosition - 25.0, 0.0));
+                    else if (spoilerData.spoilersArmed == 0)
+                        SendEvent(GROUPS.SPOILERS, EVENTS.ARM_SPOILER);
                     break;
             }
+        }
+
+        private void SendEvent(GROUPS group, EVENTS eventToSend) {
+            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, 0, group, 0);
+        }
+
+        private void SetSpoilerHandlePosition(double percent) {
+            simConnect?.SetDataOnSimObject(DATA_DEFINITIONS.SPOILER_HANDLE, SimConnect.SIMCONNECT_OBJECT_ID_USER, 0, percent);
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
