@@ -6,7 +6,35 @@ namespace FSInputMapper
 {
     public class FSIMViewModel : INotifyPropertyChanged
     {
-        private Int32 apAltitude = 0;
+        private Int32 apAirspeed = 100;
+        public Int32 AutopilotAirspeed
+        {
+            get { return apAirspeed; }
+            set { if (apAirspeed != value) { apAirspeed = value; OnPropertyChange(); } }
+        }
+
+        bool airspeedManaged = true;
+        public bool AirspeedManaged
+        {
+            get { return airspeedManaged; }
+            set { if (airspeedManaged != value) { airspeedManaged = value; OnPropertyChange(); } }
+        }
+
+        private Int32 apHeading = 0;
+        public Int32 AutopilotHeading
+        {
+            get { return apHeading; }
+            set { if (apHeading != value) { apHeading = value; OnPropertyChange(); } }
+        }
+
+        bool headingManaged = true;
+        public bool HeadingManaged
+        {
+            get { return headingManaged; }
+            set { if (headingManaged != value) { headingManaged = value; OnPropertyChange(); } }
+        }
+
+        private Int32 apAltitude = 5000;
         public Int32 AutopilotAltitude
         {
             get { return apAltitude; }

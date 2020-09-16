@@ -1,22 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Runtime.CompilerServices;
 using System.Globalization;
 
 // https://docs.microsoft.com/en-us/dotnet/desktop/wpf/getting-started/walkthrough-my-first-wpf-desktop-application?view=netframeworkdesktop-4.8
@@ -52,6 +37,26 @@ namespace FSInputMapper
             _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this), _viewModel);
         }
 
+        private void Airspeed_Push(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AirspeedManaged = true;
+        }
+
+        private void Airspeed_Pull(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AirspeedManaged = false;
+        }
+
+        private void Heading_Push(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HeadingManaged = true;
+        }
+
+        private void Heading_Pull(object sender, RoutedEventArgs e)
+        {
+            _viewModel.HeadingManaged = false;
+        }
+
         private void Altitude_Push(object sender, RoutedEventArgs e)
         {
             _viewModel.AltitudeManaged = true;
@@ -81,5 +86,6 @@ namespace FSInputMapper
         {
             _viewModel.AutopilotAltitude -= 100;
         }
+
     }
 }
