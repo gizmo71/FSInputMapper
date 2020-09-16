@@ -13,7 +13,7 @@
         <sys:Boolean x:Key="False">False</sys:Boolean>
     </Window.Resources>
     <Grid>
-        <TextBox HorizontalAlignment="Left" Margin="400,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding Altitude}" IsReadOnly="True"/>
+        <TextBox HorizontalAlignment="Left" Margin="400,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAltitude}" IsReadOnly="True"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="491,57,0,0" VerticalAlignment="Top" Width="29" Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}" Click="Altitude_Push"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="491,105,0,0" VerticalAlignment="Top" Width="29" Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource False}}" Click="Altitude_Pull"/>
         <Button Content="+1000" HorizontalAlignment="Left" Margin="400,57,0,0" VerticalAlignment="Top" Width="40" Click="Up1000_Click"/>
