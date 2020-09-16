@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -8,8 +9,13 @@ namespace FSInputMapper
 {
     enum DATA { AUTOPILOT_DATA = 69, SPOILER_DATA, SPOILER_HANDLE, }
     enum REQUEST { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
-    enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER, }
-    enum GROUP { SPOILERS = 13, }
+    /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
+      Way to identify specific things?
+      Would we be better to have a whole class for events and their recievers which includes an ID generator? */
+    enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
+        AP_HEADING_SLOT_SET, AP_SPEED_SLOT_SET, AP_ALTITUDE_SLOT_SET,
+    }
+    enum GROUP { SPOILERS = 13, AUTOPILOT, }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct AutopilotData
@@ -46,6 +52,16 @@ namespace FSInputMapper
             dispatcherTimer.Tick += new EventHandler(Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
             dispatcherTimer.Start();
+
+            viewModel.PropertyChanged += new PropertyChangedEventHandler(ViewModelPropertyChangeHandler);
+        }
+
+        private void ViewModelPropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
+        {
+            if (eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
+            {
+                SendEvent(GROUP.AUTOPILOT, EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
+            }
         }
 
         public Boolean IsConnected()
@@ -112,6 +128,13 @@ namespace FSInputMapper
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+
+            // Autopilot things we send.
+
+            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
+            // https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/26?u=dgymer
 
             // Spoilers
 
@@ -184,8 +207,8 @@ namespace FSInputMapper
             }
         }
 
-        private void SendEvent(GROUP group, EVENT eventToSend) {
-            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, 0, group, 0);
+        private void SendEvent(GROUP group, EVENT eventToSend, uint data = 0) {
+            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, group, 0);
         }
 
         private void SetSpoilerHandlePosition(double percent) {
