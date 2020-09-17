@@ -187,8 +187,12 @@ namespace FSInputMapper
             {
                 case REQUEST.AUTOPILOT_DATA:
                     AutopilotData autopilotData = (AutopilotData)data.dwData[0];
-                    viewModel.AutopilotAltitude = (int)autopilotData.apAltitude;
+                    viewModel.AirspeedManaged = autopilotData.apHeadingSlot == 2;
+                    viewModel.AutopilotAirspeed = (int)autopilotData.apSpeed;
+                    viewModel.HeadingManaged = autopilotData.apHeadingSlot == 2;
+                    viewModel.AutopilotHeading = (int)autopilotData.apHeading;
                     viewModel.AltitudeManaged = autopilotData.apAltitudeSlot == 2;
+                    viewModel.AutopilotAltitude = (int)autopilotData.apAltitude;
                     break;
                 case REQUEST.MORE_SPOILER:
                     SpoilerData spoilerData = (SpoilerData)data.dwData[0];
