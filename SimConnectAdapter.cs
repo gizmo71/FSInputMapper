@@ -15,7 +15,8 @@ namespace FSInputMapper
     enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
         AP_HEADING_SLOT_SET, AP_SPEED_SLOT_SET, AP_ALTITUDE_SLOT_SET,
     }
-    enum GROUP { SPOILERS = 13, AUTOPILOT, }
+    enum GROUP { SPOILERS = 13, AUTOPILOT,
+        PRIORITY_STANDARD = 1900000000 }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct AutopilotData
@@ -60,7 +61,7 @@ namespace FSInputMapper
         {
             if (sender == viewModel && eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
             {
-                SendEvent(GROUP.AUTOPILOT, EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
+                SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
             }
         }
 
@@ -195,7 +196,7 @@ namespace FSInputMapper
                 case REQUEST.MORE_SPOILER:
                     SpoilerData spoilerData = (SpoilerData)data.dwData[0];
                     if (spoilerData.spoilersArmed != 0)
-                        SendEvent(GROUP.SPOILERS, EVENT.DISARM_SPOILER);
+                        SendEvent(EVENT.DISARM_SPOILER);
                     else
                         SetSpoilerHandlePosition(Math.Min(spoilerData.spoilersHandlePosition + 25.0, 100.0));
                     break;
@@ -204,13 +205,13 @@ namespace FSInputMapper
                     if (spoilerData.spoilersHandlePosition > 0.0)
                         SetSpoilerHandlePosition(Math.Max(spoilerData.spoilersHandlePosition - 25.0, 0.0));
                     else if (spoilerData.spoilersArmed == 0)
-                        SendEvent(GROUP.SPOILERS, EVENT.ARM_SPOILER);
+                        SendEvent(EVENT.ARM_SPOILER);
                     break;
             }
         }
 
-        private void SendEvent(GROUP group, EVENT eventToSend, uint data = 0) {
-            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, group, 0);
+        private void SendEvent(EVENT eventToSend, uint data = 0) {
+            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         }
 
         private void SetSpoilerHandlePosition(double percent) {
