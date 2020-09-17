@@ -117,7 +117,8 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
-            //TODO: add vertical speed, "AUTOPILOT VERTICAL HOLD VAR" in "feet/minute", and maybe "AUTOPILOT VERTICAL HOLD"
+            /*TODO: add vertical speed, "AUTOPILOT VERTICAL HOLD VAR" in "feet/minute",
+              and maybe "AUTOPILOT VERTICAL HOLD" and even "AUTOPILOT_VS_SLOT_INDEX". */
 
             simConnect.RegisterDataDefineStruct<AutopilotData>(DATA.AUTOPILOT_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
@@ -129,6 +130,8 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
+            //TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting managed
+            //TODO: "AP_ALT_VAR_SET_ENGLISH"?
             // https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/26?u=dgymer
 
             // Spoilers
