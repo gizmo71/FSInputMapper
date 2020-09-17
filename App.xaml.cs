@@ -14,10 +14,8 @@ namespace FSInputMapper
 
         private void OnUnhandledException(DispatcherUnhandledExceptionEventArgs details)
         {
-            System.Windows.MessageBox.Show(details.Exception.ToString(),
-                                  "Unhandled Exception",
-                                  MessageBoxButton.OK,
-                                  MessageBoxImage.Information);
+            _ = MessageBox.Show(details.Exception.ToString(), "Unhandled Exception",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
             details.Handled = true;
         }
     }

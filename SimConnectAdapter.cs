@@ -53,20 +53,15 @@ namespace FSInputMapper
             dispatcherTimer.Interval = new TimeSpan(0, 0, 5);
             dispatcherTimer.Start();
 
-            viewModel.PropertyChanged += new PropertyChangedEventHandler(ViewModelPropertyChangeHandler);
+            viewModel.PropertyChanged += PropertyChangeHandler;
         }
 
-        private void ViewModelPropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
+        private void PropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
         {
-            if (eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
+            if (sender == viewModel && eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
             {
                 SendEvent(GROUP.AUTOPILOT, EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
             }
-        }
-
-        public Boolean IsConnected()
-        {
-            return simConnect != null;
         }
 
         private void Disconnect(Exception ex)
@@ -77,10 +72,10 @@ namespace FSInputMapper
         }
         private void Tick(object? sender, EventArgs e)
         {
-            if (IsConnected()) return;
+            if (simConnect != null) return;
             try
             {
-                ConnectAndInitialise();
+                Connect();
                 viewModel.ConnectionError = null;
             }
             catch (COMException ex)
@@ -89,13 +84,13 @@ namespace FSInputMapper
             }
         }
 
-        private void ConnectAndInitialise()
+        private void Connect()
         {
             simConnect = new SimConnect("Gizmo's FSInputMapper", hWnd, WM_USER_SIMCONNECT, null, 0);
-            simConnect.OnRecvOpen += new SimConnect.RecvOpenEventHandler(OnRecvOpen);
-            simConnect.OnRecvQuit += new SimConnect.RecvQuitEventHandler(OnRecvQuit);
-            simConnect.OnRecvSimobjectData += new SimConnect.RecvSimobjectDataEventHandler(OnRecvSimobjectData);
-            simConnect.OnRecvEvent += new SimConnect.RecvEventEventHandler(OnRecvEvent);
+            simConnect.OnRecvOpen += OnRecvOpen;
+            simConnect.OnRecvQuit += OnRecvQuit;
+            simConnect.OnRecvSimobjectData += OnRecvSimobjectData;
+            simConnect.OnRecvEvent += OnRecvEvent;
         }
 
         private void OnRecvQuit(SimConnect simConnect, SIMCONNECT_RECV data)
