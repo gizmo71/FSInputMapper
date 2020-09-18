@@ -59,9 +59,20 @@ namespace FSInputMapper
 
         private void PropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
         {
-            if (sender == viewModel && eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
+            if (sender == viewModel)
             {
-                SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
+                if (eventArgs.PropertyName == nameof(viewModel.AirspeedManaged))
+                {
+                    SendEvent(EVENT.AP_SPEED_SLOT_SET, viewModel.AirspeedManaged ? 2u : 1u);
+                }
+                else if (eventArgs.PropertyName == nameof(viewModel.HeadingManaged))
+                {
+                    SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
+                }
+                else if (eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
+                {
+                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
+                }
             }
         }
 
@@ -132,7 +143,8 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
             //TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting managed
-            //TODO: "AP_ALT_VAR_SET_ENGLISH"?
+            //TODO: "AP_ALT_VAR_SET_ENGLISH"? Nope, that just sets feet mode (there's ...METRIC too)
+            //TODO: are there events for the knobs, rather than trying to set values?
             // https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/26?u=dgymer
 
             // Spoilers
