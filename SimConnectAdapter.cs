@@ -7,13 +7,17 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
 {
-    enum DATA { AUTOPILOT_DATA = 69, SPOILER_DATA, SPOILER_HANDLE, }
+    enum DATA {
+        // Stuff intended for struct-based multiple value requests:
+        AUTOPILOT_DATA = 69, SPOILER_DATA,
+        // Stuff for single value setting:
+        SPOILER_HANDLE, AP_SPEED, AP_HEADING, AP_ALTITUDE }
     enum REQUEST { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
     enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
-        AP_HEADING_SLOT_SET, AP_SPEED_SLOT_SET, AP_ALTITUDE_SLOT_SET,
+        AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_ALTITUDE_SLOT_SET,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -59,20 +63,27 @@ namespace FSInputMapper
 
         private void PropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
         {
-            if (sender == viewModel)
+            if (sender != viewModel) return;
+            switch (eventArgs.PropertyName)
             {
-                if (eventArgs.PropertyName == nameof(viewModel.AirspeedManaged))
-                {
+                case nameof(viewModel.AirspeedManaged):
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, viewModel.AirspeedManaged ? 2u : 1u);
-                }
-                else if (eventArgs.PropertyName == nameof(viewModel.HeadingManaged))
-                {
+                    break;
+                case nameof(viewModel.AutopilotAirspeed):
+                    SetData(DATA.AP_SPEED, viewModel.AutopilotAirspeed);
+                    break;
+                case nameof(viewModel.HeadingManaged):
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
-                }
-                else if (eventArgs.PropertyName == nameof(viewModel.AltitudeManaged))
-                {
+                    break;
+                case nameof(viewModel.AutopilotHeading):
+                    SetData(DATA.AP_HEADING, viewModel.AutopilotHeading);
+                    break;
+                case nameof(viewModel.AltitudeManaged):
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
-                }
+                    break;
+                case nameof(viewModel.AutopilotAltitude):
+                    SetData(DATA.AP_ALTITUDE, viewModel.AutopilotAltitude);
+                    break;
             }
         }
 
@@ -136,6 +147,15 @@ namespace FSInputMapper
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+
+            // Autopilot things we set.
+
+            simConnect.AddToDataDefinition(DATA.AP_SPEED, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
+                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_HEADING, "AUTOPILOT HEADING LOCK DIR", "degrees",
+                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
+                SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
 
             // Autopilot things we send.
 
@@ -210,12 +230,12 @@ namespace FSInputMapper
                     if (spoilerData.spoilersArmed != 0)
                         SendEvent(EVENT.DISARM_SPOILER);
                     else
-                        SetSpoilerHandlePosition(Math.Min(spoilerData.spoilersHandlePosition + 25.0, 100.0));
+                        SetData(DATA.SPOILER_HANDLE, Math.Min(spoilerData.spoilersHandlePosition + 25.0, 100.0));
                     break;
                 case REQUEST.LESS_SPOILER:
                     spoilerData = (SpoilerData)data.dwData[0];
                     if (spoilerData.spoilersHandlePosition > 0.0)
-                        SetSpoilerHandlePosition(Math.Max(spoilerData.spoilersHandlePosition - 25.0, 0.0));
+                        SetData(DATA.SPOILER_HANDLE, Math.Max(spoilerData.spoilersHandlePosition - 25.0, 0.0));
                     else if (spoilerData.spoilersArmed == 0)
                         SendEvent(EVENT.ARM_SPOILER);
                     break;
@@ -226,12 +246,11 @@ namespace FSInputMapper
             simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         }
 
-        private void SetSpoilerHandlePosition(double percent) {
-            simConnect?.SetDataOnSimObject(DATA.SPOILER_HANDLE, SimConnect.SIMCONNECT_OBJECT_ID_USER, 0, percent);
+        private void SetData(DATA data, object value) {
+            simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
         }
 
-        private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled)
-        {
+        private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {
             if (iMsg == WM_USER_SIMCONNECT)
             {
                 try
