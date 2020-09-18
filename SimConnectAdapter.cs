@@ -152,10 +152,17 @@ namespace FSInputMapper
 
             simConnect.AddToDataDefinition(DATA.AP_SPEED, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            // There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
+            // "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
             simConnect.AddToDataDefinition(DATA.AP_HEADING, "AUTOPILOT HEADING LOCK DIR", "degrees",
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+            // or -/+10 with INCREASE/DECREASE HEADING BUG (Control-Delete/Insert on default map), there's also a SET HEADING BUG
+            // Selecting other bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
             simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
+            //TODO: "SET AP CURRENT VS"? "SET AUTOPILOT VS HOLD"?
+            // Also the selection increment.
+            // Prepar3d has a bunch of other useful sounding KEY_ events listed.
 
             // Autopilot things we send.
 
