@@ -157,9 +157,17 @@ namespace FSInputMapper
             // Selecting other bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
             simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
+
+            // Vertical speed stuff:
+            // Note that there's lots of stuff in the JS which isn't event driven, so you might have to replicate timeouts etc.
             //TODO: "SET AP CURRENT VS"? "SET AUTOPILOT VS HOLD"?
             // Also the selection increment.
             // Prepar3d has a bunch of other useful sounding KEY_ events listed.
+            // On pushing the button to level off, triggers K:AP_PANEL_ALTITUDE_HOLD and K:AP_PANEL_VS_ON [A320_Neo_FCU.js]
+            // On turning, sends/sets AP_VS_VAR_SET_ENGLISH to 2 if in idle descent;
+            //   sends AP_VS_VAR_SET_ENGLISH with the value and sets K:VS_SLOT_INDEX_SET=K:AP_PANEL_VS_ON=1 if 'normal' or levelling off
+            // On pulling, sends AP_VS_VAR_SET_ENGLISH to the desired value, and sets K:VS_SLOT_INDEX_SET=K:AP_PANEL_VS_ON=1 if at idle descent;
+            //   sets L:A320_NEO_FCU_FORCE_SELECTED_ALT=1, sets AP_VS_VAR_SET_ENGLISH twice with different parameters, and sets K:AP_PANEL_VS_ON=1
 
             // Autopilot things we send.
 
