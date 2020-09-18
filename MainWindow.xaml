@@ -18,40 +18,52 @@
             <ColumnDefinition Width="709*"/>
         </Grid.ColumnDefinitions>
         <!-- Airspeed -->
-        <Button Content="+10" HorizontalAlignment="Left" Margin="16,57,0,0" VerticalAlignment="Top" Width="40" Click="Faster10Knots" Grid.Column="1"/>
-        <Button Content="+1" HorizontalAlignment="Left" Margin="61,57,0,0" VerticalAlignment="Top" Width="32" Click="Faster1Knot" Grid.Column="1"/>
+        <Button Content="+10" HorizontalAlignment="Left" Margin="16,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Faster10Knots"/>
+        <Button Content="+1" HorizontalAlignment="Left" Margin="61,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Faster1Knot"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="107,57,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
                 Click="Airspeed_Push" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Margin="16,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAirspeed}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-10" HorizontalAlignment="Left" Margin="16,105,0,0" VerticalAlignment="Top" Width="40" Click="Slower10Knots" Grid.Column="1"/>
-        <Button Content="-1" HorizontalAlignment="Left" Margin="61,105,0,0" VerticalAlignment="Top" Width="32" Click="Slower1Knot" Grid.Column="1"/>
+        <Button Content="-10" HorizontalAlignment="Left" Margin="16,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Slower10Knots"/>
+        <Button Content="-1" HorizontalAlignment="Left" Margin="61,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Slower1Knot"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="107,105,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Airspeed_Pull" Grid.Column="1"/>
 
         <!-- Heading -->
-        <Button Content="+10" HorizontalAlignment="Left" Margin="163,57,0,0" VerticalAlignment="Top" Width="40" Click="Right10Degrees" Grid.Column="1"/>
-        <Button Content="+1" HorizontalAlignment="Left" Margin="208,57,0,0" VerticalAlignment="Top" Width="32" Click="Right1Degree" Grid.Column="1"/>
+        <Button Content="+10" HorizontalAlignment="Left" Margin="163,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Right10Degrees"/>
+        <Button Content="+1" HorizontalAlignment="Left" Margin="208,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Right1Degree"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="254,57,0,0" VerticalAlignment="Top" Width="29"
             Background="{Binding HeadingManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="Heading_Push" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Margin="163,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotHeading}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-10" HorizontalAlignment="Left" Margin="163,105,0,0" VerticalAlignment="Top" Width="40" Click="Left10Degrees" Grid.Column="1"/>
-        <Button Content="-1" HorizontalAlignment="Left" Margin="208,105,0,0" VerticalAlignment="Top" Width="32" Click="Left1Degree" Grid.Column="1"/>
+        <Button Content="-10" HorizontalAlignment="Left" Margin="163,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Left10Degrees"/>
+        <Button Content="-1" HorizontalAlignment="Left" Margin="208,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Left1Degree"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="254,105,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding HeadingManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Heading_Pull" Grid.Column="1"/>
 
         <!-- Altitude -->
-        <Button Content="+1000" HorizontalAlignment="Left" Margin="309,57,0,0" VerticalAlignment="Top" Width="40" Click="Up1000Feet" Grid.Column="1"/>
-        <Button Content="+100" HorizontalAlignment="Left" Margin="354,57,0,0" VerticalAlignment="Top" Width="32" Click="Up100Feet" Grid.Column="1"/>
+        <Button Content="+1000" HorizontalAlignment="Left" Margin="309,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Up1000Feet"/>
+        <Button Content="+100" HorizontalAlignment="Left" Margin="354,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Up100Feet"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="400,57,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="Altitude_Push" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Margin="309,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAltitude}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-1000" HorizontalAlignment="Left" Margin="309,105,0,0" VerticalAlignment="Top" Width="40" Click="Down1000Feet" Grid.Column="1"/>
-        <Button Content="-100" HorizontalAlignment="Left" Margin="354,105,0,0" VerticalAlignment="Top" Width="32" Click="Down100Feet" Grid.Column="1"/>
+        <Button Content="-1000" HorizontalAlignment="Left" Margin="309,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+                Click="Down1000Feet"/>
+        <Button Content="-100" HorizontalAlignment="Left" Margin="354,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+                Click="Down100Feet"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="400,105,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource False}}"
                 Click="Altitude_Pull" Grid.Column="1"/>
