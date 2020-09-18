@@ -47,6 +47,26 @@ namespace FSInputMapper
             _viewModel.AirspeedManaged = false;
         }
 
+        private void Faster10Knots(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotAirspeed += 10;
+        }
+
+        private void Faster1Knot(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotAirspeed += 1;
+        }
+
+        private void Slower10Knots(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotAirspeed -= 10;
+        }
+
+        private void Slower1Knot(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotAirspeed -= 1;
+        }
+
         private void Heading_Push(object sender, RoutedEventArgs e)
         {
             _viewModel.HeadingManaged = true;
@@ -55,6 +75,26 @@ namespace FSInputMapper
         private void Heading_Pull(object sender, RoutedEventArgs e)
         {
             _viewModel.HeadingManaged = false;
+        }
+
+        private void Left10Degrees(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotHeading -= 10;
+        }
+
+        private void Left1Degree(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotHeading -= 1;
+        }
+
+        private void Right10Degrees(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotHeading += 10;
+        }
+
+        private void Right1Degree(object sender, RoutedEventArgs e)
+        {
+            _viewModel.AutopilotHeading += 1;
         }
 
         private void Altitude_Push(object sender, RoutedEventArgs e)
@@ -67,22 +107,22 @@ namespace FSInputMapper
             _viewModel.AltitudeManaged = false;
         }
 
-        private void Up1000_Click(object sender, RoutedEventArgs e)
+        private void Up1000Feet(object sender, RoutedEventArgs e)
         {
             _viewModel.AutopilotAltitude += 1000;
         }
 
-        private void Up100_Click(object sender, RoutedEventArgs e)
+        private void Up100Feet(object sender, RoutedEventArgs e)
         {
             _viewModel.AutopilotAltitude += 100;
         }
 
-        private void Down1000_Click(object sender, RoutedEventArgs e)
+        private void Down1000Feet(object sender, RoutedEventArgs e)
         {
             _viewModel.AutopilotAltitude -= 1000;
         }
 
-        private void Down100_Click(object sender, RoutedEventArgs e)
+        private void Down100Feet(object sender, RoutedEventArgs e)
         {
             _viewModel.AutopilotAltitude -= 100;
         }
