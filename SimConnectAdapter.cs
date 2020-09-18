@@ -11,13 +11,13 @@ namespace FSInputMapper
         // Stuff intended for struct-based multiple value requests:
         AUTOPILOT_DATA = 69, SPOILER_DATA,
         // Stuff for single value setting:
-        SPOILER_HANDLE, AP_SPEED, AP_HEADING, AP_ALTITUDE }
+        SPOILER_HANDLE, AP_SPEED, AP_ALTITUDE }
     enum REQUEST { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
     enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
-        AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_ALTITUDE_SLOT_SET,
+        AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_HEADING_BUG_SET, AP_ALTITUDE_SLOT_SET,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -75,8 +75,8 @@ namespace FSInputMapper
                 case nameof(viewModel.HeadingManaged):
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
                     break;
-                case nameof(viewModel.AutopilotHeading):
-                    SetData(DATA.AP_HEADING, viewModel.AutopilotHeading);
+                case nameof(viewModel.AutopilotHeading) when !viewModel.HeadingManaged:
+                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)viewModel.AutopilotHeading);
                     break;
                 case nameof(viewModel.AltitudeManaged):
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
@@ -154,9 +154,6 @@ namespace FSInputMapper
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
             // There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
             // "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
-            simConnect.AddToDataDefinition(DATA.AP_HEADING, "AUTOPILOT HEADING LOCK DIR", "degrees",
-                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
-            // or -/+10 with INCREASE/DECREASE HEADING BUG (Control-Delete/Insert on default map), there's also a SET HEADING BUG
             // Selecting other bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
             simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
@@ -167,7 +164,10 @@ namespace FSInputMapper
             // Autopilot things we send.
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
+
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
+
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
             //TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting managed
             //TODO: "AP_ALT_VAR_SET_ENGLISH"? Nope, that just sets feet mode (there's ...METRIC too)
