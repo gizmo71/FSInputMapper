@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FSInputMapper"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="FSInputMapper" Height="450" Width="800">
+        Title="FSInputMapper" Height="250" Width="800">
     <Window.Resources>
         <local:ModeBackgroundConverter x:Key="ModeBackgroundConverter" />
         <sys:Boolean x:Key="True">True</sys:Boolean>
