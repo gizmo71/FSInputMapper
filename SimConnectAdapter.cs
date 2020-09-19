@@ -125,16 +125,21 @@ namespace FSInputMapper
         {
             // Autopilot things we receive.
 
+            // Correct, but not writable.
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
+            // Correct, but not writable.
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
                 SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
+            // In selected mode, this is correct (but not writable).
+            // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
+            // Have not yet found where the displayed panel value is (may not be available via SimConnect).
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
@@ -180,6 +185,8 @@ namespace FSInputMapper
             //TODO: "AP_ALT_VAR_SET_ENGLISH"? Nope, that just sets feet mode (there's ...METRIC too)
             //TODO: are there events for the knobs, rather than trying to set values?
             // https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/26?u=dgymer
+            // "decrease autopilot reference altitude" Control-PgDn
+            // "increase autopilot reference altitude" Control-PgUp
 
             // Spoilers
 
