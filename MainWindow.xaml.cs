@@ -100,6 +100,7 @@ namespace FSInputMapper
         private void Altitude_Push(object sender, RoutedEventArgs e)
         {
             _viewModel.AltitudeManaged = true;
+            _viewModel.TriggerBus.Trigger(this);
         }
 
         private void Altitude_Pull(object sender, RoutedEventArgs e)

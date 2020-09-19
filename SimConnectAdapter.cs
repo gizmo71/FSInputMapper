@@ -59,6 +59,7 @@ namespace FSInputMapper
             dispatcherTimer.Start();
 
             viewModel.PropertyChanged += PropertyChangeHandler;
+            viewModel.TriggerBus.OnTrigger += OnTrigger; //TODO: this, later? What removes it?
         }
 
         private void PropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
@@ -248,6 +249,11 @@ namespace FSInputMapper
 
         private void SetData(DATA data, object value) {
             simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
+        }
+
+        private void OnTrigger(object? sender, FSIMTrigger e)
+        {
+            throw new NotImplementedException("how do I " + e.What + "?");
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {

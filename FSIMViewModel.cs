@@ -4,8 +4,11 @@ using System.Runtime.CompilerServices;
 
 namespace FSInputMapper
 {
+
     public class FSIMViewModel : INotifyPropertyChanged
     {
+        public readonly FSIMTriggerBus TriggerBus = new FSIMTriggerBus(); //TODO: factor out somehow; DI?
+
         private Int32 apAirspeed = 100;
         public Int32 AutopilotAirspeed
         {
@@ -65,5 +68,7 @@ namespace FSInputMapper
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
+
 }
