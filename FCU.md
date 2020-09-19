@@ -52,4 +52,4 @@ TODO: are there events for the knobs, rather than trying to set values?
 References
 ----------
 
-https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/15|this]]
+[Managed/Selected Mode Binding Thread](https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/15)
