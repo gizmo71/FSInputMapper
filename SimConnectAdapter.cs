@@ -11,13 +11,13 @@ namespace FSInputMapper
         // Stuff intended for struct-based multiple value requests:
         AUTOPILOT_DATA = 69, SPOILER_DATA,
         // Stuff for single value setting:
-        SPOILER_HANDLE, AP_SPEED, AP_ALTITUDE }
+        SPOILER_HANDLE, AP_ALTITUDE }
     enum REQUEST { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
     enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
-        AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_HEADING_BUG_SET, AP_ALTITUDE_SLOT_SET,
+        AP_SPEED, AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_HEADING_BUG_SET, AP_ALTITUDE_SLOT_SET,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -69,8 +69,8 @@ namespace FSInputMapper
                 case nameof(viewModel.AirspeedManaged):
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, viewModel.AirspeedManaged ? 2u : 1u);
                     break;
-                case nameof(viewModel.AutopilotAirspeed):
-                    SetData(DATA.AP_SPEED, viewModel.AutopilotAirspeed);
+                case nameof(viewModel.AutopilotAirspeed) when !viewModel.AirspeedManaged:
+                    SendEvent(EVENT.AP_SPEED, (uint)viewModel.AutopilotAirspeed);
                     break;
                 case nameof(viewModel.HeadingManaged):
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
@@ -81,7 +81,7 @@ namespace FSInputMapper
                 case nameof(viewModel.AltitudeManaged):
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
                     break;
-                case nameof(viewModel.AutopilotAltitude):
+                case nameof(viewModel.AutopilotAltitude) when !viewModel.AltitudeManaged:
                     SetData(DATA.AP_ALTITUDE, viewModel.AutopilotAltitude);
                     break;
             }
@@ -150,10 +150,6 @@ namespace FSInputMapper
 
             // Autopilot things we set.
 
-            simConnect.AddToDataDefinition(DATA.AP_SPEED, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
-                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
-            // There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
-            // "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
             // Selecting other bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
             simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
@@ -172,6 +168,9 @@ namespace FSInputMapper
             // Autopilot things we send.
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED, "AP_SPD_VAR_SET"); // "ap reference airspeed in knots" in GUI
+            // There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
+            // "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
