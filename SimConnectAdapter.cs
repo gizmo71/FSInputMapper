@@ -82,6 +82,7 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)viewModel.AutopilotHeading);
                     break;
                 case nameof(viewModel.AltitudeManaged):
+if (!viewModel.AltitudeManaged) //TODO: use triggers instead?
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
                     break;
                 case nameof(viewModel.AutopilotAltitude) when !viewModel.AltitudeManaged:
@@ -253,7 +254,7 @@ namespace FSInputMapper
 
         private void OnTrigger(object? sender, FSIMTrigger e)
         {
-            throw new NotImplementedException("how do I " + e.What + "?");
+            SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {
