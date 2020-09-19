@@ -68,12 +68,14 @@ namespace FSInputMapper
             {
                 case nameof(viewModel.AirspeedManaged):
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, viewModel.AirspeedManaged ? 2u : 1u);
+//TODO: something when switching back to manual to stop the number sticking
                     break;
                 case nameof(viewModel.AutopilotAirspeed) when !viewModel.AirspeedManaged:
                     SendEvent(EVENT.AP_SPEED, (uint)viewModel.AutopilotAirspeed);
                     break;
                 case nameof(viewModel.HeadingManaged):
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
+//TODO: something when switching back to manual to stop the number sticking
                     break;
                 case nameof(viewModel.AutopilotHeading) when !viewModel.HeadingManaged:
                     SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)viewModel.AutopilotHeading);
@@ -145,9 +147,6 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
-            /*TODO: add vertical speed, "AUTOPILOT VERTICAL HOLD VAR" in "feet/minute",
-              and maybe "AUTOPILOT VERTICAL HOLD" and even "AUTOPILOT_VS_SLOT_INDEX". */
-
             simConnect.RegisterDataDefineStruct<AutopilotData>(DATA.AUTOPILOT_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
@@ -155,38 +154,18 @@ namespace FSInputMapper
 
             // Autopilot things we set.
 
-            // Selecting other bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
             simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
-
-            // Vertical speed stuff:
-            // Note that there's lots of stuff in the JS which isn't event driven, so you might have to replicate timeouts etc.
-            //TODO: "SET AP CURRENT VS"? "SET AUTOPILOT VS HOLD"?
-            // Also the selection increment.
-            // Prepar3d has a bunch of other useful sounding KEY_ events listed.
-            // On pushing the button to level off, triggers K:AP_PANEL_ALTITUDE_HOLD and K:AP_PANEL_VS_ON [A320_Neo_FCU.js]
-            // On turning, sends/sets AP_VS_VAR_SET_ENGLISH to 2 if in idle descent;
-            //   sends AP_VS_VAR_SET_ENGLISH with the value and sets K:VS_SLOT_INDEX_SET=K:AP_PANEL_VS_ON=1 if 'normal' or levelling off
-            // On pulling, sends AP_VS_VAR_SET_ENGLISH to the desired value, and sets K:VS_SLOT_INDEX_SET=K:AP_PANEL_VS_ON=1 if at idle descent;
-            //   sets L:A320_NEO_FCU_FORCE_SELECTED_ALT=1, sets AP_VS_VAR_SET_ENGLISH twice with different parameters, and sets K:AP_PANEL_VS_ON=1
 
             // Autopilot things we send.
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED, "AP_SPD_VAR_SET"); // "ap reference airspeed in knots" in GUI
-            // There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
-            // "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
+            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED, "AP_SPD_VAR_SET"); // "AP REFERENCE AIRSPEED IN KNOTS" in GUI = "INPUT.KEY_AP_SPD_VAR_SET"
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
-            //TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting managed
-            //TODO: "AP_ALT_VAR_SET_ENGLISH"? Nope, that just sets feet mode (there's ...METRIC too)
-            //TODO: are there events for the knobs, rather than trying to set values?
-            // https://forums.flightsimulator.com/t/airbus-neo-is-there-a-binding-to-switch-between-managed-and-selected-modes/244977/26?u=dgymer
-            // "decrease autopilot reference altitude" Control-PgDn
-            // "increase autopilot reference altitude" Control-PgUp
 
             // Spoilers
 
@@ -209,7 +188,7 @@ namespace FSInputMapper
 
             simConnect.SetNotificationGroupPriority(GROUP.SPOILERS, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
 
-            // Spoilers: things we send (we've artificially partitioned these as I could avoid hearing our own event).
+            // Spoilers: things we send (we've artificially partitioned these as I couldn't avoid hearing our own event).
 
             simConnect.MapClientEventToSimEvent(EVENT.ARM_SPOILER, "SPOILERS_ARM_ON");
             simConnect.MapClientEventToSimEvent(EVENT.DISARM_SPOILER, "SPOILERS_ARM_OFF");
