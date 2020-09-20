@@ -16,9 +16,11 @@ namespace FSInputMapper
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
-    enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
-        AP_SPEED, AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_HEADING_BUG_SET, AP_ALTITUDE_SLOT_SET,
-        AP_ALT_UP, AP_ALT_DOWN,
+    enum EVENT { NONE = 42,
+        DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
+        AP_SPEED_SLOT_SET, AP_SPD_UP, AP_SPD_DOWN,
+        AP_HEADING_SLOT_SET, AP_HDG_RIGHT, AP_HDG_LEFT, AP_HEADING_BUG_SET,
+        AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -59,27 +61,7 @@ namespace FSInputMapper
             dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
             dispatcherTimer.Start();
 
-            viewModel.PropertyChanged += PropertyChangeHandler;
             viewModel.TriggerBus.OnTrigger += OnTrigger; //TODO: this, later? What removes it?
-        }
-
-        private void PropertyChangeHandler(object sender, PropertyChangedEventArgs eventArgs)
-        {
-            if (sender != viewModel) return;
-            switch (eventArgs.PropertyName)
-            {
-//TODO: something when switching back to manual to stop the number sticking
-                case nameof(viewModel.AutopilotAirspeed) when !viewModel.AirspeedManaged:
-                    SendEvent(EVENT.AP_SPEED, (uint)viewModel.AutopilotAirspeed);
-                    break;
-//TODO: something when switching back to manual to stop the number sticking
-                case nameof(viewModel.AutopilotHeading) when !viewModel.HeadingManaged:
-                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)viewModel.AutopilotHeading);
-                    break;
-                case nameof(viewModel.AutopilotAltitude) when !viewModel.AltitudeManaged:
-                    SetData(DATA.AP_ALTITUDE, viewModel.AutopilotAltitude);
-                    break;
-            }
         }
 
         private void Disconnect(Exception ex)
@@ -122,13 +104,13 @@ namespace FSInputMapper
 
             // Correct, but not writable.
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
-                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
-            // Correct, but not writable.
+            // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
-                SIMCONNECT_DATATYPE.FLOAT64, 2.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
@@ -153,9 +135,12 @@ namespace FSInputMapper
             // Autopilot things we send.
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED, "AP_SPD_VAR_SET"); // "AP REFERENCE AIRSPEED IN KNOTS" in GUI = "INPUT.KEY_AP_SPD_VAR_SET"
+            simConnect.MapClientEventToSimEvent(EVENT.AP_SPD_UP, "AP_SPD_VAR_INC");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_SPD_DOWN, "AP_SPD_VAR_DEC");
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_HDG_RIGHT, "HEADING_BUG_INC");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_HDG_LEFT, "HEADING_BUG_DEC");
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
@@ -237,14 +222,6 @@ namespace FSInputMapper
             }
         }
 
-        private void SendEvent(EVENT eventToSend, uint data = 0) {
-            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-        }
-
-        private void SetData(DATA data, object value) {
-            simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
-        }
-
         private void OnTrigger(object? sender, FSIMTrigger e)
         {
             switch (e.What)
@@ -257,9 +234,23 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.HDG_MAN:
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
+                    SendEvent(EVENT.AP_HEADING_BUG_SET, 0u);
                     break;
                 case FSIMTrigger.HDG_SEL:
+                    //TODO: if no preselection, set heading bug to current heading?
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
+                    break;
+                case FSIMTrigger.HDG_RIGHT_1:
+                    SendEvent(EVENT.AP_HDG_RIGHT, 10u);
+                    break;
+                case FSIMTrigger.HDG_RIGHT_10:
+                    SendEvent(EVENT.AP_HDG_RIGHT, 1u);
+                    break;
+                case FSIMTrigger.HDG_LEFT_1:
+                    SendEvent(EVENT.AP_HDG_LEFT, 10u);
+                    break;
+                case FSIMTrigger.HDG_LEFT_10:
+                    SendEvent(EVENT.AP_HDG_LEFT, 1u);
                     break;
                 case FSIMTrigger.ALT_MAN:
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
@@ -280,6 +271,16 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
             }
+        }
+
+        private void SetData(DATA data, object value)
+        {
+            simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
+        }
+
+        private void SendEvent(EVENT eventToSend, uint data = 0)
+        {
+            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {

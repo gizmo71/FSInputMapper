@@ -11,6 +11,10 @@ namespace FSInputMapper
         public const string SPD_SEL = "Selected Speed";
         public const string HDG_MAN = "Managed Heading";
         public const string HDG_SEL = "Selected Heading";
+        public const string HDG_RIGHT_1 = "Heading +1";
+        public const string HDG_RIGHT_10 = "Heading +10";
+        public const string HDG_LEFT_1 = "Heading -1";
+        public const string HDG_LEFT_10 = "Heading -10";
         public const string ALT_MAN = "Managed Altitude";
         public const string ALT_SEL = "Selected Altitude";
         public const string ALT_UP_100 = "Altitude +100";

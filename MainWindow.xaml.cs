@@ -79,22 +79,22 @@ namespace FSInputMapper
 
         private void Left10Degrees(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotHeading -= 10;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_10);
         }
 
         private void Left1Degree(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotHeading -= 1;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_1);
         }
 
         private void Right10Degrees(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotHeading += 10;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_10);
         }
 
         private void Right1Degree(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotHeading += 1;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_1);
         }
 
         private void Altitude_Push(object sender, RoutedEventArgs e)
@@ -109,25 +109,21 @@ namespace FSInputMapper
 
         private void Up1000Feet(object sender, RoutedEventArgs e)
         {
-            //_viewModel.AutopilotAltitude += 1000;
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_1000);
         }
 
         private void Up100Feet(object sender, RoutedEventArgs e)
         {
-            //_viewModel.AutopilotAltitude += 100;
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_100);
         }
 
         private void Down1000Feet(object sender, RoutedEventArgs e)
         {
-            //_viewModel.AutopilotAltitude -= 1000;
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_1000);
         }
 
         private void Down100Feet(object sender, RoutedEventArgs e)
         {
-            //_viewModel.AutopilotAltitude -= 100;
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
         }
 
