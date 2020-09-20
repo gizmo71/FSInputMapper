@@ -51,6 +51,13 @@ namespace FSInputMapper
             set { if (altitudeManaged != value) { altitudeManaged = value; OnPropertyChange(); } }
         }
 
+        private bool approachMode = true;
+        public bool ApproachMode
+        {
+            get { return approachMode; }
+            set { if (approachMode != value) { approachMode = value; OnPropertyChange(); } }
+        }
+
         private string? connectionError = "Not yet connected";
         public string? ConnectionError
         {

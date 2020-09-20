@@ -9,6 +9,10 @@ namespace FSInputMapper
     {
         public const string SPD_MAN = "Managed Speed";
         public const string SPD_SEL = "Selected Speed";
+        public const string SPD_1_FASTER = "Speed +1";
+        public const string SPD_10_FASTER = "Speed +10";
+        public const string SPD_1_SLOWER = "Speed -1";
+        public const string SPD_10_SLOWER = "Speed -10";
         public const string HDG_MAN = "Managed Heading";
         public const string HDG_SEL = "Selected Heading";
         public const string HDG_RIGHT_1 = "Heading +1";
@@ -21,6 +25,7 @@ namespace FSInputMapper
         public const string ALT_UP_1000 = "Altitude +1000";
         public const string ALT_DOWN_100 = "Altitude -100";
         public const string ALT_DOWN_1000 = "Altitude -1000";
+        public const string TOGGLE_APPR_MODE = "Toggle Appr";
 
         public string? What { get; set; }
     }

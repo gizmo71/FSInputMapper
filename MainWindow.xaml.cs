@@ -8,6 +8,7 @@ using System.Globalization;
 
 namespace FSInputMapper
 {
+
     public class ModeBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -49,22 +50,22 @@ namespace FSInputMapper
 
         private void Faster10Knots(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAirspeed += 10;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_10_FASTER);
         }
 
         private void Faster1Knot(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAirspeed += 1;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_1_FASTER);
         }
 
         private void Slower10Knots(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAirspeed -= 10;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_10_SLOWER);
         }
 
         private void Slower1Knot(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAirspeed -= 1;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_1_SLOWER);
         }
 
         private void Heading_Push(object sender, RoutedEventArgs e)
@@ -127,5 +128,11 @@ namespace FSInputMapper
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
         }
 
+        private void Approach_Clicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_APPR_MODE);
+        }
+
     }
+
 }

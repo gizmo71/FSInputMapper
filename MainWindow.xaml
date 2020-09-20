@@ -68,6 +68,10 @@
                 Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource False}}"
                 Click="Altitude_Pull" Grid.Column="1"/>
 
+        <Button Content="APPR" HorizontalAlignment="Left" Margin="394,145,0,0" VerticalAlignment="Top" Width="35"
+                Background="{Binding ApproachMode,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource False}}"
+                Click="Approach_Clicked" Grid.Column="1"/>
+
         <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="612,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}" Grid.Column="1"/>
     </Grid>

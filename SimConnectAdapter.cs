@@ -21,6 +21,7 @@ namespace FSInputMapper
         AP_SPEED_SLOT_SET, AP_SPD_UP, AP_SPD_DOWN,
         AP_HEADING_SLOT_SET, AP_HDG_RIGHT, AP_HDG_LEFT, AP_HEADING_BUG_SET,
         AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
+        AP_TOGGLE_APPR,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -147,6 +148,8 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_UP, "AP_ALT_VAR_INC");
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_DOWN, "AP_ALT_VAR_DEC");
 
+            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_APPR, "AP_APR_HOLD");
+
             // Spoilers
 
             simConnect.AddToDataDefinition(DATA.SPOILER_HANDLE, "SPOILERS HANDLE POSITION", "percent",
@@ -227,30 +230,42 @@ namespace FSInputMapper
             switch (e.What)
             {
                 case FSIMTrigger.SPD_MAN:
+                    //TODO: send something to unset the locked selected value
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, 2u);
                     break;
                 case FSIMTrigger.SPD_SEL:
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
                     break;
+                case FSIMTrigger.SPD_1_FASTER:
+                    SendEvent(EVENT.AP_SPD_UP, fast: true);
+                    break;
+                case FSIMTrigger.SPD_10_FASTER:
+                    SendEvent(EVENT.AP_SPD_UP, slow: true);
+                    break;
+                case FSIMTrigger.SPD_1_SLOWER:
+                    SendEvent(EVENT.AP_SPD_DOWN, fast: true);
+                    break;
+                case FSIMTrigger.SPD_10_SLOWER:
+                    SendEvent(EVENT.AP_SPD_DOWN, slow: true);
+                    break;
                 case FSIMTrigger.HDG_MAN:
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
-                    SendEvent(EVENT.AP_HEADING_BUG_SET, 0u);
                     break;
                 case FSIMTrigger.HDG_SEL:
                     //TODO: if no preselection, set heading bug to current heading?
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
                     break;
                 case FSIMTrigger.HDG_RIGHT_1:
-                    SendEvent(EVENT.AP_HDG_RIGHT, 10u);
+                    SendEvent(EVENT.AP_HDG_RIGHT, fast: true);
                     break;
                 case FSIMTrigger.HDG_RIGHT_10:
-                    SendEvent(EVENT.AP_HDG_RIGHT, 1u);
+                    SendEvent(EVENT.AP_HDG_RIGHT, slow: true);
                     break;
                 case FSIMTrigger.HDG_LEFT_1:
-                    SendEvent(EVENT.AP_HDG_LEFT, 10u);
+                    SendEvent(EVENT.AP_HDG_LEFT, fast: true);
                     break;
                 case FSIMTrigger.HDG_LEFT_10:
-                    SendEvent(EVENT.AP_HDG_LEFT, 1u);
+                    SendEvent(EVENT.AP_HDG_LEFT, slow: true);
                     break;
                 case FSIMTrigger.ALT_MAN:
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
@@ -270,6 +285,9 @@ namespace FSInputMapper
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
+                case FSIMTrigger.TOGGLE_APPR_MODE:
+                    SendEvent(EVENT.AP_TOGGLE_APPR);
+                    break;
             }
         }
 
@@ -278,9 +296,12 @@ namespace FSInputMapper
             simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
         }
 
-        private void SendEvent(EVENT eventToSend, uint data = 0)
+        private void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
-            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+            SIMCONNECT_EVENT_FLAG flags = SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
+            if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
+            if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
+            simConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, GROUP.PRIORITY_STANDARD, flags);
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {

@@ -38,8 +38,9 @@ Add vertical speed, `AUTOPILOT VERTICAL HOLD VAR` in "feet/minute",
 and maybe `AUTOPILOT VERTICAL HOLD` and even `AUTOPILOT_VS_SLOT_INDEX`.
 ```
 Selecting bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
-How can they be adjusted by smaller amounts? Is there a parameter?
 ```
+
+Speed setting needs to be aware of difference between SPD and MACH modes.
 
 References
 ----------
