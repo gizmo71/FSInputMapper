@@ -7,15 +7,22 @@ namespace FSInputMapper
 
     public class FSIMTrigger : EventArgs
     {
+        public const string SPD_MAN = "Managed Speed";
+        public const string SPD_SEL = "Selected Speed";
+        public const string HDG_MAN = "Managed Heading";
+        public const string HDG_SEL = "Selected Heading";
+        public const string ALT_MAN = "Managed Altitude";
+        public const string ALT_SEL = "Selected Altitude";
+
         public string? What { get; set; }
     }
 
     public class FSIMTriggerBus
     {
         public event EventHandler<FSIMTrigger> OnTrigger = delegate { };
-        public void Trigger(object sender)
+        public void Trigger(object sender, string what)
         {
-            OnTrigger(this, new FSIMTrigger() { What = "foo!" });
+            OnTrigger(sender, new FSIMTrigger() { What = what });
         }
     }
 

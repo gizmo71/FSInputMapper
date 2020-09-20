@@ -41,7 +41,7 @@ namespace FSInputMapper
     };
 
     class SimConnectAdapter {
-        const int WM_USER_SIMCONNECT = 0x0402;
+        private const int WM_USER_SIMCONNECT = 0x0402;
 
         private readonly IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
@@ -67,23 +67,13 @@ namespace FSInputMapper
             if (sender != viewModel) return;
             switch (eventArgs.PropertyName)
             {
-                case nameof(viewModel.AirspeedManaged):
-                    SendEvent(EVENT.AP_SPEED_SLOT_SET, viewModel.AirspeedManaged ? 2u : 1u);
 //TODO: something when switching back to manual to stop the number sticking
-                    break;
                 case nameof(viewModel.AutopilotAirspeed) when !viewModel.AirspeedManaged:
                     SendEvent(EVENT.AP_SPEED, (uint)viewModel.AutopilotAirspeed);
                     break;
-                case nameof(viewModel.HeadingManaged):
-                    SendEvent(EVENT.AP_HEADING_SLOT_SET, viewModel.HeadingManaged ? 2u : 1u);
 //TODO: something when switching back to manual to stop the number sticking
-                    break;
                 case nameof(viewModel.AutopilotHeading) when !viewModel.HeadingManaged:
                     SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)viewModel.AutopilotHeading);
-                    break;
-                case nameof(viewModel.AltitudeManaged):
-if (!viewModel.AltitudeManaged) //TODO: use triggers instead?
-                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, viewModel.AltitudeManaged ? 2u : 1u);
                     break;
                 case nameof(viewModel.AutopilotAltitude) when !viewModel.AltitudeManaged:
                     SetData(DATA.AP_ALTITUDE, viewModel.AutopilotAltitude);
@@ -254,7 +244,27 @@ if (!viewModel.AltitudeManaged) //TODO: use triggers instead?
 
         private void OnTrigger(object? sender, FSIMTrigger e)
         {
-            SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
+            switch (e.What)
+            {
+                case FSIMTrigger.SPD_MAN:
+                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 2u);
+                    break;
+                case FSIMTrigger.SPD_SEL:
+                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
+                    break;
+                case FSIMTrigger.HDG_MAN:
+                    SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
+                    break;
+                case FSIMTrigger.HDG_SEL:
+                    SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
+                    break;
+                case FSIMTrigger.ALT_MAN:
+                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
+                    break;
+                case FSIMTrigger.ALT_SEL:
+                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 1u);
+                    break;
+            }
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {

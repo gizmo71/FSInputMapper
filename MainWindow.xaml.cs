@@ -39,12 +39,12 @@ namespace FSInputMapper
 
         private void Airspeed_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.AirspeedManaged = true;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_MAN);
         }
 
         private void Airspeed_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.AirspeedManaged = false;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_SEL);
         }
 
         private void Faster10Knots(object sender, RoutedEventArgs e)
@@ -69,12 +69,12 @@ namespace FSInputMapper
 
         private void Heading_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.HeadingManaged = true;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_MAN);
         }
 
         private void Heading_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.HeadingManaged = false;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_SEL);
         }
 
         private void Left10Degrees(object sender, RoutedEventArgs e)
@@ -99,13 +99,12 @@ namespace FSInputMapper
 
         private void Altitude_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.AltitudeManaged = true;
-            _viewModel.TriggerBus.Trigger(this);
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_MAN);
         }
 
         private void Altitude_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.AltitudeManaged = false;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_SEL);
         }
 
         private void Up1000Feet(object sender, RoutedEventArgs e)
