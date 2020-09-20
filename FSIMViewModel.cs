@@ -51,22 +51,28 @@ namespace FSInputMapper
             set { if (altitudeManaged != value) { altitudeManaged = value; OnPropertyChange(); } }
         }
 
-        private bool approachMode = true;
-        public bool ApproachMode
-        {
-            get { return approachMode; }
-            set { if (approachMode != value) { approachMode = value; OnPropertyChange(); } }
-        }
-
         private string? connectionError = "Not yet connected";
         public string? ConnectionError
         {
             get { return connectionError; }
-            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); OnPropertyChange(nameof(IsConnected)); } }
+            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); OnPropertyChange(); } }
         }
         public bool IsConnected
         {
             get { return connectionError == null; }
+        }
+
+        private bool autopilotLoc;
+        public bool AutopilotLoc {
+            get { return autopilotLoc; }
+            set { if (autopilotLoc != value) { autopilotLoc = value; OnPropertyChange(); } }
+        }
+
+        private bool autopilotAppr;
+        public bool AutopilotAppr
+        {
+            get { return autopilotAppr; }
+            set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

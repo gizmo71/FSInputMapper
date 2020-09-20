@@ -21,7 +21,7 @@ namespace FSInputMapper
         AP_SPEED_SLOT_SET, AP_SPD_UP, AP_SPD_DOWN,
         AP_HEADING_SLOT_SET, AP_HDG_RIGHT, AP_HDG_LEFT, AP_HEADING_BUG_SET,
         AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
-        AP_TOGGLE_APPR,
+        AP_TOGGLE_LOC, AP_TOGGLE_APPR,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -29,12 +29,22 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct AutopilotData
     {
-        public double apSpeed;
-        public double apSpeedSlot;
-        public double apHeading;
-        public double apHeadingSlot;
-        public double apAltitude;
-        public double apAltitudeSlot;
+        public double speedKnots; // Real range 100 -399 knots (Mach 0.10-0.99).
+        public double speedSlot;
+        public double heading; // Real range 000-359 (not 360!)
+        public double headingSlot;
+        public double altitude; // Real range 100-49000
+        public double altitudeSlot;
+        public double loc;
+        public double appr;
+        //TODO: V/S mode
+        //TODO: set V/S to 0 on push, and engage selected V/S on pull; after 0ing, subsequent turns are actioned immediately
+        //TODO: V/S selector; real range ±6000ft/min in steps of 100, or ±9.9º in steps of 0.1º
+        //TODO: SPD/MCH buton; is it implemented yet?
+        //TODO: HDG-V/S TRK-FPA toggle, when it's implemented
+        //TODO: AP1 - AP2 - A/THR
+        //TODO: EXPED button, when it's implemented
+        //TODO: metric alt - does this work in MSFS?
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -123,6 +133,11 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
+            simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT NAV1 LOCK", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+
             simConnect.RegisterDataDefineStruct<AutopilotData>(DATA.AUTOPILOT_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
@@ -148,6 +163,7 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_UP, "AP_ALT_VAR_INC");
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_DOWN, "AP_ALT_VAR_DEC");
 
+            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_LOC, "AP_LOC_HOLD");
             simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_APPR, "AP_APR_HOLD");
 
             // Spoilers
@@ -201,12 +217,14 @@ namespace FSInputMapper
             {
                 case REQUEST.AUTOPILOT_DATA:
                     AutopilotData autopilotData = (AutopilotData)data.dwData[0];
-                    viewModel.AirspeedManaged = autopilotData.apSpeedSlot == 2;
-                    viewModel.AutopilotAirspeed = (int)autopilotData.apSpeed;
-                    viewModel.HeadingManaged = autopilotData.apHeadingSlot == 2;
-                    viewModel.AutopilotHeading = (int)autopilotData.apHeading;
-                    viewModel.AltitudeManaged = autopilotData.apAltitudeSlot == 2;
-                    viewModel.AutopilotAltitude = (int)autopilotData.apAltitude;
+                    viewModel.AirspeedManaged = autopilotData.speedSlot == 2;
+                    viewModel.AutopilotAirspeed = (int)autopilotData.speedKnots;
+                    viewModel.HeadingManaged = autopilotData.headingSlot == 2;
+                    viewModel.AutopilotHeading = (int)autopilotData.heading;
+                    viewModel.AltitudeManaged = autopilotData.altitudeSlot == 2;
+                    viewModel.AutopilotAltitude = (int)autopilotData.altitude;
+                    viewModel.AutopilotLoc = autopilotData.loc == 1;
+                    viewModel.AutopilotAppr = autopilotData.appr == 1;
                     break;
                 case REQUEST.MORE_SPOILER:
                     SpoilerData spoilerData = (SpoilerData)data.dwData[0];
@@ -284,6 +302,9 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
+                    break;
+                case FSIMTrigger.TOGGLE_LOC_MODE:
+                    SendEvent(EVENT.AP_TOGGLE_LOC);
                     break;
                 case FSIMTrigger.TOGGLE_APPR_MODE:
                     SendEvent(EVENT.AP_TOGGLE_APPR);

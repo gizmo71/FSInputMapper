@@ -40,7 +40,9 @@ and maybe `AUTOPILOT VERTICAL HOLD` and even `AUTOPILOT_VS_SLOT_INDEX`.
 Selecting bugs: Shift+Control+r (airspeed) z (altitude) h (heading) ?? (VSI)
 ```
 
-Speed setting needs to be aware of difference between SPD and MACH modes.
+In managed mode, the HDG-TRK and V/S-FPA numbers should show for 45 seconds
+after selection until a timeout returns the display to dashes.
+For Speed/Mach, it should timeout after 10 seconds.
 
 References
 ----------

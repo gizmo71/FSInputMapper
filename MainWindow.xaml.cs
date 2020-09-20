@@ -128,7 +128,12 @@ namespace FSInputMapper
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
         }
 
-        private void Approach_Clicked(object sender, RoutedEventArgs e)
+        private void FcuLocClicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_LOC_MODE);
+        }
+
+        private void FcuApprClicked(object sender, RoutedEventArgs e)
         {
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_APPR_MODE);
         }
