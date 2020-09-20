@@ -109,22 +109,26 @@ namespace FSInputMapper
 
         private void Up1000Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAltitude += 1000;
+            //_viewModel.AutopilotAltitude += 1000;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_1000);
         }
 
         private void Up100Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAltitude += 100;
+            //_viewModel.AutopilotAltitude += 100;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_100);
         }
 
         private void Down1000Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAltitude -= 1000;
+            //_viewModel.AutopilotAltitude -= 1000;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_1000);
         }
 
         private void Down100Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.AutopilotAltitude -= 100;
+            //_viewModel.AutopilotAltitude -= 100;
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
         }
 
     }

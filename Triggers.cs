@@ -13,6 +13,10 @@ namespace FSInputMapper
         public const string HDG_SEL = "Selected Heading";
         public const string ALT_MAN = "Managed Altitude";
         public const string ALT_SEL = "Selected Altitude";
+        public const string ALT_UP_100 = "Altitude +100";
+        public const string ALT_UP_1000 = "Altitude +1000";
+        public const string ALT_DOWN_100 = "Altitude -100";
+        public const string ALT_DOWN_1000 = "Altitude -1000";
 
         public string? What { get; set; }
     }

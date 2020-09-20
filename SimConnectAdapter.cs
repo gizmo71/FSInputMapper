@@ -18,6 +18,7 @@ namespace FSInputMapper
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
     enum EVENT { NONE = 42, DISARM_SPOILER, ARM_SPOILER, MORE_SPOILER, LESS_SPOILER,
         AP_SPEED, AP_SPEED_SLOT_SET, AP_HEADING_SLOT_SET, AP_HEADING_BUG_SET, AP_ALTITUDE_SLOT_SET,
+        AP_ALT_UP, AP_ALT_DOWN,
     }
     enum GROUP { SPOILERS = 13, AUTOPILOT,
         PRIORITY_STANDARD = 1900000000 }
@@ -158,6 +159,8 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
 
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_UP, "AP_ALT_VAR_INC");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_DOWN, "AP_ALT_VAR_DEC");
 
             // Spoilers
 
@@ -263,6 +266,18 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.ALT_SEL:
                     SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 1u);
+                    break;
+                case FSIMTrigger.ALT_UP_1000:
+                    SendEvent(EVENT.AP_ALT_UP, 1000u);
+                    break;
+                case FSIMTrigger.ALT_UP_100:
+                    SendEvent(EVENT.AP_ALT_UP, 100u);
+                    break;
+                case FSIMTrigger.ALT_DOWN_1000:
+                    SendEvent(EVENT.AP_ALT_DOWN, 1000u);
+                    break;
+                case FSIMTrigger.ALT_DOWN_100:
+                    SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
             }
         }
