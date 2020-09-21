@@ -19,17 +19,17 @@
         </Grid.ColumnDefinitions>
         <!-- Airspeed -->
         <Button Content="+10" HorizontalAlignment="Left" Margin="16,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
-                Click="Faster10Knots"/>
+                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_FASTER}"/>
         <Button Content="+1" HorizontalAlignment="Left" Margin="61,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
-                Click="Faster1Knot"/>
+                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_FASTER}"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="107,57,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
                 Click="Airspeed_Push" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Margin="16,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAirspeed}" IsReadOnly="True" Grid.Column="1"/>
         <Button Content="-10" HorizontalAlignment="Left" Margin="16,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
-                Click="Slower10Knots"/>
+                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_SLOWER}"/>
         <Button Content="-1" HorizontalAlignment="Left" Margin="61,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
-                Click="Slower1Knot"/>
+                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_SLOWER}"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="107,105,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Airspeed_Pull" Grid.Column="1"/>

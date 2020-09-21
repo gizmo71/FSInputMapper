@@ -5,7 +5,7 @@ using System.Text;
 namespace FSInputMapper
 {
 
-    public class FSIMTrigger : EventArgs
+    public static class FSIMTrigger
     {
         public const string SPD_MAN = "Managed Speed";
         public const string SPD_SEL = "Selected Speed";
@@ -27,16 +27,19 @@ namespace FSInputMapper
         public const string ALT_DOWN_1000 = "Altitude -1000";
         public const string TOGGLE_LOC_MODE = "Toggle Loc";
         public const string TOGGLE_APPR_MODE = "Toggle Appr";
+    }
 
+    public class FSIMTriggerArgs : EventArgs
+    {
         public string? What { get; set; }
     }
 
     public class FSIMTriggerBus
     {
-        public event EventHandler<FSIMTrigger> OnTrigger = delegate { };
+        public event EventHandler<FSIMTriggerArgs> OnTrigger = delegate { };
         public void Trigger(object sender, string what)
         {
-            OnTrigger(sender, new FSIMTrigger() { What = what });
+            OnTrigger(sender, new FSIMTriggerArgs() { What = what });
         }
     }
 

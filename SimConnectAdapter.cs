@@ -243,7 +243,7 @@ namespace FSInputMapper
             }
         }
 
-        private void OnTrigger(object? sender, FSIMTrigger e)
+        private void OnTrigger(object? sender, FSIMTriggerArgs e)
         {
             switch (e.What)
             {

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interop;
 using System.Globalization;
+using System.Windows.Controls;
 
 // https://docs.microsoft.com/en-us/dotnet/desktop/wpf/getting-started/walkthrough-my-first-wpf-desktop-application?view=netframeworkdesktop-4.8
 
@@ -24,6 +25,7 @@ namespace FSInputMapper
 
     public partial class MainWindow : Window
     {
+
         private readonly FSIMViewModel _viewModel;
 
         public MainWindow()
@@ -48,24 +50,9 @@ namespace FSInputMapper
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_SEL);
         }
 
-        private void Faster10Knots(object sender, RoutedEventArgs e)
+        private void SpeedChange(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_10_FASTER);
-        }
-
-        private void Faster1Knot(object sender, RoutedEventArgs e)
-        {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_1_FASTER);
-        }
-
-        private void Slower10Knots(object sender, RoutedEventArgs e)
-        {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_10_SLOWER);
-        }
-
-        private void Slower1Knot(object sender, RoutedEventArgs e)
-        {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_1_SLOWER);
+            _viewModel.TriggerBus.Trigger(sender, (String)((Control)sender).Tag);
         }
 
         private void Heading_Push(object sender, RoutedEventArgs e)
