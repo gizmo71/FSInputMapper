@@ -18,6 +18,7 @@ There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in te
 ```
 Set ''K:SPEED_SLOT_INDEX_SET'' with a value of 1 (selected) or 2 (managed); variable ''AUTOPILOT_SPEED_SLOT_INDEX'' to read it (don't use underscores!)
 Set ''L:A320_FCU_SHOW_SELECTED_SPEED'' to show a selected speed number, or 0 for dashes (can't read from SimConnect, at least not the same way as the slot above)
+If AUTOPILOT GLIDESLOPE HOLD is on, don't show selected speed.
 Similarly, ''K:HEADING_SLOT_INDEX_SET'' is 1 (selected) or 2 (managed)
 ''L:A320_FCU_SHOW_SELECTED_HEADING'' for the selected heading shown
 Altitude version involves ''L:A320_NEO_FCU_FORCE_IDLE_VS'', ''K:ALTITUDE_SLOT_INDEX_SET'', something internal called ''AP_ALT_VAR_SET_ENGLISH''

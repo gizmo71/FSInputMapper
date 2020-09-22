@@ -9,10 +9,10 @@ namespace FSInputMapper
 {
     enum DATA {
         // Stuff intended for struct-based multiple value requests:
-        AUTOPILOT_DATA = 69, SPOILER_DATA,
+        AUTOPILOT_DATA = 69, AP_SPD_SEL, SPOILER_DATA,
         // Stuff for single value setting:
-        SPOILER_HANDLE, AP_ALTITUDE }
-    enum REQUEST { AUTOPILOT_DATA = 71, MORE_SPOILER, LESS_SPOILER, }
+        SPOILER_HANDLE, }
+    enum REQUEST { AUTOPILOT_DATA = 71, AP_SPD_SEL, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
@@ -23,7 +23,7 @@ namespace FSInputMapper
         AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
         AP_TOGGLE_LOC, AP_TOGGLE_APPR,
     }
-    enum GROUP { SPOILERS = 13, AUTOPILOT,
+    enum GROUP { SPOILERS = 13,
         PRIORITY_STANDARD = 1900000000 }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -37,6 +37,7 @@ namespace FSInputMapper
         public double altitudeSlot;
         public double loc;
         public double appr;
+        public double gs;
         //TODO: V/S mode
         //TODO: set V/S to 0 on push, and engage selected V/S on pull; after 0ing, subsequent turns are actioned immediately
         //TODO: V/S selector; real range ±6000ft/min in steps of 100, or ±9.9º in steps of 0.1º
@@ -45,6 +46,12 @@ namespace FSInputMapper
         //TODO: AP1 - AP2 - A/THR
         //TODO: EXPED button, when it's implemented
         //TODO: metric alt - does this work in MSFS?
+    };
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    struct ApSpdSelData
+    {
+        public double headingMagnetic;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -111,7 +118,7 @@ namespace FSInputMapper
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
-            // Autopilot things we receive.
+            // Autopilot - general set of things we receive.
 
             // Correct, but not writable.
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
@@ -137,16 +144,19 @@ namespace FSInputMapper
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AUTOPILOT_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
             simConnect.RegisterDataDefineStruct<AutopilotData>(DATA.AUTOPILOT_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.AUTOPILOT_DATA, DATA.AUTOPILOT_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
 
-            // Autopilot things we set.
+            // Autopilot - things we get when pulling Speed to Selected.
 
-            simConnect.AddToDataDefinition(DATA.AP_ALTITUDE, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
-                SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_SPD_SEL, "PLANE HEADING DEGREES MAGNETIC", "degrees",
+                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.RegisterDataDefineStruct<ApSpdSelData>(DATA.AP_SPD_SEL);
 
             // Autopilot things we send.
 
@@ -191,8 +201,6 @@ namespace FSInputMapper
 
             simConnect.MapClientEventToSimEvent(EVENT.ARM_SPOILER, "SPOILERS_ARM_ON");
             simConnect.MapClientEventToSimEvent(EVENT.DISARM_SPOILER, "SPOILERS_ARM_OFF");
-
-            simConnect.SetNotificationGroupPriority(GROUP.AUTOPILOT, SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD);
         }
 
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
@@ -216,7 +224,7 @@ namespace FSInputMapper
             switch ((REQUEST)data.dwRequestID)
             {
                 case REQUEST.AUTOPILOT_DATA:
-                    AutopilotData autopilotData = (AutopilotData)data.dwData[0];
+                    var autopilotData = (AutopilotData)data.dwData[0];
                     viewModel.AirspeedManaged = autopilotData.speedSlot == 2;
                     viewModel.AutopilotAirspeed = (int)autopilotData.speedKnots;
                     viewModel.HeadingManaged = autopilotData.headingSlot == 2;
@@ -226,8 +234,13 @@ namespace FSInputMapper
                     viewModel.AutopilotLoc = autopilotData.loc == 1;
                     viewModel.AutopilotAppr = autopilotData.appr == 1;
                     break;
+                case REQUEST.AP_SPD_SEL:
+                    var apSpdSelData = (ApSpdSelData)data.dwData[0];
+                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
+                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)Math.Round(apSpdSelData.headingMagnetic));
+                    break;
                 case REQUEST.MORE_SPOILER:
-                    SpoilerData spoilerData = (SpoilerData)data.dwData[0];
+                    var spoilerData = (SpoilerData)data.dwData[0];
                     if (spoilerData.spoilersArmed != 0)
                         SendEvent(EVENT.DISARM_SPOILER);
                     else
@@ -252,7 +265,9 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_SPEED_SLOT_SET, 2u);
                     break;
                 case FSIMTrigger.SPD_SEL:
-                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
+                    simConnect?.RequestDataOnSimObject(REQUEST.AP_SPD_SEL, DATA.AP_SPD_SEL,
+                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
                     break;
                 case FSIMTrigger.SPD_1_FASTER:
                     SendEvent(EVENT.AP_SPD_UP, fast: true);
@@ -270,7 +285,7 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
                     break;
                 case FSIMTrigger.HDG_SEL:
-                    //TODO: if no preselection, set heading bug to current heading?
+                    //TODO: if no preselection, set heading bug to "PLANE HEADING DEGREES MAGNETIC"?
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
                     break;
                 case FSIMTrigger.HDG_RIGHT_1:
