@@ -127,7 +127,7 @@ namespace FSInputMapper
 
         private void FcuGsClicked(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_GS_MODE);
+            throw new Exception("Can't select GS alone");
         }
 
     }

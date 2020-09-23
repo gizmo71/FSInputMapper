@@ -25,7 +25,6 @@ namespace FSInputMapper
         public const string ALT_UP_1000 = "Altitude +1000";
         public const string ALT_DOWN_100 = "Altitude -100";
         public const string ALT_DOWN_1000 = "Altitude -1000";
-        public const string TOGGLE_GS_MODE = "Toggle GS";
         public const string TOGGLE_LOC_MODE = "Toggle Loc";
         public const string TOGGLE_APPR_MODE = "Toggle Appr";
     }
