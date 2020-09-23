@@ -9,7 +9,7 @@ namespace FSInputMapper
 {
     enum DATA {
         // Stuff intended for struct-based multiple value requests:
-        FCU_DATA = 69, AP_HDG_SEL, AP_MODE_SEL, SPOILER_DATA,
+        FCU_DATA = 69, AP_HDG_SEL, AP_DATA, SPOILER_DATA,
         // Stuff for single value setting:
         SPOILER_HANDLE, }
     enum REQUEST { FCU_DATA = 71, FCU_HDG_SEL, AP_DATA, MORE_SPOILER, LESS_SPOILER, }
@@ -173,12 +173,13 @@ namespace FSInputMapper
 
             // Autopilot - things we receive.
 
-            simConnect.AddToDataDefinition(DATA.AP_MODE_SEL, "AUTOPILOT APPROACH HOLD", "Bool",
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_MODE_SEL, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_MODE_SEL, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
 
             // Autopilot - commands we send
 
@@ -333,9 +334,15 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.TOGGLE_LOC_MODE:
                     SendEvent(EVENT.AP_TOGGLE_LOC);
+                    simConnect?.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
+                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
                     break;
                 case FSIMTrigger.TOGGLE_APPR_MODE:
                     SendEvent(EVENT.AP_TOGGLE_APPR);
+                    simConnect?.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
+                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
                     break;
             }
         }
