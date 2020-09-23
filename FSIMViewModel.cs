@@ -68,6 +68,13 @@ namespace FSInputMapper
             set { if (autopilotLoc != value) { autopilotLoc = value; OnPropertyChange(); } }
         }
 
+        private bool autopilotGs;
+        public bool AutopilotGs
+        {
+            get { return autopilotGs; }
+            set { if (autopilotGs != value) { autopilotGs = value; OnPropertyChange(); } }
+        }
+
         private bool autopilotAppr;
         public bool AutopilotAppr
         {

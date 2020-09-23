@@ -125,6 +125,11 @@ namespace FSInputMapper
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_APPR_MODE);
         }
 
+        private void FcuGsClicked(object sender, RoutedEventArgs e)
+        {
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_GS_MODE);
+        }
+
     }
 
 }
