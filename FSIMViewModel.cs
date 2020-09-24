@@ -44,11 +44,25 @@ namespace FSInputMapper
             set { if (apAltitude != value) { apAltitude = value; OnPropertyChange(); } }
         }
 
-        bool altitudeManaged = true;
+        private bool altitudeManaged = true;
         public bool AltitudeManaged
         {
             get { return altitudeManaged; }
             set { if (altitudeManaged != value) { altitudeManaged = value; OnPropertyChange(); } }
+        }
+
+        private Int32 autopilotVerticalSpeed = 0;
+        public Int32 AutopilotVerticalSpeed
+        {
+            get { return autopilotVerticalSpeed; }
+            set { if (autopilotVerticalSpeed != value) { autopilotVerticalSpeed = value; OnPropertyChange(); } }
+        }
+
+        private bool vsManaged = true;
+        public bool VerticalSpeedManaged
+        {
+            get { return vsManaged; }
+            set { if (vsManaged != value) { vsManaged = value; OnPropertyChange(); } }
         }
 
         private string? connectionError = "Not yet connected";
