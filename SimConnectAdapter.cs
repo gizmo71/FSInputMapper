@@ -47,7 +47,7 @@ namespace FSInputMapper
     struct ApModeData
     {
         public double approachHold;
-        public double locHold;
+        public double nav1Hold;
         public double gsHold;
         //TODO: AP1 - AP2 - A/THR
         //TODO: EXPED button, when it's implemented
@@ -174,12 +174,16 @@ namespace FSInputMapper
             // Autopilot - things we receive.
 
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 HOLD", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
+
+            simConnect.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
+                SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
 
             // Autopilot - commands we send
 
@@ -245,8 +249,8 @@ namespace FSInputMapper
                     break;
                 case REQUEST.AP_DATA:
                     var apModeData = (ApModeData)data.dwData[0];
-                    viewModel.AutopilotLoc = apModeData.locHold != 0;
-                    viewModel.AutopilotAppr = apModeData.approachHold != 0;
+                    viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.nav1Hold == 0;
+                    viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.nav1Hold != 0;
                     viewModel.AutopilotGs = apModeData.gsHold != 0;
                     break;
                 case REQUEST.FCU_HDG_SEL:
@@ -332,17 +336,12 @@ namespace FSInputMapper
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
+//TODO: these two work when done singly, but when swapping between them, the first click toggles off. 
                 case FSIMTrigger.TOGGLE_LOC_MODE:
                     SendEvent(EVENT.AP_TOGGLE_LOC);
-                    simConnect?.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
-                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
                     break;
                 case FSIMTrigger.TOGGLE_APPR_MODE:
                     SendEvent(EVENT.AP_TOGGLE_APPR);
-                    simConnect?.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
-                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
                     break;
             }
         }
