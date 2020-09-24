@@ -21,7 +21,7 @@ namespace FSInputMapper
         AP_SPEED_SLOT_SET, AP_SPD_UP, AP_SPD_DOWN,
         AP_HEADING_SLOT_SET, AP_HDG_RIGHT, AP_HDG_LEFT, AP_HEADING_BUG_SET,
         AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
-        AP_TOGGLE_LOC, AP_TOGGLE_APPR,
+        AP_TOGGLE_LOC, AP_TOGGLE_APPR, AP_AUTOTHRUST_ARM, AP_TOGGLE_FD,
     }
     enum GROUP { SPOILERS = 13,
         PRIORITY_STANDARD = 1900000000 }
@@ -35,7 +35,8 @@ namespace FSInputMapper
         public double headingSlot;
         public double altitude; // Real range 100-49000
         public double altitudeSlot;
-        //TODO: V/S mode
+        public double vs;
+        public double vsSlot;
         //TODO: set V/S to 0 on push, and engage selected V/S on pull; after 0ing, subsequent turns are actioned immediately
         //TODO: V/S selector; real range ±6000ft/min in steps of 100, or ±9.9º in steps of 0.1º
         //TODO: SPD/MCH buton; is it implemented yet?
@@ -46,10 +47,13 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct ApModeData
     {
+        public double fdActive;
+        public double apMaster;
+        public double apHeadingHold;
         public double approachHold;
         public double nav1Hold;
         public double gsHold;
-        //TODO: AP1 - AP2 - A/THR
+        public double autothrustArmed;
         //TODO: EXPED button, when it's implemented
     }
 
@@ -129,13 +133,13 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             // In selected mode, this is correct (but not writable).
             // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
@@ -143,7 +147,12 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
                 SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+
+            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VS SLOT INDEX", "number",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             simConnect.RegisterDataDefineStruct<FcuData>(DATA.FCU_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.FCU_DATA, DATA.FCU_DATA,
@@ -173,11 +182,19 @@ namespace FSInputMapper
 
             // Autopilot - things we receive.
 
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT MASTER", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT HEADING LOCK", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT THROTTLE ARM", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
 
@@ -189,7 +206,9 @@ namespace FSInputMapper
 
             //TODO: APPR on then LOC on leaves GS stuck on; we should request modes and react
             simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_LOC, "AP_LOC_HOLD");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_APPR, "AP_APR_HOLD"); // Combines LOC and GS
+            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_APPR, "AP_APR_HOLD"); // Combines LOC and GS?
+            simConnect.MapClientEventToSimEvent(EVENT.AP_AUTOTHRUST_ARM, "AUTO_THROTTLE_ARM");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_FD, "TOGGLE_FLIGHT_DIRECTOR");
 
             // Spoilers
 
@@ -249,8 +268,8 @@ namespace FSInputMapper
                     break;
                 case REQUEST.AP_DATA:
                     var apModeData = (ApModeData)data.dwData[0];
-                    viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.nav1Hold == 0;
-                    viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.nav1Hold != 0;
+                    viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.gsHold == 0;
+                    viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.gsHold != 0;
                     viewModel.AutopilotGs = apModeData.gsHold != 0;
                     break;
                 case REQUEST.FCU_HDG_SEL:
@@ -299,9 +318,11 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_SPD_DOWN, slow: true);
                     break;
                 case FSIMTrigger.HDG_MAN:
+//TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the push
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
                     break;
                 case FSIMTrigger.HDG_SEL:
+//TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the pull
                     simConnect?.RequestDataOnSimObject(REQUEST.FCU_HDG_SEL, DATA.AP_HDG_SEL,
                         SimConnect.SIMCONNECT_OBJECT_ID_USER,
                         SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
@@ -336,7 +357,8 @@ namespace FSInputMapper
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
-//TODO: these two work when done singly, but when swapping between them, the first click toggles off. 
+//TODO: these two work when done singly, but when swapping between them, the first click toggles off.
+// Looks like MS know, and they issue the command twice if the other one is on.
                 case FSIMTrigger.TOGGLE_LOC_MODE:
                     SendEvent(EVENT.AP_TOGGLE_LOC);
                     break;
