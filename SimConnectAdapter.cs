@@ -54,6 +54,7 @@ namespace FSInputMapper
         public double nav1Hold;
         public double gsHold;
         public double autothrustArmed;
+        public double autothrustActive;
         //TODO: EXPED button, when it's implemented
     }
 
@@ -190,11 +191,13 @@ namespace FSInputMapper
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 HOLD", "Bool",
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 LOCK", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT THROTTLE ARM", "Bool",
+                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOTHROTTLE ACTIVE", "Bool",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
 
@@ -271,6 +274,7 @@ namespace FSInputMapper
                     viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.gsHold == 0;
                     viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.gsHold != 0;
                     viewModel.AutopilotGs = apModeData.gsHold != 0;
+                    viewModel.GSToolTip = $"FD {apModeData.fdActive} APPH {apModeData.approachHold} APM {apModeData.apMaster} HH {apModeData.apHeadingHold} NavH {apModeData.nav1Hold} ATHR arm {apModeData.autothrustArmed} act {apModeData.autothrustActive}";
                     break;
                 case REQUEST.FCU_HDG_SEL:
                     var apSpdSelData = (ApHdgSelData)data.dwData[0];
@@ -357,12 +361,14 @@ namespace FSInputMapper
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
-//TODO: these two work when done singly, but when swapping between them, the first click toggles off.
-// Looks like MS know, and they issue the command twice if the other one is on.
                 case FSIMTrigger.TOGGLE_LOC_MODE:
+                    if (viewModel.AutopilotAppr)
+                        SendEvent(EVENT.AP_TOGGLE_APPR);
                     SendEvent(EVENT.AP_TOGGLE_LOC);
                     break;
                 case FSIMTrigger.TOGGLE_APPR_MODE:
+                    if (viewModel.AutopilotLoc)
+                        SendEvent(EVENT.AP_TOGGLE_LOC);
                     SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
             }
