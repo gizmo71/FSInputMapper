@@ -47,14 +47,14 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct ApModeData
     {
-        public double fdActive;
-        public double apMaster;
-        public double apHeadingHold;
-        public double approachHold;
-        public double nav1Hold;
-        public double gsHold;
-        public double autothrustArmed;
-        public double autothrustActive;
+        public Int32 fdActive;
+        public Int32 apMaster;
+        public Int32 apHeadingHold;
+        public Int32 approachHold;
+        public Int32 nav1Hold;
+        public Int32 gsHold;
+        public Int32 autothrustArmed;
+        public Int32 autothrustActive;
         //TODO: EXPED button, when it's implemented
     }
 
@@ -184,21 +184,21 @@ namespace FSInputMapper
             // Autopilot - things we receive.
 
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT MASTER", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT HEADING LOCK", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 LOCK", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT THROTTLE ARM", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOTHROTTLE ACTIVE", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
 
             simConnect.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
