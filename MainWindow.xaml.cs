@@ -127,12 +127,7 @@ namespace FSInputMapper
 
         private void VS_Push(object sender, RoutedEventArgs e)
         {
-            throw new Exception("VSPush not implemented");
-        }
-
-        private void VS_Pull(object sender, RoutedEventArgs e)
-        {
-            throw new Exception("VSPull not implemented");
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_STOP);
         }
 
         private void FcuLocClicked(object sender, RoutedEventArgs e)

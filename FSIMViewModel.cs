@@ -9,8 +9,8 @@ namespace FSInputMapper
     {
         public readonly FSIMTriggerBus TriggerBus = new FSIMTriggerBus(); //TODO: factor out somehow; DI?
 
-        private Int32 apAirspeed = 100;
-        public Int32 AutopilotAirspeed
+        private double apAirspeed = 100.0;
+        public double AutopilotAirspeed
         {
             get { return apAirspeed; }
             set { if (apAirspeed != value) { apAirspeed = value; OnPropertyChange(); } }

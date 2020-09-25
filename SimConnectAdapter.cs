@@ -30,13 +30,13 @@ namespace FSInputMapper
     struct FcuData
     {
         public double speedKnots; // Real range 100 -399 knots (Mach 0.10-0.99).
-        public double speedSlot;
-        public double heading; // Real range 000-359 (not 360!)
-        public double headingSlot;
-        public double altitude; // Real range 100-49000
-        public double altitudeSlot;
-        public double vs;
-        public double vsSlot;
+        public Int32 speedSlot;
+        public Int32 heading; // Real range 000-359 (not 360!)
+        public Int32 headingSlot;
+        public Int32 altitude; // Real range 100-49000
+        public Int32 altitudeSlot;
+        public Int32 vs;
+        public Int32 vsSlot;
         //TODO: set V/S to 0 on push, and engage selected V/S on pull; after 0ing, subsequent turns are actioned immediately
         //TODO: V/S selector; real range ±6000ft/min in steps of 100, or ±9.9º in steps of 0.1º
         //TODO: SPD/MCH buton; is it implemented yet?
@@ -61,14 +61,14 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct ApHdgSelData
     {
-        public double headingMagnetic;
+        public UInt32 headingMagnetic;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     struct SpoilerData
     {
-        public double spoilersHandlePosition;
-        public double spoilersArmed;
+        public Int32 spoilersHandlePosition;
+        public Int32 spoilersArmed;
     };
 
     class SimConnectAdapter {
@@ -134,26 +134,26 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
                 SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             // In selected mode, this is correct (but not writable).
             // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
             // Have not yet found where the displayed panel value is (may not be available via SimConnect).
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
-                SIMCONNECT_DATATYPE.FLOAT64, 50f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 50f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VS SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
             simConnect.RegisterDataDefineStruct<FcuData>(DATA.FCU_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.FCU_DATA, DATA.FCU_DATA,
@@ -163,7 +163,7 @@ namespace FSInputMapper
             // FCU - things we get when pulling Heading to Selected.
 
             simConnect.AddToDataDefinition(DATA.AP_HDG_SEL, "PLANE HEADING DEGREES MAGNETIC", "degrees",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<ApHdgSelData>(DATA.AP_HDG_SEL);
 
             // FCU things we send.
@@ -219,9 +219,9 @@ namespace FSInputMapper
                 SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
 
             simConnect.AddToDataDefinition(DATA.SPOILER_DATA, "SPOILERS HANDLE POSITION", "percent",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.SPOILER_DATA, "SPOILERS ARMED", "Bool",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.RegisterDataDefineStruct<SpoilerData>(DATA.SPOILER_DATA);
 
             // Spoilers: things we recieve.
@@ -263,11 +263,13 @@ namespace FSInputMapper
                 case REQUEST.FCU_DATA:
                     var fcuData = (FcuData)data.dwData[0];
                     viewModel.AirspeedManaged = fcuData.speedSlot == 2;
-                    viewModel.AutopilotAirspeed = (int)fcuData.speedKnots;
+                    viewModel.AutopilotAirspeed = fcuData.speedKnots;
                     viewModel.HeadingManaged = fcuData.headingSlot == 2;
-                    viewModel.AutopilotHeading = (int)fcuData.heading;
+                    viewModel.AutopilotHeading = fcuData.heading;
                     viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
-                    viewModel.AutopilotAltitude = (int)fcuData.altitude;
+                    viewModel.AutopilotAltitude = fcuData.altitude;
+                    viewModel.AutopilotVerticalSpeed = fcuData.vs;
+                    viewModel.VerticalSpeedManaged = fcuData.vsSlot == 2;
                     break;
                 case REQUEST.AP_DATA:
                     var apModeData = (ApModeData)data.dwData[0];
@@ -279,7 +281,7 @@ namespace FSInputMapper
                 case REQUEST.FCU_HDG_SEL:
                     var apSpdSelData = (ApHdgSelData)data.dwData[0];
                     SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
-                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)Math.Round(apSpdSelData.headingMagnetic));
+                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)apSpdSelData.headingMagnetic);
                     break;
                 case REQUEST.MORE_SPOILER:
                     var spoilerData = (SpoilerData)data.dwData[0];
@@ -361,6 +363,8 @@ namespace FSInputMapper
                 case FSIMTrigger.ALT_DOWN_100:
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
+                case FSIMTrigger.VS_STOP:
+                    throw new Exception("Push to level off not implemented");
                 case FSIMTrigger.TOGGLE_LOC_MODE:
                     if (viewModel.AutopilotAppr)
                         SendEvent(EVENT.AP_TOGGLE_APPR);
