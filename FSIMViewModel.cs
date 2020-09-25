@@ -89,6 +89,13 @@ namespace FSInputMapper
             set { if (autopilotGs != value) { autopilotGs = value; OnPropertyChange(); } }
         }
 
+        private string gsToolTip = "";
+        public string GSToolTip
+        {
+            get { return gsToolTip; }
+            set { if (gsToolTip != value) { gsToolTip = value; OnPropertyChange(); } }
+        }
+
         private bool autopilotAppr;
         public bool AutopilotAppr
         {

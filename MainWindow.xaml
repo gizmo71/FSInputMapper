@@ -87,7 +87,7 @@
 
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,145,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
-            Click="FcuGsClicked" Grid.Column="1"/>
+            Click="FcuGsClicked" Grid.Column="1" ToolTip="{Binding GSToolTip}"/>
         <Button Content="APPR" HorizontalAlignment="Left" Margin="394,145,0,0" VerticalAlignment="Top" Width="35"
                 Background="{Binding AutopilotAppr,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="FcuApprClicked" Grid.Column="1"/>
