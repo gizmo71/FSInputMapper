@@ -28,10 +28,10 @@ namespace FSInputMapper
 
         private readonly FSIMViewModel _viewModel;
 
-        public MainWindow()
+        public MainWindow(FSIMViewModel vm)
         {
             InitializeComponent();
-            DataContext = _viewModel = new FSIMViewModel();
+            DataContext = _viewModel = vm;
         }
 
         protected override void OnSourceInitialized(EventArgs e)
