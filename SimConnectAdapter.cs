@@ -379,15 +379,20 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
                 case FSIMTrigger.VS_STOP:
+                    //TODO: A320_Neo_FCU.js says AP_PANEL_ALTITUDE_HOLD=1 and AP_PANEL_VS_ON=1
                     SendEvent(EVENT.FCU_VS_SET, 0);
                     goto vsSel;
                 case FSIMTrigger.VS_SEL:
+                //TODO: if in idle descent, set AP_VS_VAR_SET_ENGLISH twice with different parameters and the current rate, then send AP_PANEL_VS_ON=1
+                //TODO: else, set AP_VS_VAR_SET_ENGLISH to current value, and then send VS_SLOT_INDEX_SET=AP_PANEL_VS_ON=1
                 vsSel:
                     SendEvent(EVENT.FCU_VS_SLOT_SET, 1u);
                     goto vsPanelOn;
                 case FSIMTrigger.VS_DOWN:
                     SendEvent(EVENT.FCU_VS_DOWN);
                     goto vsPanelOn;
+                //TODO: if not yet active, on first turn set AP_VS_VAR_SET_ENGLISH starting value from VERTICAL SPEED
+                //TODO: else, set AP_VS_VAR_SET_ENGLISH to new selection, and then send VS_SLOT_INDEX_SET=AP_PANEL_VS_ON=1
                 case FSIMTrigger.VS_UP:
                     SendEvent(EVENT.FCU_VS_UP);
                 vsPanelOn:
