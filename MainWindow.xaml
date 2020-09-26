@@ -75,6 +75,8 @@
         <!-- Vertical Speed -->
         <Button Content="+100" HorizontalAlignment="Left" Margin="449,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
             Click="VSUp"/>
+        <Button Content="Level Off" HorizontalAlignment="Left" Margin="509,57,0,0" VerticalAlignment="Top" Width="60"
+            Click="VS_Push" Grid.Column="1"/>
         <TextBox HorizontalAlignment="Left" Margin="449,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotVerticalSpeed}" IsReadOnly="True" Grid.Column="1"/>
         <Button Content="-100" HorizontalAlignment="Left" Margin="449,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
             Click="VSDown"/>

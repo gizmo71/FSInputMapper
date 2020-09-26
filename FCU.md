@@ -22,7 +22,7 @@ If AUTOPILOT GLIDESLOPE HOLD is on, don't show selected speed.
 Similarly, ''K:HEADING_SLOT_INDEX_SET'' is 1 (selected) or 2 (managed)
 ''L:A320_FCU_SHOW_SELECTED_HEADING'' for the selected heading shown
 Altitude version involves ''L:A320_NEO_FCU_FORCE_IDLE_VS'', ''K:ALTITUDE_SLOT_INDEX_SET'', something internal called ''AP_ALT_VAR_SET_ENGLISH''
-TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting alt managed or when trying t get manual control of V/S.
+TODO: may also need to send FLIGHT_LEVEL_CHANGE_ON when setting alt managed or when trying to get manual control of V/S.
 For more, look at the JavaScript files in ''asobo-vcockpits-instruments-a320-neo/html_ui/Pages/VCockpit/Instruments/Airliners/A320_Neo''.
 Vertical speed stuff:
 Note that there's lots of stuff in the JS which isn't event driven, so you might have to replicate timeouts etc.

@@ -22,6 +22,7 @@ namespace FSInputMapper
         AP_HEADING_SLOT_SET, AP_HDG_RIGHT, AP_HDG_LEFT, AP_HEADING_BUG_SET,
         AP_ALTITUDE_SLOT_SET, AP_ALT_UP, AP_ALT_DOWN,
         AP_TOGGLE_LOC, AP_TOGGLE_APPR, AP_AUTOTHRUST_ARM, AP_TOGGLE_FD,
+        FCU_VS_UP, FCU_VS_DOWN, FCU_VS_SET, FCU_VS_SLOT_SET, AP_PANEL_VS_ON
     }
     enum GROUP { SPOILERS = 13,
         PRIORITY_STANDARD = 1900000000 }
@@ -53,6 +54,8 @@ namespace FSInputMapper
         public Int32 approachHold;
         public Int32 nav1Hold;
         public Int32 gsHold;
+        public Int32 apAltHold;
+        public Int32 apVSHold;
         public Int32 autothrustArmed;
         public Int32 autothrustActive;
         //TODO: EXPED button, when it's implemented
@@ -181,6 +184,12 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_UP, "AP_ALT_VAR_INC");
             simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_DOWN, "AP_ALT_VAR_DEC");
 
+            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_SET, "AP_VS_VAR_SET_ENGLISH");
+            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_SLOT_SET, "VS_SLOT_INDEX_SET");
+            simConnect.MapClientEventToSimEvent(EVENT.AP_PANEL_VS_ON, "AP_PANEL_VS_ON");
+            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_DOWN, "AP_VS_VAR_DEC");
+            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_UP, "AP_VS_VAR_INC");
+
             // Autopilot - things we receive.
 
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool",
@@ -194,6 +203,10 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 LOCK", "Bool",
                 SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT ALTITUDE LOCK", "Bool",
+                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT VERTICAL HOLD", "Bool",
                 SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT THROTTLE ARM", "Bool",
                 SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
@@ -276,7 +289,9 @@ namespace FSInputMapper
                     viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.gsHold == 0;
                     viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.gsHold != 0;
                     viewModel.AutopilotGs = apModeData.gsHold != 0;
-                    viewModel.GSToolTip = $"FD {apModeData.fdActive} APPH {apModeData.approachHold} APM {apModeData.apMaster} HH {apModeData.apHeadingHold} NavH {apModeData.nav1Hold} ATHR arm {apModeData.autothrustArmed} act {apModeData.autothrustActive}";
+                    viewModel.GSToolTip = $"FD {apModeData.fdActive} APPH {apModeData.approachHold} APM {apModeData.apMaster}"
+                        + $"\nHH {apModeData.apHeadingHold} NavH {apModeData.nav1Hold} AltH {apModeData.apAltHold} vsH {apModeData.apVSHold}"
+                        + $"\nATHR arm {apModeData.autothrustArmed} act {apModeData.autothrustActive}";
                     break;
                 case REQUEST.FCU_HDG_SEL:
                     var apSpdSelData = (ApHdgSelData)data.dwData[0];
@@ -364,7 +379,20 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_ALT_DOWN, 100u);
                     break;
                 case FSIMTrigger.VS_STOP:
-                    throw new Exception("Push to level off not implemented");
+                    SendEvent(EVENT.FCU_VS_SET, 0);
+                    goto vsSel;
+                case FSIMTrigger.VS_SEL:
+                vsSel:
+                    SendEvent(EVENT.FCU_VS_SLOT_SET, 1u);
+                    goto vsPanelOn;
+                case FSIMTrigger.VS_DOWN:
+                    SendEvent(EVENT.FCU_VS_DOWN);
+                    goto vsPanelOn;
+                case FSIMTrigger.VS_UP:
+                    SendEvent(EVENT.FCU_VS_UP);
+                vsPanelOn:
+                    SendEvent(EVENT.AP_PANEL_VS_ON);
+                    break;
                 case FSIMTrigger.TOGGLE_LOC_MODE:
                     if (viewModel.AutopilotAppr)
                         SendEvent(EVENT.AP_TOGGLE_APPR);

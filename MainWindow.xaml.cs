@@ -117,17 +117,22 @@ namespace FSInputMapper
 
         private void VSUp(object sender, RoutedEventArgs e)
         {
-            throw new Exception("VSUp not implemented");
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_UP);
         }
 
         private void VSDown(object sender, RoutedEventArgs e)
         {
-            throw new Exception("VSDown not implemented");
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_DOWN);
         }
 
         private void VS_Push(object sender, RoutedEventArgs e)
         {
             _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_STOP);
+        }
+
+        private void VS_Pull(object sender, RoutedEventArgs e)
+        {
+            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_SEL);
         }
 
         private void FcuLocClicked(object sender, RoutedEventArgs e)
