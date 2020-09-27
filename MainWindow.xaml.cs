@@ -26,13 +26,13 @@ namespace FSInputMapper
     public partial class MainWindow : Window
     {
 
-        private readonly FSIMViewModel _viewModel;
-
         public MainWindow(FSIMViewModel vm)
         {
+            DataContext = vm;
             InitializeComponent();
-            DataContext = _viewModel = vm;
         }
+
+        private FSIMViewModel _viewModel { get { return (FSIMViewModel)DataContext; } }
 
         protected override void OnSourceInitialized(EventArgs e)
         {
