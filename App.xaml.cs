@@ -24,12 +24,13 @@ namespace FSInputMapper
         {
             // https://stackoverflow.com/a/58476347/1892057
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection?view=dotnet-plat-ext-3.1
-            services.AddSingleton<MainWindow>();
-            foreach (var t in Assembly.GetEntryAssembly()!.DefinedTypes.Where(t => typeof(FSIMViewModel).IsAssignableFrom(t)))
+            foreach (var serviceType in new [] { typeof(FSIMViewModel), typeof(MainWindow), })
             {
-                services.AddScoped(/*TODO: more general*/t, t);
+                foreach (var t in Assembly.GetEntryAssembly()!.DefinedTypes.Where(t => serviceType.IsAssignableFrom(t)))
+                {
+                    services.AddSingleton(serviceType, t);
+                }
             }
-            //TODO: above is long winded version of services.AddSingleton<FSIMViewModel>();
         }
 
         private void OnStartup(object sender, StartupEventArgs e)
