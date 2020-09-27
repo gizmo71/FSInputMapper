@@ -24,7 +24,12 @@ namespace FSInputMapper
         {
             // https://stackoverflow.com/a/58476347/1892057
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection?view=dotnet-plat-ext-3.1
-            foreach (var serviceType in new [] { typeof(FSIMViewModel), typeof(MainWindow), })
+            foreach (var serviceType in new [] {
+                typeof(FSIMViewModel),
+                typeof(MainWindow),
+                typeof(SimConnectAdapter),
+                typeof(FSIMTriggerBus),
+            })
             {
                 foreach (var t in Assembly.GetEntryAssembly()!.DefinedTypes.Where(t => serviceType.IsAssignableFrom(t)))
                 {

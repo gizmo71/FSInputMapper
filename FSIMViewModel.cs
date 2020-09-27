@@ -7,7 +7,6 @@ namespace FSInputMapper
 
     public class FSIMViewModel : INotifyPropertyChanged
     {
-        public readonly FSIMTriggerBus TriggerBus = new FSIMTriggerBus(); //TODO: factor out somehow; DI?
 
         private double apAirspeed = 100.0;
         public double AutopilotAirspeed

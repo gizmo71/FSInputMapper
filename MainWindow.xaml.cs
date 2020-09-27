@@ -25,10 +25,14 @@ namespace FSInputMapper
 
     public partial class MainWindow : Window
     {
+        private readonly SimConnectAdapter simConnectAdapter;
+        private readonly FSIMTriggerBus triggerBus;
 
-        public MainWindow(FSIMViewModel vm)
+        public MainWindow(FSIMViewModel vm, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus)
         {
             DataContext = vm;
+            this.simConnectAdapter = simConnectAdapter;
+            this.triggerBus = triggerBus;
             InitializeComponent();
         }
 
@@ -37,112 +41,112 @@ namespace FSInputMapper
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            _ = new SimConnectAdapter((HwndSource)PresentationSource.FromVisual(this), _viewModel);
+            simConnectAdapter.AttachWinow((HwndSource)PresentationSource.FromVisual(this));
         }
 
         private void Airspeed_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_MAN);
+            triggerBus.Trigger(sender, FSIMTrigger.SPD_MAN);
         }
 
         private void Airspeed_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.SPD_SEL);
+            triggerBus.Trigger(sender, FSIMTrigger.SPD_SEL);
         }
 
         private void SpeedChange(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, (String)((Control)sender).Tag);
+            triggerBus.Trigger(sender, (String)((Control)sender).Tag);
         }
 
         private void Heading_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_MAN);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_MAN);
         }
 
         private void Heading_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_SEL);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_SEL);
         }
 
         private void Left10Degrees(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_10);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_10);
         }
 
         private void Left1Degree(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_1);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_1);
         }
 
         private void Right10Degrees(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_10);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_10);
         }
 
         private void Right1Degree(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_1);
+            triggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_1);
         }
 
         private void Altitude_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_MAN);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_MAN);
         }
 
         private void Altitude_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_SEL);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_SEL);
         }
 
         private void Up1000Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_1000);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_UP_1000);
         }
 
         private void Up100Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_UP_100);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_UP_100);
         }
 
         private void Down1000Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_1000);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_1000);
         }
 
         private void Down100Feet(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
+            triggerBus.Trigger(sender, FSIMTrigger.ALT_DOWN_100);
         }
 
         private void VSUp(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_UP);
+            triggerBus.Trigger(sender, FSIMTrigger.VS_UP);
         }
 
         private void VSDown(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_DOWN);
+            triggerBus.Trigger(sender, FSIMTrigger.VS_DOWN);
         }
 
         private void VS_Push(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_STOP);
+            triggerBus.Trigger(sender, FSIMTrigger.VS_STOP);
         }
 
         private void VS_Pull(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.VS_SEL);
+            triggerBus.Trigger(sender, FSIMTrigger.VS_SEL);
         }
 
         private void FcuLocClicked(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_LOC_MODE);
+            triggerBus.Trigger(sender, FSIMTrigger.TOGGLE_LOC_MODE);
         }
 
         private void FcuApprClicked(object sender, RoutedEventArgs e)
         {
-            _viewModel.TriggerBus.Trigger(sender, FSIMTrigger.TOGGLE_APPR_MODE);
+            triggerBus.Trigger(sender, FSIMTrigger.TOGGLE_APPR_MODE);
         }
 
         private void FcuGsClicked(object sender, RoutedEventArgs e)

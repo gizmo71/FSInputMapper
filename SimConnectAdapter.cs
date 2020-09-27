@@ -74,25 +74,28 @@ namespace FSInputMapper
         public Int32 spoilersArmed;
     };
 
-    class SimConnectAdapter {
+    public class SimConnectAdapter {
         private const int WM_USER_SIMCONNECT = 0x0402;
 
-        private readonly IntPtr hWnd;
+        private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
 
-        public SimConnectAdapter([DisallowNull] HwndSource hWndSource, FSIMViewModel viewModel)
+        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus)
+        {
+            this.viewModel = viewModel;
+            triggerBus.OnTrigger += OnTrigger; //TODO: What removes it?
+        }
+
+        public void AttachWinow([DisallowNull] HwndSource hWndSource)
         {
             this.hWnd = hWndSource.Handle;
-            this.viewModel = viewModel;
             hWndSource.AddHook(WndProc);
 
             var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 2);
             dispatcherTimer.Start();
-
-            viewModel.TriggerBus.OnTrigger += OnTrigger; //TODO: this, later? What removes it?
         }
 
         private void Disconnect(Exception ex)
