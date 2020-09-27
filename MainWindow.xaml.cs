@@ -28,15 +28,13 @@ namespace FSInputMapper
         private readonly SimConnectAdapter simConnectAdapter;
         private readonly FSIMTriggerBus triggerBus;
 
-        public MainWindow(FSIMViewModel vm, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus)
+        public MainWindow(FSIMViewModel viewModel, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus)
         {
-            DataContext = vm;
+            DataContext = viewModel;
             this.simConnectAdapter = simConnectAdapter;
             this.triggerBus = triggerBus;
             InitializeComponent();
         }
-
-        private FSIMViewModel _viewModel { get { return (FSIMViewModel)DataContext; } }
 
         protected override void OnSourceInitialized(EventArgs e)
         {

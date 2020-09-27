@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -9,6 +10,7 @@ namespace FSInputMapper
 
     public partial class App : Application
     {
+
         private readonly ServiceProvider _serviceProvider;
 
         public App()
@@ -31,12 +33,16 @@ namespace FSInputMapper
                 typeof(FSIMTriggerBus),
             })
             {
-                foreach (var t in Assembly.GetEntryAssembly()!.DefinedTypes.Where(t => serviceType.IsAssignableFrom(t)))
+                IEnumerable<TypeInfo> types = Assembly.GetEntryAssembly()!.DefinedTypes;
+                types = types.Where(CanBeInstatiated);
+                foreach (var t in types.Where(t => serviceType.IsAssignableFrom(t)))
                 {
                     services.AddSingleton(serviceType, t);
                 }
             }
         }
+
+        private bool CanBeInstatiated(TypeInfo t) { return !t.IsInterface && !t.IsAbstract; }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
@@ -50,4 +56,5 @@ namespace FSInputMapper
             details.Handled = true;
         }
     }
+
 }
