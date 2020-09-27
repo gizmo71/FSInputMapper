@@ -69,7 +69,7 @@ namespace FSInputMapper
         public string? ConnectionError
         {
             get { return connectionError; }
-            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); OnPropertyChange(); } }
+            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); OnPropertyChange(nameof(IsConnected)); } }
         }
         public bool IsConnected
         {
