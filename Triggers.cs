@@ -38,6 +38,7 @@ namespace FSInputMapper
         public string? What { get; set; }
     }
 
+    [Singleton]
     public class FSIMTriggerBus
     {
         public event EventHandler<FSIMTriggerArgs> OnTrigger = delegate { };

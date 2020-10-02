@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 namespace FSInputMapper
 {
 
+    [Singleton]
     public class FSIMViewModel : INotifyPropertyChanged
     {
 

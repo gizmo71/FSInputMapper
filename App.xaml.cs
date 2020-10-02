@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -7,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FSInputMapper
 {
+
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    public class SingletonAttribute : Attribute { }
 
     public partial class App : Application
     {
@@ -26,23 +28,17 @@ namespace FSInputMapper
         {
             // https://stackoverflow.com/a/58476347/1892057
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection?view=dotnet-plat-ext-3.1
-            foreach (var serviceType in new [] {
-                typeof(FSIMViewModel),
-                typeof(MainWindow),
-                typeof(SimConnectAdapter),
-                typeof(FSIMTriggerBus),
-            })
+            services.AddSingleton(typeof(MainWindow), typeof(MainWindow));
+            foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
-                IEnumerable<TypeInfo> types = Assembly.GetEntryAssembly()!.DefinedTypes;
-                types = types.Where(CanBeInstatiated);
-                foreach (var t in types.Where(t => serviceType.IsAssignableFrom(t)))
+                var singleton = candidate.GetCustomAttribute<SingletonAttribute>();
+                if (singleton != null)
                 {
-                    services.AddSingleton(serviceType, t);
+                    services.AddSingleton(candidate, candidate);
+// https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
                 }
             }
         }
-
-        private bool CanBeInstatiated(TypeInfo t) { return !t.IsInterface && !t.IsAbstract; }
 
         private void OnStartup(object sender, StartupEventArgs e)
         {

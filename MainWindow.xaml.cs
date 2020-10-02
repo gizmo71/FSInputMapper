@@ -23,6 +23,7 @@ namespace FSInputMapper
         }
     }
 
+    [Singleton]
     public partial class MainWindow : Window
     {
         private readonly SimConnectAdapter simConnectAdapter;

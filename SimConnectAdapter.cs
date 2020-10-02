@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Microsoft.FlightSimulator.SimConnect;
@@ -27,7 +29,7 @@ namespace FSInputMapper
         PRIORITY_STANDARD = 1900000000 }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct FcuData
+    public struct ApData
     {
         public double speedKnots; // Real range 100 -399 knots (Mach 0.10-0.99).
         public Int32 speedSlot;
@@ -45,7 +47,7 @@ namespace FSInputMapper
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct ApModeData
+    public struct ApModeData
     {
         public Int32 fdActive;
         public Int32 apMaster;
@@ -61,18 +63,19 @@ namespace FSInputMapper
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct ApHdgSelData
+    public struct ApHdgSelData
     {
         public UInt32 headingMagnetic;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    struct SpoilerData
+    public struct SpoilerData
     {
         public Int32 spoilersHandlePosition;
         public Int32 spoilersArmed;
     };
 
+    [Singleton]
     public class SimConnectAdapter {
         private const int WM_USER_SIMCONNECT = 0x0402;
 
@@ -83,7 +86,8 @@ namespace FSInputMapper
         public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus)
         {
             this.viewModel = viewModel;
-            triggerBus.OnTrigger += OnTrigger; //TODO: What removes it?
+            triggerBus.OnTrigger += OnTrigger;
+//viewModel.GSToolTip = "Datas " + dataServices.Count();
         }
 
         public void AttachWinow([DisallowNull] HwndSource hWndSource)
@@ -160,7 +164,7 @@ namespace FSInputMapper
             simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VS SLOT INDEX", "number",
                 SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 
-            simConnect.RegisterDataDefineStruct<FcuData>(DATA.FCU_DATA);
+            simConnect.RegisterDataDefineStruct<ApData>(DATA.FCU_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.FCU_DATA, DATA.FCU_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
@@ -276,7 +280,7 @@ namespace FSInputMapper
             switch ((REQUEST)data.dwRequestID)
             {
                 case REQUEST.FCU_DATA:
-                    var fcuData = (FcuData)data.dwData[0];
+                    var fcuData = (ApData)data.dwData[0];
                     viewModel.AirspeedManaged = fcuData.speedSlot == 2;
                     viewModel.AutopilotAirspeed = fcuData.speedKnots;
                     viewModel.HeadingManaged = fcuData.headingSlot == 2;
