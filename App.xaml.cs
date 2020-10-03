@@ -1,14 +1,28 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace FSInputMapper
 {
 
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public class SingletonAttribute : Attribute { }
+
+    public static class AttributeExtensions
+    {
+
+        public static TAttribute GetAttribute<TAttribute>([NotNullAttribute] this Enum value) where TAttribute : Attribute
+        {
+            var enumType = value.GetType();
+            var name = Enum.GetName(enumType, value);
+            return enumType.GetField(name!)!.GetCustomAttributes(false).OfType<TAttribute>().SingleOrDefault();
+        }
+
+    }
 
     public partial class App : Application
     {

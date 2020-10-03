@@ -1,18 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
 {
+
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class DataAttribute : Attribute
+    {
+        public readonly Type DataType;
+        public DataAttribute(Type DataType) { this.DataType = DataType; }
+    }
+
     enum DATA {
         // Stuff intended for struct-based multiple value requests:
-        FCU_DATA = 69, AP_HDG_SEL, AP_DATA, SPOILER_DATA,
+        [DataAttribute(typeof(ApData))] FCU_DATA = 69,
+        [DataAttribute(typeof(ApHdgSelData))] AP_HDG_SEL,
+        [DataAttribute(typeof(ApModeData))] AP_DATA,
+        [DataAttribute(typeof(SpoilerData))] SPOILER_DATA,
         // Stuff for single value setting:
-        SPOILER_HANDLE, }
+        [DataAttribute(typeof(double))] SPOILER_HANDLE,
+    }
     enum REQUEST { FCU_DATA = 71, FCU_HDG_SEL, AP_DATA, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
@@ -87,7 +101,19 @@ namespace FSInputMapper
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
-//viewModel.GSToolTip = "Datas " + dataServices.Count();
+string wibble = "Data structs";
+            foreach (Enum? value in typeof(DATA).GetEnumValues()) {
+                var dataType = value!.GetAttribute<DataAttribute>().DataType;
+                wibble += $"\n{value} with type " + dataType;
+                if (!dataType.IsPrimitive)
+                {
+                    foreach (object field in dataType.GetFields())
+                    {
+                        wibble += $"\n\t{field}";
+                    }
+                }
+            }
+viewModel.GSToolTip = wibble;
         }
 
         public void AttachWinow([DisallowNull] HwndSource hWndSource)
