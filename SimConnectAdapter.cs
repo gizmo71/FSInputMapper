@@ -242,6 +242,9 @@ namespace FSInputMapper
 
             // Spoilers: things we recieve.
 
+            simConnect.MapClientEventToSimEvent(EVENT.MORE_SPOILER, "SPOILERS_TOGGLE");
+            simConnect.MapClientEventToSimEvent(EVENT.LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
+
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.MORE_SPOILER, true);
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.LESS_SPOILER, true);
 
@@ -253,7 +256,7 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.DISARM_SPOILER, "SPOILERS_ARM_OFF");
         }
 
-        private static void RegisterDataStructs(SimConnect simConnect)
+        private void RegisterDataStructs(SimConnect simConnect)
         {
             foreach (Enum? value in typeof(DATA).GetEnumValues())
             {
