@@ -24,8 +24,7 @@ namespace FSInputMapper
         [DataAttribute(typeof(ApHdgSelData))] AP_HDG_SEL,
         [DataAttribute(typeof(ApModeData))] AP_DATA,
         [DataAttribute(typeof(SpoilerData))] SPOILER_DATA,
-        // Stuff for single value setting:
-        [DataAttribute(typeof(double))] SPOILER_HANDLE,
+        [DataAttribute(typeof(SpoilerHandle))] SPOILER_HANDLE,
     }
     enum REQUEST { FCU_DATA = 71, FCU_HDG_SEL, AP_DATA, MORE_SPOILER, LESS_SPOILER, }
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
@@ -87,6 +86,12 @@ namespace FSInputMapper
     {
         public Int32 spoilersHandlePosition;
         public Int32 spoilersArmed;
+    };
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct SpoilerHandle
+    {
+        public Int32 spoilersHandlePosition;
     };
 
     [Singleton]
@@ -261,7 +266,8 @@ viewModel.GSToolTip = wibble;
             // Spoilers
 
             simConnect.AddToDataDefinition(DATA.SPOILER_HANDLE, "SPOILERS HANDLE POSITION", "percent",
-                SIMCONNECT_DATATYPE.FLOAT64, 0f, SimConnect.SIMCONNECT_UNUSED);
+                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.RegisterDataDefineStruct<SpoilerHandle>(DATA.SPOILER_HANDLE);
 
             simConnect.AddToDataDefinition(DATA.SPOILER_DATA, "SPOILERS HANDLE POSITION", "percent",
                 SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
@@ -334,13 +340,13 @@ viewModel.GSToolTip = wibble;
                     var spoilerData = (SpoilerData)data.dwData[0];
                     if (spoilerData.spoilersArmed != 0)
                         SendEvent(EVENT.DISARM_SPOILER);
-                    else
-                        SetData(DATA.SPOILER_HANDLE, Math.Min(spoilerData.spoilersHandlePosition + 25.0, 100.0));
+                    else if (spoilerData.spoilersHandlePosition < 100)
+                        SetData(DATA.SPOILER_HANDLE, new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
                     break;
                 case REQUEST.LESS_SPOILER:
                     spoilerData = (SpoilerData)data.dwData[0];
-                    if (spoilerData.spoilersHandlePosition > 0.0)
-                        SetData(DATA.SPOILER_HANDLE, Math.Max(spoilerData.spoilersHandlePosition - 25.0, 0.0));
+                    if (spoilerData.spoilersHandlePosition > 0)
+                        SetData(DATA.SPOILER_HANDLE, new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
                     else if (spoilerData.spoilersArmed == 0)
                         SendEvent(EVENT.ARM_SPOILER);
                     break;
