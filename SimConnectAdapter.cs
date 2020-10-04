@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -16,6 +17,22 @@ namespace FSInputMapper
     {
         public readonly Type DataType;
         public DataAttribute(Type DataType) { this.DataType = DataType; }
+    }
+
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class DataField : Attribute
+    {
+        public readonly string Variable;
+        public readonly string Units;
+        public readonly SIMCONNECT_DATATYPE Type;
+        public readonly float Epsilon;
+        public DataField(string variable, string units, SIMCONNECT_DATATYPE type, float epsilon)
+        {
+            Variable = variable;
+            Units = units;
+            Type = type; //TODO: do we need this, or can we infer it?
+            Epsilon = epsilon;
+        }
     }
 
     enum DATA {
@@ -41,16 +58,29 @@ namespace FSInputMapper
     enum GROUP { SPOILERS = 13,
         PRIORITY_STANDARD = 1900000000 }
 
+    // FCU - general set of things we receive.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApData
     {
+        [DataField("AUTOPILOT AIRSPEED HOLD VAR", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.5f)]
         public double speedKnots; // Real range 100 -399 knots (Mach 0.10-0.99).
+        [DataField("AUTOPILOT SPEED SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 speedSlot;
+        // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
+        [DataField("AUTOPILOT HEADING LOCK DIR", "degrees", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 heading; // Real range 000-359 (not 360!)
+        [DataField("AUTOPILOT HEADING SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 headingSlot;
+        // In selected mode, this is correct (but not writable).
+        // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
+        // Have not yet found where the displayed panel value is (may not be available via SimConnect).
+        [DataField("AUTOPILOT ALTITUDE LOCK VAR", "feet", SIMCONNECT_DATATYPE.INT32, 50f)]
         public Int32 altitude; // Real range 100-49000
+        [DataField("AUTOPILOT ALTITUDE SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 altitudeSlot;
+        [DataField("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 vs;
+        [DataField("AUTOPILOT VS SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 vsSlot;
         //TODO: set V/S to 0 on push, and engage selected V/S on pull; after 0ing, subsequent turns are actioned immediately
         //TODO: V/S selector; real range ±6000ft/min in steps of 100, or ±9.9º in steps of 0.1º
@@ -59,38 +89,54 @@ namespace FSInputMapper
         //TODO: metric alt - does this work in MSFS?
     };
 
+    // Autopilot - things we receive.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApModeData
     {
+        [DataField("AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fdActive;
+        [DataField("AUTOPILOT MASTER", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 apMaster;
+        [DataField("AUTOPILOT HEADING LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 apHeadingHold;
+        [DataField("AUTOPILOT APPROACH HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 approachHold;
+        [DataField("AUTOPILOT NAV1 LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 nav1Hold;
+        [DataField("AUTOPILOT GLIDESLOPE HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 gsHold;
+        [DataField("AUTOPILOT ALTITUDE LOCK", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 apAltHold;
+        [DataField("AUTOPILOT VERTICAL HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 apVSHold;
+        [DataField("AUTOPILOT THROTTLE ARM", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 autothrustArmed;
+        [DataField("AUTOTHROTTLE ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 autothrustActive;
         //TODO: EXPED button, when it's implemented
     }
 
+    // FCU - things we get when pulling Heading to Selected.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApHdgSelData
     {
+        [DataField("PLANE HEADING DEGREES MAGNETIC", "degrees", SIMCONNECT_DATATYPE.INT32, 0f)]
         public UInt32 headingMagnetic;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerData
     {
+        [DataField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 spoilersHandlePosition;
+        [DataField("SPOILERS ARMED", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 spoilersArmed;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerHandle
     {
+        [DataField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 spoilersHandlePosition;
     };
 
@@ -106,19 +152,6 @@ namespace FSInputMapper
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
-string wibble = "Data structs";
-            foreach (Enum? value in typeof(DATA).GetEnumValues()) {
-                var dataType = value!.GetAttribute<DataAttribute>().DataType;
-                wibble += $"\n{value} with type " + dataType;
-                if (!dataType.IsPrimitive)
-                {
-                    foreach (object field in dataType.GetFields())
-                    {
-                        wibble += $"\n\t{field}";
-                    }
-                }
-            }
-viewModel.GSToolTip = wibble;
         }
 
         public void AttachWinow([DisallowNull] HwndSource hWndSource)
@@ -168,43 +201,11 @@ viewModel.GSToolTip = wibble;
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
-            // FCU - general set of things we receive.
+            RegisterDataStructs(simConnect);
 
-            // Correct, but not writable.
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT AIRSPEED HOLD VAR", "knots",
-                SIMCONNECT_DATATYPE.FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT SPEED SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-
-            // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING LOCK DIR", "degrees",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT HEADING SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-
-            // In selected mode, this is correct (but not writable).
-            // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
-            // Have not yet found where the displayed panel value is (may not be available via SimConnect).
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE LOCK VAR", "feet",
-                SIMCONNECT_DATATYPE.INT32, 50f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT ALTITUDE SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VERTICAL HOLD VAR", "Feet/minute",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.FCU_DATA, "AUTOPILOT VS SLOT INDEX", "number",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-
-            simConnect.RegisterDataDefineStruct<ApData>(DATA.FCU_DATA);
             simConnect.RequestDataOnSimObject(REQUEST.FCU_DATA, DATA.FCU_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
-
-            // FCU - things we get when pulling Heading to Selected.
-
-            simConnect.AddToDataDefinition(DATA.AP_HDG_SEL, "PLANE HEADING DEGREES MAGNETIC", "degrees",
-                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.RegisterDataDefineStruct<ApHdgSelData>(DATA.AP_HDG_SEL);
 
             // FCU things we send.
 
@@ -227,30 +228,6 @@ viewModel.GSToolTip = wibble;
             simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_DOWN, "AP_VS_VAR_DEC");
             simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_UP, "AP_VS_VAR_INC");
 
-            // Autopilot - things we receive.
-
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT FLIGHT DIRECTOR ACTIVE", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT MASTER", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT HEADING LOCK", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT APPROACH HOLD", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT NAV1 LOCK", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT GLIDESLOPE HOLD", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT ALTITUDE LOCK", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT VERTICAL HOLD", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOPILOT THROTTLE ARM", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.AP_DATA, "AUTOTHROTTLE ACTIVE", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.RegisterDataDefineStruct<ApModeData>(DATA.AP_DATA);
-
             simConnect.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
                 SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
@@ -263,22 +240,7 @@ viewModel.GSToolTip = wibble;
             simConnect.MapClientEventToSimEvent(EVENT.AP_AUTOTHRUST_ARM, "AUTO_THROTTLE_ARM");
             simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_FD, "TOGGLE_FLIGHT_DIRECTOR");
 
-            // Spoilers
-
-            simConnect.AddToDataDefinition(DATA.SPOILER_HANDLE, "SPOILERS HANDLE POSITION", "percent",
-                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.RegisterDataDefineStruct<SpoilerHandle>(DATA.SPOILER_HANDLE);
-
-            simConnect.AddToDataDefinition(DATA.SPOILER_DATA, "SPOILERS HANDLE POSITION", "percent",
-                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToDataDefinition(DATA.SPOILER_DATA, "SPOILERS ARMED", "Bool",
-                SIMCONNECT_DATATYPE.INT32, 0f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.RegisterDataDefineStruct<SpoilerData>(DATA.SPOILER_DATA);
-
             // Spoilers: things we recieve.
-
-            simConnect.MapClientEventToSimEvent(EVENT.MORE_SPOILER, "SPOILERS_TOGGLE");
-            simConnect.MapClientEventToSimEvent(EVENT.LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
 
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.MORE_SPOILER, true);
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.LESS_SPOILER, true);
@@ -289,6 +251,22 @@ viewModel.GSToolTip = wibble;
 
             simConnect.MapClientEventToSimEvent(EVENT.ARM_SPOILER, "SPOILERS_ARM_ON");
             simConnect.MapClientEventToSimEvent(EVENT.DISARM_SPOILER, "SPOILERS_ARM_OFF");
+        }
+
+        private static void RegisterDataStructs(SimConnect simConnect)
+        {
+            foreach (Enum? value in typeof(DATA).GetEnumValues())
+            {
+                var dataType = value!.GetAttribute<DataAttribute>().DataType;
+                foreach (FieldInfo field in dataType.GetFields())
+                {
+                    var dataField = field.GetCustomAttribute<DataField>();
+                    if (dataField == null) throw new NullReferenceException($"No DataField for {dataType}.{field.Name}");
+                    simConnect.AddToDataDefinition(value, dataField.Variable, dataField.Units, dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+                }
+                simConnect.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(dataType)
+                    .Invoke(simConnect, new object[] { value });
+            }
         }
 
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
