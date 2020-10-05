@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using Microsoft.FlightSimulator.SimConnect;
@@ -152,6 +149,25 @@ namespace FSInputMapper
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
+#if TRUE
+            {
+                AssemblyName aName = new AssemblyName("TempAssembly");
+                AssemblyBuilder ab = AssemblyBuilder.DefineDynamicAssembly(aName, AssemblyBuilderAccess.Run);
+
+                ModuleBuilder mb = ab.DefineDynamicModule(aName.Name!);
+
+                EnumBuilder eb = mb.DefineEnum("Elevation", TypeAttributes.Public, typeof(int));
+
+                // Define two members; there don't seem to be any inherent limitations on their names!
+                eb.DefineLiteral("$Low fat <wible>", 0);
+                eb.DefineLiteral("$High 'no rules'", 1);
+
+                // Create the type and save the assembly.
+                TypeInfo finished = eb.CreateTypeInfo()!;
+                Enum sampleValue = (Enum)Enum.GetValues(finished).GetValue(1);
+                viewModel.GSToolTip = $"Dynamic enum {finished} with {sampleValue}";
+            }
+#endif
         }
 
         public void AttachWinow([DisallowNull] HwndSource hWndSource)
