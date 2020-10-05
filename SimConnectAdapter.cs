@@ -31,7 +31,7 @@ namespace FSInputMapper
         }
     }
 
-    enum DATA {
+    public enum DATA {
         // Stuff intended for struct-based multiple value requests:
         [DataAttribute(typeof(ApData))] FCU_DATA = 69,
         [DataAttribute(typeof(ApHdgSelData))] AP_HDG_SEL,
@@ -39,7 +39,32 @@ namespace FSInputMapper
         [DataAttribute(typeof(SpoilerData))] SPOILER_DATA,
         [DataAttribute(typeof(SpoilerHandle))] SPOILER_HANDLE,
     }
-    enum REQUEST { FCU_DATA = 71, FCU_HDG_SEL, AP_DATA, MORE_SPOILER, LESS_SPOILER, }
+
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class RequestAttribute : Attribute
+    {
+        public readonly DATA Data;
+        public readonly SIMCONNECT_PERIOD Period;
+        public readonly SIMCONNECT_DATA_REQUEST_FLAG Flag;
+        public RequestAttribute(DATA data, SIMCONNECT_PERIOD period)
+        {
+            Data = data;
+            Period = period;
+            Flag = Period == SIMCONNECT_PERIOD.ONCE
+                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+        }
+    }
+
+    enum REQUEST
+    {
+        [RequestAttribute(DATA.FCU_DATA,     SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
+        [RequestAttribute(DATA.AP_HDG_SEL,   SIMCONNECT_PERIOD.ONCE)]      FCU_HDG_SEL,
+        [RequestAttribute(DATA.AP_DATA,      SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
+        [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)]      MORE_SPOILER,
+        [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)]      LESS_SPOILER,
+    }
+
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
@@ -167,6 +192,7 @@ namespace FSInputMapper
             simConnect = null;
             viewModel.ConnectionError = ex.Message;
         }
+
         private void Tick(object? sender, EventArgs e)
         {
             if (simConnect != null) return;
@@ -199,9 +225,7 @@ namespace FSInputMapper
         {
             RegisterDataStructs(simConnect);
 
-            simConnect.RequestDataOnSimObject(REQUEST.FCU_DATA, DATA.FCU_DATA,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+            RequestDataOnSimObject(REQUEST.FCU_DATA);
 
             // FCU things we send.
 
@@ -224,9 +248,7 @@ namespace FSInputMapper
             simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_DOWN, "AP_VS_VAR_DEC");
             simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_UP, "AP_VS_VAR_INC");
 
-            simConnect.RequestDataOnSimObject(REQUEST.AP_DATA, DATA.AP_DATA,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                SIMCONNECT_PERIOD.SIM_FRAME, SIMCONNECT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+            RequestDataOnSimObject(REQUEST.AP_DATA);
 
             // Autopilot - commands we send
 
@@ -272,14 +294,10 @@ namespace FSInputMapper
         {
             switch ((EVENT)data.uEventID) {
                 case EVENT.LESS_SPOILER:
-                    simConnect.RequestDataOnSimObject(REQUEST.LESS_SPOILER, DATA.SPOILER_DATA,
-                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                    RequestDataOnSimObject(REQUEST.LESS_SPOILER);
                     break;
                 case EVENT.MORE_SPOILER:
-                    simConnect.RequestDataOnSimObject(REQUEST.MORE_SPOILER, DATA.SPOILER_DATA,
-                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                    RequestDataOnSimObject(REQUEST.MORE_SPOILER);
                     break;
             }
         }
@@ -359,9 +377,7 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.HDG_SEL:
 //TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the pull
-                    simConnect?.RequestDataOnSimObject(REQUEST.FCU_HDG_SEL, DATA.AP_HDG_SEL,
-                        SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                        SIMCONNECT_PERIOD.ONCE, SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT, 0, 0, 0);
+                    RequestDataOnSimObject(REQUEST.FCU_HDG_SEL);
                     break;
                 case FSIMTrigger.HDG_RIGHT_1:
                     SendEvent(EVENT.AP_HDG_RIGHT, fast: true);
@@ -424,6 +440,13 @@ namespace FSInputMapper
                     SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
             }
+        }
+
+        private void RequestDataOnSimObject(REQUEST request)
+        {
+            var ra = request.GetAttribute<RequestAttribute>();
+            simConnect?.RequestDataOnSimObject(request, ra.Data, SimConnect.SIMCONNECT_OBJECT_ID_USER,
+                ra.Period, ra.Flag, 0, 0, 0);
         }
 
         private void SetData(DATA data, object value)
