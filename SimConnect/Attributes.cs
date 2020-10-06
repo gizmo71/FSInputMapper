@@ -43,4 +43,11 @@ namespace FSInputMapper
         }
     }
 
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class EventAttribute : Attribute
+    {
+        public readonly string ClientEvent;
+        public EventAttribute(string clientEvent) { ClientEvent = clientEvent; }
+    }
+
 }

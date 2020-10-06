@@ -70,70 +70,40 @@ namespace FSInputMapper
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
-            RegisterDataStructs(simConnect);
+            RegisterDataStructs();
+            MapClientEvents();
 
             RequestDataOnSimObject(REQUEST.FCU_DATA);
-
-            // FCU things we send.
-
-            simConnect.MapClientEventToSimEvent(EVENT.AP_SPEED_SLOT_SET, "SPEED_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_SPD_UP, "AP_SPD_VAR_INC");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_SPD_DOWN, "AP_SPD_VAR_DEC");
-
-            simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_SLOT_SET, "HEADING_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_HDG_RIGHT, "HEADING_BUG_INC");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_HDG_LEFT, "HEADING_BUG_DEC");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_HEADING_BUG_SET, "HEADING_BUG_SET");
-
-            simConnect.MapClientEventToSimEvent(EVENT.AP_ALTITUDE_SLOT_SET, "ALTITUDE_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_UP, "AP_ALT_VAR_INC");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_ALT_DOWN, "AP_ALT_VAR_DEC");
-
-            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_SET, "AP_VS_VAR_SET_ENGLISH");
-            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_SLOT_SET, "VS_SLOT_INDEX_SET");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_PANEL_VS_ON, "AP_PANEL_VS_ON");
-            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_DOWN, "AP_VS_VAR_DEC");
-            simConnect.MapClientEventToSimEvent(EVENT.FCU_VS_UP, "AP_VS_VAR_INC");
-
             RequestDataOnSimObject(REQUEST.AP_DATA);
-
-            // Autopilot - commands we send
-
-            //TODO: APPR on then LOC on leaves GS stuck on; we should request modes and react
-            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_LOC, "AP_LOC_HOLD");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_APPR, "AP_APR_HOLD"); // Combines LOC and GS?
-            simConnect.MapClientEventToSimEvent(EVENT.AP_AUTOTHRUST_ARM, "AUTO_THROTTLE_ARM");
-            simConnect.MapClientEventToSimEvent(EVENT.AP_TOGGLE_FD, "TOGGLE_FLIGHT_DIRECTOR");
-
-            // Spoilers: things we recieve.
-
-            simConnect.MapClientEventToSimEvent(EVENT.MORE_SPOILER, "SPOILERS_TOGGLE");
-            simConnect.MapClientEventToSimEvent(EVENT.LESS_SPOILER, "SPOILERS_ARM_TOGGLE");
 
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.MORE_SPOILER, true);
             simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.LESS_SPOILER, true);
-
             simConnect.SetNotificationGroupPriority(GROUP.SPOILERS, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
-
-            // Spoilers: things we send (we've artificially partitioned these as I couldn't avoid hearing our own event).
-
-            simConnect.MapClientEventToSimEvent(EVENT.ARM_SPOILER, "SPOILERS_ARM_ON");
-            simConnect.MapClientEventToSimEvent(EVENT.DISARM_SPOILER, "SPOILERS_ARM_OFF");
         }
 
-        private void RegisterDataStructs(SimConnect simConnect)
+        private void RegisterDataStructs()
         {
-            foreach (Enum? value in typeof(DATA).GetEnumValues())
+            foreach (DATA? value in Enum.GetValues(typeof(DATA)))
             {
                 var dataType = value!.GetAttribute<DataAttribute>().DataType;
                 foreach (FieldInfo field in dataType.GetFields())
                 {
                     var dataField = field.GetCustomAttribute<DataField>();
                     if (dataField == null) throw new NullReferenceException($"No DataField for {dataType}.{field.Name}");
-                    simConnect.AddToDataDefinition(value, dataField.Variable, dataField.Units, dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+                    simConnect?.AddToDataDefinition(value, dataField.Variable, dataField.Units, dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
                 }
-                simConnect.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(dataType)
+                simConnect?.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(dataType)
                     .Invoke(simConnect, new object[] { value });
+            }
+        }
+
+        private void MapClientEvents()
+        {
+            foreach (EVENT? value in Enum.GetValues(typeof(EVENT)))
+            {
+                var eventAttribute = value!.GetAttribute<EventAttribute>();
+                if (eventAttribute == null) continue;
+                simConnect?.MapClientEventToSimEvent(value, eventAttribute.ClientEvent);
             }
         }
 
