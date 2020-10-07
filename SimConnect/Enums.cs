@@ -22,10 +22,9 @@ namespace FSInputMapper
         [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
     }
 
-    enum GROUP
+    enum GROUP : uint
     {
         SPOILERS = 13,
-        PRIORITY_STANDARD = 1900000000
     }
 
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
