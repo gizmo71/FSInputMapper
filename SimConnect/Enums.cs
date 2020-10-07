@@ -22,7 +22,7 @@ namespace FSInputMapper
         [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
     }
 
-    enum GROUP : uint
+    public enum GROUP : uint
     {
         SPOILERS = 13,
     }
@@ -40,8 +40,10 @@ namespace FSInputMapper
         ARM_SPOILER,
         // These two are what I receive.
         [EventAttribute("SPOILERS_TOGGLE")]
+        [EventGroupAttribute(GROUP.SPOILERS, true)]
         MORE_SPOILER,
         [EventAttribute("SPOILERS_ARM_TOGGLE")]
+        [EventGroupAttribute(GROUP.SPOILERS, true)]
         LESS_SPOILER,
         // Autopilot stuff
         [EventAttribute("SPEED_SLOT_INDEX_SET")]

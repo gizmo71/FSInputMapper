@@ -50,4 +50,16 @@ namespace FSInputMapper
         public EventAttribute(string clientEvent) { ClientEvent = clientEvent; }
     }
 
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public class EventGroupAttribute : Attribute
+    {
+        public readonly GROUP Group;
+        public readonly bool IsMaskable;
+        public EventGroupAttribute(GROUP group, bool isMaskable)
+        {
+            Group = group;
+            IsMaskable = isMaskable;
+        }
+    }
+
 }

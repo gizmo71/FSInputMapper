@@ -76,8 +76,7 @@ namespace FSInputMapper
             RequestDataOnSimObject(REQUEST.FCU_DATA);
             RequestDataOnSimObject(REQUEST.AP_DATA);
 
-            simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.MORE_SPOILER, true);
-            simConnect.AddClientEventToNotificationGroup(GROUP.SPOILERS, EVENT.LESS_SPOILER, true);
+            // Can't easily do this with attributes because the 'constant' isn't one...
             simConnect.SetNotificationGroupPriority(GROUP.SPOILERS, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
         }
 
@@ -99,10 +98,14 @@ namespace FSInputMapper
 
         private void MapClientEvents()
         {
-            foreach (EVENT? value in Enum.GetValues(typeof(EVENT)))
+            foreach (EVENT? e in Enum.GetValues(typeof(EVENT)))
             {
-                var eventAttribute = value!.GetAttribute<EventAttribute>();
-                simConnect?.MapClientEventToSimEvent(value, eventAttribute.ClientEvent);
+                var eventAttribute = e!.GetAttribute<EventAttribute>();
+                simConnect?.MapClientEventToSimEvent(e, eventAttribute.ClientEvent);
+                var groupAttribute = e!.GetAttribute<EventGroupAttribute>();
+                if (groupAttribute != null) {
+                    simConnect?.AddClientEventToNotificationGroup(groupAttribute.Group, e, groupAttribute.IsMaskable);
+                }
             }
         }
 
