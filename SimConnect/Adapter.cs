@@ -102,7 +102,6 @@ namespace FSInputMapper
             foreach (EVENT? value in Enum.GetValues(typeof(EVENT)))
             {
                 var eventAttribute = value!.GetAttribute<EventAttribute>();
-                if (eventAttribute == null) continue;
                 simConnect?.MapClientEventToSimEvent(value, eventAttribute.ClientEvent);
             }
         }
