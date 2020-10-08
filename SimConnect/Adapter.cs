@@ -72,12 +72,10 @@ namespace FSInputMapper
         {
             RegisterDataStructs();
             MapClientEvents();
+            SetGroupPriorities();
 
             RequestDataOnSimObject(REQUEST.FCU_DATA);
             RequestDataOnSimObject(REQUEST.AP_DATA);
-
-            // Can't easily do this with attributes because the 'constant' isn't one...
-            simConnect.SetNotificationGroupPriority(GROUP.SPOILERS, SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
         }
 
         private void RegisterDataStructs()
@@ -109,8 +107,18 @@ namespace FSInputMapper
             }
         }
 
+        private void SetGroupPriorities()
+        {
+            foreach (GROUP? group in Enum.GetValues(typeof(GROUP)))
+            {
+                var attr = group!.GetAttribute<GroupAttribute>();
+                simConnect?.SetNotificationGroupPriority(group, attr.Priority);
+            }
+        }
+
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
+            // These are the ones in the notification group.
             switch ((EVENT)data.uEventID) {
                 case EVENT.LESS_SPOILER:
                     RequestDataOnSimObject(REQUEST.LESS_SPOILER);

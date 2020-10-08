@@ -62,4 +62,18 @@ namespace FSInputMapper
         }
     }
 
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    public abstract class GroupAttribute : Attribute
+    {
+        public uint Priority;
+    }
+
+    public class HighestMaskablePriorityGroup : GroupAttribute
+    {
+        public HighestMaskablePriorityGroup()
+        {
+            Priority = SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE;
+        }
+    }
+
 }

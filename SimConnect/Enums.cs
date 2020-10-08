@@ -24,6 +24,7 @@ namespace FSInputMapper
 
     public enum GROUP : uint
     {
+        [HighestMaskablePriorityGroup]
         SPOILERS = 13,
     }
 
