@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -22,7 +21,7 @@ namespace FSInputMapper
             triggerBus.OnTrigger += OnTrigger;
         }
 
-        public void AttachWinow([DisallowNull] HwndSource hWndSource)
+        public void AttachWinow(HwndSource hWndSource)
         {
             this.hWnd = hWndSource.Handle;
             hWndSource.AddHook(WndProc);

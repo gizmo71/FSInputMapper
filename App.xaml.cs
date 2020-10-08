@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
@@ -15,7 +14,7 @@ namespace FSInputMapper
     public static class AttributeExtensions
     {
 
-        public static TAttribute GetAttribute<TAttribute>([NotNullAttribute] this Enum value) where TAttribute : Attribute
+        public static TAttribute GetAttribute<TAttribute>(this Enum value) where TAttribute : Attribute
         {
             var enumType = value.GetType();
             var name = Enum.GetName(enumType, value);
