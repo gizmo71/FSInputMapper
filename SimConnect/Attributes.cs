@@ -12,13 +12,13 @@ namespace FSInputMapper
     }
 
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class DataField : Attribute
+    public class SCStructFieldAttribute : Attribute
     {
         public readonly string Variable;
         public readonly string Units;
         public readonly SIMCONNECT_DATATYPE Type;
         public readonly float Epsilon;
-        public DataField(string variable, string units, SIMCONNECT_DATATYPE type, float epsilon)
+        public SCStructFieldAttribute(string variable, string units, SIMCONNECT_DATATYPE type, float epsilon)
         {
             Variable = variable;
             Units = units;
@@ -68,9 +68,9 @@ namespace FSInputMapper
         public uint Priority;
     }
 
-    public class HighestMaskablePriorityGroup : GroupAttribute
+    public class HighestMaskablePriorityGroupAttribute : GroupAttribute
     {
-        public HighestMaskablePriorityGroup()
+        public HighestMaskablePriorityGroupAttribute()
         {
             Priority = SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE;
         }

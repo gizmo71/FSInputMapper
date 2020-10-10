@@ -84,7 +84,7 @@ namespace FSInputMapper
                 var dataType = value!.GetAttribute<DataAttribute>().DataType;
                 foreach (FieldInfo field in dataType.GetFields())
                 {
-                    var dataField = field.GetCustomAttribute<DataField>();
+                    var dataField = field.GetCustomAttribute<SCStructFieldAttribute>();
                     if (dataField == null) throw new NullReferenceException($"No DataField for {dataType}.{field.Name}");
                     simConnect?.AddToDataDefinition(value, dataField.Variable, dataField.Units, dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
                 }

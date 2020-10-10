@@ -6,20 +6,20 @@ namespace FSInputMapper
     public enum DATA
     {
         // Stuff intended for struct-based multiple value requests:
-        [DataAttribute(typeof(ApData))] FCU_DATA = 69,
-        [DataAttribute(typeof(ApHdgSelData))] AP_HDG_SEL,
-        [DataAttribute(typeof(ApModeData))] AP_DATA,
-        [DataAttribute(typeof(SpoilerData))] SPOILER_DATA,
-        [DataAttribute(typeof(SpoilerHandle))] SPOILER_HANDLE,
+        [Data(typeof(ApData))] FCU_DATA = 69,
+        [Data(typeof(ApHdgSelData))] AP_HDG_SEL,
+        [Data(typeof(ApModeData))] AP_DATA,
+        [Data(typeof(SpoilerData))] SPOILER_DATA,
+        [Data(typeof(SpoilerHandle))] SPOILER_HANDLE,
     }
 
     enum REQUEST
     {
-        [RequestAttribute(DATA.FCU_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
-        [RequestAttribute(DATA.AP_HDG_SEL, SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
-        [RequestAttribute(DATA.AP_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
-        [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
-        [RequestAttribute(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
+        [Request(DATA.FCU_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
+        [Request(DATA.AP_HDG_SEL, SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
+        [Request(DATA.AP_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
+        [Request(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
+        [Request(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
     }
 
     public enum GROUP : uint
@@ -35,56 +35,56 @@ namespace FSInputMapper
     {
         // Spoilers
         // The first two are sent because I couldn't work out how to send the same ones I receive without looping.
-        [EventAttribute("SPOILERS_ARM_OFF")]
+        [Event("SPOILERS_ARM_OFF")]
         DISARM_SPOILER = 42,
-        [EventAttribute("SPOILERS_ARM_ON")]
+        [Event("SPOILERS_ARM_ON")]
         ARM_SPOILER,
         // These two are what I receive.
-        [EventAttribute("SPOILERS_TOGGLE")]
-        [EventGroupAttribute(GROUP.SPOILERS, true)]
+        [Event("SPOILERS_TOGGLE")]
+        [EventGroup(GROUP.SPOILERS, true)]
         MORE_SPOILER,
-        [EventAttribute("SPOILERS_ARM_TOGGLE")]
-        [EventGroupAttribute(GROUP.SPOILERS, true)]
+        [Event("SPOILERS_ARM_TOGGLE")]
+        [EventGroup(GROUP.SPOILERS, true)]
         LESS_SPOILER,
         // Autopilot stuff
-        [EventAttribute("SPEED_SLOT_INDEX_SET")]
+        [Event("SPEED_SLOT_INDEX_SET")]
         AP_SPEED_SLOT_SET,
-        [EventAttribute("AP_SPD_VAR_INC")]
+        [Event("AP_SPD_VAR_INC")]
         AP_SPD_UP,
-        [EventAttribute("AP_SPD_VAR_DEC")]
+        [Event("AP_SPD_VAR_DEC")]
         AP_SPD_DOWN,
-        [EventAttribute("HEADING_SLOT_INDEX_SET")]
+        [Event("HEADING_SLOT_INDEX_SET")]
         AP_HEADING_SLOT_SET,
-        [EventAttribute("HEADING_BUG_INC")]
+        [Event("HEADING_BUG_INC")]
         AP_HDG_RIGHT,
-        [EventAttribute("HEADING_BUG_DEC")]
+        [Event("HEADING_BUG_DEC")]
         AP_HDG_LEFT,
-        [EventAttribute("HEADING_BUG_SET")]
+        [Event("HEADING_BUG_SET")]
         AP_HEADING_BUG_SET,
-        [EventAttribute("ALTITUDE_SLOT_INDEX_SET")]
+        [Event("ALTITUDE_SLOT_INDEX_SET")]
         AP_ALTITUDE_SLOT_SET,
-        [EventAttribute("AP_ALT_VAR_INC")]
+        [Event("AP_ALT_VAR_INC")]
         AP_ALT_UP,
-        [EventAttribute("AP_ALT_VAR_DEC")]
+        [Event("AP_ALT_VAR_DEC")]
         AP_ALT_DOWN,
-        [EventAttribute("AP_LOC_HOLD")]
+        [Event("AP_LOC_HOLD")]
         AP_TOGGLE_LOC,
-        [EventAttribute("AP_APR_HOLD")]
+        [Event("AP_APR_HOLD")]
 //TODO: APPR on then LOC on leaves GS stuck on; we should request modes and react
         AP_TOGGLE_APPR,
-        [EventAttribute("AUTO_THROTTLE_ARM")]
+        [Event("AUTO_THROTTLE_ARM")]
         AP_AUTOTHRUST_ARM,
-        [EventAttribute("TOGGLE_FLIGHT_DIRECTOR")]
+        [Event("TOGGLE_FLIGHT_DIRECTOR")]
         AP_TOGGLE_FD,
-        [EventAttribute("AP_VS_VAR_INC")]
+        [Event("AP_VS_VAR_INC")]
         FCU_VS_UP,
-        [EventAttribute("AP_VS_VAR_DEC")]
+        [Event("AP_VS_VAR_DEC")]
         FCU_VS_DOWN,
-        [EventAttribute("AP_VS_VAR_SET_ENGLISH")]
+        [Event("AP_VS_VAR_SET_ENGLISH")]
         FCU_VS_SET,
-        [EventAttribute("VS_SLOT_INDEX_SET")]
+        [Event("VS_SLOT_INDEX_SET")]
         FCU_VS_SLOT_SET,
-        [EventAttribute("AP_PANEL_VS_ON")]
+        [Event("AP_PANEL_VS_ON")]
         AP_PANEL_VS_ON,
     }
 
