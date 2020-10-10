@@ -68,6 +68,7 @@ namespace FSInputMapper
         public uint Priority;
     }
 
+    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class HighestMaskablePriorityGroupAttribute : GroupAttribute
     {
         public HighestMaskablePriorityGroupAttribute()
