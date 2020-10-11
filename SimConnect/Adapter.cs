@@ -14,6 +14,8 @@ namespace FSInputMapper
     public class SimConnectAdapter {
         private const int WM_USER_SIMCONNECT = 0x0402;
 
+        private enum STRUCT { }
+
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;

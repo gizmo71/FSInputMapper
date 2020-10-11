@@ -3,10 +3,6 @@
 namespace FSInputMapper
 {
 
-    public enum STRUCT
-    {
-    }
-
     enum REQUEST
     {
         [Request(typeof(ApData), SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
