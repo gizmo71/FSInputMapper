@@ -60,9 +60,9 @@ namespace FSInputMapper
 
         private void OnUnhandledException(DispatcherUnhandledExceptionEventArgs details)
         {
-            _ = MessageBox.Show(details.Exception.ToString(), "Unhandled Exception",
+            MessageBox.Show(details.Exception.ToString(), "Unhandled Exception",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
-            details.Handled = true;
+            // Don't die: details.Handled = true;
         }
     }
 
