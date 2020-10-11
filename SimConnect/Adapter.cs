@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
@@ -44,12 +47,26 @@ namespace FSInputMapper
             if (simConnect != null) return;
             try
             {
+                PopulateMappings();
                 Connect();
                 viewModel.ConnectionError = null;
             }
             catch (COMException ex)
             {
                 Disconnect(ex);
+            }
+        }
+
+        private Dictionary<Type, STRUCT> structs = new Dictionary<Type, STRUCT>();
+
+        private void PopulateMappings()
+        {
+            if (structs.Count == 0)
+            {
+                structs = Assembly.GetEntryAssembly()!.DefinedTypes
+                    .Where(candidate => candidate.GetCustomAttribute<SCStructAttribute>() != null)
+                    .Select((candidate, index) => new ValueTuple<Type, STRUCT>(candidate, (STRUCT)(index + 1)))
+                    .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
             }
         }
 
@@ -79,17 +96,20 @@ namespace FSInputMapper
 
         private void RegisterDataStructs()
         {
-            foreach (DATA? value in Enum.GetValues(typeof(DATA)))
+            foreach (var type2Struct in structs)
             {
-                var dataType = value!.GetAttribute<DataAttribute>().DataType;
-                foreach (FieldInfo field in dataType.GetFields())
+                foreach (FieldInfo field in type2Struct.Key.GetFields())
                 {
                     var dataField = field.GetCustomAttribute<SCStructFieldAttribute>();
-                    if (dataField == null) throw new NullReferenceException($"No DataField for {dataType}.{field.Name}");
-                    simConnect?.AddToDataDefinition(value, dataField.Variable, dataField.Units, dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+                    if (dataField == null)
+                    {
+                        throw new NullReferenceException($"No DataField for {type2Struct.Key}.{field.Name}");
+                    }
+                    simConnect?.AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
+                        dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
                 }
-                simConnect?.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(dataType)
-                    .Invoke(simConnect, new object[] { value });
+                simConnect?.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
+                    .Invoke(simConnect, new object[] { type2Struct.Value });
             }
         }
 
@@ -162,12 +182,12 @@ namespace FSInputMapper
                     if (spoilerData.spoilersArmed != 0)
                         SendEvent(EVENT.DISARM_SPOILER);
                     else if (spoilerData.spoilersHandlePosition < 100)
-                        SetData(DATA.SPOILER_HANDLE, new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
+                        SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
                     break;
                 case REQUEST.LESS_SPOILER:
                     spoilerData = (SpoilerData)data.dwData[0];
                     if (spoilerData.spoilersHandlePosition > 0)
-                        SetData(DATA.SPOILER_HANDLE, new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
+                        SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
                     else if (spoilerData.spoilersArmed == 0)
                         SendEvent(EVENT.ARM_SPOILER);
                     break;
@@ -271,13 +291,15 @@ namespace FSInputMapper
         private void RequestDataOnSimObject(REQUEST request)
         {
             var ra = request.GetAttribute<RequestAttribute>();
-            simConnect?.RequestDataOnSimObject(request, ra.Data, SimConnect.SIMCONNECT_OBJECT_ID_USER,
+            STRUCT structId = structs[ra.DataType];
+            simConnect?.RequestDataOnSimObject(request, structId, SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 ra.Period, ra.Flag, 0, 0, 0);
         }
 
-        private void SetData(DATA data, object value)
+        private void SetData<StructType>(StructType value)
         {
-            simConnect?.SetDataOnSimObject(data, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
+            STRUCT id = structs[value!.GetType()];
+            simConnect?.SetDataOnSimObject(id, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
         }
 
         private void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)

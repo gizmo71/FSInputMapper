@@ -5,13 +5,6 @@ namespace FSInputMapper
 {
 
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class DataAttribute : Attribute
-    {
-        public readonly Type DataType;
-        public DataAttribute(Type DataType) { this.DataType = DataType; }
-    }
-
-    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class SCStructFieldAttribute : Attribute
     {
         public readonly string Variable;
@@ -30,12 +23,12 @@ namespace FSInputMapper
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class RequestAttribute : Attribute
     {
-        public readonly DATA Data;
+        public readonly Type DataType;
         public readonly SIMCONNECT_PERIOD Period;
         public readonly SIMCONNECT_DATA_REQUEST_FLAG Flag;
-        public RequestAttribute(DATA data, SIMCONNECT_PERIOD period)
+        public RequestAttribute(Type dataType, SIMCONNECT_PERIOD period)
         {
-            Data = data;
+            DataType = dataType;
             Period = period;
             Flag = Period == SIMCONNECT_PERIOD.ONCE
                 ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
@@ -75,6 +68,11 @@ namespace FSInputMapper
         {
             Priority = SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE;
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
+    public class SCStructAttribute : Attribute
+    {
     }
 
 }

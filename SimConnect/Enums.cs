@@ -3,23 +3,17 @@
 namespace FSInputMapper
 {
 
-    public enum DATA
+    public enum STRUCT
     {
-        // Stuff intended for struct-based multiple value requests:
-        [Data(typeof(ApData))] FCU_DATA = 69,
-        [Data(typeof(ApHdgSelData))] AP_HDG_SEL,
-        [Data(typeof(ApModeData))] AP_DATA,
-        [Data(typeof(SpoilerData))] SPOILER_DATA,
-        [Data(typeof(SpoilerHandle))] SPOILER_HANDLE,
     }
 
     enum REQUEST
     {
-        [Request(DATA.FCU_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
-        [Request(DATA.AP_HDG_SEL, SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
-        [Request(DATA.AP_DATA, SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
-        [Request(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
-        [Request(DATA.SPOILER_DATA, SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
+        [Request(typeof(ApData), SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
+        [Request(typeof(ApHdgSelData), SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
+        [Request(typeof(ApModeData), SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
+        [Request(typeof(SpoilerData), SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
+        [Request(typeof(SpoilerHandle), SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
     }
 
     public enum GROUP : uint
