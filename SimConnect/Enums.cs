@@ -13,7 +13,7 @@ namespace FSInputMapper
         [Request(typeof(ApHdgSelData), SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
         [Request(typeof(ApModeData), SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
         [Request(typeof(SpoilerData), SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
-        [Request(typeof(SpoilerHandle), SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
+        [Request(typeof(SpoilerData), SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
     }
 
     public enum GROUP : uint
