@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
+using FSInputMapper.Data;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
@@ -19,11 +19,13 @@ namespace FSInputMapper
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
+        private readonly IEnumerable<IData> dataListeners;
 
-        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus)
+        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IEnumerable<IData> dataListeners)
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
+            this.dataListeners = dataListeners;
         }
 
         public void AttachWinow(HwndSource hWndSource)
@@ -59,13 +61,13 @@ namespace FSInputMapper
             }
         }
 
-        private Dictionary<Type, STRUCT> structs = new Dictionary<Type, STRUCT>();
+        private Dictionary<Type, STRUCT> typeToStruct = new Dictionary<Type, STRUCT>();
 
         private void PopulateMappings()
         {
-            if (structs.Count == 0)
+            if (typeToStruct.Count == 0)
             {
-                structs = Assembly.GetEntryAssembly()!.DefinedTypes
+                typeToStruct = Assembly.GetEntryAssembly()!.DefinedTypes
                     .Where(candidate => candidate.GetCustomAttribute<SCStructAttribute>() != null)
                     .Select((candidate, index) => new ValueTuple<Type, STRUCT>(candidate, (STRUCT)(index + 1)))
                     .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
@@ -98,7 +100,7 @@ namespace FSInputMapper
 
         private void RegisterDataStructs()
         {
-            foreach (var type2Struct in structs)
+            foreach (var type2Struct in typeToStruct)
             {
                 foreach (FieldInfo field in type2Struct.Key.GetFields())
                 {
@@ -152,19 +154,16 @@ namespace FSInputMapper
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
-            switch ((REQUEST)data.dwRequestID)
+            REQUEST request = (REQUEST)data.dwRequestID;
+            Type type = request.GetAttribute<RequestAttribute>().DataType;
+            foreach (var dataListener in dataListeners.Where(candidate => candidate.GetStructType().IsAssignableFrom(type)))
             {
-                case REQUEST.FCU_DATA:
-                    var fcuData = (ApData)data.dwData[0];
-                    viewModel.AirspeedManaged = fcuData.speedSlot == 2;
-                    viewModel.AutopilotAirspeed = fcuData.speedKnots;
-                    viewModel.HeadingManaged = fcuData.headingSlot == 2;
-                    viewModel.AutopilotHeading = fcuData.heading;
-                    viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
-                    viewModel.AutopilotAltitude = fcuData.altitude;
-                    viewModel.AutopilotVerticalSpeed = fcuData.vs;
-                    viewModel.VerticalSpeedManaged = fcuData.vsSlot == 2;
-                    break;
+                dataListener.Process(data.dwData[0]);
+            }
+
+            //TODO: move the rest of these to listeners
+            switch (request)
+            {
                 case REQUEST.AP_DATA:
                     var apModeData = (ApModeData)data.dwData[0];
                     viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.gsHold == 0;
@@ -293,14 +292,14 @@ namespace FSInputMapper
         private void RequestDataOnSimObject(REQUEST request)
         {
             var ra = request.GetAttribute<RequestAttribute>();
-            STRUCT structId = structs[ra.DataType];
+            STRUCT structId = typeToStruct[ra.DataType];
             simConnect?.RequestDataOnSimObject(request, structId, SimConnect.SIMCONNECT_OBJECT_ID_USER,
                 ra.Period, ra.Flag, 0, 0, 0);
         }
 
         private void SetData<StructType>(StructType value)
         {
-            STRUCT id = structs[value!.GetType()];
+            STRUCT id = typeToStruct[value!.GetType()];
             simConnect?.SetDataOnSimObject(id, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
         }
 

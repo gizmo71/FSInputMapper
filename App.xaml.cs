@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using FSInputMapper.Data;
 
 namespace FSInputMapper
 {
@@ -49,6 +50,10 @@ namespace FSInputMapper
                 {
                     services.AddSingleton(candidate, candidate);
 // https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
+                    if (typeof(IData).IsAssignableFrom(candidate))
+                    {
+                        services.AddSingleton<IData>(x => (IData)x.GetRequiredService(candidate));
+                    }
                 }
             }
         }
