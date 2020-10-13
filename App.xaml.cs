@@ -50,9 +50,9 @@ namespace FSInputMapper
                 {
                     services.AddSingleton(candidate, candidate);
 // https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
-                    if (typeof(IData).IsAssignableFrom(candidate))
+                    if (typeof(IDataListener).IsAssignableFrom(candidate))
                     {
-                        services.AddSingleton<IData>(x => (IData)x.GetRequiredService(candidate));
+                        services.AddSingleton<IDataListener>(x => (IDataListener)x.GetRequiredService(candidate));
                     }
                 }
             }

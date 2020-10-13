@@ -19,9 +19,9 @@ namespace FSInputMapper
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
-        private readonly IEnumerable<IData> dataListeners;
+        private readonly IEnumerable<IDataListener> dataListeners;
 
-        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IEnumerable<IData> dataListeners)
+        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IEnumerable<IDataListener> dataListeners)
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;

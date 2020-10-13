@@ -6,7 +6,7 @@ namespace FSInputMapper.Data
 {
 
     [Singleton]
-    public class FcuDataListenerLeft : Data<ApData>
+    public class FcuDataListenerLeft : DataListener<ApData>
     {
 
         private readonly FSIMViewModel viewModel;
@@ -27,7 +27,7 @@ namespace FSInputMapper.Data
     }
 
     [Singleton]
-    public class FcuDataListenerRight : Data<ApData>
+    public class FcuDataListenerRight : DataListener<ApData>
     {
 
         private readonly FSIMViewModel viewModel;
