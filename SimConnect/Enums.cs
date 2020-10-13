@@ -3,7 +3,7 @@
 namespace FSInputMapper
 {
 
-    enum REQUEST
+    public enum REQUEST
     {
         [Request(typeof(ApData), SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
         [Request(typeof(ApHdgSelData), SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
@@ -21,7 +21,7 @@ namespace FSInputMapper
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
       Way to identify specific things?
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
-    enum EVENT
+    public enum EVENT
     {
         // Spoilers
         // The first two are sent because I couldn't work out how to send the same ones I receive without looping.

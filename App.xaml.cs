@@ -40,9 +40,8 @@ namespace FSInputMapper
 
         private void ConfigureServices(IServiceCollection services)
         {
-            // https://stackoverflow.com/a/58476347/1892057
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection?view=dotnet-plat-ext-3.1
-            services.AddSingleton(typeof(MainWindow), typeof(MainWindow));
+            services.AddSingleton<MainWindow>();
             foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
                 var singleton = candidate.GetCustomAttribute<SingletonAttribute>();

@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using FSInputMapper.Data;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
@@ -19,13 +20,13 @@ namespace FSInputMapper
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
-        private readonly IEnumerable<IDataListener> dataListeners;
+        private readonly IServiceProvider provider;
 
-        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IEnumerable<IDataListener> dataListeners)
+        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IServiceProvider provider)
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
-            this.dataListeners = dataListeners;
+            this.provider = provider;
         }
 
         public void AttachWinow(HwndSource hWndSource)
@@ -156,42 +157,14 @@ namespace FSInputMapper
         {
             REQUEST request = (REQUEST)data.dwRequestID;
             Type type = request.GetAttribute<RequestAttribute>().DataType;
-            foreach (var dataListener in dataListeners.Where(candidate => candidate.GetStructType().IsAssignableFrom(type)))
+//TODO: split this whole nasty mess up to avoid cyclic dependencies.
+// Perhaps pass myself to the listeners?
+// Or have the listeners register themselves by calling something in this class.
+            foreach (var dataListener in provider.GetServices<IDataListener>()
+                .Where(candidate => candidate!.GetStructType().IsAssignableFrom(type))
+                .Where(candidate => candidate.Accept(request)))
             {
-                dataListener.Process(data.dwData[0]);
-            }
-
-            //TODO: move the rest of these to listeners
-            switch (request)
-            {
-                case REQUEST.AP_DATA:
-                    var apModeData = (ApModeData)data.dwData[0];
-                    viewModel.AutopilotLoc = apModeData.approachHold != 0 && apModeData.gsHold == 0;
-                    viewModel.AutopilotAppr = apModeData.approachHold != 0 && apModeData.gsHold != 0;
-                    viewModel.AutopilotGs = apModeData.gsHold != 0;
-                    viewModel.GSToolTip = $"FD {apModeData.fdActive} APPH {apModeData.approachHold} APM {apModeData.apMaster}"
-                        + $"\nHH {apModeData.apHeadingHold} NavH {apModeData.nav1Hold} AltH {apModeData.apAltHold} vsH {apModeData.apVSHold}"
-                        + $"\nATHR arm {apModeData.autothrustArmed} act {apModeData.autothrustActive}";
-                    break;
-                case REQUEST.FCU_HDG_SEL:
-                    var apSpdSelData = (ApHdgSelData)data.dwData[0];
-                    SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
-                    SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)apSpdSelData.headingMagnetic);
-                    break;
-                case REQUEST.MORE_SPOILER:
-                    var spoilerData = (SpoilerData)data.dwData[0];
-                    if (spoilerData.spoilersArmed != 0)
-                        SendEvent(EVENT.DISARM_SPOILER);
-                    else if (spoilerData.spoilersHandlePosition < 100)
-                        SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
-                    break;
-                case REQUEST.LESS_SPOILER:
-                    spoilerData = (SpoilerData)data.dwData[0];
-                    if (spoilerData.spoilersHandlePosition > 0)
-                        SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
-                    else if (spoilerData.spoilersArmed == 0)
-                        SendEvent(EVENT.ARM_SPOILER);
-                    break;
+                dataListener!.Process(data.dwData[0]);
             }
         }
 
@@ -297,13 +270,13 @@ namespace FSInputMapper
                 ra.Period, ra.Flag, 0, 0, 0);
         }
 
-        private void SetData<StructType>(StructType value)
+        public void SetData<StructType>(StructType value)
         {
             STRUCT id = typeToStruct[value!.GetType()];
             simConnect?.SetDataOnSimObject(id, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
         }
 
-        private void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
+        public void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
             SIMCONNECT_EVENT_FLAG flags = SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
