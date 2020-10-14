@@ -16,7 +16,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(ApData fcuData)
+        public override void Process(SimConnectAdapter _, ApData fcuData)
         {
             viewModel.AirspeedManaged = fcuData.speedSlot == 2;
             viewModel.AutopilotAirspeed = fcuData.speedKnots;
@@ -37,7 +37,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(ApData fcuData)
+        public override void Process(SimConnectAdapter _, ApData fcuData)
         {
             viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
             viewModel.AutopilotAltitude = fcuData.altitude;
@@ -58,34 +58,27 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(ApModeData fcuModeData)
+        public override void Process(SimConnectAdapter _, ApModeData fcuModeData)
         {
             viewModel.AutopilotLoc = fcuModeData.approachHold != 0 && fcuModeData.gsHold == 0;
             viewModel.AutopilotAppr = fcuModeData.approachHold != 0 && fcuModeData.gsHold != 0;
             viewModel.AutopilotGs = fcuModeData.gsHold != 0;
-            viewModel.GSToolTip = $"FD {fcuModeData.fdActive} APPH {fcuModeData.approachHold} APM {fcuModeData.apMaster}"
+            viewModel.GSToolTip = $"FD {fcuModeData.fdActive} APM {fcuModeData.apMaster}"
                 + $"\nHH {fcuModeData.apHeadingHold} NavH {fcuModeData.nav1Hold}"
                 + $" AltH {fcuModeData.apAltHold} vsH {fcuModeData.apVSHold}"
                 + $"\nATHR arm {fcuModeData.autothrustArmed} act {fcuModeData.autothrustActive}";
         }
 
-        [Singleton]
-        public class FcuHeadingSelectDataListener : DataListener<ApHdgSelData>
+    }
+
+    [Singleton]
+    public class FcuHeadingSelectDataListener : DataListener<ApHdgSelData>
+    {
+
+        public override void Process(SimConnectAdapter simConnectAdapter, ApHdgSelData fcuHeadingSelectData)
         {
-
-            private readonly SimConnectAdapter simConnectAdapter;
-
-            public FcuHeadingSelectDataListener(SimConnectAdapter simConnectAdapter)
-            {
-                this.simConnectAdapter = simConnectAdapter;
-            }
-
-            public override void Process(ApHdgSelData fcuHeadingSelectData)
-            {
-                simConnectAdapter.SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
-                simConnectAdapter.SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)fcuHeadingSelectData.headingMagnetic);
-            }
-
+            simConnectAdapter.SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
+            simConnectAdapter.SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)fcuHeadingSelectData.headingMagnetic);
         }
 
     }

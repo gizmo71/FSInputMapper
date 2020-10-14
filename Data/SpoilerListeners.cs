@@ -9,19 +9,12 @@ namespace FSInputMapper.Data
     public class MoreSpoilerListener : DataListener<SpoilerData>
     {
 
-        private readonly SimConnectAdapter simConnectAdapter;
-
-        public MoreSpoilerListener(SimConnectAdapter simConnectAdapter)
-        {
-            this.simConnectAdapter = simConnectAdapter;
-        }
-
-        public override void Process(SpoilerData spoilerData)
+        public override void Process(SimConnectAdapter adapter, SpoilerData spoilerData)
         {
             if (spoilerData.spoilersArmed != 0)
-                simConnectAdapter.SendEvent(EVENT.DISARM_SPOILER);
+                adapter.SendEvent(EVENT.DISARM_SPOILER);
             else if (spoilerData.spoilersHandlePosition < 100)
-                simConnectAdapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
+                adapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
         }
 
         public override bool Accept(REQUEST request) {
@@ -34,19 +27,12 @@ namespace FSInputMapper.Data
     public class LessSpoilerListener : DataListener<SpoilerData>
     {
 
-        private readonly SimConnectAdapter simConnectAdapter;
-
-        public LessSpoilerListener(SimConnectAdapter simConnectAdapter)
-        {
-            this.simConnectAdapter = simConnectAdapter;
-        }
-
-        public override void Process(SpoilerData spoilerData)
+        public override void Process(SimConnectAdapter adapter, SpoilerData spoilerData)
         {
             if (spoilerData.spoilersHandlePosition > 0)
-                simConnectAdapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
+                adapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
             else if (spoilerData.spoilersArmed == 0)
-                simConnectAdapter.SendEvent(EVENT.ARM_SPOILER);
+                adapter.SendEvent(EVENT.ARM_SPOILER);
         }
 
         public override bool Accept(REQUEST request)

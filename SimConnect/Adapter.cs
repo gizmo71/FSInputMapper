@@ -20,13 +20,15 @@ namespace FSInputMapper
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
         private SimConnect? simConnect;
-        private readonly IServiceProvider provider;
+        private readonly IEnumerable<IDataListener> dataListeners;
 
-        public SimConnectAdapter(FSIMViewModel viewModel, FSIMTriggerBus triggerBus, IServiceProvider provider)
+        public SimConnectAdapter(FSIMViewModel viewModel,
+            FSIMTriggerBus triggerBus,
+            IEnumerable<IDataListener> dataListeners)
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
-            this.provider = provider;
+            this.dataListeners = dataListeners;
         }
 
         public void AttachWinow(HwndSource hWndSource)
@@ -157,14 +159,11 @@ namespace FSInputMapper
         {
             REQUEST request = (REQUEST)data.dwRequestID;
             Type type = request.GetAttribute<RequestAttribute>().DataType;
-//TODO: split this whole nasty mess up to avoid cyclic dependencies.
-// Perhaps pass myself to the listeners?
-// Or have the listeners register themselves by calling something in this class.
-            foreach (var dataListener in provider.GetServices<IDataListener>()
+            foreach (var dataListener in dataListeners
                 .Where(candidate => candidate!.GetStructType().IsAssignableFrom(type))
                 .Where(candidate => candidate.Accept(request)))
             {
-                dataListener!.Process(data.dwData[0]);
+                dataListener!.Process(this, data.dwData[0]);
             }
         }
 
