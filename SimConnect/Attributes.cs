@@ -4,12 +4,6 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper
 {
 
-    //TODO: get rid of this and drive it off usage in other objects
-    [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
-    public class SCStructAttribute : Attribute
-    {
-    }
-
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class SCStructFieldAttribute : Attribute
     {

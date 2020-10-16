@@ -6,6 +6,9 @@ namespace FSInputMapper.Data
 {
 
     [Singleton]
+    public class SpoilerHandleSender : DataSender<SpoilerHandle> { }
+
+    [Singleton]
     public class MoreSpoilerListener : DataListener<SpoilerData>
     {
 

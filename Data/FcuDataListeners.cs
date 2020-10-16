@@ -17,7 +17,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
+        public SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
 
         public override void Process(SimConnectAdapter _, ApData fcuData)
         {
@@ -43,8 +43,6 @@ namespace FSInputMapper.Data
         {
             this.viewModel = viewModel;
         }
-
-        public override SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
 
         public override void Process(SimConnectAdapter _, ApModeData fcuModeData)
         {

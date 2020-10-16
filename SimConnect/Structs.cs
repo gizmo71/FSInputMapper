@@ -6,7 +6,6 @@ namespace FSInputMapper
 {
 
     // FCU - general set of things we receive.
-    [SCStruct]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApData
     {
@@ -38,7 +37,6 @@ namespace FSInputMapper
     };
 
     // Autopilot - things we receive.
-    [SCStruct]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApModeData
     {
@@ -66,7 +64,6 @@ namespace FSInputMapper
     }
 
     // FCU - things we get when pulling Heading to Selected.
-    [SCStruct]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApHdgSelData
     {
@@ -74,7 +71,6 @@ namespace FSInputMapper
         public UInt32 headingMagnetic;
     };
 
-    [SCStruct]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerData
     {
@@ -84,7 +80,6 @@ namespace FSInputMapper
         public Int32 spoilersArmed;
     };
 
-    [SCStruct]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerHandle
     {
