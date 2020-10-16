@@ -13,22 +13,39 @@ namespace FSInputMapper
 
     [Singleton]
     public class SimConnectAdapter {
+
+        private class SimConnectzmo : SimConnect
+        {
+
+            internal Dictionary<IDataListener, REQUEST> typeToRequest = new Dictionary<IDataListener, REQUEST>();
+
+            internal SimConnectzmo(string szName, IntPtr hWnd, uint UserEventWin32)
+                : base(szName, hWnd, UserEventWin32, null, 0)
+            {
+            }
+
+        }
+
         private const int WM_USER_SIMCONNECT = 0x0402;
+
+        private enum REQUEST
+        {
+        }
 
         private enum STRUCT { }
 
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel;
-        private SimConnect? simConnect;
-        private readonly IEnumerable<IDataListener> dataListeners;
+        private SimConnectzmo? simConnect;
+        private readonly IServiceProvider serviceProvider;
 
         public SimConnectAdapter(FSIMViewModel viewModel,
             FSIMTriggerBus triggerBus,
-            IEnumerable<IDataListener> dataListeners)
+            IServiceProvider serviceProvider)
         {
             this.viewModel = viewModel;
             triggerBus.OnTrigger += OnTrigger;
-            this.dataListeners = dataListeners;
+            this.serviceProvider = serviceProvider;
         }
 
         public void AttachWinow(HwndSource hWndSource)
@@ -79,7 +96,9 @@ namespace FSInputMapper
 
         private void Connect()
         {
-            simConnect = new SimConnect("Gizmo's FSInputMapper", hWnd, WM_USER_SIMCONNECT, null, 0);
+            simConnect = new SimConnectzmo("Gizmo's FSInputMapper", hWnd, WM_USER_SIMCONNECT);
+            simConnect.OnRecvException += (sc, e) => { throw new Exception($"SimConnect threw {e.dwException}"); };
+            AssignRequestIds();
             simConnect.OnRecvOpen += OnRecvOpen;
             simConnect.OnRecvQuit += OnRecvQuit;
             simConnect.OnRecvSimobjectData += OnRecvSimobjectData;
@@ -97,8 +116,8 @@ namespace FSInputMapper
             MapClientEvents();
             SetGroupPriorities();
 
-            RequestDataOnSimObject(REQUEST.FCU_DATA);
-            RequestDataOnSimObject(REQUEST.AP_DATA);
+            RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuDataListener>());
+            RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuModeDataListener>());
         }
 
         private void RegisterDataStructs()
@@ -118,6 +137,13 @@ namespace FSInputMapper
                 simConnect?.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
                     .Invoke(simConnect, new object[] { type2Struct.Value });
             }
+        }
+
+        private void AssignRequestIds()
+        {
+            simConnect!.typeToRequest = serviceProvider.GetServices<IDataListener>()
+                .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
         private void MapClientEvents()
@@ -147,10 +173,10 @@ namespace FSInputMapper
             // These are the ones in the notification group.
             switch ((EVENT)data.uEventID) {
                 case EVENT.LESS_SPOILER:
-                    RequestDataOnSimObject(REQUEST.LESS_SPOILER);
+                    RequestDataOnSimObject(serviceProvider.GetRequiredService<LessSpoilerListener>());
                     break;
                 case EVENT.MORE_SPOILER:
-                    RequestDataOnSimObject(REQUEST.MORE_SPOILER);
+                    RequestDataOnSimObject(serviceProvider.GetRequiredService<MoreSpoilerListener>());
                     break;
             }
         }
@@ -158,13 +184,11 @@ namespace FSInputMapper
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             REQUEST request = (REQUEST)data.dwRequestID;
-            Type type = request.GetAttribute<RequestAttribute>().DataType;
-            foreach (var dataListener in dataListeners
-                .Where(candidate => candidate!.GetStructType().IsAssignableFrom(type))
-                .Where(candidate => candidate.Accept(request)))
-            {
-                dataListener!.Process(this, data.dwData[0]);
-            }
+            ((SimConnectzmo)simConnect).typeToRequest
+                .Where(candidate => candidate.Value == request)
+                .Select(candidate => candidate.Key)
+                .SingleOrDefault()
+                .Process(this, data.dwData[0]);
         }
 
         private void OnTrigger(object? sender, FSIMTriggerArgs e)
@@ -196,7 +220,7 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.HDG_SEL:
 //TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the pull
-                    RequestDataOnSimObject(REQUEST.FCU_HDG_SEL);
+                    RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuHeadingSelectDataListener>());
                     break;
                 case FSIMTrigger.HDG_RIGHT_1:
                     SendEvent(EVENT.AP_HDG_RIGHT, fast: true);
@@ -261,12 +285,12 @@ namespace FSInputMapper
             }
         }
 
-        private void RequestDataOnSimObject(REQUEST request)
+        private void RequestDataOnSimObject(IDataListener data)
         {
-            var ra = request.GetAttribute<RequestAttribute>();
-            STRUCT structId = typeToStruct[ra.DataType];
+            REQUEST request = simConnect!.typeToRequest[data];
+            STRUCT structId = typeToStruct[data.GetStructType()];
             simConnect?.RequestDataOnSimObject(request, structId, SimConnect.SIMCONNECT_OBJECT_ID_USER,
-                ra.Period, ra.Flag, 0, 0, 0);
+                data.GetPeriod(), data.GetFlag(), 0, 0, 0);
         }
 
         public void SetData<StructType>(StructType value)

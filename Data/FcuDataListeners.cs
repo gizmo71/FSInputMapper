@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
 {
 
     [Singleton]
-    public class FcuDataListenerLeft : DataListener<ApData>
+    public class FcuDataListener : DataListener<ApData>
     {
 
         private readonly FSIMViewModel viewModel;
 
-        public FcuDataListenerLeft(FSIMViewModel viewModel)
+        public FcuDataListener(FSIMViewModel viewModel)
         {
             this.viewModel = viewModel;
         }
+
+        public override SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
 
         public override void Process(SimConnectAdapter _, ApData fcuData)
         {
@@ -22,23 +25,6 @@ namespace FSInputMapper.Data
             viewModel.AutopilotAirspeed = fcuData.speedKnots;
             viewModel.HeadingManaged = fcuData.headingSlot == 2;
             viewModel.AutopilotHeading = fcuData.heading;
-        }
-
-    }
-
-    [Singleton]
-    public class FcuDataListenerRight : DataListener<ApData>
-    {
-
-        private readonly FSIMViewModel viewModel;
-
-        public FcuDataListenerRight(FSIMViewModel viewModel)
-        {
-            this.viewModel = viewModel;
-        }
-
-        public override void Process(SimConnectAdapter _, ApData fcuData)
-        {
             viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
             viewModel.AutopilotAltitude = fcuData.altitude;
             viewModel.AutopilotVerticalSpeed = fcuData.vs;
@@ -57,6 +43,8 @@ namespace FSInputMapper.Data
         {
             this.viewModel = viewModel;
         }
+
+        public override SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
 
         public override void Process(SimConnectAdapter _, ApModeData fcuModeData)
         {

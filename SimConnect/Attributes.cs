@@ -4,6 +4,12 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper
 {
 
+    //TODO: get rid of this and drive it off usage in other objects
+    [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
+    public class SCStructAttribute : Attribute
+    {
+    }
+
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class SCStructFieldAttribute : Attribute
     {
@@ -17,22 +23,6 @@ namespace FSInputMapper
             Units = units;
             Type = type; //TODO: do we need this, or can we infer it?
             Epsilon = epsilon;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class RequestAttribute : Attribute
-    {
-        public readonly Type DataType;
-        public readonly SIMCONNECT_PERIOD Period;
-        public readonly SIMCONNECT_DATA_REQUEST_FLAG Flag;
-        public RequestAttribute(Type dataType, SIMCONNECT_PERIOD period)
-        {
-            DataType = dataType;
-            Period = period;
-            Flag = Period == SIMCONNECT_PERIOD.ONCE
-                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
         }
     }
 
@@ -68,11 +58,6 @@ namespace FSInputMapper
         {
             Priority = SimConnect.SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE;
         }
-    }
-
-    [AttributeUsage(AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
-    public class SCStructAttribute : Attribute
-    {
     }
 
 }

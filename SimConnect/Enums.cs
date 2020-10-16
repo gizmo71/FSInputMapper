@@ -3,15 +3,6 @@
 namespace FSInputMapper
 {
 
-    public enum REQUEST
-    {
-        [Request(typeof(ApData), SIMCONNECT_PERIOD.SIM_FRAME)] FCU_DATA = 71,
-        [Request(typeof(ApHdgSelData), SIMCONNECT_PERIOD.ONCE)] FCU_HDG_SEL,
-        [Request(typeof(ApModeData), SIMCONNECT_PERIOD.SIM_FRAME)] AP_DATA,
-        [Request(typeof(SpoilerData), SIMCONNECT_PERIOD.ONCE)] MORE_SPOILER,
-        [Request(typeof(SpoilerData), SIMCONNECT_PERIOD.ONCE)] LESS_SPOILER,
-    }
-
     public enum GROUP : uint
     {
         [HighestMaskablePriorityGroup]

@@ -17,10 +17,6 @@ namespace FSInputMapper.Data
                 adapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
         }
 
-        public override bool Accept(REQUEST request) {
-            return request == REQUEST.MORE_SPOILER;
-        }
-
     }
 
     [Singleton]
@@ -33,11 +29,6 @@ namespace FSInputMapper.Data
                 adapter.SetData<SpoilerHandle>(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
             else if (spoilerData.spoilersArmed == 0)
                 adapter.SendEvent(EVENT.ARM_SPOILER);
-        }
-
-        public override bool Accept(REQUEST request)
-        {
-            return request == REQUEST.LESS_SPOILER;
         }
 
     }
