@@ -18,76 +18,76 @@
             <ColumnDefinition Width="709*"/>
         </Grid.ColumnDefinitions>
         <!-- Airspeed -->
-        <Button Content="+10" HorizontalAlignment="Left" Margin="16,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <Button Content="+10" HorizontalAlignment="Left" Margin="16,14,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_FASTER}"/>
-        <Button Content="+1" HorizontalAlignment="Left" Margin="61,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="+1" HorizontalAlignment="Left" Margin="61,14,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_FASTER}"/>
-        <Button Content="Push" HorizontalAlignment="Left" Margin="107,57,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Push" HorizontalAlignment="Left" Margin="107,14,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
                 Click="Airspeed_Push" Grid.Column="1"/>
-        <TextBox HorizontalAlignment="Left" Margin="16,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAirspeed}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-10" HorizontalAlignment="Left" Margin="16,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <TextBox HorizontalAlignment="Left" Margin="16,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAirspeed}" IsReadOnly="True" Grid.Column="1"/>
+        <Button Content="-10" HorizontalAlignment="Left" Margin="16,62,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_SLOWER}"/>
-        <Button Content="-1" HorizontalAlignment="Left" Margin="61,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="-1" HorizontalAlignment="Left" Margin="61,62,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_SLOWER}"/>
-        <Button Content="Pull" HorizontalAlignment="Left" Margin="107,105,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Pull" HorizontalAlignment="Left" Margin="107,62,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Airspeed_Pull" Grid.Column="1"/>
 
         <!-- Heading -->
-        <Button Content="+10" HorizontalAlignment="Left" Margin="163,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <Button Content="+10" HorizontalAlignment="Left" Margin="163,14,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="Right10Degrees"/>
-        <Button Content="+1" HorizontalAlignment="Left" Margin="208,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="+1" HorizontalAlignment="Left" Margin="208,14,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="Right1Degree"/>
-        <Button Content="Push" HorizontalAlignment="Left" Margin="254,57,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Push" HorizontalAlignment="Left" Margin="254,14,0,0" VerticalAlignment="Top" Width="29"
             Background="{Binding HeadingManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="Heading_Push" Grid.Column="1"/>
-        <TextBox HorizontalAlignment="Left" Margin="163,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotHeading}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-10" HorizontalAlignment="Left" Margin="163,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <TextBox HorizontalAlignment="Left" Margin="163,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotHeading}" IsReadOnly="True" Grid.Column="1"/>
+        <Button Content="-10" HorizontalAlignment="Left" Margin="163,62,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="Left10Degrees"/>
-        <Button Content="-1" HorizontalAlignment="Left" Margin="208,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="-1" HorizontalAlignment="Left" Margin="208,62,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="Left1Degree"/>
-        <Button Content="Pull" HorizontalAlignment="Left" Margin="254,105,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Pull" HorizontalAlignment="Left" Margin="254,62,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding HeadingManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Heading_Pull" Grid.Column="1"/>
 
-        <Button Content="LOC" HorizontalAlignment="Left" Margin="163,145,0,0" VerticalAlignment="Top" Width="35"
+        <Button Content="LOC" HorizontalAlignment="Left" Margin="163,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotLoc, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="FcuLocClicked" Grid.Column="1"/>
 
         <!-- Altitude -->
-        <Button Content="+1000" HorizontalAlignment="Left" Margin="309,57,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <Button Content="+1000" HorizontalAlignment="Left" Margin="309,14,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="Up1000Feet"/>
-        <Button Content="+100" HorizontalAlignment="Left" Margin="354,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="+100" HorizontalAlignment="Left" Margin="354,14,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="Up100Feet"/>
-        <Button Content="Push" HorizontalAlignment="Left" Margin="400,57,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Push" HorizontalAlignment="Left" Margin="400,14,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="Altitude_Push" Grid.Column="1"/>
-        <TextBox HorizontalAlignment="Left" Margin="309,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAltitude}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-1000" HorizontalAlignment="Left" Margin="309,105,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
+        <TextBox HorizontalAlignment="Left" Margin="309,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotAltitude}" IsReadOnly="True" Grid.Column="1"/>
+        <Button Content="-1000" HorizontalAlignment="Left" Margin="309,62,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"
                 Click="Down1000Feet"/>
-        <Button Content="-100" HorizontalAlignment="Left" Margin="354,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="-100" HorizontalAlignment="Left" Margin="354,62,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
                 Click="Down100Feet"/>
-        <Button Content="Pull" HorizontalAlignment="Left" Margin="400,105,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Pull" HorizontalAlignment="Left" Margin="400,62,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AltitudeManaged,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource False}}"
                 Click="Altitude_Pull" Grid.Column="1"/>
 
         <!-- Vertical Speed -->
-        <Button Content="+100" HorizontalAlignment="Left" Margin="449,57,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <Button Content="+100" HorizontalAlignment="Left" Margin="449,14,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
             Click="VSUp"/>
-        <Button Content="Level Off" HorizontalAlignment="Left" Margin="509,57,0,0" VerticalAlignment="Top" Width="60"
+        <Button Content="Level Off" HorizontalAlignment="Left" Margin="509,14,0,0" VerticalAlignment="Top" Width="60"
             Click="VS_Push" Grid.Column="1"/>
-        <TextBox HorizontalAlignment="Left" Margin="449,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotVerticalSpeed}" IsReadOnly="True" Grid.Column="1"/>
-        <Button Content="-100" HorizontalAlignment="Left" Margin="449,105,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
+        <TextBox HorizontalAlignment="Left" Margin="449,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Text="{Binding AutopilotVerticalSpeed}" IsReadOnly="True" Grid.Column="1"/>
+        <Button Content="-100" HorizontalAlignment="Left" Margin="449,62,0,0" VerticalAlignment="Top" Width="32" Grid.Column="1"
             Click="VSDown"/>
-        <Button Content="Pull" HorizontalAlignment="Left" Margin="540,105,0,0" VerticalAlignment="Top" Width="29"
+        <Button Content="Pull" HorizontalAlignment="Left" Margin="540,62,0,0" VerticalAlignment="Top" Width="29"
             Background="{Binding VerticalSpeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
             Click="VS_Pull" Grid.Column="1"/>
 
-        <Button Content="GS" HorizontalAlignment="Left" Margin="351,145,0,0" VerticalAlignment="Top" Width="35"
+        <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="FcuGsClicked" Grid.Column="1" ToolTip="{Binding GSToolTip}"/>
-        <Button Content="APPR" HorizontalAlignment="Left" Margin="394,145,0,0" VerticalAlignment="Top" Width="35"
+        <Button Content="APPR" HorizontalAlignment="Left" Margin="394,102,0,0" VerticalAlignment="Top" Width="35"
                 Background="{Binding AutopilotAppr,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="FcuApprClicked" Grid.Column="1"/>
 
