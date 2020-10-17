@@ -53,6 +53,10 @@ namespace FSInputMapper
                     {
                         services.AddSingleton<IDataListener>(x => (IDataListener)x.GetRequiredService(candidate));
                     }
+                    if (typeof(IData).IsAssignableFrom(candidate))
+                    {
+                        services.AddSingleton<IData>(x => (IData)x.GetRequiredService(candidate));
+                    }
                 }
             }
         }
