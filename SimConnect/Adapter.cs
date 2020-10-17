@@ -290,13 +290,16 @@ namespace FSInputMapper
 
         private void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
         {
-            REQUEST request = (scHolder.SimConnect! as SimConnectzmo)!.typeToRequest![data];
-            STRUCT structId = (scHolder.SimConnect! as SimConnectzmo)!.typeToStruct![data.GetStructType()];
-            SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
-                            ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-                            : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
-            scHolder.SimConnect?.RequestDataOnSimObject(request, structId,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+            if (scHolder.SimConnect is SimConnectzmo sc)
+            {
+                REQUEST request = sc.typeToRequest![data];
+                STRUCT structId = sc.typeToStruct![data.GetStructType()];
+                SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
+                                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+                                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+                sc.RequestDataOnSimObject(request, structId,
+                    SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+            }
         }
 
         public void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
