@@ -111,6 +111,7 @@ namespace FSInputMapper
 
             RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
             RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuModeDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
+            RequestDataOnSimObject(serviceProvider.GetRequiredService<LightListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
         }
 
         private void AssignStructIds()

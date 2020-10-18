@@ -94,7 +94,11 @@
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}" Grid.Column="1"/>
 
         <!-- TODO: can we make the lights a seperate component? -->
-        <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60"/>
+        <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60" Text="Strobes" SelectedIndex="{Binding Path=Strobes, Mode=TwoWay}">
+            <ComboBoxItem Content="On" Tag="2" />
+            <ComboBoxItem Content="Auto" Tag="1" />
+            <ComboBoxItem Content="Off" Tag="0" />
+        </ComboBox>
         <CheckBox Content="Beacon" Grid.Column="1" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"/>
         <CheckBox Content="Wing Ice" Grid.Column="1" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"/>
         <CheckBox Content="Rwy Turn" Grid.Column="1" HorizontalAlignment="Left" Margin="10,169,0,0" VerticalAlignment="Top"/>
@@ -102,5 +106,6 @@
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="80,167,0,0" VerticalAlignment="Top" Width="60"/>
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="150,167,0,0" VerticalAlignment="Top" Width="60"/>
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"/>
+        <TextBox HorizontalAlignment="Left" Margin="309,145,0,0" Text="{Binding GSToolTip}" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="56" />
     </Grid>
 </Window>

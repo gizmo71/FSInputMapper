@@ -17,8 +17,6 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public SIMCONNECT_PERIOD GetPeriod() { return SIMCONNECT_PERIOD.SIM_FRAME; }
-
         public override void Process(SimConnectAdapter _, ApData fcuData)
         {
             viewModel.AirspeedManaged = fcuData.speedSlot == 2;
@@ -49,10 +47,12 @@ namespace FSInputMapper.Data
             viewModel.AutopilotLoc = fcuModeData.approachHold != 0 && fcuModeData.gsHold == 0;
             viewModel.AutopilotAppr = fcuModeData.approachHold != 0 && fcuModeData.gsHold != 0;
             viewModel.AutopilotGs = fcuModeData.gsHold != 0;
+#if FALSE
             viewModel.GSToolTip = $"FD {fcuModeData.fdActive} APM {fcuModeData.apMaster}"
                 + $"\nHH {fcuModeData.apHeadingHold} NavH {fcuModeData.nav1Hold}"
                 + $" AltH {fcuModeData.apAltHold} vsH {fcuModeData.apVSHold}"
                 + $"\nATHR arm {fcuModeData.autothrustArmed} act {fcuModeData.autothrustActive}";
+#endif
         }
 
     }

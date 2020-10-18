@@ -110,6 +110,13 @@ namespace FSInputMapper
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private int strobes;
+        public int Strobes
+        {
+            get { return strobes; }
+            set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
+        }
+
     }
 
 }
