@@ -85,7 +85,7 @@
 
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
-            Click="FcuGsClicked" Grid.Column="1" ToolTip="{Binding GSToolTip}"/>
+            Click="FcuGsClicked" Grid.Column="1"/>
         <Button Content="APPR" HorizontalAlignment="Left" Margin="394,102,0,0" VerticalAlignment="Top" Width="35"
                 Background="{Binding AutopilotAppr,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="FcuApprClicked" Grid.Column="1"/>
@@ -106,6 +106,7 @@
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="80,167,0,0" VerticalAlignment="Top" Width="60"/>
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="150,167,0,0" VerticalAlignment="Top" Width="60"/>
         <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"/>
-        <TextBox HorizontalAlignment="Left" Margin="309,145,0,0" Text="{Binding GSToolTip}" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="56" />
+
+        <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding DebugText}" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
     </Grid>
 </Window>

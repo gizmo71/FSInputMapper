@@ -47,7 +47,7 @@ namespace FSInputMapper.Data
         public override void Process(SimConnectAdapter _, LightData lightData)
         {
             viewModel.Strobes = lightData.strobe != 1 ? 2 : 0;
-            viewModel.GSToolTip = $"Strobes/Switch {lightData.strobe}/{lightData.strobeSwich} Beacon {lightData.beacon} Wing {lightData.wing} Nav/Logo {lightData.nav}/{lightData.logo}"
+            viewModel.DebugText = $"Strobes/Switch {lightData.strobe}/{lightData.strobeSwich} Beacon {lightData.beacon} Wing {lightData.wing} Nav/Logo {lightData.nav}/{lightData.logo}"
                 + $"\nRunway ?? Landing {lightData.landing} Nose {lightData.nose}"
                 + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')} Mask On {Convert.ToString(lightData.maskOn, 2).PadLeft(10, '0')}";
         }

@@ -89,13 +89,6 @@ namespace FSInputMapper
             set { if (autopilotGs != value) { autopilotGs = value; OnPropertyChange(); } }
         }
 
-        private string gsToolTip = "";
-        public string GSToolTip
-        {
-            get { return gsToolTip; }
-            set { if (gsToolTip != value) { gsToolTip = value; OnPropertyChange(); } }
-        }
-
         private bool autopilotAppr;
         public bool AutopilotAppr
         {
@@ -115,6 +108,20 @@ namespace FSInputMapper
         {
             get { return strobes; }
             set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
+        }
+
+        private int noseLight;
+        public int NoseLight
+        {
+            get { return noseLight; }
+            set { if (noseLight != value) { noseLight = value; OnPropertyChange(); } }
+        }
+
+        private string debugText = "";
+        public string DebugText
+        {
+            get { return debugText; }
+            set { if (debugText != value) { debugText = value; OnPropertyChange(); } }
         }
 
     }
