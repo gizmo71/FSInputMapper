@@ -116,7 +116,9 @@ namespace FSInputMapper
         private void AssignStructIds()
         {
             (scHolder.SimConnect! as SimConnectzmo)!.typeToStruct = serviceProvider.GetServices<IData>()
-                .Select((candidate, index) => new ValueTuple<Type, STRUCT>(candidate.GetStructType(), (STRUCT)(index + 1)))
+                .Select(candidate => candidate.GetStructType())
+                .Distinct()
+                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
 
