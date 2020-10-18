@@ -99,16 +99,17 @@
             <ComboBoxItem Content="Auto" Tag="1" />
             <ComboBoxItem Content="Off" Tag="0" />
         </ComboBox>
-        <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"/>
-        <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"/>
-        <CheckBox Content="Rwy Turn" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
-        <CheckBox Content="Nag/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"/>
-        <ComboBox ToolTip="Landing Lights" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120">
+        <CheckBox Content="Beacon" IsChecked="{Binding BeaconLights}" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Wing Ice" IsChecked="{Binding WingLights}" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Nav/Logo" IsChecked="{Binding NavLogoLights}" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"/>
+
+        <CheckBox Content="Rwy Turn" IsChecked="{Binding RunwayTurnoffLights}" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
+        <ComboBox ToolTip="Landing Lights" SelectedIndex="{Binding Path=LandingLights, Mode=TwoWay}" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120">
             <ComboBoxItem Content="On" Tag="2" />
             <ComboBoxItem Content="Extend" Tag="1" />
             <ComboBoxItem Content="Retract" Tag="0" />
         </ComboBox>
-        <ComboBox ToolTip="Nose Light" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox ToolTip="Nose Lights" SelectedIndex="{Binding Path=NoseLights, Mode=TwoWay}" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60">
             <ComboBoxItem Content="T.O." Tag="2" />
             <ComboBoxItem Content="Taxi" Tag="1" />
             <ComboBoxItem Content="Off" Tag="0" />

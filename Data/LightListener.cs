@@ -10,27 +10,41 @@ namespace FSInputMapper.Data
     public struct LightData
     {
         [SCStructField("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 strobeSwich; // "Auto" comes back as on. :-(
+        public Int32 strobeSwitch; // "Auto" comes back as on. :-(
         [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 strobe; // "Auto" comes back as on. :-(
+        public Int32 strobeState; // "Auto" comes back as on. :-(
+        [SCStructField("LIGHT BEACON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 beaconSwitch;
         [SCStructField("LIGHT BEACON ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 beacon;
+        public Int32 beaconState;
+        [SCStructField("LIGHT WING", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 wingSwitch;
         [SCStructField("LIGHT WING ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 wing;
+        public Int32 wingState;
+        [SCStructField("LIGHT NAV", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 navSwitch;
         [SCStructField("LIGHT NAV ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 nav; // Locked to logo
+        public Int32 navState; // Locked to logo
+        [SCStructField("LIGHT LOGO", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 logoSwitch;
         [SCStructField("LIGHT LOGO ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 logo; // Locked to nav
+        public Int32 logoState; // Locked to nav
         //[SCStructField("LIGHT ? ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         //public Int32 runway;
+        [SCStructField("LIGHT LANDING", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 landingSwitch;
         [SCStructField("LIGHT LANDING ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 landing;
+        public Int32 landingState;
+        [SCStructField("LIGHT TAXI", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 noseSwitch;
         [SCStructField("LIGHT TAXI ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 nose; // Three pos? None work
+        public Int32 noseState;
+        [SCStructField("LIGHT RECOGNITION", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 recognitionSwitch;
+        [SCStructField("LIGHT RECOGNITION ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 recognitionState;
         [SCStructField("LIGHT STATES", "Number", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 mask; // Nav 1, Beacon 2, nose=TO|either landing 4, nose=taxi|runwayTurn 8, Strobes 16 (still bool), wing 128, logo 256
-        [SCStructField("LIGHT ON STATES", "Number", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 maskOn; // Nav 1, Beacon 2, Strobes 16, wing 128, logo 256
+        public Int32 mask; // nose=TO|landing 4, nose=taxi|runwayTurn 8
     };
 
     [Singleton]
@@ -46,10 +60,22 @@ namespace FSInputMapper.Data
 
         public override void Process(SimConnectAdapter _, LightData lightData)
         {
-            viewModel.Strobes = lightData.strobe != 1 ? 2 : 0;
-            viewModel.DebugText = $"Strobes/Switch {lightData.strobe}/{lightData.strobeSwich} Beacon {lightData.beacon} Wing {lightData.wing} Nav/Logo {lightData.nav}/{lightData.logo}"
-                + $"\nRunway ?? Landing {lightData.landing} Nose {lightData.nose}"
-                + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')} Mask On {Convert.ToString(lightData.maskOn, 2).PadLeft(10, '0')}";
+            viewModel.DebugText = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}"
+                + $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
+                + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
+                + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
+                + $"\nRecog/Switch {lightData.recognitionState}/{lightData.recognitionSwitch}"
+                + $"\nRunway ??"
+                + $" Landing {lightData.landingState}/{lightData.landingSwitch}"
+                + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
+                + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}";
+            viewModel.Strobes = lightData.strobeSwitch == 1 ? 2 : 0;
+            viewModel.BeaconLights = lightData.beaconSwitch == 1;
+            viewModel.WingLights = lightData.wingSwitch == 1;
+            viewModel.NavLogoLights = lightData.navSwitch == 1 || lightData.logoSwitch == 1;
+            //viewModel.RunwayTurnoffLights
+            viewModel.LandingLights = lightData.landingSwitch == 1 ? 2 : 0;
+            viewModel.NoseLights = lightData.noseSwitch == 1 ? 2 :0;
         }
 
     }

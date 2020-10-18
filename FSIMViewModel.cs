@@ -110,11 +110,46 @@ namespace FSInputMapper
             set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
         }
 
-        private int noseLight;
-        public int NoseLight
+        private bool beaconLights;
+        public bool BeaconLights
         {
-            get { return noseLight; }
-            set { if (noseLight != value) { noseLight = value; OnPropertyChange(); } }
+            get { return beaconLights; }
+            set { if (beaconLights != value) { beaconLights = value; OnPropertyChange(); } }
+        }
+
+        private bool wingLights;
+        public bool WingLights
+        {
+            get { return wingLights; }
+            set { if (wingLights != value) { wingLights = value; OnPropertyChange(); } }
+        }
+
+        private bool navLogoLights;
+        public bool NavLogoLights
+        {
+            get { return navLogoLights; }
+            set { if (navLogoLights != value) { navLogoLights = value; OnPropertyChange(); } }
+        }
+
+        private bool runwayTurnoffLights;
+        public bool RunwayTurnoffLights
+        {
+            get { return runwayTurnoffLights; }
+            set { if (runwayTurnoffLights != value) { runwayTurnoffLights = value; OnPropertyChange(); } }
+        }
+
+        private int noseLights;
+        public int NoseLights
+        {
+            get { return noseLights; }
+            set { if (noseLights != value) { noseLights = value; OnPropertyChange(); } }
+        }
+
+        private int landingLights;
+        public int LandingLights
+        {
+            get { return landingLights; }
+            set { if (landingLights != value) { landingLights = value; OnPropertyChange(); } }
         }
 
         private string debugText = "";
