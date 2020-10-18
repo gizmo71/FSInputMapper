@@ -93,5 +93,11 @@
 
         <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="612,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}" Grid.Column="1"/>
+
+        <!-- TODO: can we make the lights a seperate component? -->
+        <ComboBox Grid.Column="1" HorizontalAlignment="Left" Margin="0,145,0,0" VerticalAlignment="Top" Width="60"/>
+        <CheckBox Content="Beacon" Grid.Column="1" HorizontalAlignment="Left" Margin="70,149,0,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Wing Ice" Grid.Column="1" HorizontalAlignment="Left" Margin="140,149,0,0" VerticalAlignment="Top"/>
+        <CheckBox Content="Rwy Turn" Grid.Column="1" HorizontalAlignment="Left" Margin="0,169,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
