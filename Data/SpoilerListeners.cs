@@ -1,9 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
+using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
 {
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct SpoilerData
+    {
+        [SCStructField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 spoilersHandlePosition;
+        [SCStructField("SPOILERS ARMED", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 spoilersArmed;
+    };
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct SpoilerHandle
+    {
+        [SCStructField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 spoilersHandlePosition;
+    };
 
     [Singleton]
     public class SpoilerHandleSender : DataSender<SpoilerHandle>

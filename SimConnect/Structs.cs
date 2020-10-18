@@ -71,48 +71,4 @@ namespace FSInputMapper
         public UInt32 headingMagnetic;
     };
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct SpoilerData
-    {
-        [SCStructField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 spoilersHandlePosition;
-        [SCStructField("SPOILERS ARMED", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 spoilersArmed;
-    };
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct SpoilerHandle
-    {
-        [SCStructField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 spoilersHandlePosition;
-    };
-
-    //http://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/simulation_variables.html#Aircraft%20Lights%20Variables
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct LightData
-    {
-        [SCStructField("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 strobeSwich; // "Auto" comes back as on. :-(
-        [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 strobe; // "Auto" comes back as on. :-(
-        [SCStructField("LIGHT BEACON ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 beacon;
-        [SCStructField("LIGHT WING ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 wing;
-        [SCStructField("LIGHT NAV ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 nav; // Locked to logo
-        [SCStructField("LIGHT LOGO ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 logo; // Locked to nav
-        //[SCStructField("LIGHT ? ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        //public Int32 runway;
-        [SCStructField("LIGHT LANDING ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 landing;
-        [SCStructField("LIGHT TAXI ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 nose; // Three pos? None work
-        [SCStructField("LIGHT STATES", "Number", SIMCONNECT_DATATYPE.INT64, 0f)]
-        public Int64 mask; // Nav 1, Beacon 2, nose=TO|either landing 4, nose=taxi|runwayTurn 8, Strobes 16 (still bool), wing 128, landing 4 (still single bool), logo 256
-        [SCStructField("LIGHT ON STATES", "Number", SIMCONNECT_DATATYPE.INT64, 0f)]
-        public Int64 maskOn; // Nav 1, Beacon 2, Strobes 16, wing 128, logo 256
-    };
-
 }
