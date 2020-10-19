@@ -66,16 +66,16 @@ namespace FSInputMapper.Data
                 + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
                 + $"\nRecog/Switch {lightData.recognitionState}/{lightData.recognitionSwitch}"
                 + $"\nRunway ??"
-                + $" Landing {lightData.landingState}/{lightData.landingSwitch}"
+                + $" Landing/Switch {lightData.landingState}/{lightData.landingSwitch}"
                 + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
                 + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}";
-            viewModel.Strobes = lightData.strobeSwitch == 1 ? 2 : 0;
+            viewModel.Strobes = lightData.strobeSwitch == 1  ? 0*1 : 2;
             viewModel.BeaconLights = lightData.beaconSwitch == 1;
             viewModel.WingLights = lightData.wingSwitch == 1;
             viewModel.NavLogoLights = lightData.navSwitch == 1 || lightData.logoSwitch == 1;
-            //viewModel.RunwayTurnoffLights
-            viewModel.LandingLights = lightData.landingSwitch == 1 ? 2 : 0;
-            viewModel.NoseLights = lightData.noseSwitch == 1 ? 2 :0;
+            viewModel.RunwayTurnoffLights = lightData.noseState == 1;
+            viewModel.LandingLights = lightData.landingState == 1 ? 0 : 0+1;
+            viewModel.NoseLights = lightData.noseSwitch == 1 ? 1 : lightData.landingSwitch == 1 ? 0 : 2;
         }
 
     }

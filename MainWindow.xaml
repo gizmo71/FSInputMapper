@@ -95,9 +95,9 @@
 
         <!-- TODO: can we make the lights a seperate component? -->
         <ComboBox ToolTip="Strobes" SelectedIndex="{Binding Path=Strobes, Mode=TwoWay}" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60">
-            <ComboBoxItem Content="On" Tag="2" />
-            <ComboBoxItem Content="Auto" Tag="1" />
-            <ComboBoxItem Content="Off" Tag="0" />
+            <ComboBoxItem Content="On" />
+            <ComboBoxItem Content="Auto" />
+            <ComboBoxItem Content="Off" />
         </ComboBox>
         <CheckBox Content="Beacon" IsChecked="{Binding BeaconLights}" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"/>
         <CheckBox Content="Wing Ice" IsChecked="{Binding WingLights}" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"/>
@@ -105,14 +105,14 @@
 
         <CheckBox Content="Rwy Turn" IsChecked="{Binding RunwayTurnoffLights}" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
         <ComboBox ToolTip="Landing Lights" SelectedIndex="{Binding Path=LandingLights, Mode=TwoWay}" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120">
-            <ComboBoxItem Content="On" Tag="2" />
-            <ComboBoxItem Content="Extend" Tag="1" />
-            <ComboBoxItem Content="Retract" Tag="0" />
+            <ComboBoxItem Content="On" Tag="Wibble" />
+            <ComboBoxItem Content="Extend" Tag="Wobble" />
+            <ComboBoxItem Content="Retract" Tag="Floob" />
         </ComboBox>
-        <ComboBox ToolTip="Nose Lights" SelectedIndex="{Binding Path=NoseLights, Mode=TwoWay}" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60">
-            <ComboBoxItem Content="T.O." Tag="2" />
-            <ComboBoxItem Content="Taxi" Tag="1" />
-            <ComboBoxItem Content="Off" Tag="0" />
+        <ComboBox ToolTip="Nose Lights" SelectedIndex="{Binding NoseLights}" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60">
+            <ComboBoxItem Content="T.O." />
+            <ComboBoxItem Content="Taxi" />
+            <ComboBoxItem Content="Off" />
         </ComboBox>
 
         <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding DebugText}" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
