@@ -288,6 +288,15 @@ namespace FSInputMapper
                         SendEvent(EVENT.AP_TOGGLE_LOC);
                     SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
+                case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
+                    SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
+                    break;
+                case FSIMTrigger.LIGHTS_STROBE_OFF:
+                    SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
+                    break;
+                case FSIMTrigger.LIGHTS_STROBE_ON:
+                    SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
+                    break;
             }
         }
 

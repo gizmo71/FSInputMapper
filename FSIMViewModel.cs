@@ -103,7 +103,7 @@ namespace FSInputMapper
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private int strobes;
+        private int strobes = 1;
         public int Strobes
         {
             get { return strobes; }
@@ -145,7 +145,7 @@ namespace FSInputMapper
             set { if (noseLights != value) { noseLights = value; OnPropertyChange(); } }
         }
 
-        private int landingLights;
+        private int landingLights = 1;
         public int LandingLights
         {
             get { return landingLights; }

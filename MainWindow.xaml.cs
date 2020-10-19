@@ -5,8 +5,6 @@ using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
 
-// https://docs.microsoft.com/en-us/dotnet/desktop/wpf/getting-started/walkthrough-my-first-wpf-desktop-application?view=netframeworkdesktop-4.8
-
 namespace FSInputMapper
 {
 
@@ -153,6 +151,26 @@ namespace FSInputMapper
             throw new Exception("Can't select GS alone");
         }
 
+        private void BeaconLightsClicked(object sender, RoutedEventArgs e)
+        {
+            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_BEACON_TOGGLE);
+        }
+
+        private void StrobeLightsSelected(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox cb)
+            {
+                switch (cb.SelectedIndex)
+                {
+                    case 0:
+                        triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_ON);
+                        break;
+                    case 1:
+                        triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_OFF);
+                        break;
+                }
+            }
+        }
     }
 
 }

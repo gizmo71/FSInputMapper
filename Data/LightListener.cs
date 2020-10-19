@@ -65,7 +65,6 @@ namespace FSInputMapper.Data
                 + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
                 + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
                 + $"\nRecog/Switch {lightData.recognitionState}/{lightData.recognitionSwitch}"
-                + $"\nRunway ??"
                 + $" Landing/Switch {lightData.landingState}/{lightData.landingSwitch}"
                 + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
                 + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}";
