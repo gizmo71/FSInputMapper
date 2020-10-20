@@ -102,16 +102,21 @@
         </ComboBox>
         <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding BeaconLights}" Click="BeaconLightsClicked" />
-        <CheckBox Content="Wing Ice" IsChecked="{Binding WingLights}" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top" />
-        <CheckBox Content="Nav/Logo" IsChecked="{Binding NavLogoLights}" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top" />
+        <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"
+                  IsChecked="{Binding WingLights}" Click="WingLightsClicked" />
+        <CheckBox Content="Nav/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"
+                  IsChecked="{Binding NavLogoLights}" Click="NavLogoLightsClicked" />
 
-        <CheckBox Content="Rwy Turn" IsChecked="{Binding RunwayTurnoffLights}" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
-        <ComboBox ToolTip="Landing Lights" SelectedIndex="{Binding Path=LandingLights, Mode=TwoWay}" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120">
+        <CheckBox Content="Rwy Turn" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"
+                  IsChecked="{Binding RunwayTurnoffLights}" Click="RunwayTurnoffLightsClicked" />
+        <ComboBox ToolTip="Landing Lights" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120"
+                  SelectedIndex="{Binding LandingLights}" SelectionChanged="LandingLightsSelected">
             <ComboBoxItem Content="On" Tag="Wibble" />
             <ComboBoxItem Content="Extend" IsEnabled="False" />
             <ComboBoxItem Content="Retract" Tag="Floob" />
         </ComboBox>
-        <ComboBox ToolTip="Nose Lights" SelectedIndex="{Binding NoseLights}" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60">
+        <ComboBox ToolTip="Nose Lights" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
+                  SelectedIndex="{Binding NoseLights}" SelectionChanged="NoseLightsSelected">
             <ComboBoxItem Content="T.O." />
             <ComboBoxItem Content="Taxi" />
             <ComboBoxItem Content="Off" />

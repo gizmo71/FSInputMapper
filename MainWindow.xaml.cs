@@ -151,26 +151,70 @@ namespace FSInputMapper
             throw new Exception("Can't select GS alone");
         }
 
+        private void StrobeLightsSelected(object sender, SelectionChangedEventArgs e)
+        {
+            switch ((sender as ComboBox)!.SelectedIndex)
+            {
+                case 0:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_ON);
+                    break;
+                case 2:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_OFF);
+                    break;
+            }
+        }
+
         private void BeaconLightsClicked(object sender, RoutedEventArgs e)
         {
             triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_BEACON_TOGGLE);
         }
 
-        private void StrobeLightsSelected(object sender, SelectionChangedEventArgs e)
+        private void WingLightsClicked(object sender, RoutedEventArgs e)
         {
-            if (sender is ComboBox cb)
+            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_WING_TOGGLE);
+        }
+
+        private void NavLogoLightsClicked(object sender, RoutedEventArgs e)
+        {
+            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NAV_LOGO_TOGGLE);
+        }
+
+        private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)
+        {
+            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_TURNOFF_TOGGLE);
+        }
+
+        private void LandingLightsSelected(object sender, SelectionChangedEventArgs e)
+        {
+            switch ((sender as ComboBox)!.SelectedIndex)
             {
-                switch (cb.SelectedIndex)
-                {
-                    case 0:
-                        triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_ON);
-                        break;
-                    case 2:
-                        triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_OFF);
-                        break;
-                }
+                case 0:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_LANDING_ON);
+                    break;
+                case 2:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_LANDING_OFF);
+                    break;
             }
         }
+
+        private void NoseLightsSelected(object sender, SelectionChangedEventArgs e)
+        {
+            switch ((sender as ComboBox)?.SelectedIndex)
+            {
+                case 0:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_TAKEOFF);
+                    break;
+                case 1:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_TAXI);
+                    break;
+                case 2:
+                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_OFF);
+                    break;
+                default:
+                    throw new Exception($"Unknown nose light index {(sender as ComboBox)?.SelectedIndex}");
+            }
+        }
+
     }
 
 }

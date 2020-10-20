@@ -34,6 +34,14 @@ namespace FSInputMapper
         public const string LIGHTS_BEACON_TOGGLE = "Toggle Beacon Lights";
         public const string LIGHTS_STROBE_OFF = "Strobe Lights OFF";
         public const string LIGHTS_STROBE_ON = "Strobe Lights On";
+        public const string LIGHTS_WING_TOGGLE = "Toggle Wing Lights";
+        public const string LIGHTS_NAV_LOGO_TOGGLE = "Toggle Nav/Logo Lights";
+        public const string LIGHTS_TURNOFF_TOGGLE = "";
+        public const string LIGHTS_LANDING_OFF = "Landing Lights Off";
+        public const string LIGHTS_LANDING_ON = "Landing Lights On";
+        public const string LIGHTS_NOSE_TAKEOFF = "Nose Lights to Take Off";
+        public const string LIGHTS_NOSE_TAXI = "Nose Lights to Taxi";
+        public const string LIGHTS_NOSE_OFF = "Nose Lights Off";
     }
 
     public class FSIMTriggerArgs : EventArgs

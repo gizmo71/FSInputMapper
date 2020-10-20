@@ -67,23 +67,22 @@ namespace FSInputMapper
         FCU_VS_SLOT_SET,
         [Event("AP_PANEL_VS_ON")]
         AP_PANEL_VS_ON,
+        [Event("STROBES_SET")]
+        LIGHTS_STROBES_SET,
         [Event("TOGGLE_BEACON_LIGHTS")]
         LIGHTS_BEACON_TOGGLE,
-        [Event("LANDING_LIGHTS_SET")]
-        LIGHTS_LANDING_SET,
+        [Event("TOGGLE_WING_LIGHTS")]
+        LIGHTS_WING_TOGGLE,
         [Event("LOGO_LIGHTS_SET")]
         LIGHTS_LOGO_SET,
         [Event("TOGGLE_NAV_LIGHTS")]
         LIGHTS_NAV_TOGGLE,
         [Event("TOGGLE_RECOGNITION_LIGHTS")]
         LIGHTS_RECOGNITION_TOGGLE,
-        [Event("STROBES_SET")]
-        LIGHTS_STROBES_SET,
+        [Event("LANDING_LIGHTS_SET")]
+        LIGHTS_LANDING_SET,
         [Event("TAXI_LIGHTS_SET")]
         LIGHTS_TAXI_SET,
-        [Event("TOGGLE_TAXI_LIGHTS")]
-        LIGHTS_WING_TOGGLE,
-        //TODO: LIGHT_POTENTIOMETER_10_SET, LIGHT_POTENTIOMETER_2_SET, LIGHT_POTENTIOMETER_3_SET?
     }
 
 }

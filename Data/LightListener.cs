@@ -5,14 +5,37 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper.Data
 {
 
-    //http://www.prepar3d.com/SDKv3/LearningCenter/utilities/variables/simulation_variables.html#Aircraft%20Lights%20Variables
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct LightData
+    public struct StrobeLightData
     {
         [SCStructField("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 strobeSwitch; // "Auto" comes back as on. :-(
         [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 strobeState; // "Auto" comes back as on. :-(
+    }
+
+    [Singleton]
+    public class StrobeLightListener : DataListener<StrobeLightData>
+    {
+
+        private readonly FSIMViewModel viewModel;
+
+        public StrobeLightListener(FSIMViewModel viewModel)
+        {
+            this.viewModel = viewModel;
+        }
+
+        public override void Process(SimConnectAdapter _, StrobeLightData lightData)
+        {
+            viewModel.DebugText = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
+            viewModel.Strobes = lightData.strobeSwitch == 1 ? 0 * 1 : 2;
+        }
+
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct LightData
+    {
         [SCStructField("LIGHT BEACON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 beaconSwitch;
         [SCStructField("LIGHT BEACON ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
@@ -60,15 +83,13 @@ namespace FSInputMapper.Data
 
         public override void Process(SimConnectAdapter _, LightData lightData)
         {
-            viewModel.DebugText = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}"
-                + $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
+            viewModel.DebugText = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
                 + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
                 + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
                 + $"\nRecog/Switch {lightData.recognitionState}/{lightData.recognitionSwitch}"
                 + $" Landing/Switch {lightData.landingState}/{lightData.landingSwitch}"
                 + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
                 + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}";
-            viewModel.Strobes = lightData.strobeSwitch == 1  ? 0*1 : 2;
             viewModel.BeaconLights = lightData.beaconSwitch == 1;
             viewModel.WingLights = lightData.wingSwitch == 1;
             viewModel.NavLogoLights = lightData.navSwitch == 1 || lightData.logoSwitch == 1;

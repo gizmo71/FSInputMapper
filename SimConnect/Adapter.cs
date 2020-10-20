@@ -288,14 +288,38 @@ namespace FSInputMapper
                         SendEvent(EVENT.AP_TOGGLE_LOC);
                     SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
-                case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
-                    SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
-                    break;
                 case FSIMTrigger.LIGHTS_STROBE_OFF:
                     SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
                     break;
                 case FSIMTrigger.LIGHTS_STROBE_ON:
                     SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
+                    break;
+                case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
+                    SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
+                    break;
+                case FSIMTrigger.LIGHTS_WING_TOGGLE:
+                    SendEvent(EVENT.LIGHTS_WING_TOGGLE);
+                    break;
+                case FSIMTrigger.LIGHTS_NAV_LOGO_TOGGLE:
+                    SendEvent(EVENT.LIGHTS_NAV_TOGGLE);
+                    break;
+                case FSIMTrigger.LIGHTS_TURNOFF_TOGGLE:
+                    SendEvent(EVENT.LIGHTS_RECOGNITION_TOGGLE);
+                    break;
+                case FSIMTrigger.LIGHTS_LANDING_OFF:
+                    SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
+                    break;
+                case FSIMTrigger.LIGHTS_LANDING_ON:
+                    SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
+                    break;
+                case FSIMTrigger.LIGHTS_NOSE_TAKEOFF:
+                    SendEvent(EVENT.LIGHTS_LOGO_SET, 1);
+                    break;
+                case FSIMTrigger.LIGHTS_NOSE_TAXI:
+                    SendEvent(EVENT.LIGHTS_TAXI_SET, 1);
+                    break;
+                case FSIMTrigger.LIGHTS_NOSE_OFF:
+                    SendEvent(EVENT.LIGHTS_TAXI_SET, 0);
                     break;
             }
         }
