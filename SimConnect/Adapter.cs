@@ -89,7 +89,7 @@ namespace FSInputMapper
         private void Connect()
         {
             scHolder.SimConnect = new SimConnectzmo("Gizmo's FSInputMapper", hWnd, WM_USER_SIMCONNECT);
-            scHolder.SimConnect.OnRecvException += (sc, e) => { throw new Exception($"SimConnect threw {e.dwException}"); };
+            scHolder.SimConnect.OnRecvException += (sc, e) => { throw new Exception($"SimConnect threw {e.dwException} from send {e.dwSendID}, index {e.dwIndex}"); };
             AssignStructIds();
             AssignRequestIds();
             scHolder.SimConnect.OnRecvOpen += OnRecvOpen;

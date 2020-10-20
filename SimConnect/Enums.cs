@@ -73,10 +73,10 @@ namespace FSInputMapper
         LIGHTS_LANDING_SET,
         [Event("LOGO_LIGHTS_SET")]
         LIGHTS_LOGO_SET,
-        [Event("LOGO_NAV_SET")]
-        LIGHTS_NAV_SET,
-        [Event("LOGO_RECOGNITION_SET")]
-        LIGHTS_RECOGNITION_SET,
+        [Event("TOGGLE_NAV_LIGHTS")]
+        LIGHTS_NAV_TOGGLE,
+        [Event("TOGGLE_RECOGNITION_LIGHTS")]
+        LIGHTS_RECOGNITION_TOGGLE,
         [Event("STROBES_SET")]
         LIGHTS_STROBES_SET,
         [Event("TAXI_LIGHTS_SET")]

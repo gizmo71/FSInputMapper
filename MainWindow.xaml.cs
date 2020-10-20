@@ -165,7 +165,7 @@ namespace FSInputMapper
                     case 0:
                         triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_ON);
                         break;
-                    case 1:
+                    case 2:
                         triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_OFF);
                         break;
                 }
