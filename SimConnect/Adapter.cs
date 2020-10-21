@@ -96,12 +96,25 @@ if (!viewModel.DebugText.StartsWith("fish"))
         {
             scHolder.SimConnect = new SimConnectzmo("Gizmo's FSInputMapper", hWnd, WM_USER_SIMCONNECT);
             scHolder.SimConnect.OnRecvException += (sc, e) => { throw new Exception($"SimConnect threw {e.dwException} from send {e.dwSendID}, index {e.dwIndex}"); };
-            AssignStructIds();
-            AssignRequestIds();
+            AssignIds((scHolder.SimConnect as SimConnectzmo)!);
             scHolder.SimConnect.OnRecvOpen += OnRecvOpen;
             scHolder.SimConnect.OnRecvQuit += OnRecvQuit;
             scHolder.SimConnect.OnRecvSimobjectData += OnRecvSimobjectData;
             scHolder.SimConnect.OnRecvEvent += OnRecvEvent;
+        }
+
+        private void AssignIds(SimConnectzmo simConnect)
+        {
+            simConnect.typeToStruct = serviceProvider.GetServices<IData>()
+                .Select(candidate => candidate.GetStructType())
+                .Distinct()
+                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+
+            simConnect.typeToRequest = serviceProvider.GetServices<IDataListener>()
+                .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+            //TODO: check that the struct is also registered
         }
 
         private void OnRecvQuit(SimConnect simConnect, SIMCONNECT_RECV data)
@@ -111,36 +124,23 @@ if (!viewModel.DebugText.StartsWith("fish"))
 
         private void OnRecvOpen(SimConnect simConnect, SIMCONNECT_RECV_OPEN data)
         {
-            RegisterDataStructs();
-            MapClientEvents();
-            SetGroupPriorities();
+            SimConnectzmo sc = (simConnect as SimConnectzmo)!;
 
-            //TODO: provide some means for the things themselves to trigger this
-            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
-            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuModeDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
-            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<LightListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
+            RegisterDataStructs(sc);
+            MapClientEvents(sc);
+            SetGroupPriorities(sc);
+
+            foreach (IRequestDataOnOpen request in sc.typeToRequest!.Keys
+                .Where(candidate => candidate is IRequestDataOnOpen)
+                .Select(data => (IRequestDataOnOpen) data))
+            {
+                simConnect.RequestDataOnSimObject(request as IDataListener, request.GetInitialRequestPeriod());
+            }
         }
 
-        private void AssignStructIds()
+        private void RegisterDataStructs(SimConnectzmo sc)
         {
-            (scHolder.SimConnect! as SimConnectzmo)!.typeToStruct = serviceProvider.GetServices<IData>()
-                .Select(candidate => candidate.GetStructType())
-                .Distinct()
-                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
-                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
-        }
-
-        private void AssignRequestIds()
-        {
-            (scHolder.SimConnect! as SimConnectzmo)!.typeToRequest = serviceProvider.GetServices<IDataListener>()
-                .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
-                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
-            //TODO: check that the struct is also registered
-        }
-
-        private void RegisterDataStructs()
-        {
-            foreach (var type2Struct in (scHolder.SimConnect! as SimConnectzmo)!.typeToStruct!)
+            foreach (var type2Struct in sc.typeToStruct!)
             {
                 foreach (FieldInfo field in type2Struct.Key.GetFields())
                 {
@@ -149,33 +149,33 @@ if (!viewModel.DebugText.StartsWith("fish"))
                     {
                         throw new NullReferenceException($"No DataField for {type2Struct.Key}.{field.Name}");
                     }
-                    scHolder.SimConnect?.AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
+                    sc.AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
                         dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
                 }
-                scHolder.SimConnect?.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
+                sc.GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
                     .Invoke(scHolder.SimConnect, new object[] { type2Struct.Value });
             }
         }
 
-        private void MapClientEvents()
+        private void MapClientEvents(SimConnectzmo sc)
         {
             foreach (EVENT? e in Enum.GetValues(typeof(EVENT)))
             {
                 var eventAttribute = e!.GetAttribute<EventAttribute>();
-                scHolder.SimConnect?.MapClientEventToSimEvent(e, eventAttribute.ClientEvent);
+                sc.MapClientEventToSimEvent(e, eventAttribute.ClientEvent);
                 var groupAttribute = e!.GetAttribute<EventGroupAttribute>();
                 if (groupAttribute != null) {
-                    scHolder.SimConnect?.AddClientEventToNotificationGroup(groupAttribute.Group, e, groupAttribute.IsMaskable);
+                    sc.AddClientEventToNotificationGroup(groupAttribute.Group, e, groupAttribute.IsMaskable);
                 }
             }
         }
 
-        private void SetGroupPriorities()
+        private void SetGroupPriorities(SimConnectzmo sc)
         {
             foreach (GROUP? group in Enum.GetValues(typeof(GROUP)))
             {
                 var attr = group!.GetAttribute<GroupAttribute>();
-                scHolder.SimConnect?.SetNotificationGroupPriority(group, attr.Priority);
+                sc.SetNotificationGroupPriority(group, attr.Priority);
             }
         }
 

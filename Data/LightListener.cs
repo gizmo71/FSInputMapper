@@ -67,7 +67,7 @@ namespace FSInputMapper.Data
     };
 
     [Singleton]
-    public class LightListener : DataListener<LightData>
+    public class LightListener : DataListener<LightData>, IRequestDataOnOpen
     {
 
         private readonly FSIMViewModel viewModel;
@@ -75,6 +75,11 @@ namespace FSInputMapper.Data
         public LightListener(FSIMViewModel viewModel)
         {
             this.viewModel = viewModel;
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
+        {
+            return SIMCONNECT_PERIOD.SIM_FRAME;
         }
 
         public override void Process(SimConnect _, LightData lightData)

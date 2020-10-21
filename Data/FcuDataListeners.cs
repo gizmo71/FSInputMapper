@@ -7,7 +7,7 @@ namespace FSInputMapper.Data
 {
 
     [Singleton]
-    public class FcuDataListener : DataListener<ApData>
+    public class FcuDataListener : DataListener<ApData>, IRequestDataOnOpen
     {
 
         private readonly FSIMViewModel viewModel;
@@ -15,6 +15,11 @@ namespace FSInputMapper.Data
         public FcuDataListener(FSIMViewModel viewModel)
         {
             this.viewModel = viewModel;
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
+        {
+            return SIMCONNECT_PERIOD.SIM_FRAME;
         }
 
         public override void Process(SimConnect _, ApData fcuData)
@@ -32,7 +37,7 @@ namespace FSInputMapper.Data
     }
 
     [Singleton]
-    public class FcuModeDataListener : DataListener<ApModeData>
+    public class FcuModeDataListener : DataListener<ApModeData>, IRequestDataOnOpen
     {
 
         private readonly FSIMViewModel viewModel;
@@ -40,6 +45,11 @@ namespace FSInputMapper.Data
         public FcuModeDataListener(FSIMViewModel viewModel)
         {
             this.viewModel = viewModel;
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
+        {
+            return SIMCONNECT_PERIOD.SIM_FRAME;
         }
 
         public override void Process(SimConnect _, ApModeData fcuModeData)

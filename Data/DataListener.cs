@@ -14,6 +14,11 @@ namespace FSInputMapper.Data
         public abstract void Process(SimConnect simConnect, object data);
     }
 
+    public interface IRequestDataOnOpen : IDataListener
+    {
+        public abstract SIMCONNECT_PERIOD GetInitialRequestPeriod();
+    }
+
     public abstract class Data<StructType> : IData
     {
         public Type GetStructType() { return typeof(StructType); }
