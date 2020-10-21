@@ -292,6 +292,7 @@ namespace FSInputMapper
                     SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
                     break;
                 case FSIMTrigger.LIGHTS_STROBE_ON:
+                    // Sadly, this can only do "auto", not fully "on".
                     SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
                     break;
                 case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
@@ -302,9 +303,10 @@ namespace FSInputMapper
                     break;
                 case FSIMTrigger.LIGHTS_NAV_LOGO_TOGGLE:
                     SendEvent(EVENT.LIGHTS_NAV_TOGGLE);
+                    SendEvent(EVENT.LIGHTS_LOGO_SET, viewModel.NavLogoLights ? 1u : 0u);
                     break;
                 case FSIMTrigger.LIGHTS_TURNOFF_TOGGLE:
-                    SendEvent(EVENT.LIGHTS_RECOGNITION_TOGGLE);
+                    // No idea. :-(
                     break;
                 case FSIMTrigger.LIGHTS_LANDING_OFF:
                     SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
@@ -313,7 +315,7 @@ namespace FSInputMapper
                     SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
                     break;
                 case FSIMTrigger.LIGHTS_NOSE_TAKEOFF:
-                    SendEvent(EVENT.LIGHTS_LOGO_SET, 1);
+                    // No idea. :-(
                     break;
                 case FSIMTrigger.LIGHTS_NOSE_TAXI:
                     SendEvent(EVENT.LIGHTS_TAXI_SET, 1);

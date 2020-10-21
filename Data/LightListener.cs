@@ -62,10 +62,6 @@ namespace FSInputMapper.Data
         public Int32 noseSwitch;
         [SCStructField("LIGHT TAXI ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 noseState;
-        [SCStructField("LIGHT RECOGNITION", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 recognitionSwitch;
-        [SCStructField("LIGHT RECOGNITION ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 recognitionState;
         [SCStructField("LIGHT STATES", "Number", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 mask; // nose=TO|landing 4, nose=taxi|runwayTurn 8
     };
@@ -86,7 +82,6 @@ namespace FSInputMapper.Data
             viewModel.DebugText = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
                 + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
                 + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
-                + $"\nRecog/Switch {lightData.recognitionState}/{lightData.recognitionSwitch}"
                 + $" Landing/Switch {lightData.landingState}/{lightData.landingSwitch}"
                 + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
                 + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}";
