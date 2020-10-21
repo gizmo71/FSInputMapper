@@ -4,7 +4,7 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper
 {
 
-    //TODO: turn into different objectsX
+    //TODO: turn into different objects
     [Singleton]
     internal class FSIMTriggerHandler
     {
