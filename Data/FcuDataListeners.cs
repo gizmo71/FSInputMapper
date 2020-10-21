@@ -17,7 +17,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(SimConnectAdapter _, ApData fcuData)
+        public override void Process(SimConnect _, ApData fcuData)
         {
             viewModel.AirspeedManaged = fcuData.speedSlot == 2;
             viewModel.AutopilotAirspeed = fcuData.speedKnots;
@@ -42,7 +42,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(SimConnectAdapter _, ApModeData fcuModeData)
+        public override void Process(SimConnect _, ApModeData fcuModeData)
         {
             viewModel.AutopilotLoc = fcuModeData.approachHold != 0 && fcuModeData.gsHold == 0;
             viewModel.AutopilotAppr = fcuModeData.approachHold != 0 && fcuModeData.gsHold != 0;
@@ -61,10 +61,10 @@ namespace FSInputMapper.Data
     public class FcuHeadingSelectDataListener : DataListener<ApHdgSelData>
     {
 
-        public override void Process(SimConnectAdapter simConnectAdapter, ApHdgSelData fcuHeadingSelectData)
+        public override void Process(SimConnect simConnect, ApHdgSelData fcuHeadingSelectData)
         {
-            simConnectAdapter.SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
-            simConnectAdapter.SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)fcuHeadingSelectData.headingMagnetic);
+            simConnect.SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
+            simConnect.SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)fcuHeadingSelectData.headingMagnetic);
         }
 
     }

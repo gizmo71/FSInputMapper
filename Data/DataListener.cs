@@ -11,7 +11,7 @@ namespace FSInputMapper.Data
 
     public interface IDataListener : IData
     {
-        public abstract void Process(SimConnectAdapter adapter, object data);
+        public abstract void Process(SimConnect simConnect, object data);
     }
 
     public abstract class Data<StructType> : IData
@@ -43,8 +43,8 @@ namespace FSInputMapper.Data
 
     public abstract class DataListener<StructType> : Data<StructType>, IDataListener
     {
-        public void Process(SimConnectAdapter adapter, object data) { Process(adapter, (StructType)data); }
-        public abstract void Process(SimConnectAdapter adapter, StructType data);
+        public void Process(SimConnect simConnect, object data) { Process(simConnect, (StructType)data); }
+        public abstract void Process(SimConnect simConnect, StructType data);
     }
 
 }

@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.FlightSimulator.SimConnect;
 
+//TODO: split the listeners up and move these to each
 namespace FSInputMapper
 {
 

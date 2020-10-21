@@ -39,17 +39,15 @@ namespace FSInputMapper
         private const int WM_USER_SIMCONNECT = 0x0402;
 
         private IntPtr hWnd;
-        private readonly FSIMViewModel viewModel;
+        private readonly FSIMViewModel viewModel; //TODO: decouple
         private SimConnectHolder scHolder;
         private readonly IServiceProvider serviceProvider;
 
         public SimConnectAdapter(FSIMViewModel viewModel,
-            FSIMTriggerBus triggerBus,
             IServiceProvider serviceProvider,
             SimConnectHolder scHolder)
         {
             this.viewModel = viewModel;
-            triggerBus.OnTrigger += OnTrigger;
             this.serviceProvider = serviceProvider;
             this.scHolder = scHolder;
         }
@@ -75,6 +73,14 @@ namespace FSInputMapper
         private void Tick(object? sender, EventArgs e)
         {
             if (scHolder.SimConnect != null) return;
+if (!viewModel.DebugText.StartsWith("fish"))
+{
+                viewModel.DebugText = "fish";
+                foreach (var service in serviceProvider.GetServices<IData>())
+                {
+                    viewModel.DebugText += $"\n{service} -> {service.GetStructType()}";
+                }
+}
             try
             {
                 Connect();
@@ -109,9 +115,10 @@ namespace FSInputMapper
             MapClientEvents();
             SetGroupPriorities();
 
-            RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
-            RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuModeDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
-            RequestDataOnSimObject(serviceProvider.GetRequiredService<LightListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
+            //TODO: provide some means for the things themselves to trigger this
+            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
+            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuModeDataListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
+            scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<LightListener>(), SIMCONNECT_PERIOD.SIM_FRAME);
         }
 
         private void AssignStructIds()
@@ -128,6 +135,7 @@ namespace FSInputMapper
             (scHolder.SimConnect! as SimConnectzmo)!.typeToRequest = serviceProvider.GetServices<IDataListener>()
                 .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+            //TODO: check that the struct is also registered
         }
 
         private void RegisterDataStructs()
@@ -171,16 +179,17 @@ namespace FSInputMapper
             }
         }
 
+        //TODO: turn into different objects
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             // These are the ones in the notification group.
             switch ((EVENT)data.uEventID) {
                 case EVENT.LESS_SPOILER:
-                    RequestDataOnSimObject(serviceProvider.GetRequiredService<LessSpoilerListener>(),
+                    scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<LessSpoilerListener>(),
                         SIMCONNECT_PERIOD.ONCE);
                     break;
                 case EVENT.MORE_SPOILER:
-                    RequestDataOnSimObject(serviceProvider.GetRequiredService<MoreSpoilerListener>(),
+                    scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<MoreSpoilerListener>(),
                         SIMCONNECT_PERIOD.ONCE);
                     break;
             }
@@ -193,160 +202,7 @@ namespace FSInputMapper
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
                 .SingleOrDefault()
-                .Process(this, data.dwData[0]);
-        }
-
-        private void OnTrigger(object? sender, FSIMTriggerArgs e)
-        {
-            switch (e.What)
-            {
-                case FSIMTrigger.SPD_MAN:
-                    //TODO: send something to unset the locked selected value
-                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 2u);
-                    break;
-                case FSIMTrigger.SPD_SEL:
-                    SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
-                    break;
-                case FSIMTrigger.SPD_1_FASTER:
-                    SendEvent(EVENT.AP_SPD_UP, fast: true);
-                    break;
-                case FSIMTrigger.SPD_10_FASTER:
-                    SendEvent(EVENT.AP_SPD_UP, slow: true);
-                    break;
-                case FSIMTrigger.SPD_1_SLOWER:
-                    SendEvent(EVENT.AP_SPD_DOWN, fast: true);
-                    break;
-                case FSIMTrigger.SPD_10_SLOWER:
-                    SendEvent(EVENT.AP_SPD_DOWN, slow: true);
-                    break;
-                case FSIMTrigger.HDG_MAN:
-//TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the push
-                    SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
-                    break;
-                case FSIMTrigger.HDG_SEL:
-//TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the pull
-                    RequestDataOnSimObject(serviceProvider.GetRequiredService<FcuHeadingSelectDataListener>(),
-                        SIMCONNECT_PERIOD.ONCE);
-                    break;
-                case FSIMTrigger.HDG_RIGHT_1:
-                    SendEvent(EVENT.AP_HDG_RIGHT, fast: true);
-                    break;
-                case FSIMTrigger.HDG_RIGHT_10:
-                    SendEvent(EVENT.AP_HDG_RIGHT, slow: true);
-                    break;
-                case FSIMTrigger.HDG_LEFT_1:
-                    SendEvent(EVENT.AP_HDG_LEFT, fast: true);
-                    break;
-                case FSIMTrigger.HDG_LEFT_10:
-                    SendEvent(EVENT.AP_HDG_LEFT, slow: true);
-                    break;
-                case FSIMTrigger.ALT_MAN:
-                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
-                    break;
-                case FSIMTrigger.ALT_SEL:
-                    SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 1u);
-                    break;
-                case FSIMTrigger.ALT_UP_1000:
-                    SendEvent(EVENT.AP_ALT_UP, 1000u);
-                    break;
-                case FSIMTrigger.ALT_UP_100:
-                    SendEvent(EVENT.AP_ALT_UP, 100u);
-                    break;
-                case FSIMTrigger.ALT_DOWN_1000:
-                    SendEvent(EVENT.AP_ALT_DOWN, 1000u);
-                    break;
-                case FSIMTrigger.ALT_DOWN_100:
-                    SendEvent(EVENT.AP_ALT_DOWN, 100u);
-                    break;
-                case FSIMTrigger.VS_STOP:
-                    //TODO: A320_Neo_FCU.js says AP_PANEL_ALTITUDE_HOLD=1 and AP_PANEL_VS_ON=1
-                    SendEvent(EVENT.FCU_VS_SET, 0);
-                    goto vsSel;
-                case FSIMTrigger.VS_SEL:
-                //TODO: if in idle descent, set AP_VS_VAR_SET_ENGLISH twice with different parameters and the current rate, then send AP_PANEL_VS_ON=1
-                //TODO: else, set AP_VS_VAR_SET_ENGLISH to current value, and then send VS_SLOT_INDEX_SET=AP_PANEL_VS_ON=1
-                vsSel:
-                    SendEvent(EVENT.FCU_VS_SLOT_SET, 1u);
-                    goto vsPanelOn;
-                case FSIMTrigger.VS_DOWN:
-                    SendEvent(EVENT.FCU_VS_DOWN);
-                    goto vsPanelOn;
-                //TODO: if not yet active, on first turn set AP_VS_VAR_SET_ENGLISH starting value from VERTICAL SPEED
-                //TODO: else, set AP_VS_VAR_SET_ENGLISH to new selection, and then send VS_SLOT_INDEX_SET=AP_PANEL_VS_ON=1
-                case FSIMTrigger.VS_UP:
-                    SendEvent(EVENT.FCU_VS_UP);
-                vsPanelOn:
-                    SendEvent(EVENT.AP_PANEL_VS_ON);
-                    break;
-                case FSIMTrigger.TOGGLE_LOC_MODE:
-                    if (viewModel.AutopilotAppr)
-                        SendEvent(EVENT.AP_TOGGLE_APPR);
-                    SendEvent(EVENT.AP_TOGGLE_LOC);
-                    break;
-                case FSIMTrigger.TOGGLE_APPR_MODE:
-                    if (viewModel.AutopilotLoc)
-                        SendEvent(EVENT.AP_TOGGLE_LOC);
-                    SendEvent(EVENT.AP_TOGGLE_APPR);
-                    break;
-                case FSIMTrigger.LIGHTS_STROBE_OFF:
-                    SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
-                    break;
-                case FSIMTrigger.LIGHTS_STROBE_ON:
-                    // Sadly, this can only do "auto", not fully "on".
-                    SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
-                    break;
-                case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
-                    SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
-                    break;
-                case FSIMTrigger.LIGHTS_WING_TOGGLE:
-                    SendEvent(EVENT.LIGHTS_WING_TOGGLE);
-                    break;
-                case FSIMTrigger.LIGHTS_NAV_LOGO_TOGGLE:
-                    SendEvent(EVENT.LIGHTS_NAV_TOGGLE);
-                    SendEvent(EVENT.LIGHTS_LOGO_SET, viewModel.NavLogoLights ? 1u : 0u);
-                    break;
-                case FSIMTrigger.LIGHTS_TURNOFF_TOGGLE:
-                    // No idea. :-(
-                    break;
-                case FSIMTrigger.LIGHTS_LANDING_OFF:
-                    SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
-                    break;
-                case FSIMTrigger.LIGHTS_LANDING_ON:
-                    SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_TAKEOFF:
-                    // No idea. :-(
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_TAXI:
-                    SendEvent(EVENT.LIGHTS_TAXI_SET, 1);
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_OFF:
-                    SendEvent(EVENT.LIGHTS_TAXI_SET, 0);
-                    break;
-            }
-        }
-
-        private void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
-        {
-            if (scHolder.SimConnect is SimConnectzmo sc)
-            {
-                REQUEST request = sc.typeToRequest![data];
-                STRUCT structId = sc.typeToStruct![data.GetStructType()];
-                SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
-                                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-                                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
-                sc.RequestDataOnSimObject(request, structId,
-                    SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
-            }
-        }
-
-        public void SendEvent(EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
-        {
-            SIMCONNECT_EVENT_FLAG flags = SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
-            if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
-            if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
-            scHolder.SimConnect?.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data,
-                (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD, flags);
+                .Process(simConnect, data.dwData[0]);
         }
 
         private IntPtr WndProc(IntPtr hWnd, int iMsg, IntPtr hWParam, IntPtr hLParam, ref bool bHandled) {

@@ -25,7 +25,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(SimConnectAdapter _, StrobeLightData lightData)
+        public override void Process(SimConnect _, StrobeLightData lightData)
         {
             viewModel.DebugText = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
             viewModel.Strobes = lightData.strobeSwitch == 1 ? 0 * 1 : 2;
@@ -77,7 +77,7 @@ namespace FSInputMapper.Data
             this.viewModel = viewModel;
         }
 
-        public override void Process(SimConnectAdapter _, LightData lightData)
+        public override void Process(SimConnect _, LightData lightData)
         {
             viewModel.DebugText = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
                 + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
