@@ -83,6 +83,20 @@ namespace FSInputMapper
         LIGHTS_LANDING_SET,
         [Event("TAXI_LIGHTS_SET")]
         LIGHTS_TAXI_SET,
+#if FALSE
+        // Hmm - pot n is 1 to 31; 0 might be nav/logo; 1 is the nose light; combo of 2+3 might be RWY_TURNOFF
+        // A320_NEO_INTERIOR.xml
+        [Event("LIGHT_POTENTIOMETER_2_SET")]
+        LIGHTS_LANDING_RIGHT_SET,
+        [Event("LIGHT_POTENTIOMETER_3_SET")]
+        LIGHTS_LANDING_LEFT_SET,
+        [Event("LIGHT_POTENTIOMETER_24_SET")]
+        LIGHTS_STROBE_SET,
+        [Event("LIGHT_POTENTIOMETER_INC")] // Presumably one passes the potentiometer # as a parameter
+        LIGHTS_POTENTIOMETER_INC,
+        [Event("LIGHT_POTENTIOMETER_DEC")] // Presumably one passes the potentiometer # as a parameter
+        LIGHTS_POTENTIOMETER_DEC,
+#endif
     }
 
 }

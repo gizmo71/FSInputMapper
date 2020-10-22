@@ -4,6 +4,7 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
+using FSInputMapper.Systems;
 
 namespace FSInputMapper
 {
@@ -26,12 +27,15 @@ namespace FSInputMapper
     {
         private readonly SimConnectAdapter simConnectAdapter;
         private readonly FSIMTriggerBus triggerBus;
+        private readonly LightSystem lightSystem;
 
-        public MainWindow(FSIMViewModel viewModel, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus)
+        public MainWindow(FSIMViewModel viewModel, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus,
+            LightSystem lightSystem)
         {
             DataContext = viewModel;
             this.simConnectAdapter = simConnectAdapter;
             this.triggerBus = triggerBus;
+            this.lightSystem = lightSystem;
             InitializeComponent();
         }
 

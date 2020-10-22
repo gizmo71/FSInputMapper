@@ -51,6 +51,7 @@ namespace FSInputMapper
     [Singleton]
     public class FSIMTriggerBus
     {
+//TODO: only need this until the 'triggers' are injected by the things using them
 private readonly IServiceProvider sp;
 public FSIMTriggerBus(IServiceProvider sp) { this.sp = sp; }
         public event EventHandler<FSIMTriggerArgs> OnTrigger;
