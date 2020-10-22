@@ -6,13 +6,13 @@ namespace FSInputMapper
 
     //TODO: turn into different objects
     [Singleton]
-    internal class FSIMTriggerHandler
+    public class FSIMTriggerHandler
     {
         private readonly SimConnectHolder scHolder;
         private readonly FSIMViewModel viewModel; //TODO: remove
         private readonly FcuHeadingSelectDataListener fcuHeadingSelectDataListener;
 
-        FSIMTriggerHandler(FSIMTriggerBus triggerBus, SimConnectHolder scHolder, FSIMViewModel viewModel, FcuHeadingSelectDataListener fcuHeadingSelectDataListener)
+        public FSIMTriggerHandler(FSIMTriggerBus triggerBus, SimConnectHolder scHolder, FSIMViewModel viewModel, FcuHeadingSelectDataListener fcuHeadingSelectDataListener)
         {
             triggerBus.OnTrigger += OnTrigger;
             this.scHolder = scHolder;

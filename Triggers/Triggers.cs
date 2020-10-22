@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FSInputMapper
 {
@@ -50,10 +51,13 @@ namespace FSInputMapper
     [Singleton]
     public class FSIMTriggerBus
     {
-        public event EventHandler<FSIMTriggerArgs> OnTrigger = delegate { };
+private readonly IServiceProvider sp;
+public FSIMTriggerBus(IServiceProvider sp) { this.sp = sp; }
+        public event EventHandler<FSIMTriggerArgs> OnTrigger;
         public void Trigger(object sender, string what)
         {
-            OnTrigger(sender, new FSIMTriggerArgs() { What = what });
+sp.GetService<FSIMTriggerHandler>();
+            OnTrigger?.Invoke(sender, new FSIMTriggerArgs() { What = what });
         }
     }
 
