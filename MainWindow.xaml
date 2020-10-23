@@ -97,7 +97,7 @@
         <ComboBox ToolTip="Strobes" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60"
                    SelectedIndex="{Binding Strobes}" SelectionChanged="StrobeLightsSelected">
             <ComboBoxItem Content="On" />
-            <ComboBoxItem Content="Auto" IsEnabled="False" />
+            <ComboBoxItem Content="Auto" IsEnabled="True" />
             <ComboBoxItem Content="Off" />
         </ComboBox>
         <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"
@@ -112,7 +112,7 @@
         <ComboBox ToolTip="Landing Lights" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120"
                   SelectedIndex="{Binding LandingLights}" SelectionChanged="LandingLightsSelected">
             <ComboBoxItem Content="On" Tag="Wibble" />
-            <ComboBoxItem Content="Extend" IsEnabled="False" />
+            <ComboBoxItem Content="Extend" IsEnabled="True" />
             <ComboBoxItem Content="Retract" Tag="Floob" />
         </ComboBox>
         <ComboBox ToolTip="Nose Lights" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
