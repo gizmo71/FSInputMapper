@@ -12,6 +12,9 @@ namespace FSInputMapper
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public class SingletonAttribute : Attribute { }
 
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
+    public class ProvideDerivedAttribute : Attribute { }
+
     public static class AttributeExtensions
     {
 
@@ -42,20 +45,18 @@ namespace FSInputMapper
         {
             // https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.dependencyinjection?view=dotnet-plat-ext-3.1
             services.AddSingleton<MainWindow>();
+            var serviceInterfacesAndBaseClasses = Assembly.GetEntryAssembly()!.DefinedTypes
+                .Where(candidate => candidate.GetCustomAttribute<ProvideDerivedAttribute>() != null);
             foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
                 var singleton = candidate.GetCustomAttribute<SingletonAttribute>();
                 if (singleton != null)
                 {
                     services.AddSingleton(candidate, candidate);
-// https://andrewlock.net/how-to-register-a-service-with-multiple-interfaces-for-in-asp-net-core-di/
-                    if (typeof(IDataListener).IsAssignableFrom(candidate))
+                    foreach (var derviedFrom in serviceInterfacesAndBaseClasses
+                        .Where(fromCandidate => fromCandidate.IsAssignableFrom(candidate)))
                     {
-                        services.AddSingleton<IDataListener>(x => (IDataListener)x.GetRequiredService(candidate));
-                    }
-                    if (typeof(IData).IsAssignableFrom(candidate))
-                    {
-                        services.AddSingleton<IData>(x => (IData)x.GetRequiredService(candidate));
+                        services.AddSingleton(derviedFrom, x => x.GetRequiredService(candidate));
                     }
                 }
             }

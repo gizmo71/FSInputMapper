@@ -4,11 +4,13 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper.Data
 {
 
+    [ProvideDerived]
     public interface IData
     {
         public abstract Type GetStructType();
     }
 
+    [ProvideDerived]
     public interface IDataListener : IData
     {
         public abstract void Process(SimConnect simConnect, object data);
