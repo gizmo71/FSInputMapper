@@ -24,15 +24,19 @@ namespace FSInputMapper
 
         public static void RequestDataOnSimObject(this SimConnect simConnect, IDataListener data, SIMCONNECT_PERIOD period)
         {
-            var sc = simConnect as SimConnectzmo;
-            if (sc == null) throw new NullReferenceException("Supplied SimConnect was not correct subclass");
-            REQUEST request = sc.typeToRequest![data];
-            STRUCT structId = sc.typeToStruct![data.GetStructType()];
-            SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
-                            ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-                            : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
-            sc.RequestDataOnSimObject(request, structId,
-                SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+            if (simConnect is SimConnectzmo sc)
+            {
+                REQUEST request = sc.typeToRequest![data];
+                STRUCT structId = sc.typeToStruct![data.GetStructType()];
+                SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
+                                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+                                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+                sc.RequestDataOnSimObject(request, structId,
+                    SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+            }
+            else
+                throw new NullReferenceException("Supplied SimConnect was not correct subclass");
+
         }
 
     }

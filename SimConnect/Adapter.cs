@@ -40,7 +40,7 @@ namespace FSInputMapper
 
         private IntPtr hWnd;
         private readonly FSIMViewModel viewModel; //TODO: decouple
-        private SimConnectHolder scHolder;
+        private readonly SimConnectHolder scHolder;
         private readonly IServiceProvider serviceProvider;
 
         public SimConnectAdapter(FSIMViewModel viewModel,

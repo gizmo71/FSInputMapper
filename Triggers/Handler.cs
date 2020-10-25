@@ -112,14 +112,12 @@ namespace FSInputMapper
                     scHolder.SimConnect?.SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
                 case FSIMTrigger.LIGHTS_STROBE_OFF:
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_POTENTIOMETER_DEC, 24);
+                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
                     viewModel.Strobes = 1;
                     break;
                 case FSIMTrigger.LIGHTS_STROBE_ON:
                     // Sadly, this can only do "auto", not fully "on".
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_POTENTIOMETER_INC, 24);
+                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
                     viewModel.Strobes = 1;
                     break;
                 case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
@@ -136,17 +134,11 @@ namespace FSInputMapper
                     // No idea. :-(
                     break;
                 case FSIMTrigger.LIGHTS_LANDING_OFF:
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_LEFT_SET, 50u);
-                    for (uint i = 1; i < 32; ++i)
-                        scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_POTENTIOMETER_DEC, i);
+                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
                     viewModel.LandingLights = 1;
                     break;
                 case FSIMTrigger.LIGHTS_LANDING_ON:
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
-                    //scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_LEFT_SET, 100u);
-                    for (uint i = 1; i < 32; ++i)
-                        scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_POTENTIOMETER_INC, i);
+                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
                     viewModel.LandingLights = 1;
                     break;
                 case FSIMTrigger.LIGHTS_NOSE_TAKEOFF:

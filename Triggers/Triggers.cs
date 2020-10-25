@@ -54,7 +54,7 @@ namespace FSInputMapper
 //TODO: only need this until the 'triggers' are injected by the things using them
 private readonly IServiceProvider sp;
 public FSIMTriggerBus(IServiceProvider sp) { this.sp = sp; }
-        public event EventHandler<FSIMTriggerArgs> OnTrigger;
+        public event EventHandler<FSIMTriggerArgs>? OnTrigger;
         public void Trigger(object sender, string what)
         {
 sp.GetService<FSIMTriggerHandler>();
