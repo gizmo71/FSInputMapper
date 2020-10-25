@@ -10,11 +10,11 @@ namespace FSInputMapper
 
         public static void SendEvent(this SimConnect sc, EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
-            SIMCONNECT_EVENT_FLAG flags = SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
+            SIMCONNECT_EVENT_FLAG flags = 0;// SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
             sc.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data,
-                (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD, flags);
+                /*(GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD*/GROUP.SPOILERS, flags);
         }
 
         public static void RequestDataOnSimObject(this SimConnect simConnect, IDataListener data, SIMCONNECT_PERIOD period)
