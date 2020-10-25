@@ -184,11 +184,11 @@ if (!viewModel.DebugText.StartsWith("fish"))
         {
             // These are the ones in the notification group.
             switch ((EVENT)data.uEventID) {
-                case EVENT.LESS_SPOILER:
+                case EVENT.SPOILERS_ARM_TOGGLE:
                     scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<LessSpoilerListener>(),
                         SIMCONNECT_PERIOD.ONCE);
                     break;
-                case EVENT.MORE_SPOILER:
+                case EVENT.SPOILERS_TOGGLE:
                     scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<MoreSpoilerListener>(),
                         SIMCONNECT_PERIOD.ONCE);
                     break;

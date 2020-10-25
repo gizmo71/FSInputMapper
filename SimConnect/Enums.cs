@@ -15,18 +15,12 @@ namespace FSInputMapper
     public enum EVENT
     {
         // Spoilers
-        // The first two are sent because I couldn't work out how to send the same ones I receive without looping.
-        [Event("SPOILERS_ARM_OFF")]
-        DISARM_SPOILER = 42,
-        [Event("SPOILERS_ARM_ON")]
-        ARM_SPOILER,
-        // These two are what I receive.
         [Event("SPOILERS_TOGGLE")]
         [EventGroup(GROUP.SPOILERS, true)]
-        MORE_SPOILER,
+        SPOILERS_TOGGLE,
         [Event("SPOILERS_ARM_TOGGLE")]
         [EventGroup(GROUP.SPOILERS, true)]
-        LESS_SPOILER,
+        SPOILERS_ARM_TOGGLE,
         // Autopilot stuff
         [Event("SPEED_SLOT_INDEX_SET")]
         AP_SPEED_SLOT_SET,
