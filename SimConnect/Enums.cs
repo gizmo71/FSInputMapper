@@ -1,4 +1,5 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
+﻿using FSInputMapper.Event;
+using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
 {
@@ -15,11 +16,9 @@ namespace FSInputMapper
     public enum EVENT
     {
         // Spoilers
-        [Event("SPOILERS_TOGGLE")]
-        [EventGroup(GROUP.SPOILERS, true)]
+        [Event("SPOILERS_TOGGLE", typeof(MoreSpoilerEventNotification))]
         SPOILERS_TOGGLE,
-        [Event("SPOILERS_ARM_TOGGLE")]
-        [EventGroup(GROUP.SPOILERS, true)]
+        [Event("SPOILERS_ARM_TOGGLE", typeof(LessSpoilerEventNotification))]
         SPOILERS_ARM_TOGGLE,
         // Autopilot stuff
         [Event("SPEED_SLOT_INDEX_SET")]

@@ -1,4 +1,5 @@
 ﻿using System;
+using FSInputMapper.Event;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
@@ -7,10 +8,12 @@ namespace FSInputMapper
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class SCStructFieldAttribute : Attribute
     {
+
         public readonly string Variable;
         public readonly string Units;
         public readonly SIMCONNECT_DATATYPE Type;
         public readonly float Epsilon;
+
         public SCStructFieldAttribute(string variable, string units, SIMCONNECT_DATATYPE type, float epsilon)
         {
             Variable = variable;
@@ -18,25 +21,26 @@ namespace FSInputMapper
             Type = type; //TODO: do we need this, or can we infer it?
             Epsilon = epsilon;
         }
+
     }
 
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class EventAttribute : Attribute
     {
-        public readonly string ClientEvent;
-        public EventAttribute(string clientEvent) { ClientEvent = clientEvent; }
-    }
 
-    [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    public class EventGroupAttribute : Attribute
-    {
-        public readonly GROUP Group;
-        public readonly bool IsMaskable;
-        public EventGroupAttribute(GROUP group, bool isMaskable)
+        public readonly string ClientEvent;
+        public readonly Type? EventNotificationType;
+
+        public EventAttribute(string clientEvent) : this(clientEvent, null) { }
+
+        public EventAttribute(string clientEvent, Type? eventNotificationType)
         {
-            Group = group;
-            IsMaskable = isMaskable;
+            ClientEvent = clientEvent;
+            EventNotificationType = eventNotificationType;
+            if (EventNotificationType != null && !typeof(IEventNotification).IsAssignableFrom(EventNotificationType))
+                throw new ArgumentException($"{EventNotificationType!.Name} is not an IEventNotification");
         }
+
     }
 
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]

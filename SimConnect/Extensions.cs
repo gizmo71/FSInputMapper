@@ -11,12 +11,12 @@ namespace FSInputMapper
         public static void SendEvent(this SimConnect sc, EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
             SIMCONNECT_EVENT_FLAG flags = 0;
-            GROUP group = (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD;
-            var groupAttribute = eventToSend!.GetAttribute<EventGroupAttribute>();
-            if (groupAttribute != null)
-                group = groupAttribute.Group;
-            else
+            GROUP? group = (sc as SimConnectzmo)!.eventToNotification![eventToSend]?.GetGroup();
+            if (group == null)
+            {
+                group = (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD;
                 flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
+            }
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
             sc.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, group, flags);

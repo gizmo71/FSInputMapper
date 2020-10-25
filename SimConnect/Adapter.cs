@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 using FSInputMapper.Data;
+using FSInputMapper.Event;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 
@@ -19,6 +20,7 @@ namespace FSInputMapper
 
         internal Dictionary<Type, STRUCT>? typeToStruct;
         internal Dictionary<IDataListener, REQUEST>? typeToRequest;
+        internal Dictionary<EVENT, IEventNotification?>? eventToNotification;
 
         internal SimConnectzmo(string szName, IntPtr hWnd, uint UserEventWin32)
             : base(szName, hWnd, UserEventWin32, null, 0)
@@ -89,6 +91,7 @@ if (!viewModel.DebugText.StartsWith("fish"))
             catch (COMException ex)
             {
                 Disconnect(ex);
+//viewModel.DebugText = "Event thingies " + serviceProvider.GetServices<ISimConnectEvent>().Select(e => e.GetType().ToString()).Aggregate((a, b) => $"{a}, {b}");
             }
         }
 
@@ -115,6 +118,19 @@ if (!viewModel.DebugText.StartsWith("fish"))
                 .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
             //TODO: check that the struct is also registered
+
+            simConnect.eventToNotification = Enum.GetValues(typeof(EVENT)).OfType<EVENT>()
+                .ToDictionary(e => e, e => NotificationFromEvent(e));
+        }
+
+        private IEventNotification? NotificationFromEvent(EVENT e)
+        {
+            var attribute = e.GetAttribute<EventAttribute>();
+            if (attribute.EventNotificationType != null)
+            {
+                return (IEventNotification)serviceProvider.GetService(attribute.EventNotificationType);
+            }
+            return null;
         }
 
         private void OnRecvQuit(SimConnect simConnect, SIMCONNECT_RECV data)
@@ -159,13 +175,14 @@ if (!viewModel.DebugText.StartsWith("fish"))
 
         private void MapClientEvents(SimConnectzmo sc)
         {
-            foreach (EVENT? e in Enum.GetValues(typeof(EVENT)))
+            foreach (var eventToNotification in sc.eventToNotification!)
             {
-                var eventAttribute = e!.GetAttribute<EventAttribute>();
-                sc.MapClientEventToSimEvent(e, eventAttribute.ClientEvent);
-                var groupAttribute = e!.GetAttribute<EventGroupAttribute>();
-                if (groupAttribute != null) {
-                    sc.AddClientEventToNotificationGroup(groupAttribute.Group, e, groupAttribute.IsMaskable);
+                var eventAttribute = eventToNotification.Key.GetAttribute<EventAttribute>();
+                sc.MapClientEventToSimEvent(eventToNotification.Key, eventAttribute.ClientEvent);
+                if (eventToNotification.Value != null)
+                {
+                    sc.AddClientEventToNotificationGroup(
+                        eventToNotification.Value.GetGroup(), eventToNotification.Key, true);
                 }
             }
         }
@@ -179,20 +196,9 @@ if (!viewModel.DebugText.StartsWith("fish"))
             }
         }
 
-        //TODO: turn into different objects
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
-            // These are the ones in the notification group.
-            switch ((EVENT)data.uEventID) {
-                case EVENT.SPOILERS_ARM_TOGGLE:
-                    scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<LessSpoilerListener>(),
-                        SIMCONNECT_PERIOD.ONCE);
-                    break;
-                case EVENT.SPOILERS_TOGGLE:
-                    scHolder.SimConnect?.RequestDataOnSimObject(serviceProvider.GetRequiredService<MoreSpoilerListener>(),
-                        SIMCONNECT_PERIOD.ONCE);
-                    break;
-            }
+            (simConnect as SimConnectzmo)!.eventToNotification![(EVENT)data.uEventID]!.OnRecieve(simConnect, data);
 viewModel.DebugText = "Received " + (EVENT)data.uEventID + "\n@ " + System.DateTime.Now + "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
         }
 
