@@ -193,6 +193,7 @@ if (!viewModel.DebugText.StartsWith("fish"))
                         SIMCONNECT_PERIOD.ONCE);
                     break;
             }
+viewModel.DebugText = "Received " + (EVENT)data.uEventID + "\n@ " + System.DateTime.Now + "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
         }
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
