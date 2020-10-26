@@ -164,7 +164,6 @@ namespace FSInputMapper
                     OnPropertyChange(nameof(IsConnected));
                     break;
             }
-
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
