@@ -122,6 +122,6 @@
             <ComboBoxItem Content="Off" />
         </ComboBox>
 
-        <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding DebugText}" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
+        <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
     </Grid>
 </Window>

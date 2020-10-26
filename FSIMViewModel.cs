@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace FSInputMapper
@@ -8,6 +9,11 @@ namespace FSInputMapper
     [Singleton]
     public class FSIMViewModel : INotifyPropertyChanged
     {
+
+        public FSIMViewModel(DebugConsole debugConsole)
+        {
+            (this.debugConsole = debugConsole).PropertyChanged += OnDebugConsolePropertyChanged;
+        }
 
         private double apAirspeed = 100.0;
         public double AutopilotAirspeed
@@ -65,17 +71,6 @@ namespace FSInputMapper
             set { if (vsManaged != value) { vsManaged = value; OnPropertyChange(); } }
         }
 
-        private string? connectionError = "Not yet connected";
-        public string? ConnectionError
-        {
-            get { return connectionError; }
-            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); OnPropertyChange(nameof(IsConnected)); } }
-        }
-        public bool IsConnected
-        {
-            get { return connectionError == null; }
-        }
-
         private bool autopilotLoc;
         public bool AutopilotLoc {
             get { return autopilotLoc; }
@@ -94,13 +89,6 @@ namespace FSInputMapper
         {
             get { return autopilotAppr; }
             set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
-        }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChange([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private int strobes = 1;
@@ -152,11 +140,38 @@ namespace FSInputMapper
             set { if (landingLights != value) { landingLights = value; OnPropertyChange(); } }
         }
 
-        private string debugText = "";
-        public string DebugText
+        private readonly DebugConsole debugConsole;
+
+        public string? ConnectionError
         {
-            get { return debugText; }
-            set { if (debugText != value) { debugText = value; OnPropertyChange(); } }
+            get { return debugConsole.ConnectionError; }
+        }
+        public bool IsConnected
+        {
+            get { return debugConsole.ConnectionError == null; }
+        }
+
+        public string DebugConsoleText { get { return debugConsole.Text; } }
+        private void OnDebugConsolePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Debug.Assert(sender == debugConsole);
+            switch (e.PropertyName) {
+                case nameof(debugConsole.Text):
+                    OnPropertyChange(nameof(DebugConsoleText));
+                    break;
+                case nameof(debugConsole.ConnectionError):
+                    OnPropertyChange(nameof(ConnectionError));
+                    OnPropertyChange(nameof(IsConnected));
+                    break;
+            }
+
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChange([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
     }

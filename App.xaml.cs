@@ -4,7 +4,8 @@ using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
-using FSInputMapper.Data;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace FSInputMapper
 {
@@ -25,6 +26,31 @@ namespace FSInputMapper
             return enumType.GetField(name!)!.GetCustomAttributes(false).OfType<TAttribute>().SingleOrDefault();
         }
 
+    }
+
+    [Singleton]
+    public class DebugConsole : INotifyPropertyChanged
+    {
+        private string text = "";
+        public string Text
+        {
+            get { return text; }
+            set { if (text != value) { text = value; OnPropertyChange(); } }
+        }
+
+        private string? connectionError = "Connection not yet attempted";
+        public string? ConnectionError
+        {
+            get { return connectionError; }
+            set { if (connectionError != value) { connectionError = value; OnPropertyChange(); } }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChange([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public partial class App : Application

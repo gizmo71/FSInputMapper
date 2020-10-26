@@ -41,17 +41,16 @@ namespace FSInputMapper
         private const int WM_USER_SIMCONNECT = 0x0402;
 
         private IntPtr hWnd;
-        private readonly FSIMViewModel viewModel; //TODO: decouple
-        private readonly SimConnectHolder scHolder;
-        private readonly IServiceProvider serviceProvider;
 
-        public SimConnectAdapter(FSIMViewModel viewModel,
-            IServiceProvider serviceProvider,
-            SimConnectHolder scHolder)
+        private readonly IServiceProvider serviceProvider;
+        private readonly SimConnectHolder scHolder;
+        private readonly DebugConsole debugConsole;
+
+        public SimConnectAdapter(IServiceProvider serviceProvider)
         {
-            this.viewModel = viewModel;
             this.serviceProvider = serviceProvider;
-            this.scHolder = scHolder;
+            this.scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            this.debugConsole = serviceProvider.GetRequiredService<DebugConsole>();
         }
 
         public void AttachWinow(HwndSource hWndSource)
@@ -69,29 +68,29 @@ namespace FSInputMapper
         {
             scHolder.SimConnect?.Dispose();
             scHolder.SimConnect = null;
-            viewModel.ConnectionError = ex.Message;
+            debugConsole.ConnectionError = ex.Message;
         }
 
         private void Tick(object? sender, EventArgs e)
         {
             if (scHolder.SimConnect != null) return;
-if (!viewModel.DebugText.StartsWith("fish"))
+if (!debugConsole.Text.StartsWith("fish"))
 {
-                viewModel.DebugText = "fish";
+                debugConsole.Text = "fish";
                 foreach (var service in serviceProvider.GetServices<IData>())
                 {
-                    viewModel.DebugText += $"\n{service} -> {service.GetStructType()}";
+                    debugConsole.Text += $"\n{service} -> {service.GetStructType()}";
                 }
 }
             try
             {
                 Connect();
-                viewModel.ConnectionError = null;
+                debugConsole.ConnectionError = null;
             }
             catch (COMException ex)
             {
                 Disconnect(ex);
-//viewModel.DebugText = "Event thingies " + serviceProvider.GetServices<ISimConnectEvent>().Select(e => e.GetType().ToString()).Aggregate((a, b) => $"{a}, {b}");
+//debugConsole.Text = "Event thingies " + serviceProvider.GetServices<IEventNotification>().Select(e => e.GetType().ToString()).Aggregate((a, b) => $"{a}, {b}");
             }
         }
 
@@ -199,7 +198,7 @@ if (!viewModel.DebugText.StartsWith("fish"))
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             (simConnect as SimConnectzmo)!.eventToNotification![(EVENT)data.uEventID]!.OnRecieve(simConnect, data);
-viewModel.DebugText = "Received " + (EVENT)data.uEventID + " = " + Convert.ToString(data.dwData, 16) + $" (of {data.dwSize})"
+debugConsole.Text = $"Received {(EVENT)data.uEventID} = {Convert.ToString(data.dwData, 16)} (of {data.dwSize})"
 + "\n@ " + System.DateTime.Now
 + "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
         }

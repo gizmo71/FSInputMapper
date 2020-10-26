@@ -18,16 +18,18 @@ namespace FSInputMapper.Data
     public class StrobeLightListener : DataListener<StrobeLightData>
     {
 
-        private readonly FSIMViewModel viewModel;
+        private readonly FSIMViewModel viewModel; //TODO; replace with property notification
+        private readonly DebugConsole debugConsole;
 
-        public StrobeLightListener(FSIMViewModel viewModel)
+        public StrobeLightListener(FSIMViewModel viewModel, DebugConsole debugConsole)
         {
             this.viewModel = viewModel;
+            this.debugConsole = debugConsole;
         }
 
         public override void Process(SimConnect _, StrobeLightData lightData)
         {
-            viewModel.DebugText = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
+debugConsole.Text = $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
             viewModel.Strobes = lightData.strobeSwitch == 1 ? 0 * 1 : 2;
         }
 
@@ -70,11 +72,13 @@ namespace FSInputMapper.Data
     public class LightListener : DataListener<LightData>, IRequestDataOnOpen
     {
 
-        private readonly FSIMViewModel viewModel;
+        private readonly FSIMViewModel viewModel; //TODO: remove this and have the VM listen to us
+        private readonly DebugConsole debugConsole;
 
-        public LightListener(FSIMViewModel viewModel)
+        public LightListener(FSIMViewModel viewModel, DebugConsole debugConsole)
         {
             this.viewModel = viewModel;
+            this.debugConsole = debugConsole;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
@@ -84,7 +88,7 @@ namespace FSInputMapper.Data
 
         public override void Process(SimConnect _, LightData lightData)
         {
-            viewModel.DebugText = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
+            debugConsole.Text = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSwitch}"
                 + $" Wing/Switch {lightData.wingState}/{lightData.wingSwitch}"
                 + $" Nav+Logo/Switches {lightData.navState}+{lightData.logoState}/{lightData.navSwitch}+{lightData.logoSwitch}"
                 + $" Landing/Switch {lightData.landingState}/{lightData.landingSwitch}"
