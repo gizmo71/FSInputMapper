@@ -199,7 +199,9 @@ if (!viewModel.DebugText.StartsWith("fish"))
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             (simConnect as SimConnectzmo)!.eventToNotification![(EVENT)data.uEventID]!.OnRecieve(simConnect, data);
-viewModel.DebugText = "Received " + (EVENT)data.uEventID + "\n@ " + System.DateTime.Now + "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
+viewModel.DebugText = "Received " + (EVENT)data.uEventID + " = " + Convert.ToString(data.dwData, 16) + $" (of {data.dwSize})"
++ "\n@ " + System.DateTime.Now
++ "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
         }
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)

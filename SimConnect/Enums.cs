@@ -8,6 +8,8 @@ namespace FSInputMapper
     {
         [HighestMaskablePriorityGroup]
         SPOILERS = 13,
+        [HighestMaskablePriorityGroup]
+        ENGINE,
     }
 
     /*TODO: https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.categoryattribute?view=netcore-3.1
@@ -76,6 +78,17 @@ namespace FSInputMapper
         LIGHTS_LANDING_SET,
         [Event("TAXI_LIGHTS_SET")]
         LIGHTS_TAXI_SET,
+        [Event("THROTTLE_AXIS_SET_EX1", typeof(ThrottleSetEventNotification))]
+        ENGINE_THROTTLE_AXIS_SET,
+        [Event("THROTTLE1_AXIS_SET_EX1")]
+        ENGINE_THROTTLE_1_AXIS_SET,
+        [Event("THROTTLE2_AXIS_SET_EX1")]
+        ENGINE_THROTTLE_2_AXIS_SET,
+        // These "work" but the visible lever doesn't move; that stops reverse being set like this too. :-(
+        [Event("THROTTLE1_SET")]
+        ENGINE_THROTTLE_1_SET,
+        [Event("THROTTLE2_SET")]
+        ENGINE_THROTTLE_2_SET,
     }
 
 }
