@@ -180,7 +180,7 @@ namespace FSInputMapper
 
         private void NavLogoLightsClicked(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NAV_LOGO_TOGGLE);
+            lightSystem.SetNavLogo(!(DataContext as FSIMViewModel)!.NavLogoLights);
         }
 
         private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)
