@@ -16,8 +16,7 @@ namespace FSInputMapper.Event
 
         public void OnRecieve(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
-            simConnect.SendEvent(EVENT.ENGINE_THROTTLE_1_AXIS_SET, data.dwData);
-            simConnect.SendEvent(EVENT.ENGINE_THROTTLE_2_AXIS_SET, data.dwData);
+            simConnect.SendEvent((EVENT)data.uEventID, data.dwData);
             double axis = ((int)data.dwData + 16384) / 327.68;
         }
 
