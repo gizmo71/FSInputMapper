@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using FSInputMapper.Systems.Lights;
 
 namespace FSInputMapper
 {
@@ -10,10 +11,13 @@ namespace FSInputMapper
     public class FSIMViewModel : INotifyPropertyChanged
     {
 
-        public FSIMViewModel(DebugConsole debugConsole)
+        public FSIMViewModel(DebugConsole debugConsole, LightSystem lightSystem)
         {
             (this.debugConsole = debugConsole).PropertyChanged += OnDebugConsolePropertyChanged;
+            (this.lightSystem = lightSystem).PropertyChanged += OnLightSystemPropertyChanged;
         }
+
+        #region Autopilot
 
         private double apAirspeed = 100.0;
         public double AutopilotAirspeed
@@ -91,6 +95,25 @@ namespace FSInputMapper
             set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
         }
 
+        #endregion
+        #region Lights
+
+        private readonly LightSystem lightSystem;
+
+        private void OnLightSystemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Debug.Assert(sender == lightSystem);
+            switch (e.PropertyName)
+            {
+                case nameof(lightSystem.BeaconLights):
+                    OnPropertyChange(nameof(BeaconLights));
+                    break;
+                case nameof(lightSystem.WingLights):
+                    OnPropertyChange(nameof(WingLights));
+                    break;
+            }
+        }
+
         private int strobes = 1;
         public int Strobes
         {
@@ -98,19 +121,9 @@ namespace FSInputMapper
             set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
         }
 
-        private bool beaconLights;
-        public bool BeaconLights
-        {
-            get { return beaconLights; }
-            set { if (beaconLights != value) { beaconLights = value; OnPropertyChange(); } }
-        }
+        public bool BeaconLights { get { return lightSystem.BeaconLights; } }
 
-        private bool wingLights;
-        public bool WingLights
-        {
-            get { return wingLights; }
-            set { if (wingLights != value) { wingLights = value; OnPropertyChange(); } }
-        }
+        public bool WingLights { get { return lightSystem.WingLights; } }
 
         private bool navLogoLights;
         public bool NavLogoLights
@@ -140,6 +153,9 @@ namespace FSInputMapper
             set { if (landingLights != value) { landingLights = value; OnPropertyChange(); } }
         }
 
+        #endregion
+        #region Debug
+
         private readonly DebugConsole debugConsole;
 
         public string? ConnectionError
@@ -165,6 +181,8 @@ namespace FSInputMapper
                     break;
             }
         }
+
+        #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

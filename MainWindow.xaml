@@ -101,9 +101,9 @@
             <ComboBoxItem Content="Off" />
         </ComboBox>
         <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding BeaconLights}" Click="BeaconLightsClicked" />
+                  IsChecked="{Binding Path=BeaconLights,Mode=OneWay}" Click="BeaconLightsClicked" />
         <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding WingLights}" Click="WingLightsClicked" />
+                  IsChecked="{Binding Path=WingLights,Mode=OneWay}" Click="WingLightsClicked" />
         <CheckBox Content="Nav/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding NavLogoLights}" Click="NavLogoLightsClicked" />
 

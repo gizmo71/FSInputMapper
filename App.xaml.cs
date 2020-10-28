@@ -31,6 +31,7 @@ namespace FSInputMapper
     [Singleton]
     public class DebugConsole : INotifyPropertyChanged
     {
+
         private string text = "";
         public string Text
         {
@@ -51,6 +52,7 @@ namespace FSInputMapper
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 
     public partial class App : Application

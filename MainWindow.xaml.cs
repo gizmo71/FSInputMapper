@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
-using FSInputMapper.Systems;
+using FSInputMapper.Systems.Lights;
 
 namespace FSInputMapper
 {
@@ -170,17 +170,17 @@ namespace FSInputMapper
 
         private void BeaconLightsClicked(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_BEACON_TOGGLE);
+            lightSystem.SetBeacon((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void WingLightsClicked(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_WING_TOGGLE);
+            lightSystem.SetWing((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void NavLogoLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetNavLogo(!(DataContext as FSIMViewModel)!.NavLogoLights);
+            lightSystem.SetNavLogo((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)

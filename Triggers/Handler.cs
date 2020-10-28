@@ -120,12 +120,6 @@ namespace FSInputMapper
                     scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
                     viewModel.Strobes = 1;
                     break;
-                case FSIMTrigger.LIGHTS_BEACON_TOGGLE:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
-                    break;
-                case FSIMTrigger.LIGHTS_WING_TOGGLE:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_WING_TOGGLE);
-                    break;
                 case FSIMTrigger.LIGHTS_TURNOFF_TOGGLE:
                     // No idea. :-(
                     break;
