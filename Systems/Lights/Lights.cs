@@ -14,16 +14,49 @@ namespace FSInputMapper.Systems.Lights
 
         private readonly SimConnectHolder scHolder;
 
-        private bool wingLights;
-        public bool WingLights {
-            get { return wingLights; }
-            internal set { if (wingLights != value) { wingLights = value; OnPropertyChange(); } }
+        private bool wing;
+        public bool Wing {
+            get { return wing; }
+            internal set { if (wing != value) { wing = value; OnPropertyChange(); } }
         }
 
-        private bool beaconLights;
-        public bool BeaconLights {
-            get { return beaconLights; }
-            internal set { if (beaconLights != value) { beaconLights = value; OnPropertyChange(); } }
+        private bool beacon;
+        public bool Beacon {
+            get { return beacon; }
+            internal set { if (beacon != value) { beacon = value; OnPropertyChange(); } }
+        }
+
+        private bool navLogo;
+        public bool NavLogo {
+            get { return navLogo; }
+            internal set { if (navLogo != value) { navLogo = value; OnPropertyChange(); } }
+        }
+
+        private bool runwayTurnoff;
+        public bool RunwayTurnoff {
+            get { return runwayTurnoff; }
+            internal set { if (runwayTurnoff != value) { runwayTurnoff = value; OnPropertyChange(); } }
+        }
+
+        private bool strobes;
+        public bool Strobes
+        {
+            get { return strobes; }
+            internal set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
+        }
+
+        private bool landing;
+        public bool Landing
+        {
+            get { return landing; }
+            internal set { if (landing != value) { landing = value; OnPropertyChange(); } }
+        }
+
+        private bool taxi;
+        public bool Taxi
+        {
+            get { return taxi; }
+            internal set { if (taxi != value) { taxi = value; OnPropertyChange(); } }
         }
 
         public LightSystem(SimConnectHolder scHolder)
@@ -38,16 +71,47 @@ namespace FSInputMapper.Systems.Lights
             scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LOGO_SET, data);
         }
 
-        internal void SetWing(bool desired)
+        internal void SetStrobes(bool desired)
         {
-//TODO: check against actual state?
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_WING_TOGGLE);
+            // Sadly, this can only do "auto", not fully "on".
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, desired ? 1u : 0u);
         }
 
         internal void SetBeacon(bool desired)
         {
-//TODO: check against actual state?
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
+            if (Beacon != desired)
+                scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_BEACON_TOGGLE);
+        }
+
+        internal void SetWing(bool desired)
+        {
+            if (Wing != desired)
+                scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_WING_TOGGLE);
+        }
+
+        internal void SetRunwayTurnoff(bool desired)
+        {
+            // No idea. :-(
+        }
+
+        internal void SetLanding(bool desired)
+        {
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, desired ? 1u : 0u);
+        }
+
+        internal void NoseTakeoff()
+        {
+            SetLanding(true);
+        }
+
+        internal void NoseTaxi()
+        {
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 1u);
+        }
+
+        internal void NoseOff()
+        {
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 0u);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -57,6 +121,6 @@ namespace FSInputMapper.Systems.Lights
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-}
+    }
 
 }

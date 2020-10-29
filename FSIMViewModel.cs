@@ -105,53 +105,38 @@ namespace FSInputMapper
             Debug.Assert(sender == lightSystem);
             switch (e.PropertyName)
             {
-                case nameof(lightSystem.BeaconLights):
+                /*case nameof(lightSystem.Strobes):
+                    OnPropertyChange(nameof(Strobes));
+                    break;*/
+                case nameof(lightSystem.Beacon):
                     OnPropertyChange(nameof(BeaconLights));
                     break;
-                case nameof(lightSystem.WingLights):
+                case nameof(lightSystem.Wing):
                     OnPropertyChange(nameof(WingLights));
+                    break;
+                case nameof(lightSystem.NavLogo):
+                    OnPropertyChange(nameof(NavLogoLights));
+                    break;
+                case nameof(lightSystem.RunwayTurnoff):
+                    OnPropertyChange(nameof(RunwayTurnoffLights));
+                    break;
+                case nameof(lightSystem.Landing):
+                    OnPropertyChange(nameof(LandingLights));
+                    OnPropertyChange(nameof(NoseLights));
+                    break;
+                case nameof(lightSystem.Taxi):
+                    OnPropertyChange(nameof(NoseLights));
                     break;
             }
         }
 
-        private int strobes = 1;
-        public int Strobes
-        {
-            get { return strobes; }
-            set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
-        }
-
-        public bool BeaconLights { get { return lightSystem.BeaconLights; } }
-
-        public bool WingLights { get { return lightSystem.WingLights; } }
-
-        private bool navLogoLights;
-        public bool NavLogoLights
-        {
-            get { return navLogoLights; }
-            set { if (navLogoLights != value) { navLogoLights = value; OnPropertyChange(); } }
-        }
-
-        private bool runwayTurnoffLights;
-        public bool RunwayTurnoffLights
-        {
-            get { return runwayTurnoffLights; }
-            set { if (runwayTurnoffLights != value) { runwayTurnoffLights = value; OnPropertyChange(); } }
-        }
-
-        private int noseLights;
-        public int NoseLights
-        {
-            get { return noseLights; }
-            set { if (noseLights != value) { noseLights = value; OnPropertyChange(); } }
-        }
-
-        private int landingLights = 1;
-        public int LandingLights
-        {
-            get { return landingLights; }
-            set { if (landingLights != value) { landingLights = value; OnPropertyChange(); } }
-        }
+        public int Strobes { get { return 1/*lightSystem.Strobes ? 0 : 2*/; } }
+        public bool BeaconLights { get { return lightSystem.Beacon; } }
+        public bool WingLights { get { return lightSystem.Wing; } }
+        public bool NavLogoLights { get { return lightSystem.NavLogo; } }
+        public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
+        public int LandingLights { get { return lightSystem.Landing ? 2 : 1; } }
+        public int NoseLights { get { return lightSystem.Taxi ? 1 : lightSystem.Landing ? 2 :0; } }
 
         #endregion
         #region Debug

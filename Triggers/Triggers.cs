@@ -30,14 +30,6 @@ namespace FSInputMapper
         public const string VS_DOWN = "VS Down";
         public const string TOGGLE_LOC_MODE = "Toggle Loc";
         public const string TOGGLE_APPR_MODE = "Toggle Appr";
-        public const string LIGHTS_STROBE_OFF = "Strobe Lights OFF";
-        public const string LIGHTS_STROBE_ON = "Strobe Lights On";
-        public const string LIGHTS_TURNOFF_TOGGLE = "Doesn't work";
-        public const string LIGHTS_LANDING_OFF = "Landing Lights Off";
-        public const string LIGHTS_LANDING_ON = "Landing Lights On";
-        public const string LIGHTS_NOSE_TAKEOFF = "Nose Lights to Take Off";
-        public const string LIGHTS_NOSE_TAXI = "Nose Lights to Taxi";
-        public const string LIGHTS_NOSE_OFF = "Nose Lights Off";
     }
 
     public class FSIMTriggerArgs : EventArgs

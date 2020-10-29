@@ -111,35 +111,6 @@ namespace FSInputMapper
                         scHolder.SimConnect?.SendEvent(EVENT.AP_TOGGLE_LOC);
                     scHolder.SimConnect?.SendEvent(EVENT.AP_TOGGLE_APPR);
                     break;
-                case FSIMTrigger.LIGHTS_STROBE_OFF:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 0);
-                    viewModel.Strobes = 1;
-                    break;
-                case FSIMTrigger.LIGHTS_STROBE_ON:
-                    // Sadly, this can only do "auto", not fully "on".
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, 1);
-                    viewModel.Strobes = 1;
-                    break;
-                case FSIMTrigger.LIGHTS_TURNOFF_TOGGLE:
-                    // No idea. :-(
-                    break;
-                case FSIMTrigger.LIGHTS_LANDING_OFF:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 0);
-                    viewModel.LandingLights = 1;
-                    break;
-                case FSIMTrigger.LIGHTS_LANDING_ON:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, 1);
-                    viewModel.LandingLights = 1;
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_TAKEOFF:
-                    // No idea. :-(
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_TAXI:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 1);
-                    break;
-                case FSIMTrigger.LIGHTS_NOSE_OFF:
-                    scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 0);
-                    break;
             }
         }
 

@@ -47,15 +47,13 @@ namespace FSInputMapper.Systems.Lights
     public class Listeners : DataListener<LightData>, IRequestDataOnOpen
     {
 
-        private readonly FSIMViewModel viewModel; //TODO: move everything into the LightSystem
         private readonly LightSystem lightSystem;
         private readonly DebugConsole debugConsole;
 
-        public Listeners(FSIMViewModel viewModel, LightSystem lightSystem, DebugConsole debugConsole)
+        public Listeners(LightSystem lightSystem, DebugConsole debugConsole)
         {
             this.lightSystem = lightSystem;
             this.debugConsole = debugConsole;
-            this.viewModel = viewModel;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
@@ -72,13 +70,13 @@ debugConsole.Text = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSw
     + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
     + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}"
     + $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
-            lightSystem.BeaconLights = lightData.beaconSwitch == 1;
-            lightSystem.WingLights = lightData.wingSwitch == 1;
-            viewModel.NavLogoLights = lightData.navSwitch == 1 || lightData.logoSwitch == 1;
-            viewModel.RunwayTurnoffLights = lightData.noseState == 1;
-            viewModel.LandingLights = lightData.landingState == 1 ? 0 : 0 + 1;
-            viewModel.NoseLights = lightData.noseSwitch == 1 ? 1 : lightData.landingSwitch == 1 ? 0 : 2;
-            viewModel.Strobes = lightData.strobeSwitch == 1 ? 0 * 1 : 2;
+            lightSystem.Beacon = lightData.beaconSwitch == 1;
+            lightSystem.Wing = lightData.wingSwitch == 1;
+            lightSystem.NavLogo = (lightData.navState | lightData.logoState) != 0;
+            lightSystem.RunwayTurnoff = lightData.noseState == 1;
+            lightSystem.Landing = lightData.landingState == 1;
+            lightSystem.Taxi = lightData.noseState == 1;
+            lightSystem.Strobes = lightData.strobeState == 1;
         }
 
     }

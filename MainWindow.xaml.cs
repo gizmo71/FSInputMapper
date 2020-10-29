@@ -160,10 +160,10 @@ namespace FSInputMapper
             switch ((sender as ComboBox)!.SelectedIndex)
             {
                 case 0:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_ON);
+                    lightSystem.SetStrobes(true);
                     break;
                 case 2:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_STROBE_OFF);
+                    lightSystem.SetStrobes(false);
                     break;
             }
         }
@@ -185,7 +185,7 @@ namespace FSInputMapper
 
         private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_TURNOFF_TOGGLE);
+            lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void LandingLightsSelected(object sender, SelectionChangedEventArgs e)
@@ -193,10 +193,10 @@ namespace FSInputMapper
             switch ((sender as ComboBox)!.SelectedIndex)
             {
                 case 0:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_LANDING_ON);
+                    lightSystem.SetLanding(true);
                     break;
                 case 2:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_LANDING_OFF);
+                    lightSystem.SetLanding(false);
                     break;
             }
         }
@@ -206,13 +206,13 @@ namespace FSInputMapper
             switch ((sender as ComboBox)?.SelectedIndex)
             {
                 case 0:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_TAKEOFF);
+                    lightSystem.NoseTakeoff();
                     break;
                 case 1:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_TAXI);
+                    lightSystem.NoseTaxi();
                     break;
                 case 2:
-                    triggerBus.Trigger(sender, FSIMTrigger.LIGHTS_NOSE_OFF);
+                    lightSystem.NoseOff();
                     break;
                 default:
                     throw new Exception($"Unknown nose light index {(sender as ComboBox)?.SelectedIndex}");

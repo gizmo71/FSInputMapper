@@ -95,9 +95,9 @@
 
         <!-- TODO: can we make the lights a seperate component? -->
         <ComboBox ToolTip="Strobes" HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60"
-                   SelectedIndex="{Binding Strobes}" SelectionChanged="StrobeLightsSelected">
+                   SelectedIndex="{Binding Path=Strobes,Mode=OneWay}" SelectionChanged="StrobeLightsSelected">
             <ComboBoxItem Content="On" />
-            <ComboBoxItem Content="Auto" IsEnabled="True" />
+            <ComboBoxItem Content="Auto" IsEnabled="False" />
             <ComboBoxItem Content="Off" />
         </ComboBox>
         <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"
@@ -105,18 +105,18 @@
         <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding Path=WingLights,Mode=OneWay}" Click="WingLightsClicked" />
         <CheckBox Content="Nav/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding NavLogoLights}" Click="NavLogoLightsClicked" />
+                  IsChecked="{Binding Path=NavLogoLights,Mode=OneWay}" Click="NavLogoLightsClicked" />
 
         <CheckBox Content="Rwy Turn" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding RunwayTurnoffLights}" Click="RunwayTurnoffLightsClicked" />
+                  IsChecked="{Binding Path=RunwayTurnoffLights,Mode=OneWay}" Click="RunwayTurnoffLightsClicked" />
         <ComboBox ToolTip="Landing Lights" HorizontalAlignment="Left" Margin="90,167,0,0" VerticalAlignment="Top" Width="120"
-                  SelectedIndex="{Binding LandingLights}" SelectionChanged="LandingLightsSelected">
+                  SelectedIndex="{Binding Path=LandingLights,Mode=OneWay}" SelectionChanged="LandingLightsSelected">
             <ComboBoxItem Content="On" Tag="Wibble" />
-            <ComboBoxItem Content="Extend" IsEnabled="True" />
+            <ComboBoxItem Content="Extend" IsEnabled="False" />
             <ComboBoxItem Content="Retract" Tag="Floob" />
         </ComboBox>
         <ComboBox ToolTip="Nose Lights" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
-                  SelectedIndex="{Binding NoseLights}" SelectionChanged="NoseLightsSelected">
+                  SelectedIndex="{Binding Path=NoseLights,Mode=OneWay}" SelectionChanged="NoseLightsSelected">
             <ComboBoxItem Content="T.O." />
             <ComboBoxItem Content="Taxi" />
             <ComboBoxItem Content="Off" />
