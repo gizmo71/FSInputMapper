@@ -130,13 +130,13 @@ namespace FSInputMapper
             }
         }
 
-        public int Strobes { get { return 1/*lightSystem.Strobes ? 0 : 2*/; } }
+        public int Strobes { get { return lightSystem.Strobes ? 0 : 2; } }
         public bool BeaconLights { get { return lightSystem.Beacon; } }
         public bool WingLights { get { return lightSystem.Wing; } }
         public bool NavLogoLights { get { return lightSystem.NavLogo; } }
         public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
-        public int LandingLights { get { return lightSystem.Landing ? 2 : 1; } }
-        public int NoseLights { get { return lightSystem.Taxi ? 1 : lightSystem.Landing ? 2 :0; } }
+        public int LandingLights { get { return lightSystem.Landing ? 2 : 0; } }
+        public int NoseLights { get { return lightSystem.Landing ? 2 : lightSystem.Taxi ? 1 : 0; } }
 
         #endregion
         #region Debug

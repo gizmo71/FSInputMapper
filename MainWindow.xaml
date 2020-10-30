@@ -117,9 +117,9 @@
         </ComboBox>
         <ComboBox ToolTip="Nose Lights" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
                   SelectedIndex="{Binding Path=NoseLights,Mode=OneWay}" SelectionChanged="NoseLightsSelected">
-            <ComboBoxItem Content="T.O." />
-            <ComboBoxItem Content="Taxi" />
-            <ComboBoxItem Content="Off" />
+            <ComboBoxItem Content="T.O." IsEnabled="False" />
+            <ComboBoxItem Content="Taxi" IsEnabled="False" />
+            <ComboBoxItem Content="Off" IsEnabled="False" />
         </ComboBox>
 
         <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />

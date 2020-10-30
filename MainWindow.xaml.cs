@@ -208,14 +208,12 @@ namespace FSInputMapper
                 case 0:
                     lightSystem.NoseTakeoff();
                     break;
-                case 1:
+                /*case 1:
                     lightSystem.NoseTaxi();
-                    break;
+                    break;*/
                 case 2:
                     lightSystem.NoseOff();
                     break;
-                default:
-                    throw new Exception($"Unknown nose light index {(sender as ComboBox)?.SelectedIndex}");
             }
         }
 

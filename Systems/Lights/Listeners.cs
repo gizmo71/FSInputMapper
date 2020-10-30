@@ -70,13 +70,14 @@ debugConsole.Text = $" Beacon/Switch {lightData.beaconState}/{lightData.beaconSw
     + $" NoseState/Switch {lightData.noseState}/{lightData.noseSwitch}"
     + $"\nMask {Convert.ToString(lightData.mask, 2).PadLeft(10, '0')}"
     + $"Strobes/Switch {lightData.strobeState}/{lightData.strobeSwitch}";
+#if false
             lightSystem.Beacon = lightData.beaconSwitch == 1;
             lightSystem.Wing = lightData.wingSwitch == 1;
             lightSystem.NavLogo = (lightData.navState | lightData.logoState) != 0;
             lightSystem.RunwayTurnoff = lightData.noseState == 1;
-            lightSystem.Landing = lightData.landingState == 1;
-            lightSystem.Taxi = lightData.noseState == 1;
+            lightSystem.Taxi = lightSystem.Landing = lightData.landingState == 1;
             lightSystem.Strobes = lightData.strobeState == 1;
+#endif
         }
 
     }

@@ -92,6 +92,7 @@ namespace FSInputMapper.Systems.Lights
         internal void SetRunwayTurnoff(bool desired)
         {
             // No idea. :-(
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, desired ? 1u : 0u);
         }
 
         internal void SetLanding(bool desired)
@@ -102,6 +103,7 @@ namespace FSInputMapper.Systems.Lights
         internal void NoseTakeoff()
         {
             SetLanding(true);
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 0u);
         }
 
         internal void NoseTaxi()
