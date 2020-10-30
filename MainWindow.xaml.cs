@@ -162,6 +162,9 @@ namespace FSInputMapper
                 case 0:
                     lightSystem.SetStrobes(true);
                     break;
+                case 1:
+                    lightSystem.SetStrobes(null);
+                    break;
                 case 2:
                     lightSystem.SetStrobes(false);
                     break;
@@ -188,33 +191,14 @@ namespace FSInputMapper
             lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
-        private void LandingLightsSelected(object sender, SelectionChangedEventArgs e)
+        private void LandingLightsClicked(object sender, SelectionChangedEventArgs e)
         {
-            switch ((sender as ComboBox)!.SelectedIndex)
-            {
-                case 0:
-                    lightSystem.SetLanding(true);
-                    break;
-                case 2:
-                    lightSystem.SetLanding(false);
-                    break;
-            }
+            lightSystem.SetLanding((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void NoseLightsSelected(object sender, SelectionChangedEventArgs e)
         {
-            switch ((sender as ComboBox)?.SelectedIndex)
-            {
-                case 0:
-                    lightSystem.NoseTakeoff();
-                    break;
-                /*case 1:
-                    lightSystem.NoseTaxi();
-                    break;*/
-                case 2:
-                    lightSystem.NoseOff();
-                    break;
-            }
+            lightSystem.SetNose(2 - (sender as ComboBox)!.SelectedIndex);
         }
 
     }

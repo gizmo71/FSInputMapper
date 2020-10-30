@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows;
 
 namespace FSInputMapper.Systems.Lights
 {
@@ -38,13 +39,6 @@ namespace FSInputMapper.Systems.Lights
             internal set { if (runwayTurnoff != value) { runwayTurnoff = value; OnPropertyChange(); } }
         }
 
-        private bool strobes;
-        public bool Strobes
-        {
-            get { return strobes; }
-            internal set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
-        }
-
         private bool landing;
         public bool Landing
         {
@@ -52,8 +46,8 @@ namespace FSInputMapper.Systems.Lights
             internal set { if (landing != value) { landing = value; OnPropertyChange(); } }
         }
 
-        private bool taxi;
-        public bool Taxi
+        private int taxi;
+        public int Taxi0Off1Taxi2Takeoff
         {
             get { return taxi; }
             internal set { if (taxi != value) { taxi = value; OnPropertyChange(); } }
@@ -71,10 +65,13 @@ namespace FSInputMapper.Systems.Lights
             scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LOGO_SET, data);
         }
 
-        internal void SetStrobes(bool desired)
+        internal void SetStrobes(bool? desired)
         {
-            // Sadly, this can only do "auto", not fully "on".
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, desired ? 1u : 0u);
+            //TODO: store the desired state, then request states and set as required.
+            // Our version of auto could include being on the runway.
+//MessageBox.Show($"got {desired}", "SetStrobes", MessageBoxButton.OK, MessageBoxImage.Warning);
+            if (desired != null)
+                scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, desired == true ? 1u : 0u);
         }
 
         internal void SetBeacon(bool desired)
@@ -91,7 +88,6 @@ namespace FSInputMapper.Systems.Lights
 
         internal void SetRunwayTurnoff(bool desired)
         {
-            // No idea. :-(
             scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, desired ? 1u : 0u);
         }
 
@@ -100,20 +96,9 @@ namespace FSInputMapper.Systems.Lights
             scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_LANDING_SET, desired ? 1u : 0u);
         }
 
-        internal void NoseTakeoff()
+        internal void SetNose(int off0Taxi1Landing2)
         {
-            SetLanding(true);
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 0u);
-        }
-
-        internal void NoseTaxi()
-        {
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 1u);
-        }
-
-        internal void NoseOff()
-        {
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_TAXI_SET, 0u);
+            //TODO: hmm.
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
