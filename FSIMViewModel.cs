@@ -105,6 +105,9 @@ namespace FSInputMapper
             Debug.Assert(sender == lightSystem);
             switch (e.PropertyName)
             {
+                case nameof(lightSystem.Strobes):
+                    OnPropertyChange(nameof(StrobeLights));
+                    break;
                 case nameof(lightSystem.Beacon):
                     OnPropertyChange(nameof(BeaconLights));
                     break;
@@ -126,11 +129,12 @@ namespace FSInputMapper
             }
         }
 
+        public bool StrobeLights { get { return lightSystem.Strobes; } }
         public bool BeaconLights { get { return lightSystem.Beacon; } }
         public bool WingLights { get { return lightSystem.Wing; } }
         public bool NavLogoLights { get { return lightSystem.NavLogo; } }
         public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
-        public int LandingLights { get { return lightSystem.Landing ? 2 : 0; } }
+        public bool LandingLights { get { return lightSystem.Landing; } }
         public int NoseLights { get { return 2 - lightSystem.Taxi0Off1Taxi2Takeoff; } }
 
         #endregion

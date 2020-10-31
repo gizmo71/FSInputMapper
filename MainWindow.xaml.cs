@@ -155,20 +155,9 @@ namespace FSInputMapper
             throw new Exception("Can't select GS alone");
         }
 
-        private void StrobeLightsSelected(object sender, SelectionChangedEventArgs e)
+        private void StrobeLightsClicked(object sender, RoutedEventArgs e)
         {
-            switch ((sender as ComboBox)!.SelectedIndex)
-            {
-                case 0:
-                    lightSystem.SetStrobes(true);
-                    break;
-                case 1:
-                    lightSystem.SetStrobes(null);
-                    break;
-                case 2:
-                    lightSystem.SetStrobes(false);
-                    break;
-            }
+            lightSystem.SetStrobes((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
         private void BeaconLightsClicked(object sender, RoutedEventArgs e)

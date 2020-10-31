@@ -93,12 +93,9 @@
         <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="612,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}"/>
 
-        <ComboBox ToolTip="Strobes" SelectionChanged="StrobeLightsSelected"
-                  HorizontalAlignment="Left" Margin="10,145,0,0" VerticalAlignment="Top" Width="60">
-            <ComboBoxItem Content="On" />
-            <ComboBoxItem Content="Auto" IsSelected="True" />
-            <ComboBoxItem Content="Off" />
-        </ComboBox>
+        <!-- Lights - top row -->
+        <CheckBox Content="Strobes" ToolTip="Ensure On or Off (not Auto) in game" HorizontalAlignment="Left" Margin="10,149,0,0" VerticalAlignment="Top" Width="60"
+                  IsChecked="{Binding Path=StrobeLights,Mode=OneWay}" Click="StrobeLightsClicked" />
         <CheckBox Content="Beacon" HorizontalAlignment="Left" Margin="80,149,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding Path=BeaconLights,Mode=OneWay}" Click="BeaconLightsClicked" />
         <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"
@@ -106,15 +103,17 @@
         <CheckBox Content="Nav/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding Path=NavLogoLights,Mode=OneWay}" Click="NavLogoLightsClicked" />
 
+        <!-- Lights - bottom row -->
         <CheckBox Content="Rwy Turn" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"
                   IsChecked="{Binding Path=RunwayTurnoffLights,Mode=OneWay}" Click="RunwayTurnoffLightsClicked" />
-        <CheckBox Content="Landing Lights" HorizontalAlignment="Left" Margin="90,170,0,0" VerticalAlignment="Top" Width="120"
+        <CheckBox Content="Landing Lights" ToolTip="Ensure On or Retract (not Off) in game" HorizontalAlignment="Left" Margin="90,170,0,0" VerticalAlignment="Top" Width="120"
                   IsChecked="{Binding Path=LandingLights,Mode=OneWay}" Click="LandingLightsClicked" />
-        <ComboBox ToolTip="Nose Lights (INOP)" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
+        <ComboBox ToolTip="Nose Lights" IsEnabled="False" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
                   SelectedIndex="{Binding Path=NoseLights,Mode=OneWay}" SelectionChanged="NoseLightsSelected">
-            <ComboBoxItem Content="T.O." IsEnabled="False" />
-            <ComboBoxItem Content="Taxi" IsEnabled="False" />
-            <ComboBoxItem Content="Off" IsEnabled="False" />
+            <ComboBoxItem Content="T.O." />
+            <ComboBoxItem Content="Taxi" />
+            <ComboBoxItem Content="Off" />
+            <ComboBoxItem Content="INOP" IsEnabled="False" IsSelected="True" />
         </ComboBox>
 
         <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
