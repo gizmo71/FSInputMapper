@@ -20,7 +20,8 @@ namespace FSInputMapper
 
         internal Dictionary<Type, STRUCT>? typeToStruct;
         internal Dictionary<IDataListener, REQUEST>? typeToRequest;
-        internal Dictionary<EVENT, IEventNotification?>? eventToNotification;
+        internal Dictionary<IEventNotification, EVENT>? notificationsToEvent;
+        internal Dictionary<IEvent, EVENT>? eventToEnum;
 
         internal SimConnectzmo(string szName, IntPtr hWnd, uint UserEventWin32)
             : base(szName, hWnd, UserEventWin32, null, 0)
@@ -77,11 +78,12 @@ namespace FSInputMapper
 if (!debugConsole.Text.StartsWith("fish"))
 {
                 debugConsole.Text = "fish";
-                foreach (var service in serviceProvider.GetServices<IData>())
+                foreach (var service in serviceProvider.GetServices<IEvent>())
                 {
-                    debugConsole.Text += $"\n{service} -> {service.GetStructType()}";
+                    debugConsole.Text += $"\n{service} -> {service.SimEvent()}";
                 }
-}
+                debugConsole.Text = $"\nAfter {Enum.GetValues(typeof(EVENT)).Cast<uint>().Max()}";
+            }
             try
             {
                 Connect();
@@ -118,18 +120,13 @@ if (!debugConsole.Text.StartsWith("fish"))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
             //TODO: check that the struct is also registered
 
-            simConnect.eventToNotification = Enum.GetValues(typeof(EVENT)).OfType<EVENT>()
-                .ToDictionary(e => e, e => NotificationFromEvent(e));
-        }
+            int maxEvent = Enum.GetValues(typeof(EVENT)).Cast<int>().Max();
+            simConnect.eventToEnum = serviceProvider.GetServices<IEvent>()
+                .Select((e, index) => new ValueTuple<IEvent, EVENT>(e, (EVENT)(index + maxEvent + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
-        private IEventNotification? NotificationFromEvent(EVENT e)
-        {
-            var attribute = e.GetAttribute<EventAttribute>();
-            if (attribute.EventNotificationType != null)
-            {
-                return (IEventNotification)serviceProvider.GetService(attribute.EventNotificationType);
-            }
-            return null;
+            simConnect.notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
+                .ToDictionary(en => en, en => simConnect.eventToEnum[en.GetEvent()]);
         }
 
         private void OnRecvQuit(SimConnect simConnect, SIMCONNECT_RECV data)
@@ -174,15 +171,14 @@ if (!debugConsole.Text.StartsWith("fish"))
 
         private void MapClientEvents(SimConnectzmo sc)
         {
-            foreach (var eventToNotification in sc.eventToNotification!)
+            foreach (var eventToEnum in sc.eventToEnum!)
             {
-                var eventAttribute = eventToNotification.Key.GetAttribute<EventAttribute>();
-                sc.MapClientEventToSimEvent(eventToNotification.Key, eventAttribute.ClientEvent);
-                if (eventToNotification.Value != null)
-                {
-                    sc.AddClientEventToNotificationGroup(
-                        eventToNotification.Value.GetGroup(), eventToNotification.Key, true);
-                }
+                sc.MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
+            }
+
+            foreach (var notificationToEvent in sc.notificationsToEvent!)
+            {
+                sc.AddClientEventToNotificationGroup(notificationToEvent.Key.GetGroup(), notificationToEvent.Value, true);
             }
         }
 
@@ -197,10 +193,15 @@ if (!debugConsole.Text.StartsWith("fish"))
 
         private void OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
-            (simConnect as SimConnectzmo)!.eventToNotification![(EVENT)data.uEventID]!.OnRecieve(simConnect, data);
-debugConsole.Text = $"Received {(EVENT)data.uEventID} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
-+ "\n@ " + System.DateTime.Now
-+ "\nGroup ID " + (GROUP)data.uGroupID + " with ID " + data.dwID + " and version " + data.dwVersion;
+            EVENT e = (EVENT)data.uEventID;
+debugConsole.Text = $"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
++ "\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}";
+            foreach (KeyValuePair<IEventNotification, EVENT> entry
+                in ((simConnect as SimConnectzmo)!.notificationsToEvent!)
+                .Where<KeyValuePair<IEventNotification, EVENT>>(candidate => e == candidate.Value))
+            {
+                entry.Key.OnRecieve(simConnect, data);
+            }
         }
 
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)

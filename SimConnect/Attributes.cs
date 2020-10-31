@@ -29,16 +29,10 @@ namespace FSInputMapper
     {
 
         public readonly string ClientEvent;
-        public readonly Type? EventNotificationType;
 
-        public EventAttribute(string clientEvent) : this(clientEvent, null) { }
-
-        public EventAttribute(string clientEvent, Type? eventNotificationType)
+        public EventAttribute(string clientEvent)
         {
             ClientEvent = clientEvent;
-            EventNotificationType = eventNotificationType;
-            if (EventNotificationType != null && !typeof(IEventNotification).IsAssignableFrom(EventNotificationType))
-                throw new ArgumentException($"{EventNotificationType!.Name} is not an IEventNotification");
         }
 
     }

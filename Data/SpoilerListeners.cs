@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using FSInputMapper.Event;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
@@ -30,14 +31,20 @@ namespace FSInputMapper.Data
     [Singleton]
     public class MoreSpoilerListener : DataListener<SpoilerData>
     {
-        private readonly SpoilerHandleSender sender;
 
-        public MoreSpoilerListener(SpoilerHandleSender sender) { this.sender = sender; }
+        private readonly SpoilerHandleSender sender;
+        private readonly LessSpoilerEvent toggleArmSpoiler;
+
+        public MoreSpoilerListener(SpoilerHandleSender sender, LessSpoilerEvent toggleArmSpoiler)
+        {
+            this.sender = sender;
+            this.toggleArmSpoiler = toggleArmSpoiler;
+        }
 
         public override void Process(SimConnect simConnect, SpoilerData spoilerData)
         {
             if (spoilerData.spoilersArmed != 0)
-                simConnect.SendEvent(EVENT.SPOILERS_ARM_TOGGLE);
+                simConnect.SendEvent(toggleArmSpoiler);
             else if (spoilerData.spoilersHandlePosition < 100)
                 sender.Send(new SpoilerHandle { spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100) });
         }
@@ -46,17 +53,24 @@ namespace FSInputMapper.Data
     [Singleton]
     public class LessSpoilerListener : DataListener<SpoilerData>
     {
-        private readonly SpoilerHandleSender sender;
 
-        public LessSpoilerListener(SpoilerHandleSender sender) { this.sender = sender; }
+        private readonly SpoilerHandleSender sender;
+        private readonly LessSpoilerEvent toggleArmSpoiler;
+
+        public LessSpoilerListener(SpoilerHandleSender sender, LessSpoilerEvent toggleArmSpoiler)
+        {
+            this.sender = sender;
+            this.toggleArmSpoiler = toggleArmSpoiler;
+        }
 
         public override void Process(SimConnect simConnect, SpoilerData spoilerData)
         {
             if (spoilerData.spoilersHandlePosition > 0)
                 sender.Send(new SpoilerHandle { spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0) });
             else if (spoilerData.spoilersArmed == 0)
-                simConnect.SendEvent(EVENT.SPOILERS_ARM_TOGGLE);
+                simConnect.SendEvent(toggleArmSpoiler);
         }
+
     }
 
 }

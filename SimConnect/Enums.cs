@@ -1,7 +1,4 @@
-﻿using FSInputMapper.Event;
-using Microsoft.FlightSimulator.SimConnect;
-
-namespace FSInputMapper
+﻿namespace FSInputMapper
 {
 
     public enum GROUP : uint
@@ -17,11 +14,6 @@ namespace FSInputMapper
       Would we be better to have a whole class for events and their recievers which includes an ID generator? */
     public enum EVENT
     {
-        // Spoilers
-        [Event("SPOILERS_TOGGLE", typeof(MoreSpoilerEventNotification))]
-        SPOILERS_TOGGLE,
-        [Event("SPOILERS_ARM_TOGGLE", typeof(LessSpoilerEventNotification))]
-        SPOILERS_ARM_TOGGLE,
         // Autopilot stuff
         [Event("SPEED_SLOT_INDEX_SET")]
         AP_SPEED_SLOT_SET,
@@ -78,10 +70,6 @@ namespace FSInputMapper
         LIGHTS_LANDING_SET,
         [Event("TAXI_LIGHTS_SET")]
         LIGHTS_TAXI_SET,
-        [Event("THROTTLE1_AXIS_SET_EX1", typeof(ThrottleSetEventNotification))]
-        ENGINE_THROTTLE_1_AXIS_SET,
-        [Event("THROTTLE2_AXIS_SET_EX1", typeof(ThrottleSetEventNotification))]
-        ENGINE_THROTTLE_2_AXIS_SET,
         // These "work" but the visible lever doesn't move; that stops reverse being set like this too. :-(
         [Event("THROTTLE1_SET")]
         ENGINE_THROTTLE_1_SET,

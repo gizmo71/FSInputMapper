@@ -4,20 +4,32 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper.Event
 {
 
+    [Singleton]
+    public class MoreSpoilerEvent : IEvent
+    {
+        public string SimEvent() { return "SPOILERS_TOGGLE"; }
+    }
+
+    [Singleton]
+    public class LessSpoilerEvent : IEvent
+    {
+        public string SimEvent() { return "SPOILERS_ARM_TOGGLE"; }
+    }
+
     public abstract class SpoilerEventNotification : IEventNotification
     {
 
-        protected readonly DataListener<SpoilerData> listener;
+        private readonly IEvent trigger;
+        private readonly DataListener<SpoilerData> listener;
 
-        public GROUP GetGroup()
-        {
-            return GROUP.SPOILERS;
-        }
-
-        protected SpoilerEventNotification(DataListener<SpoilerData> listener)
+        protected SpoilerEventNotification(DataListener<SpoilerData> listener, IEvent trigger)
         {
             this.listener = listener;
+            this.trigger = trigger;
         }
+
+        public IEvent GetEvent() { return trigger; }
+        public GROUP GetGroup() { return GROUP.SPOILERS; }
 
         public void OnRecieve(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
@@ -29,13 +41,13 @@ namespace FSInputMapper.Event
     [Singleton]
     public class LessSpoilerEventNotification : SpoilerEventNotification
     {
-        public LessSpoilerEventNotification(LessSpoilerListener listener) : base(listener) { }
+        public LessSpoilerEventNotification(LessSpoilerListener listener, LessSpoilerEvent e) : base(listener, e) { }
     }
 
     [Singleton]
     public class MoreSpoilerEventNotification : SpoilerEventNotification
     {
-        public MoreSpoilerEventNotification(MoreSpoilerListener listener) : base(listener) { }
+        public MoreSpoilerEventNotification(MoreSpoilerListener listener, MoreSpoilerEvent e) : base(listener, e) { }
     }
 
 }

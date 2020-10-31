@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using FSInputMapper.Data;
+using FSInputMapper.Event;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper
@@ -7,11 +9,20 @@ namespace FSInputMapper
 
     public static class SimConnectExtensions
     {
-
+        public static void SendEvent(this SimConnect sc, IEvent eventToSend, uint data = 0u, bool slow = false, bool fast = false)
+        {
+            EVENT e = (sc as SimConnectzmo)!.eventToEnum![eventToSend];
+            sc.SendEvent(e, data, slow, fast);
+        }
+//TODO: remove all callers of the below and merge it with the above...
         public static void SendEvent(this SimConnect sc, EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
             SIMCONNECT_EVENT_FLAG flags = 0;
-            GROUP? group = (sc as SimConnectzmo)!.eventToNotification![eventToSend]?.GetGroup();
+            GROUP? group = (sc as SimConnectzmo)!.notificationsToEvent
+                .Where(candidate => candidate.Value == eventToSend)
+                .Select(notification => notification.Key.GetGroup())
+                .Distinct()
+                .SingleOrDefault();
             if (group == null)
             {
                 group = (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD;
