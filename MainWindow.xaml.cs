@@ -191,7 +191,7 @@ namespace FSInputMapper
             lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked == true ? true : false);
         }
 
-        private void LandingLightsClicked(object sender, SelectionChangedEventArgs e)
+        private void LandingLightsClicked(object sender, RoutedEventArgs e)
         {
             lightSystem.SetLanding((sender as CheckBox)!.IsChecked == true ? true : false);
         }
