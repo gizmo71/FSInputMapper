@@ -22,12 +22,15 @@ namespace FSInputMapper
                 .Where(candidate => candidate.Value == eventToSend)
                 .Select(notification => notification.Key.GetGroup())
                 .Distinct()
-                .SingleOrDefault();
+                .Cast<GROUP?>()
+                .DefaultIfEmpty(null)
+                .Single();
             if (group == null)
             {
                 group = (GROUP)SimConnect.SIMCONNECT_GROUP_PRIORITY_STANDARD;
                 flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             }
+//MessageBox.Show($"event {eventToSend} group " + (group != null ? group.ToString() : "none") + $" data {data}", "SendEvent", MessageBoxButton.OK, MessageBoxImage.Warning);
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
             sc.TransmitClientEvent(SimConnect.SIMCONNECT_OBJECT_ID_USER, eventToSend, data, group, flags);

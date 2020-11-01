@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
 
 namespace FSInputMapper.Systems.Lights
 {
@@ -71,8 +70,7 @@ namespace FSInputMapper.Systems.Lights
 
         internal void SetStrobes(bool desired)
         {
-//MessageBox.Show($"got {desired}", "SetStrobes", MessageBoxButton.OK, MessageBoxImage.Warning);
-            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, desired == true ? 1u : 0u);
+            scHolder.SimConnect?.SendEvent(EVENT.LIGHTS_STROBES_SET, desired ? 1u : 0u);
         }
 
         internal void SetBeacon(bool desired)

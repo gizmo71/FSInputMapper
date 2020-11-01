@@ -171,6 +171,10 @@ if (!debugConsole.Text.StartsWith("fish"))
 
         private void MapClientEvents(SimConnectzmo sc)
         {
+            foreach (var e in Enum.GetValues(typeof(EVENT)).OfType<EVENT>())
+            {
+                sc.MapClientEventToSimEvent(e, e.GetAttribute<EventAttribute>().ClientEvent);
+            }
             foreach (var eventToEnum in sc.eventToEnum!)
             {
                 sc.MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());

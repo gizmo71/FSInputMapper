@@ -1,4 +1,3 @@
-﻿using System;
 using System.Runtime.InteropServices;
 using FSInputMapper.Data;
 using Microsoft.FlightSimulator.SimConnect;
@@ -10,9 +9,9 @@ namespace FSInputMapper.Systems.Lights
     public struct StrobeLightData
     {
         // "Auto" comes back as on. :-(
-        [SCStructField("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SCStructField("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public int strobeSwitch;
-        [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public int strobeState;
     }
 
@@ -29,7 +28,7 @@ namespace FSInputMapper.Systems.Lights
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
         {
-            return SIMCONNECT_PERIOD.SECOND;
+            return SIMCONNECT_PERIOD.VISUAL_FRAME;
         }
 
         public override void Process(SimConnect simConnect, StrobeLightData data)
