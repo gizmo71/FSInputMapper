@@ -50,12 +50,12 @@ namespace FSInputMapper
 
         private void Airspeed_Push(object sender, RoutedEventArgs e)
         {
-            fcuSystem.SetSpeedMode(false);
+            fcuSystem.SetSpeedSelected(false);
         }
 
         private void Airspeed_Pull(object sender, RoutedEventArgs e)
         {
-            fcuSystem.SetSpeedMode(true);
+            fcuSystem.SetSpeedSelected(true);
         }
 
         private void SpeedChange(object sender, RoutedEventArgs e)
