@@ -8,13 +8,13 @@ namespace FSInputMapper.Data
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct BaroData
     {
-        [SCStructField("BAROMETER PRESSURE", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SCStructField("BAROMETER PRESSURE", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float barometerPressureMB;
-        [SCStructField("SEA LEVEL PRESSURE", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SCStructField("SEA LEVEL PRESSURE", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float seaLevelPressureMB;
-        [SCStructField("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SCStructField("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanMB; // This is the only settable one, via "KOHLSMAN_SET".
-        [SCStructField("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SCStructField("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanHg;
     };
 
@@ -31,7 +31,7 @@ namespace FSInputMapper.Data
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
         {
-            return SIMCONNECT_PERIOD.SECOND;
+            return SIMCONNECT_PERIOD.VISUAL_FRAME;
         }
 
         public override void Process(SimConnect _, BaroData data)
