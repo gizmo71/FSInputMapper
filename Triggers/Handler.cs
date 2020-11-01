@@ -24,13 +24,6 @@ namespace FSInputMapper
         {
             switch (e.What)
             {
-                case FSIMTrigger.SPD_MAN:
-                    //TODO: send something to unset the locked selected value
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPEED_SLOT_SET, 2u);
-                    break;
-                case FSIMTrigger.SPD_SEL:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPEED_SLOT_SET, 1u);
-                    break;
                 case FSIMTrigger.SPD_1_FASTER:
                     scHolder.SimConnect?.SendEvent(EVENT.AP_SPD_UP, fast: true);
                     break;

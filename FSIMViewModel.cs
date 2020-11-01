@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using FSInputMapper.Systems.Fcu;
 using FSInputMapper.Systems.Lights;
 
 namespace FSInputMapper
@@ -11,19 +12,31 @@ namespace FSInputMapper
     public class FSIMViewModel : INotifyPropertyChanged
     {
 
-        public FSIMViewModel(DebugConsole debugConsole, LightSystem lightSystem)
+        public FSIMViewModel(DebugConsole debugConsole, LightSystem lightSystem, FcuSystem fcuSystem)
         {
             (this.debugConsole = debugConsole).PropertyChanged += OnDebugConsolePropertyChanged;
             (this.lightSystem = lightSystem).PropertyChanged += OnLightSystemPropertyChanged;
+            (this.fcuSystem = fcuSystem).PropertyChanged += OnFcuSystemPropertyChanged;
         }
 
         #region Autopilot
 
-        private double apAirspeed = 100.0;
+        private readonly FcuSystem fcuSystem;
+
+        private void OnFcuSystemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            Debug.Assert(sender == fcuSystem);
+            switch (e.PropertyName)
+            {
+                case nameof(fcuSystem.Speed):
+                    OnPropertyChange(nameof(AutopilotAirspeed));
+                    break;
+            }
+        }
+
         public double AutopilotAirspeed
         {
-            get { return apAirspeed; }
-            set { if (apAirspeed != value) { apAirspeed = value; OnPropertyChange(); } }
+            get { return fcuSystem.Speed; }
         }
 
         bool airspeedManaged = true;
@@ -95,8 +108,8 @@ namespace FSInputMapper
             set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
         }
 
-        #endregion
-        #region Lights
+#endregion
+#region Lights
 
         private readonly LightSystem lightSystem;
 
@@ -137,8 +150,8 @@ namespace FSInputMapper
         public bool LandingLights { get { return lightSystem.Landing; } }
         public int NoseLights { get { return 2 - lightSystem.Taxi0Off1Taxi2Takeoff; } }
 
-        #endregion
-        #region Debug
+#endregion
+#region Debug
 
         private readonly DebugConsole debugConsole;
 
@@ -166,7 +179,7 @@ namespace FSInputMapper
             }
         }
 
-        #endregion
+#endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

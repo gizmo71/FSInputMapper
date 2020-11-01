@@ -5,6 +5,8 @@ using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
 using FSInputMapper.Systems.Lights;
+using FSInputMapper.Systems.Fcu;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FSInputMapper
 {
@@ -28,14 +30,15 @@ namespace FSInputMapper
         private readonly SimConnectAdapter simConnectAdapter;
         private readonly FSIMTriggerBus triggerBus;
         private readonly LightSystem lightSystem;
+        private readonly FcuSystem fcuSystem;
 
-        public MainWindow(FSIMViewModel viewModel, SimConnectAdapter simConnectAdapter, FSIMTriggerBus triggerBus,
-            LightSystem lightSystem)
+        public MainWindow(IServiceProvider sp)
         {
-            DataContext = viewModel;
-            this.simConnectAdapter = simConnectAdapter;
-            this.triggerBus = triggerBus;
-            this.lightSystem = lightSystem;
+            DataContext = sp.GetRequiredService<FSIMViewModel>();
+            this.simConnectAdapter = sp.GetRequiredService<SimConnectAdapter>();
+            this.triggerBus = sp.GetRequiredService<FSIMTriggerBus>();
+            this.lightSystem = sp.GetRequiredService<LightSystem>();
+            this.fcuSystem = sp.GetRequiredService<FcuSystem>();
             InitializeComponent();
         }
 
@@ -47,12 +50,12 @@ namespace FSInputMapper
 
         private void Airspeed_Push(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.SPD_MAN);
+            fcuSystem.SetSpeedMode(false);
         }
 
         private void Airspeed_Pull(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.SPD_SEL);
+            fcuSystem.SetSpeedMode(true);
         }
 
         private void SpeedChange(object sender, RoutedEventArgs e)
