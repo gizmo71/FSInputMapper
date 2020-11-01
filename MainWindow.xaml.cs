@@ -157,37 +157,32 @@ namespace FSInputMapper
 
         private void StrobeLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetStrobes((sender as CheckBox)!.IsChecked == true ? true : false);
+            lightSystem.SetStrobes((sender as CheckBox)!.IsChecked ?? false);
         }
 
         private void BeaconLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetBeacon((sender as CheckBox)!.IsChecked == true ? true : false);
+            lightSystem.SetBeacon((sender as CheckBox)!.IsChecked ?? false);
         }
 
         private void WingLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetWing((sender as CheckBox)!.IsChecked == true ? true : false);
+            lightSystem.SetWing((sender as CheckBox)!.IsChecked ?? false);
         }
 
         private void NavLogoLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetNavLogo((sender as CheckBox)!.IsChecked == true ? true : false);
+            lightSystem.SetNavLogo((sender as CheckBox)!.IsChecked ?? false);
         }
 
         private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked == true ? true : false);
+            lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked ?? false);
         }
 
         private void LandingLightsClicked(object sender, RoutedEventArgs e)
         {
-            lightSystem.SetLanding((sender as CheckBox)!.IsChecked == true ? true : false);
-        }
-
-        private void NoseLightsSelected(object sender, SelectionChangedEventArgs e)
-        {
-            lightSystem.SetNose(2 - (sender as ComboBox)!.SelectedIndex);
+            lightSystem.SetLanding((sender as CheckBox)!.IsChecked ?? false);
         }
 
     }

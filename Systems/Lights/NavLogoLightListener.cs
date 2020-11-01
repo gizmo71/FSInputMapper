@@ -38,10 +38,7 @@ namespace FSInputMapper.Systems.Lights
         public override void Process(SimConnect simConnect, NavLogoLightData data)
         {
             if (data.logoSwitch != data.navSwitch)
-            {
-                simConnect?.SendEvent(EVENT.LIGHTS_NAV_SET, 1u);
-                simConnect?.SendEvent(EVENT.LIGHTS_LOGO_SET, 1u);
-            }
+                lightSystem.SetNavLogo(true);
             lightSystem.NavLogo = data.navSwitch + data.logoSwitch != 0;
         }
 

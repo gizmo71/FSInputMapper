@@ -54,22 +54,6 @@
         FCU_VS_SLOT_SET,
         [Event("AP_PANEL_VS_ON")]
         AP_PANEL_VS_ON,
-        [Event("STROBES_SET")]
-        LIGHTS_STROBES_SET,
-        [Event("TOGGLE_BEACON_LIGHTS")]
-        LIGHTS_BEACON_TOGGLE,
-        [Event("TOGGLE_WING_LIGHTS")]
-        LIGHTS_WING_TOGGLE,
-        [Event("LOGO_LIGHTS_SET")]
-        LIGHTS_LOGO_SET,
-        [Event("NAV_LIGHTS_SET")]
-        LIGHTS_NAV_SET,
-        [Event("TOGGLE_RECOGNITION_LIGHTS")]
-        LIGHTS_RECOGNITION_TOGGLE,
-        [Event("LANDING_LIGHTS_SET")]
-        LIGHTS_LANDING_SET,
-        [Event("TAXI_LIGHTS_SET")]
-        LIGHTS_TAXI_SET,
         // These "work" but the visible lever doesn't move; that stops reverse being set like this too. :-(
         [Event("THROTTLE1_SET")]
         ENGINE_THROTTLE_1_SET,

@@ -109,7 +109,7 @@
         <CheckBox Content="Landing Lights" ToolTip="Ensure On or Retract (not Off) in game" HorizontalAlignment="Left" Margin="90,170,0,0" VerticalAlignment="Top" Width="120"
                   IsChecked="{Binding Path=LandingLights,Mode=OneWay}" Click="LandingLightsClicked" />
         <ComboBox ToolTip="Nose Lights" IsEnabled="False" HorizontalAlignment="Left" Margin="220,167,0,0" VerticalAlignment="Top" Width="60"
-                  SelectedIndex="{Binding Path=NoseLights,Mode=OneWay}" SelectionChanged="NoseLightsSelected">
+                  SelectedIndex="{Binding Path=NoseLights,Mode=OneWay}">
             <ComboBoxItem Content="T.O." />
             <ComboBoxItem Content="Taxi" />
             <ComboBoxItem Content="Off" />
