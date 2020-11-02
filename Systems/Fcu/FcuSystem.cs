@@ -15,6 +15,10 @@ namespace FSInputMapper.Systems.Fcu
         public FcuSystem(IServiceProvider sp)
         {
             this.scHolder = sp.GetRequiredService<SimConnectHolder>();
+            this.speedSelectedListener = sp.GetRequiredService<FcuSpeedSelectedListener>();
+            this.speedModeSet = sp.GetRequiredService<FcuSpeedModeSet>();
+            this.speedIncrease = sp.GetRequiredService<FcuSpeedIncrease>();
+            this.speedDecrease = sp.GetRequiredService<FcuSpeedDecrease>();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

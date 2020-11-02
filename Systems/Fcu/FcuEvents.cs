@@ -4,13 +4,6 @@
     //TODO: convert to IEvent singletons
     public enum EVENT
     {
-        // Autopilot stuff
-        [Event("SPEED_SLOT_INDEX_SET")]
-        AP_SPEED_SLOT_SET,
-        [Event("AP_SPD_VAR_INC")]
-        AP_SPD_UP,
-        [Event("AP_SPD_VAR_DEC")]
-        AP_SPD_DOWN,
         [Event("HEADING_SLOT_INDEX_SET")]
         AP_HEADING_SLOT_SET,
         [Event("HEADING_BUG_INC")]

@@ -6,10 +6,6 @@ namespace FSInputMapper
 
     public static class FSIMTrigger
     {
-        public const string SPD_1_FASTER = "Speed +1";
-        public const string SPD_10_FASTER = "Speed +10";
-        public const string SPD_1_SLOWER = "Speed -1";
-        public const string SPD_10_SLOWER = "Speed -10";
         public const string HDG_MAN = "Managed Heading";
         public const string HDG_SEL = "Selected Heading";
         public const string HDG_RIGHT_1 = "Heading +1";

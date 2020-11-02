@@ -60,7 +60,7 @@ namespace FSInputMapper
 
         private void SpeedChange(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, (String)((Control)sender).Tag);
+            fcuSystem.SpeedChange((Int16)((Control)sender).Tag);
         }
 
         private void Heading_Push(object sender, RoutedEventArgs e)

@@ -11,6 +11,10 @@
         <local:ModeBackgroundConverter x:Key="ModeBackgroundConverter" />
         <sys:Boolean x:Key="True">True</sys:Boolean>
         <sys:Boolean x:Key="False">False</sys:Boolean>
+        <sys:Int16 x:Key="Plus1">+1</sys:Int16>
+        <sys:Int16 x:Key="Plus10">+10</sys:Int16>
+        <sys:Int16 x:Key="Minus1">-1</sys:Int16>
+        <sys:Int16 x:Key="Minus10">-10</sys:Int16>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -18,18 +22,18 @@
         </Grid.ColumnDefinitions>
         <!-- Airspeed -->
         <Button Content="+10" HorizontalAlignment="Left" Margin="16,14,0,0" VerticalAlignment="Top" Width="40"
-                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_FASTER}"/>
+                Click="SpeedChange" Tag="{StaticResource Plus10}"/>
         <Button Content="+1" HorizontalAlignment="Left" Margin="61,14,0,0" VerticalAlignment="Top" Width="32"
-                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_FASTER}"/>
+                Click="SpeedChange" Tag="{StaticResource Plus1}"/>
         <Button Content="Push" HorizontalAlignment="Left" Margin="107,14,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
                 Click="Airspeed_Push"/>
         <TextBox HorizontalAlignment="Left" Margin="16,39,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"
                  Text="{Binding Path=AutopilotAirspeed,Mode=OneWay}" IsReadOnly="True" />
         <Button Content="-10" HorizontalAlignment="Left" Margin="16,62,0,0" VerticalAlignment="Top" Width="40"
-                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_10_SLOWER}"/>
+                Click="SpeedChange" Tag="{StaticResource Minus10}"/>
         <Button Content="-1" HorizontalAlignment="Left" Margin="61,62,0,0" VerticalAlignment="Top" Width="32"
-                Click="SpeedChange" Tag="{x:Static local:FSIMTrigger.SPD_1_SLOWER}"/>
+                Click="SpeedChange" Tag="{StaticResource Minus1}"/>
         <Button Content="Pull" HorizontalAlignment="Left" Margin="107,62,0,0" VerticalAlignment="Top" Width="29"
                 Background="{Binding AirspeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
                 Click="Airspeed_Pull"/>

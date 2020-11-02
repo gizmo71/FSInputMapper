@@ -12,12 +12,10 @@ namespace FSInputMapper.Data
     {
 
         private readonly FSIMViewModel viewModel;
-        private readonly FcuSystem fcuSystem;
 
-        public FcuDataListener(FSIMViewModel viewModel, FcuSystem fcuSystem)
+        public FcuDataListener(FSIMViewModel viewModel, FcuSystem _)
         {
             this.viewModel = viewModel;
-            this.fcuSystem = fcuSystem;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
@@ -27,8 +25,6 @@ namespace FSInputMapper.Data
 
         public override void Process(SimConnect _, ApData fcuData)
         {
-            viewModel.AirspeedManaged = fcuData.speedSlot == 2;
-            fcuSystem.Speed = fcuData.speedKnots;
             viewModel.HeadingManaged = fcuData.headingSlot == 2;
             viewModel.AutopilotHeading = fcuData.heading;
             viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;

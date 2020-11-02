@@ -24,18 +24,6 @@ namespace FSInputMapper
         {
             switch (e.What)
             {
-                case FSIMTrigger.SPD_1_FASTER:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPD_UP, fast: true);
-                    break;
-                case FSIMTrigger.SPD_10_FASTER:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPD_UP, slow: true);
-                    break;
-                case FSIMTrigger.SPD_1_SLOWER:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPD_DOWN, fast: true);
-                    break;
-                case FSIMTrigger.SPD_10_SLOWER:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_SPD_DOWN, slow: true);
-                    break;
                 case FSIMTrigger.HDG_MAN:
                     //TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the push
                     scHolder.SimConnect?.SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);

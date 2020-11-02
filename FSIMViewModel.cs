@@ -31,6 +31,9 @@ namespace FSInputMapper
                 case nameof(fcuSystem.Speed):
                     OnPropertyChange(nameof(AutopilotAirspeed));
                     break;
+                case nameof(fcuSystem.SpeedSelected):
+                    OnPropertyChange(nameof(AirspeedManaged));
+                    break;
             }
         }
 
@@ -39,11 +42,9 @@ namespace FSInputMapper
             get { return fcuSystem.Speed; }
         }
 
-        bool airspeedManaged = true;
         public bool AirspeedManaged
         {
-            get { return airspeedManaged; }
-            set { if (airspeedManaged != value) { airspeedManaged = value; OnPropertyChange(); } }
+            get { return !fcuSystem.SpeedSelected; }
         }
 
         private Int32 apHeading = 0;
