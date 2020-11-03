@@ -53,6 +53,16 @@ namespace FSInputMapper
 
         }
 
+        public static void SetDataOnSimObject<StructType>(this SimConnect simConnect, StructType data)
+            where StructType : struct
+        {
+            if (simConnect is SimConnectzmo sc)
+            {
+                STRUCT id = sc.typeToStruct![typeof(StructType)];
+                sc.SetDataOnSimObject(id, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
+            }
+        }
+
     }
 
 }
