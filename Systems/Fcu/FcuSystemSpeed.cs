@@ -23,7 +23,7 @@ namespace FSInputMapper.Systems.Fcu
     public struct ApSpeedData
     {
         [SCStructField("AUTOPILOT AIRSPEED HOLD VAR", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.1f)]
-        public double speedKnots; // Real range 100 -399 knots (Mach 0.10-0.99).
+        public double speedKnots; // Allowable Mach range 0.10-0.99
         [SCStructField("AUTOPILOT SPEED SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 speedSlot;
     }
@@ -76,7 +76,7 @@ namespace FSInputMapper.Systems.Fcu
 
         public override void Process(SimConnect simConnect, FcuSpeedSelectedData data)
         {
-            simConnect.SendEvent(speedSet, data.indicatedKnots);
+            simConnect.SendEvent(speedSet, Math.Max(Math.Min(data.indicatedKnots, 100), 399));
             simConnect.SendEvent(speedModeSet, 1u);
         }
 
