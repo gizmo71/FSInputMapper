@@ -7,6 +7,7 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper.Systems.Fcu
 {
 
+    #region Events
     [Singleton]
     public class FcuSpeedModeSet : IEvent { public string SimEvent() { return "SPEED_SLOT_INDEX_SET"; } }
 
@@ -18,9 +19,10 @@ namespace FSInputMapper.Systems.Fcu
 
     [Singleton]
     public class FcuSpeedSet : IEvent { public string SimEvent() { return "AP_SPD_VAR_SET"; } }
+    #endregion
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct ApSpeedData
+    public struct FcuSpeedData
     {
         [SCStructField("AUTOPILOT AIRSPEED HOLD VAR", "knots", SIMCONNECT_DATATYPE.FLOAT64, 0.1f)]
         public double speedKnots; // Allowable Mach range 0.10-0.99
@@ -29,7 +31,7 @@ namespace FSInputMapper.Systems.Fcu
     }
 
     [Singleton]
-    public class FcuSpeedListener : DataListener<ApSpeedData>, IRequestDataOnOpen
+    public class FcuSpeedListener : DataListener<FcuSpeedData>, IRequestDataOnOpen
     {
 
         private readonly FcuSystem fcuSystem;
@@ -44,7 +46,7 @@ namespace FSInputMapper.Systems.Fcu
             return SIMCONNECT_PERIOD.SIM_FRAME;
         }
 
-        public override void Process(SimConnect _, ApSpeedData data)
+        public override void Process(SimConnect _, FcuSpeedData data)
         {
             fcuSystem.SpeedSelected = data.speedSlot == 1;
             fcuSystem.Speed = data.speedKnots;

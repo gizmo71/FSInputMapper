@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FSInputMapper.Systems.Fcu;
+﻿using FSInputMapper.Systems.Fcu;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
@@ -25,8 +22,6 @@ namespace FSInputMapper.Data
 
         public override void Process(SimConnect _, ApData fcuData)
         {
-            viewModel.HeadingManaged = fcuData.headingSlot == 2;
-            viewModel.AutopilotHeading = fcuData.heading;
             viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
             viewModel.AutopilotAltitude = fcuData.altitude;
             viewModel.AutopilotVerticalSpeed = fcuData.vs;
@@ -62,18 +57,6 @@ namespace FSInputMapper.Data
                 + $" AltH {fcuModeData.apAltHold} vsH {fcuModeData.apVSHold}"
                 + $"\nATHR arm {fcuModeData.autothrustArmed} act {fcuModeData.autothrustActive}";
 #endif
-        }
-
-    }
-
-    [Singleton]
-    public class FcuHeadingSelectDataListener : DataListener<ApHdgSelData>
-    {
-
-        public override void Process(SimConnect simConnect, ApHdgSelData fcuHeadingSelectData)
-        {
-            simConnect.SendEvent(EVENT.AP_HEADING_SLOT_SET, 1u);
-            simConnect.SendEvent(EVENT.AP_HEADING_BUG_SET, (uint)fcuHeadingSelectData.headingMagnetic);
         }
 
     }

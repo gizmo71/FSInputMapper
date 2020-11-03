@@ -10,11 +10,6 @@ namespace FSInputMapper
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ApData
     {
-        // Correct for selected, but not writable. When the user is pre-selecting, remains on the managed number.
-        [SCStructField("AUTOPILOT HEADING LOCK DIR", "degrees", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 heading; // Real range 000-359 (not 360!)
-        [SCStructField("AUTOPILOT HEADING SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 headingSlot;
         // In selected mode, this is correct (but not writable).
         // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
         // Have not yet found where the displayed panel value is (may not be available via SimConnect).
@@ -59,13 +54,5 @@ namespace FSInputMapper
         public Int32 autothrustActive;
         //TODO: EXPED button, when it's implemented
     }
-
-    // FCU - things we get when pulling Heading to Selected.
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct ApHdgSelData
-    {
-        [SCStructField("PLANE HEADING DEGREES MAGNETIC", "degrees", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public UInt32 headingMagnetic;
-    };
 
 }

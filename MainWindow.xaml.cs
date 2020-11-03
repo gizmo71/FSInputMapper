@@ -48,14 +48,9 @@ namespace FSInputMapper
             simConnectAdapter.AttachWinow((HwndSource)PresentationSource.FromVisual(this));
         }
 
-        private void Airspeed_Push(object sender, RoutedEventArgs e)
+        private void AirspeedManaged(object sender, RoutedEventArgs e)
         {
-            fcuSystem.SetSpeedSelected(false);
-        }
-
-        private void Airspeed_Pull(object sender, RoutedEventArgs e)
-        {
-            fcuSystem.SetSpeedSelected(true);
+            fcuSystem.SetSpeedSelected(!(bool)((Control)sender).Tag);
         }
 
         private void SpeedChange(object sender, RoutedEventArgs e)
@@ -63,34 +58,14 @@ namespace FSInputMapper
             fcuSystem.SpeedChange((Int16)((Control)sender).Tag);
         }
 
-        private void Heading_Push(object sender, RoutedEventArgs e)
+        private void HeadingManaged(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_MAN);
+            fcuSystem.SetHeadingSelected(!(bool)((Control)sender).Tag);
         }
 
-        private void Heading_Pull(object sender, RoutedEventArgs e)
+        private void HeadingChange(object sender, RoutedEventArgs e)
         {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_SEL);
-        }
-
-        private void Left10Degrees(object sender, RoutedEventArgs e)
-        {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_10);
-        }
-
-        private void Left1Degree(object sender, RoutedEventArgs e)
-        {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_LEFT_1);
-        }
-
-        private void Right10Degrees(object sender, RoutedEventArgs e)
-        {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_10);
-        }
-
-        private void Right1Degree(object sender, RoutedEventArgs e)
-        {
-            triggerBus.Trigger(sender, FSIMTrigger.HDG_RIGHT_1);
+            fcuSystem.SpeedChange((Int16)((Control)sender).Tag);
         }
 
         private void Altitude_Push(object sender, RoutedEventArgs e)

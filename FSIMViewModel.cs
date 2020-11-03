@@ -34,6 +34,12 @@ namespace FSInputMapper
                 case nameof(fcuSystem.SpeedSelected):
                     OnPropertyChange(nameof(AirspeedManaged));
                     break;
+                case nameof(fcuSystem.Heading):
+                    OnPropertyChange(nameof(AutopilotHeading));
+                    break;
+                case nameof(fcuSystem.HeadingSelected):
+                    OnPropertyChange(nameof(HeadingManaged));
+                    break;
             }
         }
 
@@ -47,18 +53,14 @@ namespace FSInputMapper
             get { return !fcuSystem.SpeedSelected; }
         }
 
-        private Int32 apHeading = 0;
-        public Int32 AutopilotHeading
+        public int AutopilotHeading
         {
-            get { return apHeading; }
-            set { if (apHeading != value) { apHeading = value; OnPropertyChange(); } }
+            get { return fcuSystem.Heading; }
         }
 
-        bool headingManaged = true;
         public bool HeadingManaged
         {
-            get { return headingManaged; }
-            set { if (headingManaged != value) { headingManaged = value; OnPropertyChange(); } }
+            get { return !fcuSystem.HeadingSelected; }
         }
 
         private Int32 apAltitude = 5000;

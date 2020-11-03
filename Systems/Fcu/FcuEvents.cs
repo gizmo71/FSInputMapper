@@ -4,14 +4,6 @@
     //TODO: convert to IEvent singletons
     public enum EVENT
     {
-        [Event("HEADING_SLOT_INDEX_SET")]
-        AP_HEADING_SLOT_SET,
-        [Event("HEADING_BUG_INC")]
-        AP_HDG_RIGHT,
-        [Event("HEADING_BUG_DEC")]
-        AP_HDG_LEFT,
-        [Event("HEADING_BUG_SET")]
-        AP_HEADING_BUG_SET,
         [Event("ALTITUDE_SLOT_INDEX_SET")]
         AP_ALTITUDE_SLOT_SET,
         [Event("AP_ALT_VAR_INC")]

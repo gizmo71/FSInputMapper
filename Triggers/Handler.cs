@@ -1,7 +1,4 @@
-﻿using FSInputMapper.Data;
-using Microsoft.FlightSimulator.SimConnect;
-
-namespace FSInputMapper
+﻿namespace FSInputMapper
 {
 
     //TODO: turn into different objects
@@ -10,40 +7,18 @@ namespace FSInputMapper
     {
         private readonly SimConnectHolder scHolder;
         private readonly FSIMViewModel viewModel; //TODO: remove
-        private readonly FcuHeadingSelectDataListener fcuHeadingSelectDataListener;
 
-        public FSIMTriggerHandler(FSIMTriggerBus triggerBus, SimConnectHolder scHolder, FSIMViewModel viewModel, FcuHeadingSelectDataListener fcuHeadingSelectDataListener)
+        public FSIMTriggerHandler(FSIMTriggerBus triggerBus, SimConnectHolder scHolder, FSIMViewModel viewModel)
         {
             triggerBus.OnTrigger += OnTrigger;
             this.scHolder = scHolder;
             this.viewModel = viewModel; //TODO: remove this and do those things another way
-            this.fcuHeadingSelectDataListener = fcuHeadingSelectDataListener;
         }
 
         private void OnTrigger(object? sender, FSIMTriggerArgs e)
         {
             switch (e.What)
             {
-                case FSIMTrigger.HDG_MAN:
-                    //TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the push
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_HEADING_SLOT_SET, 2u);
-                    break;
-                case FSIMTrigger.HDG_SEL:
-                    //TODO: if AUTOPILOT APPROACH HOLD is TRUE, ignore the pull
-                    scHolder.SimConnect?.RequestDataOnSimObject(fcuHeadingSelectDataListener, SIMCONNECT_PERIOD.ONCE);
-                    break;
-                case FSIMTrigger.HDG_RIGHT_1:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_HDG_RIGHT, fast: true);
-                    break;
-                case FSIMTrigger.HDG_RIGHT_10:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_HDG_RIGHT, slow: true);
-                    break;
-                case FSIMTrigger.HDG_LEFT_1:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_HDG_LEFT, fast: true);
-                    break;
-                case FSIMTrigger.HDG_LEFT_10:
-                    scHolder.SimConnect?.SendEvent(EVENT.AP_HDG_LEFT, slow: true);
-                    break;
                 case FSIMTrigger.ALT_MAN:
                     scHolder.SimConnect?.SendEvent(EVENT.AP_ALTITUDE_SLOT_SET, 2u);
                     break;
