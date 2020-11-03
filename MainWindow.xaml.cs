@@ -130,7 +130,8 @@ namespace FSInputMapper
 
         private void FcuGsClicked(object sender, RoutedEventArgs e)
         {
-            throw new Exception("Can't select GS alone");
+            MessageBox.Show("Can't select GS alone", "Please do not press that button again",
+                            MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void StrobeLightsClicked(object sender, RoutedEventArgs e)
