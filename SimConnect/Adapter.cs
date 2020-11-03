@@ -199,7 +199,7 @@ if (!debugConsole.Text.StartsWith("fish"))
         {
             EVENT e = (EVENT)data.uEventID;
 debugConsole.Text = $"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
-+ "\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}";
++ $"\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}";
             foreach (KeyValuePair<IEventNotification, EVENT> entry
                 in ((simConnect as SimConnectzmo)!.notificationsToEvent!)
                 .Where<KeyValuePair<IEventNotification, EVENT>>(candidate => e == candidate.Value))
