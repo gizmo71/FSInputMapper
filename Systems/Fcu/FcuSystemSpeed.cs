@@ -114,9 +114,9 @@ namespace FSInputMapper.Systems.Fcu
 
         public void SpeedChange(int delta)
         {
-            bool isSlow = Math.Abs(delta) == 1;
+            bool isFast = Math.Abs(delta) == 1;
             IEvent eventToSend = delta < 0 ? (IEvent)speedDecrease : speedIncrease;
-            scHolder.SimConnect?.SendEvent(eventToSend, slow: isSlow, fast: !isSlow);
+            scHolder.SimConnect?.SendEvent(eventToSend, slow: !isFast, fast: isFast);
         }
 
     }
