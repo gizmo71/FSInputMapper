@@ -45,7 +45,7 @@ namespace FSInputMapper.Data
             if (data.seaLevelPressureMB != data.kohlsmanMB)
             {
                 //TODO: allow the user to turn off this automatic sync.
-                simConnect.SendEvent(kohlsmanSet, data.seaLevelPressureMB);
+                simConnect.SendEvent(kohlsmanSet, data.seaLevelPressureMB * 16);
                 dc.Text += $"\nAutomatically adjusted {DateTime.Now}";
             }
         }
