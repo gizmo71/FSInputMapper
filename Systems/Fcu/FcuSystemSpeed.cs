@@ -78,7 +78,7 @@ namespace FSInputMapper.Systems.Fcu
 
         public override void Process(SimConnect simConnect, FcuSpeedSelectedData data)
         {
-            simConnect.SendEvent(speedSet, Math.Max(Math.Min(data.indicatedKnots, 100), 399));
+            simConnect.SendEvent(speedSet, Math.Min(Math.Max(data.indicatedKnots, 100), 399));
             simConnect.SendEvent(speedModeSet, 1u);
         }
 
