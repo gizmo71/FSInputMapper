@@ -65,7 +65,7 @@ namespace FSInputMapper
 
         private void HeadingChange(object sender, RoutedEventArgs e)
         {
-            fcuSystem.SpeedChange((Int16)((Control)sender).Tag);
+            fcuSystem.HeadingChange((Int16)((Control)sender).Tag);
         }
 
         private void Altitude_Push(object sender, RoutedEventArgs e)
