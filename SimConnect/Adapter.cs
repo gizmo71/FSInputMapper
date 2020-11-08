@@ -75,14 +75,13 @@ namespace FSInputMapper
         private void Tick(object? sender, EventArgs e)
         {
             if (scHolder.SimConnect != null) return;
-if (!debugConsole.Text.StartsWith("fish"))
+if (false && !debugConsole.Text.StartsWith("fish"))
 {
                 debugConsole.Text = "fish";
                 foreach (var service in serviceProvider.GetServices<IEvent>())
                 {
                     debugConsole.Text += $"\n{service} -> {service.SimEvent()}";
                 }
-                debugConsole.Text = $"\nAfter {Enum.GetValues(typeof(EVENT)).Cast<uint>().Max()}";
             }
             try
             {
