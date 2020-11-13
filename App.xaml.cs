@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 namespace FSInputMapper
 {
 
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
     public class SingletonAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, AllowMultiple = false)]
@@ -80,7 +80,10 @@ namespace FSInputMapper
                 var singleton = candidate.GetCustomAttribute<SingletonAttribute>();
                 if (singleton != null)
                 {
-                    services.AddSingleton(candidate, candidate);
+                    if (candidate.IsValueType) // For structs.
+                        services.AddSingleton(candidate, _ => Activator.CreateInstance(candidate));
+                    else
+                        services.AddSingleton(candidate, candidate);
                     foreach (var derviedFrom in serviceInterfacesAndBaseClasses
                         .Where(fromCandidate => fromCandidate.IsAssignableFrom(candidate)))
                     {

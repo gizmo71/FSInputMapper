@@ -15,18 +15,13 @@ namespace FSInputMapper.Data
         public Int32 spoilersArmed;
     };
 
+    [Singleton] //TODO: Eliminate the need for this on structs. Perhaps a special since they have to be handled differently anyway.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct SpoilerHandle
+    public struct SpoilerHandle : Data<SpoilerHandle>
     {
         [SCStructField("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 0f)]
         public Int32 spoilersHandlePosition;
     };
-
-    [Singleton] //TODO: don't really want to have to do this, but otherwise it's not registered. Sender class?
-    public class SpoilerHandleDataRegistrationHack : IData
-    {
-        public Type GetStructType() { return typeof(SpoilerHandle); }
-    }
 
     [Singleton]
     public class MoreSpoilerListener : DataListener<SpoilerData>

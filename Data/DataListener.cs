@@ -21,9 +21,9 @@ namespace FSInputMapper.Data
         public abstract SIMCONNECT_PERIOD GetInitialRequestPeriod();
     }
 
-    public abstract class Data<StructType> : IData
+    public interface Data<StructType> : IData
     {
-        public Type GetStructType() { return typeof(StructType); }
+        Type IData.GetStructType() { return typeof(StructType); }
     }
 
     public abstract class DataListener<StructType> : Data<StructType>, IDataListener
