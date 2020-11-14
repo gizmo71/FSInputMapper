@@ -80,7 +80,7 @@ if (false && !debugConsole.Text.StartsWith("fish"))
     debugConsole.Text = "fish";
     foreach (var service in serviceProvider.GetServices<IData>())
     {
-        debugConsole.Text += $"\n{service} -> {service.GetStructType()}";
+        debugConsole.Text += $"\n{service.GetType().Name} -> {service.GetStructType().Name}";
     }
 }
             try

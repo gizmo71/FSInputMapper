@@ -77,18 +77,19 @@ namespace FSInputMapper
                 .Where(candidate => candidate.GetCustomAttribute<ProvideDerivedAttribute>() != null);
             foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
-                var singleton = candidate.GetCustomAttribute<SingletonAttribute>();
-                if (singleton != null)
+                var required = candidate.GetCustomAttribute<SingletonAttribute>() != null;
+                foreach (var derviedFrom in serviceInterfacesAndBaseClasses
+                    .Where(fromCandidate => fromCandidate.IsAssignableFrom(candidate) && !candidate.IsAbstract))
+                {
+                    services.AddSingleton(derviedFrom, x => x.GetRequiredService(candidate));
+                    required = true;
+                }
+                if (required)
                 {
                     if (candidate.IsValueType) // For structs.
                         services.AddSingleton(candidate, _ => Activator.CreateInstance(candidate));
                     else
                         services.AddSingleton(candidate, candidate);
-                    foreach (var derviedFrom in serviceInterfacesAndBaseClasses
-                        .Where(fromCandidate => fromCandidate.IsAssignableFrom(candidate)))
-                    {
-                        services.AddSingleton(derviedFrom, x => x.GetRequiredService(candidate));
-                    }
                 }
             }
         }

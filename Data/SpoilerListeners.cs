@@ -15,7 +15,6 @@ namespace FSInputMapper.Data
         public Int32 spoilersArmed;
     };
 
-    [Singleton] //TODO: Eliminate the need for this on structs. Perhaps a special since they have to be handled differently anyway.
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerHandle : Data<SpoilerHandle>
     {
