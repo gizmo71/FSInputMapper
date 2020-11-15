@@ -4,6 +4,7 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
+using FSInputMapper.Systems.Altimeter;
 using FSInputMapper.Systems.Lights;
 using FSInputMapper.Systems.Fcu;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,7 @@ namespace FSInputMapper
         private readonly FSIMTriggerBus triggerBus;
         private readonly LightSystem lightSystem;
         private readonly FcuSystem fcuSystem;
+        private readonly AltimeterSystem altimeterSystem;
 
         public MainWindow(IServiceProvider sp)
         {
@@ -39,6 +41,7 @@ namespace FSInputMapper
             this.triggerBus = sp.GetRequiredService<FSIMTriggerBus>();
             this.lightSystem = sp.GetRequiredService<LightSystem>();
             this.fcuSystem = sp.GetRequiredService<FcuSystem>();
+            this.altimeterSystem = sp.GetRequiredService<AltimeterSystem>();
             InitializeComponent();
         }
 
@@ -162,6 +165,11 @@ namespace FSInputMapper
         private void LandingLightsClicked(object sender, RoutedEventArgs e)
         {
             lightSystem.SetLanding((sender as CheckBox)!.IsChecked ?? false);
+        }
+
+        private void SetStandard(object sender, RoutedEventArgs e)
+        {
+            altimeterSystem.SetStandard();
         }
 
     }

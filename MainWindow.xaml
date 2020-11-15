@@ -24,6 +24,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="800*"/>
         </Grid.ColumnDefinitions>
+
         <!-- Airspeed -->
         <Button Content="+10" HorizontalAlignment="Left" Margin="16,14,0,0" VerticalAlignment="Top" Width="40"
                 Click="SpeedChange" Tag="{StaticResource Plus10}"/>
@@ -95,6 +96,9 @@
             Background="{Binding VerticalSpeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
             Click="VS_Pull"/>
 
+        <Button Content="Set Standard" Margin="616,33,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
+            Click="SetStandard"/>
+
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="FcuGsClicked"/>
@@ -129,5 +133,6 @@
         </ComboBox>
 
         <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
+
     </Grid>
 </Window>

@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using FSInputMapper.Data;
 using FSInputMapper.Event;
 using Microsoft.FlightSimulator.SimConnect;
 
-namespace FSInputMapper.Data
+namespace FSInputMapper.Systems.Altimeter
 {
 
     [Singleton]
     public class KohlsmanSet : IEvent { public string SimEvent() { return "KOHLSMAN_SET"; } }
+
+    [Singleton]
+    public class KohlsmanSetStandard : IEvent { public string SimEvent() { return "BAROMETRIC_STD_PRESSURE"; } }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct BaroData
@@ -49,6 +53,23 @@ namespace FSInputMapper.Data
                 dc.Text += $"\nAutomatically adjusted {DateTime.Now}";
             }
         }
+
+    }
+
+    [Singleton]
+    public class AltimeterSystem
+    {
+
+        private readonly KohlsmanSetStandard setStandard;
+        private readonly SimConnectHolder sch;
+
+        public AltimeterSystem(KohlsmanSetStandard setStandard, SimConnectHolder sch)
+        {
+            this.setStandard = setStandard;
+            this.sch = sch;
+        }
+
+        public void SetStandard() { sch.SimConnect?.SendEvent(setStandard); }
 
     }
 
