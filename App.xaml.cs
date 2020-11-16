@@ -23,7 +23,7 @@ namespace FSInputMapper
         {
             var enumType = value.GetType();
             var name = Enum.GetName(enumType, value);
-            return enumType.GetField(name!)!.GetCustomAttributes(false).OfType<TAttribute>().SingleOrDefault();
+            return enumType.GetField(name!)!.GetCustomAttributes(false).OfType<TAttribute>().Single();
         }
 
     }
