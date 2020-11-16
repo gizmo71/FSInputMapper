@@ -23,7 +23,7 @@ namespace FSInputMapper
 
         private readonly FcuSystem fcuSystem;
 
-        private void OnFcuSystemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnFcuSystemPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             Debug.Assert(sender == fcuSystem);
             switch (e.PropertyName)
@@ -116,7 +116,7 @@ namespace FSInputMapper
 
         private readonly LightSystem lightSystem;
 
-        private void OnLightSystemPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnLightSystemPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             Debug.Assert(sender == lightSystem);
             switch (e.PropertyName)
@@ -168,7 +168,7 @@ namespace FSInputMapper
         }
 
         public string DebugConsoleText { get { return debugConsole.Text; } }
-        private void OnDebugConsolePropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void OnDebugConsolePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             Debug.Assert(sender == debugConsole);
             switch (e.PropertyName) {
