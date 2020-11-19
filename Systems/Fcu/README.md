@@ -11,6 +11,27 @@ There is currently no support for mach numbers.
 Things to experiment with
 -------------------------
 
+According to a post on Discord, there are some more A/P variables at indexes:
+```
+A:AUTOPILOT ALTITUDE LOCK VAR:3
+A:AUTOPILOT HEADING LOCK DIR:1
+A:AUTOPILOT VERTICAL HOLD VAR:2
+```
+There may be a load more [here](https://github.com/Sequal32/yourcontrols/blob/master/definitions/aircraft/FBW%20A32NX%20Dev.yaml) including
+```
+LIGHT TAXI:1
+LIGHT TAXI:2
+LIGHT LANDING:2
+LIGHT LANDING:3
+AUTOPILOT FLIGHT DIRECTOR ACTIVE:1
+AUTOPILOT FLIGHT DIRECTOR ACTIVE:2
+KOHLSMAN SETTING MB:1
+KOHLSMAN SETTING MB:2
+TRANSPONDER STATE:1
+TRANSPONDER CODE
+LIGHT POTENTIOMETER:24 with event LIGHT_POTENTIOMETER_24_SET - might be strobes
+```
+
 ```
 There are also "SET AP MANAGED SPEED IN MACH"/" ON"/" OFF" - contradiction in terms?!
 "SET AUTOPILOT AIRSPEED HOLD"? "SET AUTOPILOT MACH HOLD"? "SET AUTOPILOT MACH REFERENCE"?
