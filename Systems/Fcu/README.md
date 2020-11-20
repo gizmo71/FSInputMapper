@@ -13,7 +13,7 @@ Things to experiment with
 
 According to a post on Discord, there are some more A/P variables at indexes:
 ```
-A:AUTOPILOT ALTITUDE LOCK VAR:3
+A:AUTOPILOT ALTITUDE LOCK VAR:3 matched with K:2:AP_ALT_VAR_SET_ENGLISH - what is the "2"?
 A:AUTOPILOT HEADING LOCK DIR:1
 A:AUTOPILOT VERTICAL HOLD VAR:2
 ```
