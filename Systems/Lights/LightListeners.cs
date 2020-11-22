@@ -18,8 +18,14 @@ namespace FSInputMapper.Systems.Lights
         public int wingState;
         [SCStructField("LIGHT TAXI", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int noseSwitch;
+        [SCStructField("LIGHT TAXI:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int noseSwitch2; // runway turn off (left?)
+        [SCStructField("LIGHT TAXI:3", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int noseSwitch3; // runway turn off (right?)
         [SCStructField("LIGHT TAXI ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int noseState;
+        [SCStructField("LIGHT POTENTIOMETER:7", "Number", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
+        public float domeLight; // 0=off, 0.5=dim, 1.0=bright
     };
 
     [Singleton]
