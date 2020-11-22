@@ -20,6 +20,8 @@ namespace FSInputMapper.Systems.Altimeter
         public float seaLevelPressureMB;
         [SCStructField("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanMB;
+        [SCStructField("KOHLSMAN SETTING MB:2", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
+        public float kohlsmanMB2;
         [SCStructField("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanHg;
     };
@@ -44,13 +46,13 @@ namespace FSInputMapper.Systems.Altimeter
 
         public override void Process(SimConnect simConnect, BaroData data)
         {
-            dc.Text = $"MSL {data.seaLevelPressureMB}MB"
-                + $"\nKohlsman {data.kohlsmanMB}MB {data.kohlsmanHg.ToString("N2")}Hg";
+dc.Text = $"MSL {data.seaLevelPressureMB}MB"
+    + $"\nKohlsman {data.kohlsmanMB}MB (second {data.kohlsmanMB2}MB) {data.kohlsmanHg.ToString("N2")}Hg";
             if (Math.Abs(data.seaLevelPressureMB - data.kohlsmanMB) > 0.666)
             {
                 //TODO: allow the user to turn off this automatic sync.
                 simConnect.SendEvent(kohlsmanSet, (uint)(data.seaLevelPressureMB * 16.0));
-                dc.Text += $"\nAutomatically adjusted {DateTime.Now}";
+dc.Text += $"\nAutomatically adjusted {DateTime.Now}";
             }
         }
 
