@@ -28,7 +28,7 @@ namespace FSInputMapper.Systems.Lights
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
         {
-            return SIMCONNECT_PERIOD.SECOND;
+            return SIMCONNECT_PERIOD.VISUAL_FRAME;
         }
 
         public override void Process(SimConnect simConnect, LandingLightData data)

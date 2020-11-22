@@ -124,6 +124,9 @@ namespace FSInputMapper
                 case nameof(lightSystem.Strobes):
                     OnPropertyChange(nameof(StrobeLights));
                     break;
+                case nameof(lightSystem.IsStrobeAuto):
+                    OnPropertyChange(nameof(StrobesNotAuto));
+                    break;
                 case nameof(lightSystem.Beacon):
                     OnPropertyChange(nameof(BeaconLights));
                     break;
@@ -145,6 +148,7 @@ namespace FSInputMapper
             }
         }
 
+        public bool StrobesNotAuto { get { return !lightSystem.IsStrobeAuto; } }
         public bool StrobeLights { get { return lightSystem.Strobes; } }
         public bool BeaconLights { get { return lightSystem.Beacon; } }
         public bool WingLights { get { return lightSystem.Wing; } }

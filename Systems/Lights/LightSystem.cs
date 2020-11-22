@@ -38,6 +38,13 @@ namespace FSInputMapper.Systems.Lights
             internal set { if (strobes != value) { strobes = value; OnPropertyChange(); } }
         }
 
+        private bool isStrobeAuto;
+        public bool IsStrobeAuto
+        {
+            get { return isStrobeAuto; }
+            internal set { if (isStrobeAuto != value) { isStrobeAuto = value; OnPropertyChange(); } }
+        }
+
         private bool wing;
         public bool Wing
         {

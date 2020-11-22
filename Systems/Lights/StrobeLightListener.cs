@@ -13,6 +13,8 @@ namespace FSInputMapper.Systems.Lights
         public int strobeSwitch;
         [SCStructField("LIGHT STROBE ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public int strobeState;
+        [SCStructField("LIGHT POTENTIOMETER:24", "Number", SIMCONNECT_DATATYPE.INT32, 0.1f)]
+        public int lPot24;
     }
 
     [Singleton]
@@ -34,6 +36,7 @@ namespace FSInputMapper.Systems.Lights
         public override void Process(SimConnect simConnect, StrobeLightData data)
         {
             lightSystem.Strobes = data.strobeSwitch == 1;
+            lightSystem.IsStrobeAuto = data.lPot24 == 0;
         }
 
     }
