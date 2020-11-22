@@ -14,7 +14,9 @@ namespace FSInputMapper
         // In managed mode, it shows what the autopilot is really doing (which may be modified by constraints).
         // Have not yet found where the displayed panel value is (may not be available via SimConnect).
         [SCStructField("AUTOPILOT ALTITUDE LOCK VAR", "feet", SIMCONNECT_DATATYPE.INT32, 50f)]
-        public Int32 altitude; // Real range 100-49000
+        public Int32 constrainedAltitude; // Real range 100-49000
+        [SCStructField("AUTOPILOT ALTITUDE LOCK VAR:3", "feet", SIMCONNECT_DATATYPE.INT32, 50f)]
+        public Int32 selectedAltitude; // Real range 100-49000
         [SCStructField("AUTOPILOT ALTITUDE SLOT INDEX", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 altitudeSlot;
         [SCStructField("AUTOPILOT VERTICAL HOLD VAR", "Feet/minute", SIMCONNECT_DATATYPE.INT32, 0.5f)]

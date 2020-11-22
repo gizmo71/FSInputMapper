@@ -23,7 +23,7 @@ namespace FSInputMapper.Data
         public override void Process(SimConnect _, ApData fcuData)
         {
             viewModel.AltitudeManaged = fcuData.altitudeSlot == 2;
-            viewModel.AutopilotAltitude = fcuData.altitude;
+            viewModel.AutopilotAltitude = fcuData.selectedAltitude;
             viewModel.AutopilotVerticalSpeed = fcuData.vs;
             viewModel.VerticalSpeedManaged = fcuData.vsSlot == 2;
         }
