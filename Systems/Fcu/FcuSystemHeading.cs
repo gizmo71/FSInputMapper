@@ -54,6 +54,7 @@ namespace FSInputMapper.Systems.Fcu
         {
             fcuSystem.HeadingSelected = data.headingSlot == 1;
             fcuSystem.Heading = data.heading;
+_.Set6dof(data.heading);
         }
 
     }

@@ -63,6 +63,16 @@ namespace FSInputMapper
             }
         }
 
+        public static void Set6dof(this SimConnect sc, float fHeadingDeg)
+        {
+            float fDeltaX = 0.0f;
+            float fDeltaY = 0.0f;
+            float fDeltaZ = 0.0f;
+            float fPitchDeg = fHeadingDeg;
+            float fBankDeg = fHeadingDeg;
+            sc.CameraSetRelative6DOF(fDeltaX, fDeltaY, fDeltaZ, fPitchDeg, fBankDeg, fHeadingDeg);
+        }
+
     }
 
 }
