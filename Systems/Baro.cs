@@ -48,7 +48,7 @@ namespace FSInputMapper.Systems.Altimeter
         {
 dc.Text = $"MSL {data.seaLevelPressureMB}MB"
     + $"\nKohlsman {data.kohlsmanMB}MB (second {data.kohlsmanMB2}MB) {data.kohlsmanHg.ToString("N2")}Hg";
-            if (Math.Abs(data.seaLevelPressureMB - data.kohlsmanMB) > 0.666)
+            if (false && Math.Abs(data.seaLevelPressureMB - data.kohlsmanMB) > 0.666)
             {
                 //TODO: allow the user to turn off this automatic sync.
                 simConnect.SendEvent(kohlsmanSet, (uint)(data.seaLevelPressureMB * 16.0));
