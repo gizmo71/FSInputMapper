@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.RightsManagement;
+using HidSharp;
+using System.Threading;
 
 namespace FSInputMapper
 {
@@ -97,6 +100,7 @@ namespace FSInputMapper
         private void OnStartup(object sender, StartupEventArgs e)
         {
             _serviceProvider.GetService<MainWindow>().Show();
+            _serviceProvider.GetService<HidSharpCoreTest>().Test();
         }
 
         private void OnUnhandledException(DispatcherUnhandledExceptionEventArgs details)
@@ -104,6 +108,75 @@ namespace FSInputMapper
             MessageBox.Show(details.Exception.ToString(), "Unhandled Exception",
                             MessageBoxButton.OK, MessageBoxImage.Warning);
             // Don't die: details.Handled = true;
+        }
+    }
+
+    //https://docs.zer7.com/hidsharp/?topic=html/2794bd11-156f-04dd-db45-7978aaa249ca.htm
+    [Singleton]
+    public class HidSharpCoreTest
+    {
+        private readonly DebugConsole dc;
+
+        public HidSharpCoreTest(DebugConsole dc)
+        {
+            this.dc = dc;
+        }
+
+        internal void Test()
+        {
+            var device = DeviceList.Local.GetHidDeviceOrNull(0x44f);
+            if (device == null)
+            {
+                MessageBox.Show("Restart me after plugging it in", "GamePad not found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            dc.Text = $"Found {device}";
+            var rd = device.GetReportDescriptor();
+            foreach (var r in rd.InputReports.SelectMany(ir => ir.DataItems).Select(di => di.Report))
+            {
+                dc.Text += $"\n{r} with";
+                foreach (var di in r.DataItems)
+                    dc.Text += $" {di.ExpectedUsageType}";
+            }
+return;
+            DeviceList.Local.Changed += DevicesChanged;
+            var stream = device.Open();
+            var hidUpdateThread = new Thread(() =>
+            {
+                Thread.CurrentThread.IsBackground = true;
+                using (stream)
+                {
+                    stream.ReadTimeout = 1000;
+                    for (;;)
+                    {
+                        if (!Thread.CurrentThread.IsAlive)
+                        {
+                            dc.Text = $"Dead {DateTime.UtcNow}";
+                            break;
+                        }
+                        try
+                        {
+                            var bytes = stream.Read();
+                            dc.Text = $"Rx {string.Join(" ", bytes)} {DateTime.UtcNow.Millisecond}";
+                        }
+                        catch (TimeoutException)
+                        {
+//dc.Text = $"Alive {DateTime.Now} but timed out";
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            dc.Text = $"Failed to read {e}";
+                        }
+                    }
+                }
+            });
+            hidUpdateThread.Start();
+        }
+
+        private void DevicesChanged(object? sender, DeviceListChangedEventArgs e)
+        {
+            dc.Text = $"Detected change {e}";
         }
     }
 
