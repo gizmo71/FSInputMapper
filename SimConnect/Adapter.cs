@@ -210,10 +210,10 @@ debugConsole.Text = $"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)d
         private void OnRecvSimobjectData(SimConnect simConnect, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             REQUEST request = (REQUEST)data.dwRequestID;
-            ((SimConnectzmo)simConnect).typeToRequest
+            (simConnect as SimConnectzmo)!.typeToRequest!
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
-                .SingleOrDefault()
+                .Single()
                 .Process(simConnect, data.dwData[0]);
         }
 

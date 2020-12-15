@@ -18,7 +18,7 @@ namespace FSInputMapper
         public static void SendEvent(this SimConnect sc, EVENT eventToSend, uint data = 0u, bool slow = false, bool fast = false)
         {
             SIMCONNECT_EVENT_FLAG flags = 0;
-            GROUP? group = (sc as SimConnectzmo)!.notificationsToEvent
+            GROUP? group = (sc as SimConnectzmo)!.notificationsToEvent!
                 .Where(candidate => candidate.Value == eventToSend)
                 .Select(notification => notification.Key.GetGroup())
                 .Distinct()
