@@ -24,7 +24,7 @@ namespace FSInputMapper
         internal Dictionary<IEvent, EVENT>? eventToEnum;
 
         internal SimConnectzmo(string szName, IntPtr hWnd, uint UserEventWin32)
-            : base(szName, hWnd, UserEventWin32, null, 6)
+            : base(szName, hWnd, UserEventWin32, null, 0) // 6 for over IP - can we make it timeout easier?
         {
         }
 
