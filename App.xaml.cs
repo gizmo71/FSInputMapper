@@ -87,7 +87,7 @@ namespace FSInputMapper
                 if (required)
                 {
                     if (candidate.IsValueType) // For structs.
-                        services.AddSingleton(candidate, _ => Activator.CreateInstance(candidate));
+                        services.AddSingleton(candidate, _ => Activator.CreateInstance(candidate)!);
                     else
                         services.AddSingleton(candidate, candidate);
                 }
@@ -96,7 +96,7 @@ namespace FSInputMapper
 
         private void OnStartup(object sender, StartupEventArgs e)
         {
-            _serviceProvider.GetService<MainWindow>().Show();
+            _serviceProvider.GetService<MainWindow>()!.Show();
         }
 
         private void OnUnhandledException(DispatcherUnhandledExceptionEventArgs details)
