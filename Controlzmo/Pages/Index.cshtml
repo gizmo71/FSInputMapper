@@ -5,6 +5,14 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <table>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Field1)</th>
+            <td>@Html.DisplayFor(model => model.Field1)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Field2)</th>
+            <td>@Html.DisplayFor(model => Model.Field2)</td>
+        </tr>
+    </table>
 </div>
