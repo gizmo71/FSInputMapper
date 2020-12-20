@@ -58,7 +58,7 @@ namespace FSInputMapper
     public partial class App : Application
     {
 
-        private readonly ServiceProvider _serviceProvider;
+        private readonly IServiceProvider _serviceProvider;
 
         public App()
         {
