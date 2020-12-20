@@ -17,6 +17,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controlzmo\**" />
+    <EmbeddedResource Remove="Controlzmo\**" />
+    <None Remove="Controlzmo\**" />
+    <Page Remove="Controlzmo\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>C:\MSFS SDK\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
