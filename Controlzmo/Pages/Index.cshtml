@@ -12,7 +12,11 @@
         </tr>
         <tr>
             <th>@Html.DisplayNameFor(model => model.Field2)</th>
-            <td>@Model.Field2</td>
+            <td id="clickyClicky">@Model.Field2</td>
         </tr>
     </table>
+    <ul id="messagesList"></ul>
 </div>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/test.js"></script>
