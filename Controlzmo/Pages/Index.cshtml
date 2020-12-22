@@ -1,5 +1,4 @@
 ﻿@page
-@model IndexModel
 @{
     ViewData["Title"] = "Home page";
 }
@@ -7,12 +6,12 @@
 <div class="text-center">
     <table>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Field1)</th>
-            <td>@Model.Field1</td>
+            <th>Light 1</th>
+            <td><input type="checkbox" id="light1" /></td>
         </tr>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Field2)</th>
-            <td id="clickyClicky">@Model.Field2</td>
+            <th>Light 2</th>
+            <td><input type="checkbox" id="light2" /></td>
         </tr>
     </table>
     <ul id="messagesList"></ul>

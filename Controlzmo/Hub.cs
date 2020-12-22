@@ -9,7 +9,7 @@ namespace Controlzmo
     {
         public async Task TestMessage(string message)
         {
-            await Clients.All.SendAsync(MethodName(), message);
+            await Clients.All.SendAsync(/*MethodName()*/"TestMessage", message + " " + System.DateTime.Now);
         }
 
         protected string MethodName([CallerMemberName] string name = "unknown")

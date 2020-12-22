@@ -18,7 +18,9 @@ connection.start().then(function() {
     // Called when connection established - may want to disable things until this is received
 }).catch(errorHandler);
 
-document.getElementById("clickyClicky").addEventListener("click", function(event) {
-    connection.invoke("TestMessage", "Um " + Math.random()).catch(errorHandler);
-    //event.preventDefault();
-});
+["light1", "light2"].forEach(id =>
+    document.getElementById(id).addEventListener("change", function (event) {
+        connection.invoke("TestMessage", /*event.srcElement.*/id + " is " + event.srcElement.checked).catch(errorHandler);
+        //event.preventDefault();
+    })
+);
