@@ -4,7 +4,7 @@ function errorHandler(err) {
     return console.error(err.toString());
 }
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/hub/test").build();
+var connection = new signalR.HubConnectionBuilder().withUrl("/hub/light").build();
 
 connection.on("TestMessage", function(message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

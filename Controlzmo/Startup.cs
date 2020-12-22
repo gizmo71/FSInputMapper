@@ -47,7 +47,7 @@ namespace Controlzmo
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapHub<TestHub>("/hub/test");
+                endpoints.MapHub<LightHub>("/hub/light");
             });
         }
     }
