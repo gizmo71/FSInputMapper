@@ -19,9 +19,9 @@ connection.start().then(function () {
     connection.invoke("SendAll").catch(errorHandler);
 }).catch(errorHandler);
 
-["light1", "light2"].forEach(id =>
+["lightStrobes", "lightBeacon"].forEach(id =>
     document.getElementById(id).addEventListener("change", function (event) {
-        connection.invoke("ChangedSomet", /*event.srcElement.*/id + " is " + event.srcElement.checked).catch(errorHandler);
+        connection.invoke("ChangedSomet", id + " is " + event.srcElement.checked).catch(errorHandler);
         //event.preventDefault();
     })
 );
