@@ -62,19 +62,22 @@ dc.Text = $"Event {(EVENT)data.uEventID} shifted {shifted}->{mapped} (raw {data.
     {
         private static SortedDictionary<uint, uint> map = new SortedDictionary<uint, uint>
         {
-            [0] = 0, // Max reverse
-            [16383] = 0, // Idle reverse - map to full until engine 1 problem fixed
-            [16384] = 16384, // Idle
-            [22000] = 17000, // Start of climb
-            [23999] = 19999, // End of climb
-            [24000] = 20000,
-            [25999] = 22999,
-            [26000] = 23000, // Start of Flex/MCT
-            [27999] = 25999, // End of Flex/MCT
-            [28000] = 26000,
-            [29999] = 28999,
-            [30000] = 29000, // Start of TO/GA
-            [32767] = 32767, // End of TO/GA
+            [0] = 13220, // Max reverse
+            [7999] = 16100, // Idle reverse - map to full until engine 1 problem fixed
+            [8000] = 16384, // Start of idle
+            [9200] = 16384, // End of idle
+            [9201] = 16550,
+            [16600] = 29500,
+            [16601] = 31000, // Start of climb
+            [17000] = 31000, // End of climb
+            [17001] = 31151,
+            [24099] = 31780,
+            [24100] = 32000, // Start of Flex/MCT
+            [25500] = 32000, // End of Flex/MCT
+            [25501] = 32210,
+            [32766] = 32758,
+            [32767] = 32768, // Start of TO/GA
+            [32768] = 32768, // End of TO/GA
         };
         public Throttle1SetEventNotification(DebugConsole dc, Throttle1SetEvent e) : base(e, map, dc) { }
     }
@@ -84,19 +87,22 @@ dc.Text = $"Event {(EVENT)data.uEventID} shifted {shifted}->{mapped} (raw {data.
     {
         private static SortedDictionary<uint, uint> map = new SortedDictionary<uint, uint>
         {
-            [0] = 0, // Max reverse
-            [16383] = 0, // Idle reverse - map to full until engine 1 problem fixed
-            [16384] = 16384, // Idle
-            [17000] = 22000, // Start of climb
-            [19999] = 23999, // End of climb
-            [20000] = 24000,
-            [22999] = 25999,
-            [23000] = 26000, // Start of Flex/MCT
-            [25999] = 27999, // End of Flex/MCT
-            [26000] = 28000,
-            [28999] = 29999,
-            [29000] = 30000, // Start of TO/GA
-            [32767] = 32767, // End of TO/GA
+            [0] = 13220, // Max reverse
+            [7999] = 16100, // Idle reverse - map to full until engine 1 problem fixed
+            [8000] = 16384, // Start of idle
+            [9200] = 16384, // End of idle
+            [9201] = 16550,
+            [16600] = 29500,
+            [16601] = 31000, // Start of climb
+            [17000] = 31000, // End of climb
+            [17001] = 31151,
+            [23949] = 31780,
+            [23950] = 32000, // Start of Flex/MCT
+            [25500] = 32000, // End of Flex/MCT
+            [25501] = 32210,
+            [32766] = 32758,
+            [32767] = 32768, // Start of TO/GA
+            [32768] = 32768, // End of TO/GA
         };
         public Throttle2SetEventNotification(DebugConsole dc, Throttle2SetEvent e) : base(e, map, dc) { }
     }
