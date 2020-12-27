@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;" />
+    <Exec Command="xcopy &quot;$(ProjectDir)..\SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;" />
   </Target>
 
 </Project>
