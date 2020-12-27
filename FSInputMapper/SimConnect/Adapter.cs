@@ -54,7 +54,7 @@ namespace FSInputMapper
             this.debugConsole = serviceProvider.GetRequiredService<DebugConsole>();
         }
 
-        public void AttachWinow(HwndSource hWndSource)
+        public void AttachWindow(HwndSource hWndSource)
         {
             this.hWnd = hWndSource.Handle;
             hWndSource.AddHook(WndProc);

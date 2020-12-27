@@ -48,7 +48,7 @@ namespace FSInputMapper
         protected override void OnSourceInitialized(EventArgs e)
         {
             base.OnSourceInitialized(e);
-            simConnectAdapter.AttachWinow((HwndSource)PresentationSource.FromVisual(this));
+            simConnectAdapter.AttachWindow((HwndSource)PresentationSource.FromVisual(this));
         }
 
         private void AirspeedManaged(object sender, RoutedEventArgs e)
