@@ -16,10 +16,13 @@ namespace FSInputMapper.Event
 
     public abstract class ThrottleSetEventNotification : IEventNotification
     {
-
+        private readonly DebugConsole dc;
         private readonly IEvent trigger;
 
-        protected ThrottleSetEventNotification(IEvent trigger) { this.trigger = trigger; }
+        protected ThrottleSetEventNotification(DebugConsole dc, IEvent trigger) {
+            this.dc = dc;
+            this.trigger = trigger;
+        }
 
         public IEvent GetEvent() { return trigger; }
         public GROUP GetGroup() { return GROUP.ENGINE; }
@@ -28,6 +31,7 @@ namespace FSInputMapper.Event
         {
             simConnect.SendEvent((EVENT)data.uEventID, data.dwData);
             double axis = ((int)data.dwData + 16384) / 327.68;
+            dc.Text = "Event ${(EVENT)data.uEventID} raw ${data.dwData} axis ${axis}";
         }
 
     }
@@ -35,13 +39,13 @@ namespace FSInputMapper.Event
     [Singleton]
     public class Throttle1SetEventNotification : ThrottleSetEventNotification
     {
-        public Throttle1SetEventNotification(Throttle1SetEvent e) : base(e) { }
+        public Throttle1SetEventNotification(DebugConsole dc, Throttle1SetEvent e) : base(dc, e) { }
     }
 
     [Singleton]
     public class Throttle2SetEventNotification : ThrottleSetEventNotification
     {
-        public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e) { }
+        public Throttle2SetEventNotification(DebugConsole dc, Throttle2SetEvent e) : base(dc, e) { }
     }
 
 }
