@@ -46,7 +46,7 @@ namespace Controlzmo
 
         private void DoStuff(object sender, ElapsedEventArgs e)
         {
-            _ = Hub.Clients.All.ShowMessage("tick");
+            _ = Hub.Clients.All.ShowMessage("\"<tick>\" " + System.DateTime.Now);
         }
     }
 }
