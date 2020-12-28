@@ -15,11 +15,8 @@ connection.on("ShowMessage", function (message) {
 connection.start().then(function () {
     // Called when connection established - may want to disable things until this is received
     connection.invoke("SendAll").catch(errorHandler);
-}).catch(errorHandler);
-
-["lightStrobes", "lightBeacon"].forEach(id =>
-    document.getElementById(id).addEventListener("change", function (event) {
-        connection.invoke("ChangedSomet", id + " is " + event.srcElement.checked).catch(errorHandler);
+    $(".sendSomet").on("change", function (event) {
+        connection.invoke("ChangedSomet", event.target.id + " is " + event.target.checked).catch(errorHandler);
         //event.preventDefault();
-    })
-);
+    });
+}).catch(errorHandler);
