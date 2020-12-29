@@ -21,6 +21,7 @@ namespace Controlzmo
             services.AddRazorPages();
             services.AddSignalR();
             services.AddSingleton<WibbleTimer>();
+            services.AddSingleton<SimConnectzmo.Adapter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

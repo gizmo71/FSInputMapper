@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Timers;
+using SimConnectzmo;
 
 namespace Controlzmo
 {
@@ -37,16 +38,27 @@ namespace Controlzmo
     public class WibbleTimer : System.Timers.Timer
     {
         private readonly IHubContext<LightHub, ILightHub> Hub;
+        private readonly Adapter adapter;
 
-        public WibbleTimer(IHubContext<LightHub, ILightHub> hub) : base(1000)
+        public WibbleTimer(IHubContext<LightHub, ILightHub> hub, Adapter adapter) : base(1000)
         {
             this.Hub = hub;
             this.Elapsed += DoStuff;
+            this.adapter = adapter;
         }
 
-        private void DoStuff(object sender, ElapsedEventArgs e)
+        private void DoStuff(object sender, ElapsedEventArgs args)
         {
-            _ = Hub.Clients.All.ShowMessage("\"<tick>\" " + System.DateTime.Now);
+            string scResult = "ain't tried";
+            try
+            {
+                scResult = adapter.TestIt();
+            }
+            catch (Exception e)
+            {
+                scResult = e.Message;
+            }
+            _ = Hub.Clients.All.ShowMessage("\"<tick>\" " + System.DateTime.Now + " " + scResult);
         }
     }
 }
