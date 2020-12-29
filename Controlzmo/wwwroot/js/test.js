@@ -9,7 +9,8 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/hub/light").build(
 connection.on("ShowMessage", function (message) {
     var messagesList = $("#messagesList");
     messagesList.children("li").slice(0, 1 - 5).remove();
-    messagesList.append($("<li/>", { text: message }))
+    var timestamp = new Date().toLocaleTimeString([], { timeStyle: 'medium' });
+    messagesList.append($("<li/>", { text: timestamp + ": " + message }))
 });
 
 connection.start().then(function () {
