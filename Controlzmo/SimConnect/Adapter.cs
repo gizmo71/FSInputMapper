@@ -13,7 +13,6 @@ namespace SimConnectzmo
         private readonly IHubContext<LightHub, ILightHub> hub;
 
         BackgroundWorker? bw;
-        string status = "Uninitialised";
 
         public Adapter(IHubContext<LightHub, ILightHub> hub)
         {
@@ -39,13 +38,11 @@ namespace SimConnectzmo
             {
                 AutoResetEvent MessageSignal = new AutoResetEvent(false);
                 using var sc = new SimConnect("Controlzmo", hWnd, WM_USER_SIMCONNECT, MessageSignal, 0u);
-                status = "connected";
                 while (!bw!.CancellationPending)
                 {
                     if (MessageSignal.WaitOne(1000))
                     {
                         sc.ReceiveMessage();
-                        status = "got message";
                         hub.Clients.All.ShowMessage("Got somet' from SimConnect");
                     }
                     else
