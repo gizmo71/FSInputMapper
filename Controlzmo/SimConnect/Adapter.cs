@@ -30,10 +30,11 @@ namespace SimConnectzmo
             }
         }
 
+        private const uint WM_USER_SIMCONNECT = 0x0402;
+        private static readonly IntPtr hWnd = IntPtr.Zero;
+
         private void Donkey(object? sender, DoWorkEventArgs args)
         {
-            const uint WM_USER_SIMCONNECT = 0x0402;
-            IntPtr hWnd = IntPtr.Zero;
             try
             {
                 AutoResetEvent MessageSignal = new AutoResetEvent(false);
@@ -51,7 +52,7 @@ namespace SimConnectzmo
             }
             catch (Exception e)
             {
-                hub.Clients.All.ShowMessage($"Exception from SimConnect: {e}");
+                hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
                 bw = null;
             }
         }
