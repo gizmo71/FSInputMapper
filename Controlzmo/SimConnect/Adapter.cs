@@ -20,12 +20,12 @@ namespace SimConnectzmo
 
         public string TestIt()
         {
-            if (bw != null) return "Already connected " + status;
+            if (bw != null) return "Already running; " + status;
             bw = new BackgroundWorker();
             bw.WorkerSupportsCancellation = true;
             bw.DoWork += Donkey;
             bw.RunWorkerAsync();
-            return "Attempting to connect in background " + status;
+            return "Attempting to connect in background; " + status;
         }
 
         private void Donkey(object? sender, DoWorkEventArgs args)
@@ -33,13 +33,15 @@ namespace SimConnectzmo
             try
             {
                 var scinfo = new SimConnect("Controlzmo", hWnd, WM_USER_SIMCONNECT, MessageSignal, 0u);
+                status = "connected";
                 while (MessageSignal.WaitOne(1))
                 {
-                    object locker = new(); // Do we need this?
-                    lock (locker)
-                    {
+                    //object locker = new(); // Do we need this?
+                    //lock (locker)
+                    //{
                         scinfo.ReceiveMessage();
-                    }
+                        status = "got message";
+                    //}
                 }
             }
             catch (Exception e)
