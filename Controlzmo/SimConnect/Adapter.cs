@@ -1,52 +1,60 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
-using System.Threading;
-using System.Runtime.InteropServices;
-using Microsoft.FlightSimulator.SimConnect;
+﻿using System;
 using System.ComponentModel;
+using System.Threading;
+using Controlzmo;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.FlightSimulator.SimConnect;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
 {
     public class Adapter
     {
-        private const uint WM_USER_SIMCONNECT = 0x0402;
-        private IntPtr hWnd = IntPtr.Zero;
-        public AutoResetEvent MessageSignal = new AutoResetEvent(false);
+        private readonly IHubContext<LightHub, ILightHub> hub;
+
         BackgroundWorker? bw;
         string status = "Uninitialised";
 
-        public string TestIt()
+        public Adapter(IHubContext<LightHub, ILightHub> hub)
         {
-            if (bw != null) return "Already running; " + status;
-            bw = new BackgroundWorker();
-            bw.WorkerSupportsCancellation = true;
-            bw.DoWork += Donkey;
-            bw.RunWorkerAsync();
-            return "Attempting to connect in background; " + status;
+            this.hub = hub;
+        }
+
+        public void EnsureConnectionIfPossible()
+        {
+            if (bw == null)
+            {
+                bw = new BackgroundWorker();
+                bw.WorkerSupportsCancellation = true;
+                bw.DoWork += Donkey;
+                bw.RunWorkerAsync();
+            }
         }
 
         private void Donkey(object? sender, DoWorkEventArgs args)
         {
+            const uint WM_USER_SIMCONNECT = 0x0402;
+            IntPtr hWnd = IntPtr.Zero;
             try
             {
-                var scinfo = new SimConnect("Controlzmo", hWnd, WM_USER_SIMCONNECT, MessageSignal, 0u);
+                AutoResetEvent MessageSignal = new AutoResetEvent(false);
+                using var sc = new SimConnect("Controlzmo", hWnd, WM_USER_SIMCONNECT, MessageSignal, 0u);
                 status = "connected";
-                while (MessageSignal.WaitOne(1))
+                while (!bw!.CancellationPending)
                 {
-                    //object locker = new(); // Do we need this?
-                    //lock (locker)
-                    //{
-                        scinfo.ReceiveMessage();
+                    if (MessageSignal.WaitOne(1000))
+                    {
+                        sc.ReceiveMessage();
                         status = "got message";
-                    //}
+                        hub.Clients.All.ShowMessage("Got somet' from SimConnect");
+                    }
+                    else
+                        hub.Clients.All.ShowMessage("Got nowt from SimConnect");
                 }
             }
             catch (Exception e)
             {
-                status = e.Message;
+                hub.Clients.All.ShowMessage($"Exception from SimConnect: {e}");
                 bw = null;
             }
         }

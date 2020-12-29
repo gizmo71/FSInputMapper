@@ -20,7 +20,7 @@ namespace Controlzmo
         {
             services.AddRazorPages();
             services.AddSignalR();
-            services.AddSingleton<WibbleTimer>();
+            services.AddSingleton<EnsureConnectionTimer>();
             services.AddSingleton<SimConnectzmo.Adapter>();
         }
 
