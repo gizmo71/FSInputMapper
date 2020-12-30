@@ -50,11 +50,15 @@ namespace FSInputMapper
         public Int32 apAltHold;
         [SCStructField("AUTOPILOT VERTICAL HOLD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 apVSHold;
+        //TODO: EXPED button, when it's implemented
+    };
+
+    // Autopilot - things we receive.
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct AutothrustState
+    {
         [SCStructField("AUTOPILOT THROTTLE ARM", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 autothrustArmed;
-        [SCStructField("AUTOTHROTTLE ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 autothrustActive;
-        //TODO: EXPED button, when it's implemented
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using FSInputMapper.Event;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
@@ -46,6 +47,23 @@ namespace FSInputMapper.Data
                 + $"\nTurbEng IS {data.turbEnIg} MSS {data.tubEngMSS}";
         }
 
+    }
+
+    [Singleton]
+    public class ArmAutothrustListener : DataListener<AutothrustState>
+    {
+        private readonly AutothrustArmToggleEvent armEvent;
+
+        public ArmAutothrustListener(AutothrustArmToggleEvent armEvent)
+        {
+            this.armEvent = armEvent;
+        }
+
+        public override void Process(SimConnect simConnect, AutothrustState armingState)
+        {
+            if (armingState.autothrustArmed == 0)
+                simConnect.SendEvent(armEvent);
+        }
     }
 
 }

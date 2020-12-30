@@ -15,8 +15,6 @@
         [Event("AP_APR_HOLD")]
         //TODO: APPR on then LOC on leaves GS stuck on; we should request modes and react
         AP_TOGGLE_APPR,
-        [Event("AUTO_THROTTLE_ARM")]
-        AP_AUTOTHRUST_ARM,
         [Event("TOGGLE_FLIGHT_DIRECTOR")]
         AP_TOGGLE_FD,
         [Event("AP_VS_VAR_INC")]

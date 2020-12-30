@@ -8,6 +8,8 @@
         SPOILERS = 13,
         [HighestMaskablePriorityGroup]
         ENGINE,
+        [HighestMaskablePriorityGroup]
+        AUTOTHRUST,
     }
 
 }

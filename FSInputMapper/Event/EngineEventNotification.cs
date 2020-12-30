@@ -1,9 +1,33 @@
 ﻿using System.Collections.Generic;
+using FSInputMapper.Data;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Event
 {
 
+    [Singleton]
+    public class AutothrustArmToggleEvent : IEvent { public string SimEvent() { return "AUTO_THROTTLE_ARM"; } }
+
+    [Singleton]
+    public class AutothrustArmEventNotification : IEventNotification
+    {
+        private readonly AutothrustArmToggleEvent trigger;
+        private readonly ArmAutothrustListener listener;
+
+        protected AutothrustArmEventNotification(ArmAutothrustListener listener, AutothrustArmToggleEvent trigger)
+        {
+            this.listener = listener;
+            this.trigger = trigger;
+        }
+
+        public IEvent GetEvent() { return trigger; }
+        public GROUP GetGroup() { return GROUP.AUTOTHRUST; }
+
+        public void OnRecieve(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        {
+            simConnect.RequestDataOnSimObject(listener, SIMCONNECT_PERIOD.ONCE);
+        }
+    }
 
     [Singleton]
     public class Throttle1SetEvent : IEvent { public string SimEvent() { return "THROTTLE1_SET"; } }
