@@ -16,7 +16,6 @@ namespace FSInputMapper.Systems.Apu
     [Singleton]
     public class ApuSystem
     {
-
         private readonly ApuToggle apuToggle;
         private readonly ApuStart apuStart;
         private readonly SimConnectHolder sch;
@@ -28,10 +27,15 @@ namespace FSInputMapper.Systems.Apu
             this.sch = sch;
         }
 
-        public void ApuToggle() { sch.SimConnect?.SendEvent(apuToggle); }
+        public void ApuToggle()
+        {
+            //sch.SimConnect?.SendEvent(apuToggle);
+        }
 
-        public void ApuStart() { sch.SimConnect?.SendEvent(apuStart); }
-
+        public void ApuStart()
+        {
+            //sch.SimConnect?.SendEvent(apuStart);
+        }
     }
 
 }
