@@ -96,8 +96,11 @@
             Background="{Binding VerticalSpeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
             Click="VS_Pull"/>
 
-        <Button Content="Set Standard" Margin="616,33,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
-            Click="SetStandard"/>
+        <Label Content="APU" HorizontalAlignment="Left" Margin="665,10,0,0" VerticalAlignment="Top"/>
+        <Button Content="Master" Margin="642,33,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
+            Click="ApuMaster"/>
+        <Button Content="Start" Margin="642,54,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
+            Click="ApuStart"/>
 
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"

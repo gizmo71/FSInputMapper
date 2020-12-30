@@ -5,6 +5,7 @@ using System.Windows.Interop;
 using System.Globalization;
 using System.Windows.Controls;
 using FSInputMapper.Systems.Altimeter;
+using FSInputMapper.Systems.Apu;
 using FSInputMapper.Systems.Lights;
 using FSInputMapper.Systems.Fcu;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ namespace FSInputMapper
         private readonly LightSystem lightSystem;
         private readonly FcuSystem fcuSystem;
         private readonly AltimeterSystem altimeterSystem;
+        private readonly ApuSystem apuSystem;
 
         public MainWindow(IServiceProvider sp)
         {
@@ -42,6 +44,7 @@ namespace FSInputMapper
             this.lightSystem = sp.GetRequiredService<LightSystem>();
             this.fcuSystem = sp.GetRequiredService<FcuSystem>();
             this.altimeterSystem = sp.GetRequiredService<AltimeterSystem>();
+            this.apuSystem = sp.GetRequiredService<ApuSystem>();
             InitializeComponent();
         }
 
@@ -167,9 +170,14 @@ namespace FSInputMapper
             lightSystem.SetLanding((sender as CheckBox)!.IsChecked ?? false);
         }
 
-        private void SetStandard(object sender, RoutedEventArgs e)
+        private void ApuMaster(object sender, RoutedEventArgs e)
         {
-            altimeterSystem.SetStandard();
+            apuSystem.ApuToggle();
+        }
+
+        private void ApuStart(object sender, RoutedEventArgs e)
+        {
+            apuSystem.ApuStart();
         }
 
     }
