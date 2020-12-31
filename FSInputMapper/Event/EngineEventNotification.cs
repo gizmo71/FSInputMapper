@@ -14,7 +14,7 @@ namespace FSInputMapper.Event
         private readonly AutothrustArmToggleEvent trigger;
         private readonly ArmAutothrustListener listener;
 
-        protected AutothrustArmEventNotification(ArmAutothrustListener listener, AutothrustArmToggleEvent trigger)
+        public AutothrustArmEventNotification(ArmAutothrustListener listener, AutothrustArmToggleEvent trigger)
         {
             this.listener = listener;
             this.trigger = trigger;
