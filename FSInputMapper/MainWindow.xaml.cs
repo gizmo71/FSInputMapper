@@ -191,7 +191,7 @@ namespace FSInputMapper
                 comRadioSystem.SetCom1Standby(newFreq);
                 comRadioSystem.SwapCom1();
                 //TODO: swapped out frequency
-                (DataContext as FSIMViewModel)!.Com1StandbyFrequency = Decimal.MaxValue;
+                //(DataContext as FSIMViewModel)!.Com1StandbyFrequency = new Decimal;
             }
             catch (Exception e)
             {

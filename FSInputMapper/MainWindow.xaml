@@ -104,9 +104,9 @@
             Click="ApuStart"/>
 
         <Label Content="COM1" HorizontalAlignment="Left" Margin="669,16,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="669,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120"
+        <TextBox HorizontalAlignment="Left" Margin="669,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="96"
             Text="{Binding Com1StandbyFrequency, Mode=TwoWay}" />
-        <Button Content="Swap" HorizontalAlignment="Left" Margin="749,19,0,0" VerticalAlignment="Top" Width="32"
+        <Button Content="Swap" HorizontalAlignment="Left" Margin="733,19,0,0" VerticalAlignment="Top" Width="32"
             Click="Com1Swap" RenderTransformOrigin="9.752,-1.588"/>
 
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"

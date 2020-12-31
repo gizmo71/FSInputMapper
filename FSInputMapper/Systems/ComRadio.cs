@@ -22,12 +22,16 @@ namespace FSInputMapper.Systems.Altimeter
             this.sch = sch;
         }
 
-        public void SetCom1Standby(Decimal newFrequency)
+        public string SetCom1Standby(Decimal newFrequency)
         {
             uint kHz = Decimal.ToUInt32(Decimal.Multiply(newFrequency, new Decimal(1000)));
-            string hex = kHz.ToString("x8");
-            uint bcd = uint.Parse(hex, System.Globalization.NumberStyles.HexNumber);
+            string bcdHex = kHz.ToString("D6");
+            // Currently, MSFS doesn't support setting the first or last digit directly. :-(
+            bcdHex = bcdHex.Substring(1, 4);
+//throw new Exception($"hex {bcdHex}");
+            uint bcd = uint.Parse(bcdHex, System.Globalization.NumberStyles.HexNumber);
             sch.SimConnect?.SendEvent(com1StandbyRadioSetEvent, bcd);
+            return bcdHex;
         }
 
         public void SwapCom1()
