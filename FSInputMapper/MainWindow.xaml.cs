@@ -34,7 +34,6 @@ namespace FSInputMapper
         private readonly FSIMTriggerBus triggerBus;
         private readonly LightSystem lightSystem;
         private readonly FcuSystem fcuSystem;
-        private readonly AltimeterSystem altimeterSystem;
         private readonly ApuSystem apuSystem;
         private readonly ComRadioSystem comRadioSystem;
 
@@ -45,7 +44,6 @@ namespace FSInputMapper
             this.triggerBus = sp.GetRequiredService<FSIMTriggerBus>();
             this.lightSystem = sp.GetRequiredService<LightSystem>();
             this.fcuSystem = sp.GetRequiredService<FcuSystem>();
-            this.altimeterSystem = sp.GetRequiredService<AltimeterSystem>();
             this.apuSystem = sp.GetRequiredService<ApuSystem>();
             this.comRadioSystem = sp.GetRequiredService<ComRadioSystem>();
             InitializeComponent();
@@ -193,7 +191,7 @@ namespace FSInputMapper
                 //TODO: swapped out frequency
                 //(DataContext as FSIMViewModel)!.Com1StandbyFrequency = new Decimal;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 (DataContext as FSIMViewModel)!.Com1StandbyFrequency = Decimal.Zero;
             }
