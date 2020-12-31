@@ -18,7 +18,6 @@ namespace FSInputMapper
             (this.lightSystem = lightSystem).PropertyChanged += OnLightSystemPropertyChanged;
             (this.fcuSystem = fcuSystem).PropertyChanged += OnFcuSystemPropertyChanged;
         }
-
         #region Autopilot
 
         private readonly FcuSystem fcuSystem;
@@ -110,9 +109,8 @@ namespace FSInputMapper
             get { return autopilotAppr; }
             set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
         }
-
-#endregion
-#region Lights
+        #endregion
+        #region Lights
 
         private readonly LightSystem lightSystem;
 
@@ -156,9 +154,8 @@ namespace FSInputMapper
         public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
         public bool LandingLights { get { return lightSystem.Landing; } }
         public int NoseLights { get { return 2 - lightSystem.Taxi0Off1Taxi2Takeoff; } }
-
-#endregion
-#region Debug
+        #endregion
+        #region Debug
 
         private readonly DebugConsole debugConsole;
 
@@ -185,8 +182,16 @@ namespace FSInputMapper
                     break;
             }
         }
+        #endregion
+        #region ComRadio
 
-#endregion
+        private Decimal com1StandbyFrequency = Decimal.Zero;
+        public Decimal Com1StandbyFrequency
+        {
+            get { return com1StandbyFrequency; }
+            set { if (com1StandbyFrequency != value) { com1StandbyFrequency = value; OnPropertyChange(); } }
+        }
+        #endregion
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

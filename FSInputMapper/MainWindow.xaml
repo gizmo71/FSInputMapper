@@ -96,11 +96,18 @@
             Background="{Binding VerticalSpeedManaged, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource False}}"
             Click="VS_Pull"/>
 
-        <Label Content="APU" HorizontalAlignment="Left" Margin="665,10,0,0" VerticalAlignment="Top"/>
-        <Button Content="Master" Margin="642,33,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
+        <Label Content="APU" HorizontalAlignment="Left" Margin="602,16,0,0" VerticalAlignment="Top"
+               Background="Aqua"/>
+        <Button Content="Master" Margin="579,39,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
             Click="ApuMaster"/>
-        <Button Content="Start" Margin="642,54,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
+        <Button Content="Start" Margin="579,60,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
             Click="ApuStart"/>
+
+        <Label Content="COM1" HorizontalAlignment="Left" Margin="669,16,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="669,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120"
+            Text="{Binding Com1StandbyFrequency, Mode=TwoWay}" />
+        <Button Content="Swap" HorizontalAlignment="Left" Margin="749,19,0,0" VerticalAlignment="Top" Width="32"
+            Click="Com1Swap" RenderTransformOrigin="9.752,-1.588"/>
 
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"

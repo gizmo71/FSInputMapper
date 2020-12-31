@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Configuration;
+using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interop;
-using System.Globalization;
-using System.Windows.Controls;
 using FSInputMapper.Systems.Altimeter;
 using FSInputMapper.Systems.Apu;
-using FSInputMapper.Systems.Lights;
 using FSInputMapper.Systems.Fcu;
+using FSInputMapper.Systems.Lights;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FSInputMapper
@@ -35,6 +36,7 @@ namespace FSInputMapper
         private readonly FcuSystem fcuSystem;
         private readonly AltimeterSystem altimeterSystem;
         private readonly ApuSystem apuSystem;
+        private readonly ComRadioSystem comRadioSystem;
 
         public MainWindow(IServiceProvider sp)
         {
@@ -45,6 +47,7 @@ namespace FSInputMapper
             this.fcuSystem = sp.GetRequiredService<FcuSystem>();
             this.altimeterSystem = sp.GetRequiredService<AltimeterSystem>();
             this.apuSystem = sp.GetRequiredService<ApuSystem>();
+            this.comRadioSystem = sp.GetRequiredService<ComRadioSystem>();
             InitializeComponent();
         }
 
@@ -178,6 +181,22 @@ namespace FSInputMapper
         private void ApuStart(object sender, RoutedEventArgs e)
         {
             apuSystem.ApuStart();
+        }
+
+        private void Com1Swap(object sender, RoutedEventArgs args)
+        {
+            Decimal newFreq = (DataContext as FSIMViewModel)!.Com1StandbyFrequency;
+            try
+            {
+                comRadioSystem.SetCom1Standby(newFreq);
+                comRadioSystem.SwapCom1();
+                //TODO: swapped out frequency
+                (DataContext as FSIMViewModel)!.Com1StandbyFrequency = Decimal.MaxValue;
+            }
+            catch (Exception e)
+            {
+                (DataContext as FSIMViewModel)!.Com1StandbyFrequency = Decimal.Zero;
+            }
         }
 
     }
