@@ -1,4 +1,3 @@
-using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -22,14 +21,6 @@ namespace Controlzmo
             services.AddSignalR();
             services.AddSingleton<EnsureConnectionTimer>();
             services.AddSingleton<SimConnectzmo.Adapter>();
-        }
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            // Register your own things directly with Autofac here. Don't
-            // call builder.Populate(), that happens in AutofacServiceProviderFactory
-            // for you.
-            // e.g. builder.RegisterModule(new MyApplicationModule());
-            // https://autofaccn.readthedocs.io/en/latest/index.html
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
