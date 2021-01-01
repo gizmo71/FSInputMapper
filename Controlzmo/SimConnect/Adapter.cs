@@ -8,6 +8,7 @@ using Microsoft.FlightSimulator.SimConnect;
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
 {
+    [Component]
     public class Adapter
     {
         private readonly IHubContext<LightHub, ILightHub> hub;

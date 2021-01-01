@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +8,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Controlzmo
 {
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, Inherited = false, AllowMultiple = false)]
+    public class ComponentAttribute : Attribute { }
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -19,8 +24,12 @@ namespace Controlzmo
         {
             services.AddRazorPages();
             services.AddSignalR();
-            services.AddSingleton<EnsureConnectionTimer>();
-            services.AddSingleton<SimConnectzmo.Adapter>();
+            foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
+            {
+                if (candidate.GetCustomAttribute<ComponentAttribute>() == null) continue;
+                //TODO: struct support (see FSInputMapper)
+                services.AddSingleton(candidate, candidate);
+            }
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

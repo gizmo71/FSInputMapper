@@ -30,6 +30,7 @@ namespace Controlzmo
         }
     }
 
+    [Component]
     public class EnsureConnectionTimer : System.Timers.Timer
     {
         public EnsureConnectionTimer(IHubContext<LightHub, ILightHub> hub, Adapter adapter) : base(1000)
