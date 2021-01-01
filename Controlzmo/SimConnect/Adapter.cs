@@ -23,8 +23,7 @@ namespace SimConnectzmo
         {
             if (bw == null)
             {
-                bw = new BackgroundWorker();
-                bw.WorkerSupportsCancellation = true;
+                bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
                 bw.DoWork += Donkey;
                 bw.RunWorkerAsync();
             }
