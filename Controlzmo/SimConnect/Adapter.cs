@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using Controlzmo;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.Extensions.DependencyInjection;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
@@ -12,12 +12,14 @@ namespace SimConnectzmo
     public class Adapter
     {
         private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly SimConnectHolder holder;
 
         BackgroundWorker? bw;
 
-        public Adapter(IHubContext<LightHub, ILightHub> hub)
+        public Adapter(IServiceProvider serviceProvider)
         {
-            this.hub = hub;
+            this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>();
+            this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
         }
 
         public void EnsureConnectionIfPossible()
@@ -31,19 +33,19 @@ namespace SimConnectzmo
         }
 
         private const uint WM_USER_SIMCONNECT = 0x0402;
-        private static readonly IntPtr hWnd = IntPtr.Zero;
 
         private void Donkey(object? sender, DoWorkEventArgs args)
         {
             try
             {
                 AutoResetEvent MessageSignal = new AutoResetEvent(false);
-                using var sc = new SimConnect("Controlzmo", hWnd, WM_USER_SIMCONNECT, MessageSignal, 0u);
+                using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal);
+                holder.SimConnect = esc;
                 while (!bw!.CancellationPending)
                 {
                     if (MessageSignal.WaitOne(1000))
                     {
-                        sc.ReceiveMessage();
+                        esc.ReceiveMessage();
                         hub.Clients.All.ShowMessage("Got somet' from SimConnect");
                     }
                     else
@@ -52,6 +54,7 @@ namespace SimConnectzmo
             }
             catch (Exception e)
             {
+                holder.SimConnect = null;
                 hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
                 bw = null;
             }
