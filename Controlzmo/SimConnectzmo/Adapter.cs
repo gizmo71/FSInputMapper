@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading;
 using Controlzmo;
 using Microsoft.AspNetCore.SignalR;
@@ -11,15 +12,17 @@ namespace SimConnectzmo
     [Component]
     public class Adapter
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+private readonly IHubContext<LightHub, ILightHub> hub;
         private readonly SimConnectHolder holder;
+        private readonly IServiceProvider serviceProvider;
 
         BackgroundWorker? bw;
 
         public Adapter(IServiceProvider serviceProvider)
         {
-            this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>();
+this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>();
             this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            this.serviceProvider = serviceProvider;
         }
 
         public void EnsureConnectionIfPossible()
@@ -40,24 +43,34 @@ namespace SimConnectzmo
             {
                 AutoResetEvent MessageSignal = new AutoResetEvent(false);
                 using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal);
+                AssignIds(esc);
                 holder.SimConnect = esc;
                 while (!bw!.CancellationPending)
                 {
                     if (MessageSignal.WaitOne(1000))
                     {
                         esc.ReceiveMessage();
-                        hub.Clients.All.ShowMessage("Got somet' from SimConnect");
+hub.Clients.All.ShowMessage("Got somet' from SimConnect");
                     }
                     else
-                        hub.Clients.All.ShowMessage("Got nowt from SimConnect");
+hub.Clients.All.ShowMessage("Got nowt from SimConnect");
                 }
             }
             catch (Exception e)
             {
                 holder.SimConnect = null;
-                hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
+hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
                 bw = null;
             }
+        }
+
+        private void AssignIds(ExtendedSimConnect simConnect)
+        {
+            simConnect.typeToStruct = serviceProvider.GetServices<IData>()
+                .Select(candidate => candidate.GetStructType())
+                .Distinct()
+                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
     }
 }

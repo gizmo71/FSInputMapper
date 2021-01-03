@@ -6,6 +6,6 @@ namespace SimConnectzmo
     [Component]
     public class SimConnectHolder
     {
-        public SimConnect? SimConnect { get; internal set; }
+        public ExtendedSimConnect? SimConnect { get; internal set; }
     }
 }
