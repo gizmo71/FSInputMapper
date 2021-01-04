@@ -27,8 +27,9 @@ namespace Controlzmo
             foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
                 if (candidate.GetCustomAttribute<ComponentAttribute>() == null) continue;
-                //TODO: struct support (see FSInputMapper)
                 services.AddSingleton(candidate, candidate);
+                foreach (var also in candidate.GetInterfaces())
+                    services.AddSingleton(also, x => x.GetRequiredService(candidate));
             }
         }
 

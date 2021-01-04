@@ -66,7 +66,8 @@ hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
 
         private void AssignIds(ExtendedSimConnect simConnect)
         {
-            simConnect.typeToStruct = serviceProvider.GetServices<IData>()
+            simConnect.typeToStruct = serviceProvider
+                .GetServices<IData>()
                 .Select(candidate => candidate.GetStructType())
                 .Distinct()
                 .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
