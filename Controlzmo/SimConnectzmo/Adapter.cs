@@ -5,6 +5,7 @@ using System.Threading;
 using Controlzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
@@ -42,8 +43,8 @@ this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>(
             try
             {
                 AutoResetEvent MessageSignal = new AutoResetEvent(false);
-                using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal);
-                AssignIds(esc);
+                using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
+                    .AssignIds(serviceProvider);
                 holder.SimConnect = esc;
                 while (!bw!.CancellationPending)
                 {
@@ -62,16 +63,6 @@ hub.Clients.All.ShowMessage("Got nowt from SimConnect");
 hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
                 bw = null;
             }
-        }
-
-        private void AssignIds(ExtendedSimConnect simConnect)
-        {
-            simConnect.typeToStruct = serviceProvider
-                .GetServices<IData>()
-                .Select(candidate => candidate.GetStructType())
-                .Distinct()
-                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
-                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
         }
     }
 }
