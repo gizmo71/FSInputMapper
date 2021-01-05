@@ -45,9 +45,12 @@ namespace SimConnectzmo
             return this;
         }
 
-        private void Handle_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
+        private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
             RegisterDataStructs();
+
+            foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
+                RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
         }
 
         private void RegisterDataStructs()
@@ -60,11 +63,21 @@ namespace SimConnectzmo
                     if (dataField == null)
                         throw new NullReferenceException($"No DataField for {type2Struct.Key}.{field.Name}");
                     AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
-                        dataField.Type, dataField.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+                        dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
                 }
                 GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
                     .Invoke(this, new object[] { type2Struct.Value });
             }
+        }
+
+        public void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
+        {
+            REQUEST request = typeToRequest![data];
+            STRUCT structId = typeToStruct![data.GetStructType()];
+            SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
+                            ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+                            : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+            RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
         }
     }
 }
