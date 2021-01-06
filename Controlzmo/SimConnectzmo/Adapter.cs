@@ -48,7 +48,7 @@ this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>(
                 holder.SimConnect = esc;
                 while (!bw!.CancellationPending)
                 {
-                    if (MessageSignal.WaitOne(1000))
+                    if (MessageSignal.WaitOne(5_000))
                     {
                         esc.ReceiveMessage();
 hub.Clients.All.ShowMessage("Got somet' from SimConnect");
