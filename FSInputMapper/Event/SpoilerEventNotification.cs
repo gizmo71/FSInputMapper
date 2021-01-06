@@ -3,7 +3,7 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Event
 {
-
+#if false
     [Singleton]
     public class MoreSpoilerEvent : IEvent
     {
@@ -49,5 +49,5 @@ namespace FSInputMapper.Event
     {
         public MoreSpoilerEventNotification(MoreSpoilerListener listener, MoreSpoilerEvent e) : base(listener, e) { }
     }
-
+#endif
 }

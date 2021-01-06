@@ -5,7 +5,7 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace FSInputMapper.Data
 {
-
+#if false
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerData
     {
@@ -64,5 +64,5 @@ namespace FSInputMapper.Data
         }
 
     }
-
+#endif
 }
