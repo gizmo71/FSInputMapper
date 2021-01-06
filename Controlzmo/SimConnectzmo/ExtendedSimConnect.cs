@@ -12,6 +12,7 @@ namespace SimConnectzmo
     internal enum REQUEST { }
     internal enum STRUCT { }
     internal enum EVENT { }
+    internal enum GROUP { JUST_MASKABLE = 666 }
 
     public class ExtendedSimConnect : SimConnect
     {
@@ -19,8 +20,8 @@ namespace SimConnectzmo
 
         internal Dictionary<Type, STRUCT>? typeToStruct;
         internal Dictionary<IDataListener, REQUEST>? typeToRequest;
-        //internal Dictionary<IEventNotification, EVENT>? notificationsToEvent;
-        //internal Dictionary<IEvent, EVENT>? eventToEnum;
+        internal Dictionary<IEvent, EVENT>? eventToEnum;
+        internal Dictionary<IEventNotification, EVENT>? notificationsToEvent;
 
         internal ExtendedSimConnect(string szName, uint UserEventWin32, WaitHandle waitHandle)
             : base(szName, hWnd, UserEventWin32, waitHandle, 0) // 6 for over IP - can we make it timeout easier?
@@ -43,7 +44,14 @@ namespace SimConnectzmo
             typeToRequest = serviceProvider.GetServices<IDataListener>()
                 .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
-            //TODO: check that the struct is also registered
+//TODO: check that the struct is also registered
+
+            eventToEnum = serviceProvider.GetServices<IEvent>()
+                .Select((e, index) => new ValueTuple<IEvent, EVENT>(e, (EVENT)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+
+            notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
+                .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
             return this;
         }
@@ -51,6 +59,8 @@ namespace SimConnectzmo
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
             RegisterDataStructs();
+            MapClientEvents();
+            SetGroupPriorities();
 
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
@@ -78,6 +88,21 @@ namespace SimConnectzmo
             }
         }
 
+        private void MapClientEvents()
+        {
+            foreach (var e in Enum.GetValues(typeof(EVENT)).OfType<EVENT>())
+                MapClientEventToSimEvent(e, e.GetAttribute<EventAttribute>().ClientEvent);
+            foreach (var eventToEnum in eventToEnum!)
+                MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
+            foreach (var notificationToEvent in notificationsToEvent!)
+                AddClientEventToNotificationGroup(GROUP.JUST_MASKABLE, notificationToEvent.Value, true);
+        }
+
+        private void SetGroupPriorities()
+        {
+            SetNotificationGroupPriority(GROUP.JUST_MASKABLE, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+        }
+
         public void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
         {
             REQUEST request = typeToRequest![data];
@@ -98,18 +123,17 @@ namespace SimConnectzmo
                 .Process(this, data.dwData[0]);
         }
 
-        private void Handle_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
+        private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
-#if false
             EVENT e = (EVENT)data.uEventID;
 //debugConsole.Text = $"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
 //    + $"\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}";
-            foreach (KeyValuePair<IEventNotification, EVENT> entry in notificationsToEvent!
-                .Where<KeyValuePair<IEventNotification, EVENT>>(candidate => e == candidate.Value))
+            foreach (IEventNotification notification in notificationsToEvent!
+                .Where(candidate => e == candidate.Value)
+                .Select(candidate => candidate.Key))
             {
-                entry.Key.OnRecieve(simConnect, data);
+                notification.OnRecieve(this, data);
             }
-#endif
         }
     }
 }
