@@ -22,6 +22,6 @@ namespace SimConnectzmo
     public interface IEventNotification
     {
         public abstract IEvent GetEvent();
-        public abstract void OnRecieve(SimConnect simConnect, SIMCONNECT_RECV_EVENT data);
+        public abstract void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data);
     }
 }

@@ -34,7 +34,7 @@ namespace Controlzmo.Systems
             return SIMCONNECT_PERIOD.VISUAL_FRAME;
         }
 
-        public override void Process(SimConnect simConnect, BaroData data)
+        public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
             hub.Clients.All.ShowMessage($"MSL {data.seaLevelPressureMB}MB\nKohlsman {data.kohlsmanMB}MB"
                 + $" (second {data.kohlsmanMB2}MB) {data.kohlsmanHg.ToString("N2")}Hg");

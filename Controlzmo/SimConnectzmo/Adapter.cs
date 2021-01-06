@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using Controlzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.FlightSimulator.SimConnect;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
