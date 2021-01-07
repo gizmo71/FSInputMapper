@@ -37,6 +37,6 @@ namespace SimConnectzmo
     public abstract class DataSender<StructType> : IData<StructType>
         where StructType : struct
     {
-        public void Send(SimConnect simConnect, StructType data) => simConnect.SetDataOnSimObject(data);
+        public void Send(ExtendedSimConnect? simConnect, StructType data) => simConnect.SendDataOnSimObject(data);
     }
 }

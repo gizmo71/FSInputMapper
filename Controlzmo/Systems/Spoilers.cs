@@ -23,13 +23,18 @@ namespace Controlzmo.Systems.Spoilers
     };
 
     [Component]
+    public class SpoilerHandleSender : DataSender<SpoilerHandle> { }
+
+    [Component]
     public class MoreSpoilerListener : DataListener<SpoilerData>
     {
         private readonly LessSpoilerEvent toggleArmSpoiler;
+        private readonly SpoilerHandleSender spoilerHandleSender;
 
-        public MoreSpoilerListener(LessSpoilerEvent toggleArmSpoiler)
+        public MoreSpoilerListener(LessSpoilerEvent toggleArmSpoiler, SpoilerHandleSender spoilerHandleSender)
         {
             this.toggleArmSpoiler = toggleArmSpoiler;
+            this.spoilerHandleSender = spoilerHandleSender;
         }
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData spoilerData)
@@ -37,7 +42,7 @@ namespace Controlzmo.Systems.Spoilers
             if (spoilerData.spoilersArmed != 0)
                 simConnect.SendEvent(toggleArmSpoiler);
             else if (spoilerData.spoilersHandlePosition < 100)
-                simConnect.SetDataOnSimObject(new SpoilerHandle
+                spoilerHandleSender.Send(simConnect, new SpoilerHandle
                 {
                     spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100)
                 });
@@ -48,16 +53,18 @@ namespace Controlzmo.Systems.Spoilers
     public class LessSpoilerListener : DataListener<SpoilerData>
     {
         private readonly LessSpoilerEvent toggleArmSpoiler;
+        private readonly SpoilerHandleSender spoilerHandleSender;
 
-        public LessSpoilerListener(LessSpoilerEvent toggleArmSpoiler)
+        public LessSpoilerListener(LessSpoilerEvent toggleArmSpoiler, SpoilerHandleSender spoilerHandleSender)
         {
             this.toggleArmSpoiler = toggleArmSpoiler;
+            this.spoilerHandleSender = spoilerHandleSender;
         }
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData spoilerData)
         {
             if (spoilerData.spoilersHandlePosition > 0)
-                simConnect.SetDataOnSimObject(new SpoilerHandle
+                spoilerHandleSender.Send(simConnect, new SpoilerHandle
                 {
                     spoilersHandlePosition = Math.Max(spoilerData.spoilersHandlePosition - 25, 0)
                 });

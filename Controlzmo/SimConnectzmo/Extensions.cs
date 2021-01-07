@@ -49,10 +49,10 @@ namespace SimConnectzmo
                 SimConnect.SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
         }
 
-        public static void SetDataOnSimObject<StructType>(this SimConnect simConnect, StructType data)
+        public static void SendDataOnSimObject<StructType>(this ExtendedSimConnect? simConnect, StructType data)
             where StructType : struct
         {
-            STRUCT id = (simConnect as ExtendedSimConnect)!.typeToStruct![typeof(StructType)];
+            STRUCT id = simConnect!.typeToStruct![typeof(StructType)];
             simConnect.SetDataOnSimObject(id, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
         }
     }
