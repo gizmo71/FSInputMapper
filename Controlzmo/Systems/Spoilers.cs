@@ -39,13 +39,12 @@ namespace Controlzmo.Systems.Spoilers
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData spoilerData)
         {
+            SpoilerHandle newPosition = new();
             if (spoilerData.spoilersArmed != 0)
                 simConnect.SendEvent(toggleArmSpoiler);
             else if (spoilerData.spoilersHandlePosition < 100)
-                spoilerHandleSender.Send(simConnect, new SpoilerHandle
-                {
-                    spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100)
-                });
+                newPosition.spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100);
+            spoilerHandleSender.Send(simConnect, newPosition);
         }
     }
 
