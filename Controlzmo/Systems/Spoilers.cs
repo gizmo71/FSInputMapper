@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices;
 using System;
-using Controlzmo;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
