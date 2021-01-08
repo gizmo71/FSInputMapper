@@ -53,12 +53,4 @@ namespace FSInputMapper
         //TODO: EXPED button, when it's implemented
     };
 
-    // Autopilot - things we receive.
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct AutothrustState
-    {
-        [SCStructField("AUTOPILOT THROTTLE ARM", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 autothrustArmed;
-    }
-
 }

@@ -12,8 +12,9 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace FSInputMapper
 {
 
-    internal enum REQUEST { }
-    internal enum STRUCT { }
+    public enum GROUP : uint { }
+    internal enum REQUEST : uint { }
+    internal enum STRUCT : uint { }
 
     internal class SimConnectzmo : SimConnect
     {
