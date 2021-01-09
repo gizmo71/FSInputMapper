@@ -20,6 +20,6 @@ connection.start().then(function () {
     connection.invoke("SendAll").catch(errorHandler);
     $(".sendSomet").on("change", function (event) {
         connection.invoke("ChangedSomet", event.target.id + " is " + event.target.checked).catch(errorHandler);
-        //event.preventDefault();
+        event.preventDefault();
     });
 }).catch(errorHandler);
