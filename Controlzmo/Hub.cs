@@ -33,7 +33,7 @@ namespace Controlzmo
     [Component]
     public class EnsureConnectionTimer : System.Timers.Timer
     {
-        public EnsureConnectionTimer(IHubContext<LightHub, ILightHub> hub, Adapter adapter) : base(1000)
+        public EnsureConnectionTimer(IHubContext<LightHub, ILightHub> hub, Adapter adapter) : base(5000)
         {
             this.Elapsed += (object sender, ElapsedEventArgs args) => adapter.EnsureConnectionIfPossible();
         }
