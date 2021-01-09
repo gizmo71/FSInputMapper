@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading;
 using Controlzmo;
+using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 

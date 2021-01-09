@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Controlzmo;
+using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;

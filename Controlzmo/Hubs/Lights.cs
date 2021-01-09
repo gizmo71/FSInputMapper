@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using SimConnectzmo;
 
-namespace Controlzmo
+namespace Controlzmo.Hubs
 {
     // server to client messages
     public interface ILightHub
