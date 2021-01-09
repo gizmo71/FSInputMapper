@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using System.Timers;
 using Microsoft.AspNetCore.SignalR;
 using SimConnectzmo;
 
@@ -27,15 +26,6 @@ namespace Controlzmo
         public async Task SendAll()
         {
             await Clients.All.ShowMessage("Would send all " + System.DateTime.Now + " " + Context.Items);
-        }
-    }
-
-    [Component]
-    public class EnsureConnectionTimer : System.Timers.Timer
-    {
-        public EnsureConnectionTimer(IHubContext<LightHub, ILightHub> hub, Adapter adapter) : base(5000)
-        {
-            this.Elapsed += (object sender, ElapsedEventArgs args) => adapter.EnsureConnectionIfPossible();
         }
     }
 }
