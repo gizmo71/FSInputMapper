@@ -1,5 +1,5 @@
 ﻿using System.Runtime.InteropServices;
-using Controlzmo;
+using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -37,7 +37,7 @@ namespace Controlzmo.Systems
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
             hub.Clients.All.ShowMessage($"MSL {data.seaLevelPressureMB}MB\nKohlsman {data.kohlsmanMB}MB"
-                + $" (second {data.kohlsmanMB2}MB) {data.kohlsmanHg.ToString("N2")}Hg");
+                + $" (second {data.kohlsmanMB2}MB) {data.kohlsmanHg:N2)}Hg");
         }
     }
 }
