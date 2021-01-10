@@ -58,7 +58,7 @@ private readonly ILogger<Adapter> _logger;
             catch (Exception e)
             {
                 holder.SimConnect = null;
-                _logger.LogError($"Exception from SimConnect: {e.Message}");
+                _logger.LogError(e, "Exception from SimConnect");
                 bw = null;
             }
         }
