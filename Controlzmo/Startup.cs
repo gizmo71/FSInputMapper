@@ -24,6 +24,7 @@ namespace Controlzmo
         {
             services.AddRazorPages();
             services.AddSignalR();
+            services.AddLogging();
             foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
             {
                 if (candidate.GetCustomAttribute<ComponentAttribute>() == null) continue;

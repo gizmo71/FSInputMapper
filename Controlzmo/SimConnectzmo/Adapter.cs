@@ -4,6 +4,7 @@ using System.Threading;
 using Controlzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
@@ -12,6 +13,7 @@ namespace SimConnectzmo
     public class Adapter
     {
 private readonly IHubContext<LightHub, ILightHub> hub;
+private readonly ILogger<Adapter> _logger;
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
 
@@ -20,6 +22,7 @@ private readonly IHubContext<LightHub, ILightHub> hub;
         public Adapter(IServiceProvider serviceProvider)
         {
 this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>();
+            this._logger = serviceProvider.GetRequiredService<ILogger<Adapter>>();
             this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             this.serviceProvider = serviceProvider;
         }
@@ -49,16 +52,15 @@ this.hub = serviceProvider.GetRequiredService<IHubContext<LightHub, ILightHub>>(
                     if (MessageSignal.WaitOne(5_000))
                     {
                         esc.ReceiveMessage();
-hub.Clients.All.ShowMessage("Got somet' from SimConnect");
+_logger.LogInformation("Got somet' from SimConnect");
                     }
-                    else
-hub.Clients.All.ShowMessage("Got nowt from SimConnect");
+else _logger.LogDebug("Got nowt from SimConnect");
                 }
             }
             catch (Exception e)
             {
                 holder.SimConnect = null;
-hub.Clients.All.ShowMessage($"Exception from SimConnect: {e.Message}");
+_logger.LogError($"Exception from SimConnect: {e.Message}");
                 bw = null;
             }
         }
