@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 
 namespace SimConnectzmo
@@ -16,6 +17,8 @@ namespace SimConnectzmo
     public class ExtendedSimConnect : SimConnect
     {
         private static readonly IntPtr hWnd = IntPtr.Zero;
+
+        private ILogger<ExtendedSimConnect>? _logging;
 
         internal Dictionary<Type, STRUCT>? typeToStruct;
         internal Dictionary<IDataListener, REQUEST>? typeToRequest;
@@ -33,6 +36,8 @@ namespace SimConnectzmo
 
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
         {
+            _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
+
             typeToStruct = serviceProvider
                 .GetServices<IData>()
                 .Select(candidate => candidate.GetStructType())
@@ -57,6 +62,7 @@ namespace SimConnectzmo
 
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
+_logging!.LogDebug("SimConnect open");
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
@@ -66,6 +72,7 @@ namespace SimConnectzmo
 
         public void TriggerInitialRequests()
         {
+_logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
         }
@@ -120,6 +127,7 @@ namespace SimConnectzmo
         private void Handle_OnRecvSimobjectData(SimConnect _, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             REQUEST request = (REQUEST)data.dwRequestID;
+_logging!.LogDebug($"Received {request}");
             typeToRequest!
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
@@ -130,8 +138,8 @@ namespace SimConnectzmo
         private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
             EVENT e = (EVENT)data.uEventID;
-//debugConsole.Text = $"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
-//    + $"\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}";
+_logging!.LogDebug($"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
+    + $"\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
             foreach (IEventNotification notification in notificationsToEvent!
                 .Where(candidate => e == candidate.Value)
                 .Select(candidate => candidate.Key))

@@ -29,14 +29,16 @@ namespace SimConnectzmo
             timer.Start();
         }
 
-        public void EnsureConnectionIfPossible()
+        private void EnsureConnectionIfPossible()
         {
             if (bw == null)
             {
+_logger.LogDebug("Starting background worker");
                 bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
                 bw.DoWork += Donkey;
                 bw.RunWorkerAsync();
             }
+else _logger.LogDebug("Existing background worker");
         }
 
         private const uint WM_USER_SIMCONNECT = 0x0402;

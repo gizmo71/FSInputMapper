@@ -57,6 +57,8 @@ namespace Controlzmo
                 endpoints.MapRazorPages();
                 endpoints.MapHub<LightHub>("/hub/light");
             });
+
+            app.ApplicationServices.GetRequiredService<SimConnectzmo.Adapter>();
         }
     }
 }
