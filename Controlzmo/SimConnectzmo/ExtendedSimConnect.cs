@@ -61,6 +61,11 @@ namespace SimConnectzmo
             MapClientEvents();
             SetGroupPriorities();
 
+            TriggerInitialRequests();
+        }
+
+        public void TriggerInitialRequests()
+        {
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
         }

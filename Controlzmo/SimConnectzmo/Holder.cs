@@ -1,5 +1,4 @@
 ﻿using Controlzmo;
-using Microsoft.FlightSimulator.SimConnect;
 
 namespace SimConnectzmo
 {

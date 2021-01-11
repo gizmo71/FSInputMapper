@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading;
+using System.Timers;
 using Controlzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ namespace SimConnectzmo
     [Component]
     public class Adapter
     {
-private readonly ILogger<Adapter> _logger;
+        private readonly ILogger<Adapter> _logger;
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
 
@@ -22,6 +23,10 @@ private readonly ILogger<Adapter> _logger;
             this._logger = serviceProvider.GetRequiredService<ILogger<Adapter>>();
             this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             this.serviceProvider = serviceProvider;
+
+            var timer = new System.Timers.Timer(5000);
+            timer.Elapsed += (object sender, ElapsedEventArgs args) => EnsureConnectionIfPossible();
+            timer.Start();
         }
 
         public void EnsureConnectionIfPossible()

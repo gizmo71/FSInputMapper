@@ -14,12 +14,15 @@ function addMessage(message) {
 }
 
 connection.on("ShowMessage", addMessage);
+connection.on("SetLandingLights", function (value) {
+    $("#lightLanding").prop('checked', value);
+});
 
 connection.start().then(function () {
     // Called when connection established - may want to disable things until this is received
     connection.invoke("SendAll").catch(errorHandler);
     $(".sendSomet").on("change", function (event) {
-        connection.invoke("ChangedSomet", event.target.id + " is " + event.target.checked).catch(errorHandler);
+        connection.invoke("ChangedSomet", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
 }).catch(errorHandler);
