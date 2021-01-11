@@ -137,9 +137,6 @@ namespace FSInputMapper
                 case nameof(lightSystem.RunwayTurnoff):
                     OnPropertyChange(nameof(RunwayTurnoffLights));
                     break;
-                case nameof(lightSystem.Landing):
-                    OnPropertyChange(nameof(LandingLights));
-                    break;
                 case nameof(lightSystem.Taxi0Off1Taxi2Takeoff):
                     OnPropertyChange(nameof(NoseLights));
                     break;
@@ -152,7 +149,6 @@ namespace FSInputMapper
         public bool WingLights { get { return lightSystem.Wing; } }
         public bool NavLogoLights { get { return lightSystem.NavLogo; } }
         public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
-        public bool LandingLights { get { return lightSystem.Landing; } }
         public int NoseLights { get { return 2 - lightSystem.Taxi0Off1Taxi2Takeoff; } }
         #endregion
         #region Debug

@@ -166,11 +166,6 @@ namespace FSInputMapper
             lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked ?? false);
         }
 
-        private void LandingLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetLanding((sender as CheckBox)!.IsChecked ?? false);
-        }
-
         private void ApuMaster(object sender, RoutedEventArgs e)
         {
             apuSystem.ApuToggle();

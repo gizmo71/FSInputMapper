@@ -34,12 +34,6 @@ namespace FSInputMapper.Systems.Lights
     }
 
     [Singleton]
-    public class SetLandingLightsEvent : IEvent
-    {
-        public string SimEvent() { return "LANDING_LIGHTS_SET"; }
-    }
-
-    [Singleton]
     public class SetTaxiLightsEvent : IEvent
     {
         public string SimEvent() { return "TAXI_LIGHTS_SET"; }

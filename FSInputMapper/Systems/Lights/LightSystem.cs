@@ -17,7 +17,6 @@ namespace FSInputMapper.Systems.Lights
         private readonly SetNavLightsEvent setNavLightsEvent;
         private readonly SetLogoLightsEvent setLogoLightsEvent;
         private readonly SetTaxiLightsEvent setTaxiLightsEvent;
-        private readonly SetLandingLightsEvent setLandingLightsEvent;
 
         public LightSystem(IServiceProvider sp)
         {
@@ -28,7 +27,6 @@ namespace FSInputMapper.Systems.Lights
             this.setNavLightsEvent = sp.GetRequiredService<SetNavLightsEvent>();
             this.setLogoLightsEvent = sp.GetRequiredService<SetLogoLightsEvent>();
             this.setTaxiLightsEvent = sp.GetRequiredService<SetTaxiLightsEvent>();
-            this.setLandingLightsEvent = sp.GetRequiredService<SetLandingLightsEvent>();
         }
 
         private bool strobes;
@@ -70,13 +68,6 @@ namespace FSInputMapper.Systems.Lights
             internal set { if (runwayTurnoff != value) { runwayTurnoff = value; OnPropertyChange(); } }
         }
 
-        private bool landing;
-        public bool Landing
-        {
-            get { return landing; }
-            internal set { if (landing != value) { landing = value; OnPropertyChange(); } }
-        }
-
         private int taxi;
         public int Taxi0Off1Taxi2Takeoff
         {
@@ -111,11 +102,6 @@ namespace FSInputMapper.Systems.Lights
         internal void SetRunwayTurnoff(bool desired)
         {
             scHolder.SimConnect?.SendEvent(setTaxiLightsEvent, desired ? 1u : 0u);
-        }
-
-        internal void SetLanding(bool desired)
-        {
-            scHolder.SimConnect?.SendEvent(setLandingLightsEvent, desired ? 1u : 0u);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
