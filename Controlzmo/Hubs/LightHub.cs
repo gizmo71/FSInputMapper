@@ -39,13 +39,15 @@ namespace Controlzmo.Hubs
                     _logger.LogError($"Dunno what {item} is");
                     break;
             }
+            await Task.CompletedTask;
         }
 
         //TODO: move out of the light hub to something more 'central'
-        public void SendAll()
+        public async Task SendAll()
         {
             _logger.LogInformation("Triggering initial data requests");
             holder.SimConnect?.TriggerInitialRequests();
+            await Task.CompletedTask;
         }
     }
 }
