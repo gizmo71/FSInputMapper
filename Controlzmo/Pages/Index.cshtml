@@ -7,15 +7,23 @@
     <table>
         <tr>
             <th>Strobes</th>
-            <td><input type="checkbox" id="lightStrobes" class="sendSomet" disabled /></td>
-        </tr>
-        <tr title="Ensure On or Retract (not Off) in game">
-            <th>Landing</th>
-            <td><input type="checkbox" id="lightLanding" class="sendSomet" /></td>
+            <td><input type="checkbox" id="lightsStrobe" class="sendLights" disabled /></td>
+            <th>Beacon</th>
+            <td><input type="checkbox" id="lightsBeacon" class="sendLights" /></td>
+            <th>Wing Ice</th>
+            <td><input type="checkbox" id="lightsWingIce" class="sendLights" /></td>
+            <th>Nav/Logo</th>
+            <td><input type="checkbox" id="lightsNavLogo" class="sendLights" /></td>
         </tr>
         <tr>
             <th>Turnoff/Taxi</th>
-            <td><input type="checkbox" id="lightTurnoff" class="sendSomet" /></td>
+            <td><input type="checkbox" id="lightsTurnoff" class="sendLights" /></td>
+            <td></td>
+            <th title="Ensure On or Retract (not Off) in game">Landing</th>
+            <td><input type="checkbox" id="lightsLanding" class="sendLights" /></td>
+            <td></td>
+            <th>Nose</th>
+            <td>INOP</td>
         </tr>
     </table>
     <ul id="messagesList"></ul>

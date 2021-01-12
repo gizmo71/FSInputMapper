@@ -41,7 +41,7 @@ namespace Controlzmo.Systems.Lights
             var strobesOn = data.strobeSwitch == 1;
             var strobesAuto = data.lPot24 == 0;
             _logging.LogDebug($"Strobes on? {strobesOn} Strobes auto? {strobesAuto}");
-            hub.Clients.All.SetStrobeLights(strobesAuto ? null : strobesOn);
+            hub.Clients.All.SetFromSim("Strobe", strobesAuto ? null : strobesOn);
         }
     }
 

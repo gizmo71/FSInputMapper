@@ -10,8 +10,7 @@ namespace Controlzmo.Hubs
     public interface ILightHub
     {
         public Task ShowMessage(string message);
-        public Task SetLandingLights(bool value);
-        public Task SetStrobeLights(bool? value);
+        public Task SetFromSim(string name, bool? value);
     }
 
     // client to server messages
@@ -30,19 +29,19 @@ namespace Controlzmo.Hubs
             this.setStrobeLightsEvent = setStrobeLightsEvent;
         }
 
-        public async Task ChangedSomet(string item, bool value)
+        public async Task SetInSim(string item, bool value)
         {
             _logger.LogDebug($"Changing {item} to {value} at {System.DateTime.Now}");
             switch (item)
             {
-                case "lightLanding":
+                case "Landing":
                     holder.SimConnect?.SendEvent(setLandingLightsEvent, value ? 1u : 0u);
                     break;
-                case "lightStrobes":
+                case "Strobe":
                     holder.SimConnect?.SendEvent(setStrobeLightsEvent, value ? 1u : 0u);
                     break;
                 default:
-                    _logger.LogError($"Dunno what {item} is");
+                    _logger.LogError($"Dunno what lights {item} are");
                     break;
             }
             await Task.CompletedTask;
