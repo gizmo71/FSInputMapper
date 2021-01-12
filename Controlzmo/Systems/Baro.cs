@@ -31,7 +31,7 @@ namespace Controlzmo.Systems
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod()
         {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
+            return SIMCONNECT_PERIOD.SECOND;
         }
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
