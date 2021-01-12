@@ -19,8 +19,8 @@ connection.on("SetLandingLights", function (value) {
 });
 connection.on("SetStrobeLights", function (value) {
     if (value != null)
-        $("#lightLanding").prop('checked', value);
-    $("#lightLanding").prop('disabled', value == null);
+        $("#lightStrobes").prop('checked', value);
+    $("#lightStrobes").prop('disabled', value == null);
 });
 
 connection.start().then(function () {
