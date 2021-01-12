@@ -17,6 +17,11 @@ connection.on("ShowMessage", addMessage);
 connection.on("SetLandingLights", function (value) {
     $("#lightLanding").prop('checked', value);
 });
+connection.on("SetStrobeLights", function (value) {
+    if (value != null)
+        $("#lightLanding").prop('checked', value);
+    $("#lightLanding").prop('disabled', value == null);
+});
 
 connection.start().then(function () {
     // Called when connection established - may want to disable things until this is received
