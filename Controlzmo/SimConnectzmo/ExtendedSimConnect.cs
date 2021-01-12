@@ -72,9 +72,13 @@ _logging!.LogDebug("SimConnect open");
 
         public void TriggerInitialRequests()
         {
-_logging!.LogDebug("Requesting initial data");
+            _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
+            {
+                RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
+                // The above is an attempt to get the below to work when a web client connects after SimConnect already running.
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
+            }
         }
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
