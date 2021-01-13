@@ -11,8 +11,6 @@ namespace FSInputMapper.Systems.Lights
     {
 
         private readonly SimConnectHolder scHolder;
-        private readonly SetStrobesEvent setStrobesEvent;
-        private readonly ToggleBeaconLightsEvent toggleBeaconLightsEvent;
         private readonly ToggleWingIceLightsEvent toggleWingIceLightsEvent;
         private readonly SetNavLightsEvent setNavLightsEvent;
         private readonly SetLogoLightsEvent setLogoLightsEvent;
@@ -21,8 +19,6 @@ namespace FSInputMapper.Systems.Lights
         public LightSystem(IServiceProvider sp)
         {
             this.scHolder = sp.GetRequiredService<SimConnectHolder>();
-            this.setStrobesEvent = sp.GetRequiredService<SetStrobesEvent>();
-            this.toggleBeaconLightsEvent = sp.GetRequiredService<ToggleBeaconLightsEvent>();
             this.toggleWingIceLightsEvent = sp.GetRequiredService<ToggleWingIceLightsEvent>();
             this.setNavLightsEvent = sp.GetRequiredService<SetNavLightsEvent>();
             this.setLogoLightsEvent = sp.GetRequiredService<SetLogoLightsEvent>();
@@ -80,17 +76,6 @@ namespace FSInputMapper.Systems.Lights
             uint data = desired ? 1u : 0u;
             scHolder.SimConnect?.SendEvent(setNavLightsEvent, data);
             scHolder.SimConnect?.SendEvent(setLogoLightsEvent, data);
-        }
-
-        internal void SetStrobes(bool desired)
-        {
-            scHolder.SimConnect?.SendEvent(setStrobesEvent, desired ? 1u : 0u);
-        }
-
-        internal void SetBeacon(bool desired)
-        {
-            if (Beacon != desired)
-                scHolder.SimConnect?.SendEvent(toggleBeaconLightsEvent);
         }
 
         internal void SetWing(bool desired)

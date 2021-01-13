@@ -4,18 +4,6 @@ namespace FSInputMapper.Systems.Lights
 {
 
     [Singleton]
-    public class SetStrobesEvent : IEvent
-    {
-        public string SimEvent() { return "STROBES_SET"; }
-    }
-
-    [Singleton]
-    public class ToggleBeaconLightsEvent : IEvent
-    {
-        public string SimEvent() { return "TOGGLE_BEACON_LIGHTS"; }
-    }
-
-    [Singleton]
     public class ToggleWingIceLightsEvent : IEvent
     {
         public string SimEvent() { return "TOGGLE_WING_LIGHTS"; }

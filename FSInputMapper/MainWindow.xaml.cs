@@ -141,16 +141,6 @@ namespace FSInputMapper
                             MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        private void StrobeLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetStrobes((sender as CheckBox)!.IsChecked ?? false);
-        }
-
-        private void BeaconLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetBeacon((sender as CheckBox)!.IsChecked ?? false);
-        }
-
         private void WingLightsClicked(object sender, RoutedEventArgs e)
         {
             lightSystem.SetWing((sender as CheckBox)!.IsChecked ?? false);

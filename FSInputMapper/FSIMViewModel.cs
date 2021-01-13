@@ -12,10 +12,9 @@ namespace FSInputMapper
     public class FSIMViewModel : INotifyPropertyChanged
     {
 
-        public FSIMViewModel(DebugConsole debugConsole, LightSystem lightSystem, FcuSystem fcuSystem)
+        public FSIMViewModel(DebugConsole debugConsole, FcuSystem fcuSystem)
         {
             (this.debugConsole = debugConsole).PropertyChanged += OnDebugConsolePropertyChanged;
-            (this.lightSystem = lightSystem).PropertyChanged += OnLightSystemPropertyChanged;
             (this.fcuSystem = fcuSystem).PropertyChanged += OnFcuSystemPropertyChanged;
         }
         #region Autopilot
@@ -109,47 +108,6 @@ namespace FSInputMapper
             get { return autopilotAppr; }
             set { if (autopilotAppr != value) { autopilotAppr = value; OnPropertyChange(); } }
         }
-        #endregion
-        #region Lights
-
-        private readonly LightSystem lightSystem;
-
-        private void OnLightSystemPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            Debug.Assert(sender == lightSystem);
-            switch (e.PropertyName)
-            {
-                case nameof(lightSystem.Strobes):
-                    OnPropertyChange(nameof(StrobeLights));
-                    break;
-                case nameof(lightSystem.IsStrobeAuto):
-                    OnPropertyChange(nameof(StrobesNotAuto));
-                    break;
-                case nameof(lightSystem.Beacon):
-                    OnPropertyChange(nameof(BeaconLights));
-                    break;
-                case nameof(lightSystem.Wing):
-                    OnPropertyChange(nameof(WingLights));
-                    break;
-                case nameof(lightSystem.NavLogo):
-                    OnPropertyChange(nameof(NavLogoLights));
-                    break;
-                case nameof(lightSystem.RunwayTurnoff):
-                    OnPropertyChange(nameof(RunwayTurnoffLights));
-                    break;
-                case nameof(lightSystem.Taxi0Off1Taxi2Takeoff):
-                    OnPropertyChange(nameof(NoseLights));
-                    break;
-            }
-        }
-
-        public bool StrobesNotAuto { get { return !lightSystem.IsStrobeAuto; } }
-        public bool StrobeLights { get { return lightSystem.Strobes; } }
-        public bool BeaconLights { get { return lightSystem.Beacon; } }
-        public bool WingLights { get { return lightSystem.Wing; } }
-        public bool NavLogoLights { get { return lightSystem.NavLogo; } }
-        public bool RunwayTurnoffLights { get { return lightSystem.RunwayTurnoff; } }
-        public int NoseLights { get { return 2 - lightSystem.Taxi0Off1Taxi2Takeoff; } }
         #endregion
         #region Debug
 
