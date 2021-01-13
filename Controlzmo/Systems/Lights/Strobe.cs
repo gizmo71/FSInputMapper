@@ -23,9 +23,9 @@ namespace Controlzmo.Systems.Lights
     public class StrobeLightListener : DataListener<StrobeLightData>, IRequestDataOnOpen
     {
         private readonly IHubContext<LightHub, ILightHub> hub;
-        private readonly ILogger<StrobeLightData> _logging;
+        private readonly ILogger<StrobeLightListener> _logging;
 
-        public StrobeLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<StrobeLightData> _logging)
+        public StrobeLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<StrobeLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;

@@ -19,14 +19,16 @@ namespace Controlzmo.Hubs
         private readonly SimConnectHolder holder;
         private readonly SetLandingLightsEvent setLandingLightsEvent;
         private readonly SetStrobeLightsEvent setStrobeLightsEvent;
+        private readonly ToggleBeaconLightsEvent toggleBeaconLightsEvent;
         private readonly ILogger<LightHub> _logger;
 
-        public LightHub(SimConnectHolder holder, SetLandingLightsEvent setLandingLightsEvent, SetStrobeLightsEvent setStrobeLightsEvent, ILogger<LightHub> _logger)
+        public LightHub(SimConnectHolder holder, SetLandingLightsEvent setLandingLightsEvent, SetStrobeLightsEvent setStrobeLightsEvent, ToggleBeaconLightsEvent toggleBeaconLightsEvent, ILogger<LightHub> _logger)
         {
             this.holder = holder;
             this._logger = _logger;
             this.setLandingLightsEvent = setLandingLightsEvent;
             this.setStrobeLightsEvent = setStrobeLightsEvent;
+            this.toggleBeaconLightsEvent = toggleBeaconLightsEvent;
         }
 
         public async Task SetInSim(string item, bool value)
@@ -39,6 +41,10 @@ namespace Controlzmo.Hubs
                     break;
                 case "Strobe":
                     holder.SimConnect?.SendEvent(setStrobeLightsEvent, value ? 1u : 0u);
+                    break;
+                case "Beacon":
+                    //TODO: should we read it and then react if not set correctly?
+                    holder.SimConnect?.SendEvent(toggleBeaconLightsEvent);
                     break;
                 default:
                     _logger.LogError($"Dunno what lights {item} are");
