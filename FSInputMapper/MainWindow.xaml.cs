@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace FSInputMapper
 {
-
     public class ModeBackgroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -32,7 +31,6 @@ namespace FSInputMapper
     {
         private readonly SimConnectAdapter simConnectAdapter;
         private readonly FSIMTriggerBus triggerBus;
-        private readonly LightSystem lightSystem;
         private readonly FcuSystem fcuSystem;
         private readonly ApuSystem apuSystem;
         private readonly ComRadioSystem comRadioSystem;
@@ -42,7 +40,6 @@ namespace FSInputMapper
             DataContext = sp.GetRequiredService<FSIMViewModel>();
             this.simConnectAdapter = sp.GetRequiredService<SimConnectAdapter>();
             this.triggerBus = sp.GetRequiredService<FSIMTriggerBus>();
-            this.lightSystem = sp.GetRequiredService<LightSystem>();
             this.fcuSystem = sp.GetRequiredService<FcuSystem>();
             this.apuSystem = sp.GetRequiredService<ApuSystem>();
             this.comRadioSystem = sp.GetRequiredService<ComRadioSystem>();
@@ -141,21 +138,6 @@ namespace FSInputMapper
                             MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        private void WingLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetWing((sender as CheckBox)!.IsChecked ?? false);
-        }
-
-        private void NavLogoLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetNavLogo((sender as CheckBox)!.IsChecked ?? false);
-        }
-
-        private void RunwayTurnoffLightsClicked(object sender, RoutedEventArgs e)
-        {
-            lightSystem.SetRunwayTurnoff((sender as CheckBox)!.IsChecked ?? false);
-        }
-
         private void ApuMaster(object sender, RoutedEventArgs e)
         {
             apuSystem.ApuToggle();
@@ -181,7 +163,5 @@ namespace FSInputMapper
                 (DataContext as FSIMViewModel)!.Com1StandbyFrequency = Decimal.Zero;
             }
         }
-
     }
-
 }

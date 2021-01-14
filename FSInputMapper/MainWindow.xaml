@@ -119,16 +119,6 @@
         <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="612,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}"/>
 
-        <!-- Lights - top row -->
-        <CheckBox Content="Wing Ice" HorizontalAlignment="Left" Margin="150,149,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding Path=WingLights,Mode=OneWay}" Click="WingLightsClicked" />
-        <CheckBox Content="Nav/Logo" HorizontalAlignment="Left" Margin="220,149,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding Path=NavLogoLights,Mode=OneWay}" Click="NavLogoLightsClicked" />
-
-        <!-- Lights - bottom row -->
-        <CheckBox Content="Rwy Turn" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"
-                  IsChecked="{Binding Path=RunwayTurnoffLights,Mode=OneWay}" Click="RunwayTurnoffLightsClicked" />
-
         <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
 
     </Grid>
