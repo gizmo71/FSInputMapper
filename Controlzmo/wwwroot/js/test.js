@@ -1,5 +1,11 @@
 ﻿"use strict";
 
+var noSleep = new NoSleep();
+document.addEventListener('click', function enableNoSleep() {
+    document.removeEventListener('click', enableNoSleep, false);
+    noSleep.enable();
+}, false);
+
 function errorHandler(err) {
     return console.error(err.toString());
 }
