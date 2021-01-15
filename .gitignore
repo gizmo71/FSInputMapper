@@ -351,3 +351,5 @@ MigrationBackup/
 
 simconnect.dll
 {Run FSInputMapper.exe}.lnk
+/Controlzmo/wwwroot/js/nosleep/
+/Controlzmo/wwwroot/js/signalr/

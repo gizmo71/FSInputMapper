@@ -7,8 +7,14 @@
       "library": "@microsoft/signalr@latest",
       "destination": "wwwroot/js/signalr/",
       "files": [
-        "dist/browser/signalr.js",
-        "dist/browser/signalr.min.js"
+        "dist/browser/signalr.js"
+      ]
+    },
+    {
+      "library": "nosleep@0.12.0",
+      "destination": "wwwroot/js/nosleep/",
+      "files": [
+        "NoSleep.js"
       ]
     }
   ]
