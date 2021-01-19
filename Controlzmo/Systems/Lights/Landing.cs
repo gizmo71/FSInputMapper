@@ -41,8 +41,9 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect simConnect, LandingLightData data)
         {
-            _logging.LogDebug($"Landing light on? {data.landingState == 1}");
-            hub.Clients.All.SetFromSim("lightsLanding", data.landingState == 1);
+            _logging.LogDebug($"Landing light switch? {data.landingSwitch} 2 {data.landingSwitchLeft} 3 {data.landingSwitchRight} "
+                + $"states {data.landingState} {data.landingStateLeft} {data.landingStateRight}");
+            hub.Clients.All.SetFromSim("lightsLanding", data.landingSwitch == 1);
         }
     }
 
