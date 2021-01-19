@@ -28,30 +28,45 @@ namespace Controlzmo.Systems.Lights
     [Component]
     public class LandingLightListener : DataListener<LandingLightData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<LandingLightListener> _logging;
 
-        public LandingLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<LandingLightListener> _logging)
+        public LandingLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<LandingLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, LandingLightData data)
         {
             _logging.LogDebug($"Landing light on? {data.landingState == 1}");
-            hub.Clients.All.SetFromSim("Landing", data.landingState == 1);
+            hub.Clients.All.SetFromSim("lightsLanding", data.landingState == 1);
         }
     }
 
     [Component]
     public class SetLandingLightsEvent : IEvent
     {
-        public string SimEvent() { return "LANDING_LIGHTS_SET"; }
+        public string SimEvent() => "LANDING_LIGHTS_SET";
+    }
+
+    [Component]
+    public class LandingLightsSetter : ISettable
+    {
+        private readonly SetLandingLightsEvent setLandingLightsEvent;
+
+        public LandingLightsSetter(SetLandingLightsEvent setLandingLightsEvent)
+        {
+            this.setLandingLightsEvent = setLandingLightsEvent;
+        }
+
+        public string GetId() => "lightsLanding";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        {
+            simConnect.SendEvent(setLandingLightsEvent, value ? 1u : 0u);
+        }
     }
 }

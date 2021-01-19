@@ -19,30 +19,46 @@ namespace Controlzmo.Systems.Lights
     [Component]
     public class BeaconLightListener : DataListener<BeaconLightData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<BeaconLightListener> _logging;
 
-        public BeaconLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<BeaconLightListener> _logging)
+        public BeaconLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<BeaconLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BeaconLightData data)
         {
             _logging.LogDebug($"Beacon state {data.beaconState}, switch {data.beaconSwitch}");
-            hub.Clients.All.SetFromSim("Beacon", data.beaconSwitch == 1);
+            hub.Clients.All.SetFromSim("lightsBeacon", data.beaconSwitch == 1);
         }
     }
 
     [Component]
     public class ToggleBeaconLightsEvent : IEvent
     {
-        public string SimEvent() { return "TOGGLE_BEACON_LIGHTS"; }
+        public string SimEvent() => "TOGGLE_BEACON_LIGHTS";
+    }
+
+    [Component]
+    public class BeaconLightsSetter : ISettable
+    {
+        private readonly ToggleBeaconLightsEvent toggleBeaconLightsEvent;
+
+        public BeaconLightsSetter(ToggleBeaconLightsEvent toggleBeaconLightsEvent)
+        {
+            this.toggleBeaconLightsEvent = toggleBeaconLightsEvent;
+        }
+
+        public string GetId() => "lightsBeacon";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        {
+            simConnect.SendEvent(toggleBeaconLightsEvent);
+            simConnect.SendEvent(toggleBeaconLightsEvent);
+        }
     }
 }

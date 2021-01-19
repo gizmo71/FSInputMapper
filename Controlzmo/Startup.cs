@@ -55,7 +55,7 @@ namespace Controlzmo
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapHub<LightHub>("/hub/light");
+                endpoints.MapHub<ControlzmoHub>("/hub/connectzmo");
             });
 
             app.ApplicationServices.GetRequiredService<SimConnectzmo.Adapter>();

@@ -23,10 +23,10 @@ namespace Controlzmo.Systems.Lights
     [Component]
     public class TaxiTurnoffLightListener : DataListener<TaxiTurnoffLightData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<TaxiTurnoffLightListener> _logging;
 
-        public TaxiTurnoffLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<TaxiTurnoffLightListener> _logging)
+        public TaxiTurnoffLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<TaxiTurnoffLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;
@@ -40,7 +40,7 @@ namespace Controlzmo.Systems.Lights
         public override void Process(ExtendedSimConnect simConnect, TaxiTurnoffLightData data)
         {
             _logging.LogDebug($"Nose light state {data.noseState}, switch 2 {data.noseSwitch2}, switch 3 {data.noseSwitch3}");
-            hub.Clients.All.SetFromSim("TaxiTurnoff", data.noseSwitch == 1);
+            hub.Clients.All.SetFromSim("lightsTaxiTurnoff", data.noseSwitch == 1);
         }
     }
 
@@ -48,5 +48,23 @@ namespace Controlzmo.Systems.Lights
     public class SetTaxiTurnoffLightsEvent : IEvent
     {
         public string SimEvent() { return "TAXI_LIGHTS_SET"; }
+    }
+
+    [Component]
+    public class TaxiTurnoffLightsSetter : ISettable
+    {
+        private readonly SetTaxiTurnoffLightsEvent setTaxiTurnoffLightsEvent;
+
+        public TaxiTurnoffLightsSetter(SetTaxiTurnoffLightsEvent setTaxiTurnoffLightsEvent)
+        {
+            this.setTaxiTurnoffLightsEvent = setTaxiTurnoffLightsEvent;
+        }
+
+        public string GetId() => "lightsTaxiTurnoff";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        {
+            simConnect.SendEvent(setTaxiTurnoffLightsEvent, value ? 1u : 0u);
+        }
     }
 }

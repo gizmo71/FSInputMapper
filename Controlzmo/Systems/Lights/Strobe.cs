@@ -22,32 +22,47 @@ namespace Controlzmo.Systems.Lights
     [Component]
     public class StrobeLightListener : DataListener<StrobeLightData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<StrobeLightListener> _logging;
 
-        public StrobeLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<StrobeLightListener> _logging)
+        public StrobeLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<StrobeLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, StrobeLightData data)
         {
             var strobesOn = data.strobeSwitch == 1;
             var strobesAuto = data.lPot24 == 0;
             _logging.LogDebug($"Strobes on? {strobesOn} Strobes auto? {strobesAuto}");
-            hub.Clients.All.SetFromSim("Strobe", strobesAuto ? null : strobesOn);
+            hub.Clients.All.SetFromSim("lightsStrobe", strobesAuto ? null : strobesOn);
         }
     }
 
     [Component]
     public class SetStrobeLightsEvent : IEvent
     {
-        public string SimEvent() { return "STROBES_SET"; }
+        public string SimEvent() => "STROBES_SET";
+    }
+
+    [Component]
+    public class StrobeLightsSetter : ISettable
+    {
+        private readonly SetStrobeLightsEvent setStrobeLightsEvent;
+
+        public StrobeLightsSetter(SetStrobeLightsEvent setStrobeLightsEvent)
+        {
+            this.setStrobeLightsEvent = setStrobeLightsEvent;
+        }
+
+        public string GetId() => "lightsStrobe";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        {
+            simConnect.SendEvent(setStrobeLightsEvent, value ? 1u : 0u);
+        }
     }
 }

@@ -23,36 +23,54 @@ namespace Controlzmo.Systems.Lights
     [Component]
     public class NavLogoLightListener : DataListener<NavLogoLightData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<NavLogoLightListener> _logging;
 
-        public NavLogoLightListener(IHubContext<LightHub, ILightHub> hub, ILogger<NavLogoLightListener> _logging)
+        public NavLogoLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<NavLogoLightListener> _logging)
         {
             this.hub = hub;
             this._logging = _logging;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, NavLogoLightData data)
         {
             _logging.LogDebug($"Nav light on? {data.navState} Logo light on? {data.logoState}");
-            hub.Clients.All.SetFromSim("NavLogo", data.navSwitch + data.logoSwitch != 0);
+            hub.Clients.All.SetFromSim("lightsNavLogo", data.navSwitch + data.logoSwitch != 0);
         }
     }
 
     [Component]
     public class SetNavLightsEvent : IEvent
     {
-        public string SimEvent() { return "NAV_LIGHTS_SET"; }
+        public string SimEvent() => "NAV_LIGHTS_SET";
     }
 
     [Component]
     public class SetLogoLightsEvent : IEvent
     {
-        public string SimEvent() { return "LOGO_LIGHTS_SET"; }
+        public string SimEvent() => "LOGO_LIGHTS_SET";
+    }
+
+    [Component]
+    public class LogoNavLightsSetter : ISettable
+    {
+        private readonly SetLogoLightsEvent setLogoLightsEvent;
+        private readonly SetNavLightsEvent setNavLightsEvent;
+
+        public LogoNavLightsSetter(SetLogoLightsEvent setLogoLightsEvent, SetNavLightsEvent setNavLightsEvent)
+        {
+            this.setLogoLightsEvent = setLogoLightsEvent;
+            this.setNavLightsEvent = setNavLightsEvent;
+        }
+
+        public string GetId() => "lightsNavLogo";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        {
+            simConnect.SendEvent(setLogoLightsEvent, value ? 1u : 0u);
+            simConnect.SendEvent(setNavLightsEvent, value ? 1u : 0u);
+        }
     }
 }

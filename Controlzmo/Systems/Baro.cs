@@ -22,9 +22,9 @@ namespace Controlzmo.Systems
     [Component]
     public class BaroListener : DataListener<BaroData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<LightHub, ILightHub> hub;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public BaroListener(IHubContext<LightHub, ILightHub> hub)
+        public BaroListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
             this.hub = hub;
         }
