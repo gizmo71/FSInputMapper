@@ -58,7 +58,6 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             simConnect.SendEvent(toggleBeaconLightsEvent);
-            simConnect.SendEvent(toggleBeaconLightsEvent);
         }
     }
 }
