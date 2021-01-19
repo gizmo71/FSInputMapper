@@ -29,10 +29,7 @@ namespace Controlzmo.Systems
             this.hub = hub;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.SECOND;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {

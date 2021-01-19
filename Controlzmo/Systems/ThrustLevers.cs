@@ -5,10 +5,16 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.ThrustLevers
 {
     [Component]
-    public class Throttle1SetEvent : IEvent { public string SimEvent() { return "THROTTLE1_SET"; } }
+    public class Throttle1SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE1_SET";
+    }
 
     [Component]
-    public class Throttle2SetEvent : IEvent { public string SimEvent() { return "THROTTLE2_SET"; } }
+    public class Throttle2SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE2_SET";
+    }
 
     public abstract class ThrottleSetEventNotification : IEventNotification
     {
@@ -22,7 +28,7 @@ namespace Controlzmo.Systems.ThrustLevers
             this.raw2fs = raw2fs;
         }
 
-        public IEvent GetEvent() { return trigger; }
+        public IEvent GetEvent() => trigger;
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {

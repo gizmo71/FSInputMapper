@@ -74,13 +74,13 @@ namespace Controlzmo.Systems.Spoilers
     [Component]
     public class MoreSpoilerEvent : IEvent
     {
-        public string SimEvent() { return "SPOILERS_TOGGLE"; }
+        public string SimEvent() => "SPOILERS_TOGGLE";
     }
 
     [Component]
     public class LessSpoilerEvent : IEvent
     {
-        public string SimEvent() { return "SPOILERS_ARM_TOGGLE"; }
+        public string SimEvent() => "SPOILERS_ARM_TOGGLE";
     }
 
     public abstract class SpoilerEventNotification : IEventNotification
@@ -95,7 +95,7 @@ namespace Controlzmo.Systems.Spoilers
             this.trigger = trigger;
         }
 
-        public IEvent GetEvent() { return trigger; }
+        public IEvent GetEvent() => trigger;
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {

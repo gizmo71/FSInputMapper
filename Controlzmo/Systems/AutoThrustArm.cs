@@ -6,7 +6,10 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.ThrustLevers
 {
     [Component]
-    public class AutothrustArmToggleEvent : IEvent { public string SimEvent() { return "AUTO_THROTTLE_ARM"; } }
+    public class AutothrustArmToggleEvent : IEvent
+    {
+        public string SimEvent() => "AUTO_THROTTLE_ARM";
+    }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AutothrustState
@@ -45,7 +48,7 @@ namespace Controlzmo.Systems.ThrustLevers
             this.trigger = trigger;
         }
 
-        public IEvent GetEvent() { return trigger; }
+        public IEvent GetEvent() => trigger;
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
