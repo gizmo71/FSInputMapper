@@ -3,27 +3,29 @@
     ViewData["Title"] = "Home page";
 }
 
+<style>
+    td { text-align: right; }
+    th { text-align: left; padding-right: 2em; }
+</style>
 <div class="text-center" style="float: right;">
-    <table style="text-size-adjust: 200%;">
+    <table style="font-size: x-large;">
         <tr>
-            <th>Strobes</th>
             <td><input type="checkbox" id="lightsStrobe" class="sendLights" disabled /></td>
-            <th>Beacon</th>
+            <th><label for="lightsStrobe">Strobes</label></th>
             <td><input type="checkbox" id="lightsBeacon" class="sendLights" /></td>
-            <th>Wing Ice</th>
+            <th><label for="lightsBeacon">Beacon</label></th>
             <td><input type="checkbox" id="lightsWingIce" class="sendLights" /></td>
-            <th>Nav/Logo</th>
+            <th><label for="lightsWingIce">Wing Ice</label></th>
             <td><input type="checkbox" id="lightsNavLogo" class="sendLights" /></td>
+            <th><label for="lightsNavLogo">Nav/Logo</label></th>
         </tr>
         <tr>
-            <th>Turnoff/Taxi</th>
             <td><input type="checkbox" id="lightsTaxiTurnoff" class="sendLights" /></td>
-            <td></td>
-            <th title="Ensure On or Retract (not Off) in game">Landing</th>
-            <td><input type="checkbox" id="lightsLanding" class="sendLights" /></td>
-            <td></td>
-            <th>Nose</th>
-            <td>INOP</td>
+            <th><label for="lightsTaxiTurnoff">Turnoff/Taxi</label></th>
+            <td colspan="2"><input type="checkbox" id="lightsLanding" class="sendLights" /></td>
+            <th colspan="2" title="Ensure On or Retract (not Off) in game"><label for="lightsLanding">Landing</label></th>
+            <td><select id="lightsNose"><option disabled selected>INOP</option></select></td>
+            <th><label for="lightsNost">Nose</label></th>
         </tr>
     </table>
     <ul id="messagesList"></ul>
