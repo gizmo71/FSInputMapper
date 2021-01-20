@@ -33,7 +33,7 @@ namespace Controlzmo.Systems.ThrustLevers
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             var shifted = data.dwData + MAGNITUDE_RANGE;
-            var mapped = MapAxis(shifted);
+            var mapped = /*MapAxis*/(shifted);
             simConnect.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
         }
 
