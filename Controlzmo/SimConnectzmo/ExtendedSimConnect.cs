@@ -106,8 +106,6 @@ _logging!.LogDebug("SimConnect open");
 
         private void MapClientEvents()
         {
-            foreach (var e in Enum.GetValues(typeof(EVENT)).OfType<EVENT>())
-                MapClientEventToSimEvent(e, e.GetAttribute<EventAttribute>().ClientEvent);
             foreach (var eventToEnum in eventToEnum!)
                 MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
             foreach (var notificationToEvent in notificationsToEvent!)
