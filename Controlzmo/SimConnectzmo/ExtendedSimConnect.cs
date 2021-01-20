@@ -143,7 +143,7 @@ _logging!.LogDebug($"Received {request}");
         {
             EVENT e = (EVENT)data.uEventID;
 _logging!.LogDebug($"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
-    + $"\n@{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
+    + $" @{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
             foreach (IEventNotification notification in notificationsToEvent!
                 .Where(candidate => e == candidate.Value)
                 .Select(candidate => candidate.Key))
