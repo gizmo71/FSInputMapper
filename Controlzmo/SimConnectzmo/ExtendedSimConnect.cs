@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Controlzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -20,10 +21,10 @@ namespace SimConnectzmo
 
         private ILogger<ExtendedSimConnect>? _logging;
 
-        internal Dictionary<Type, STRUCT>? typeToStruct;
-        internal Dictionary<IDataListener, REQUEST>? typeToRequest;
-        internal Dictionary<IEvent, EVENT>? eventToEnum;
-        internal Dictionary<IEventNotification, EVENT>? notificationsToEvent;
+        private Dictionary<Type, STRUCT>? typeToStruct;
+        private Dictionary<IDataListener, REQUEST>? typeToRequest;
+        private Dictionary<IEvent, EVENT>? eventToEnum;
+        private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
 
         internal ExtendedSimConnect(string szName, uint UserEventWin32, WaitHandle waitHandle)
             : base(szName, hWnd, UserEventWin32, waitHandle, 0) // 6 for over IP - can we make it timeout easier?
@@ -116,6 +117,35 @@ _logging!.LogDebug("SimConnect open");
         private void SetGroupPriorities()
         {
             SetNotificationGroupPriority(GROUP.JUST_MASKABLE, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+        }
+
+        public void SendDataOnSimObject<StructType>(StructType data)
+            where StructType : struct
+        {
+            STRUCT id = typeToStruct![typeof(StructType)];
+            SetDataOnSimObject(id, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
+        }
+
+        public void SendEvent(IEvent eventToSend, uint data = 0u, bool slow = false, bool fast = false)
+        {
+            EVENT @event = eventToEnum![eventToSend];
+            SIMCONNECT_EVENT_FLAG flags = 0;
+            GROUP? group = notificationsToEvent!
+                .Where(candidate => candidate.Value == @event)
+                .Select(_ => GROUP.JUST_MASKABLE)
+                .Distinct()
+                .Cast<GROUP?>()
+                .DefaultIfEmpty(null)
+                .Single();
+            if (group == null)
+            {
+                group = (GROUP)SIMCONNECT_GROUP_PRIORITY_STANDARD;
+                flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
+            }
+//_logging.LogDebug($"event {eventToSend} group " + (group != null ? group.ToString() : "none") + $" data {data}", "SendEvent", MessageBoxButton.OK, MessageBoxImage.Warning);
+            if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
+            if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
+            TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data, group, flags);
         }
 
         public void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
