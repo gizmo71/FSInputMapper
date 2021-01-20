@@ -24,8 +24,8 @@ namespace Controlzmo.Hubs
 
         public ControlzmoHub(IServiceProvider serviceProvider)
         {
-            this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
-            this._logger = serviceProvider.GetRequiredService<ILogger<ControlzmoHub>>();
+            holder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            _logger = serviceProvider.GetRequiredService<ILogger<ControlzmoHub>>();
 
             settables = serviceProvider
                 .GetServices<ISettable>()

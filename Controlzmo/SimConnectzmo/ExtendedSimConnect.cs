@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Controlzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -63,7 +62,6 @@ namespace SimConnectzmo
 
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
-_logging!.LogDebug("SimConnect open");
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
@@ -159,22 +157,23 @@ _logging!.LogDebug("SimConnect open");
         private void Handle_OnRecvSimobjectData(SimConnect _, SIMCONNECT_RECV_SIMOBJECT_DATA data)
         {
             REQUEST request = (REQUEST)data.dwRequestID;
-_logging!.LogDebug($"Received {request}");
-            typeToRequest!
+            var listener = typeToRequest!
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
-                .Single()
-                .Process(this, data.dwData[0]);
+                .Single();
+            _logging!.LogDebug($"Received {request} for {listener}");
+            listener.Process(this, data.dwData[0]);
         }
 
         private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
             EVENT e = (EVENT)data.uEventID;
-_logging!.LogDebug($"Received {e} = {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
-    + $" @{System.DateTime.Now}\nGroup ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
-            foreach (IEventNotification notification in notificationsToEvent!
+            IEnumerable<IEventNotification> notifications = notificationsToEvent!
                 .Where(candidate => e == candidate.Value)
-                .Select(candidate => candidate.Key))
+                .Select(candidate => candidate.Key);
+_logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
+    + $" Group ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
+            foreach (IEventNotification notification in notifications)
             {
                 notification.OnRecieve(this, data);
             }
