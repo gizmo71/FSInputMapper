@@ -4,6 +4,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
+#if false
     [Component]
     public class Throttle1SetEvent : IEvent
     {
@@ -33,7 +34,7 @@ namespace Controlzmo.Systems.ThrustLevers
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             var shifted = data.dwData + MAGNITUDE_RANGE;
-            var mapped = /*MapAxis*/(shifted);
+            var mapped = MapAxis(shifted);
             simConnect.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
         }
 
@@ -108,4 +109,5 @@ namespace Controlzmo.Systems.ThrustLevers
         };
         public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e, map) { }
     }
+#endif
 }
