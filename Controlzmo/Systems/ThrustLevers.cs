@@ -4,6 +4,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
+    // The custom FBW model uses the _EX1 versions...
 #if false
     [Component]
     public class Throttle1SetEvent : IEvent
