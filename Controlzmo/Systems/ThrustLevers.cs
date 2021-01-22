@@ -1,10 +1,38 @@
 ﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
-    // The custom FBW model uses the _EX1 versions...
+#if true
+    [Component]
+    public class Throttle1SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE1_AXIS_SET_EX1";
+    }
+
+    public class ThrottleSetEventNotification : IEventNotification
+    {
+        private readonly Throttle1SetEvent trigger;
+        private readonly ILogger<ThrottleSetEventNotification> _logging;
+
+        public ThrottleSetEventNotification(Throttle1SetEvent trigger, ILogger<ThrottleSetEventNotification> logging)
+        {
+            this.trigger = trigger;
+            _logging = logging;
+        }
+
+        public IEvent GetEvent() => trigger;
+
+        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        {
+            _logging.LogDebug($"{trigger.SimEvent()} = {data.dwData}");
+            simConnect.SendEvent(trigger, data.dwData);
+        }
+    }
+#endif
+
 #if false
     [Component]
     public class Throttle1SetEvent : IEvent
