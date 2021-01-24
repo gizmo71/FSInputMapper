@@ -21,16 +21,27 @@ namespace Controlzmo.Hubs
         private readonly SimConnectHolder holder;
         private readonly ILogger<ControlzmoHub> _logger;
         private readonly IDictionary<string, ISettable> settables;
+private readonly Systems.ThrustLevers.Throttle2SetEventNotification frottle;
 
         public ControlzmoHub(IServiceProvider serviceProvider)
         {
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             _logger = serviceProvider.GetRequiredService<ILogger<ControlzmoHub>>();
+frottle = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle2SetEventNotification>();
 
             settables = serviceProvider
                 .GetServices<ISettable>()
                 .ToDictionary(settable => settable.GetId(), settable => settable);
         }
+
+public async Task SetFrottle(uint value)
+{
+    //_logger.LogDebug($"Calling frottle with {value}");
+    Microsoft.FlightSimulator.SimConnect.SIMCONNECT_RECV_EVENT foo = new ();
+    foo.dwData = value - 0x4000;
+    frottle.OnRecieve(holder.SimConnect, foo);
+    await Task.CompletedTask;
+}
 
         public async Task SendAll()
         {

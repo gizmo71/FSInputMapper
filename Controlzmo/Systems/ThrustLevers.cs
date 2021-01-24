@@ -5,47 +5,6 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
-#if false
-    [Component]
-    public class Throttle1SetEvent : IEvent
-    {
-        public string SimEvent() => "THROTTLE1_AXIS_SET_EX1";
-    }
-
-    public class ThrottleSetEventNotification : IEventNotification
-    {
-        private readonly Throttle1SetEvent trigger;
-        private readonly ILogger<ThrottleSetEventNotification> _logging;
-
-        public ThrottleSetEventNotification(Throttle1SetEvent trigger, ILogger<ThrottleSetEventNotification> logging)
-        {
-            this.trigger = trigger;
-            _logging = logging;
-        }
-
-        public IEvent GetEvent() => trigger;
-
-        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
-        {
-            _logging.LogDebug($"{trigger.SimEvent()} = {data.dwData}");
-            simConnect.SendEvent(trigger, data.dwData);
-        }
-    }
-#endif
-
-#if false
-    [Component]
-    public class Throttle1SetEvent : IEvent
-    {
-        public string SimEvent() => "THROTTLE1_SET";
-    }
-
-    [Component]
-    public class Throttle2SetEvent : IEvent
-    {
-        public string SimEvent() => "THROTTLE2_SET";
-    }
-
     public abstract class ThrottleSetEventNotification : IEventNotification
     {
         protected const uint MAGNITUDE_RANGE = 0x4000u;
@@ -60,16 +19,16 @@ namespace Controlzmo.Systems.ThrustLevers
 
         public IEvent GetEvent() => trigger;
 
-        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        public void OnRecieve(ExtendedSimConnect? simConnect, SIMCONNECT_RECV_EVENT data)
         {
             var shifted = data.dwData + MAGNITUDE_RANGE;
             var mapped = MapAxis(shifted);
-            simConnect.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
+            simConnect?.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
         }
 
         private readonly KeyValuePair<uint, uint> DUMMY = new(MAGNITUDE_RANGE, MAGNITUDE_RANGE);
 
-        private uint MapAxis(uint raw)
+        protected virtual uint MapAxis(uint raw)
         {
             var start = DUMMY;
             var end = DUMMY;
@@ -87,6 +46,13 @@ namespace Controlzmo.Systems.ThrustLevers
             double inputFraction = (raw - start.Key) / (end.Key - (double)start.Key);
             return start.Value + (uint)(inputFraction * (end.Value - start.Value));
         }
+    }
+
+#if false
+    [Component]
+    public class Throttle1SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE1_SET";
     }
 
     [Component]
@@ -111,7 +77,16 @@ namespace Controlzmo.Systems.ThrustLevers
             [32767] = 32768, // Start of TO/GA
             [32768] = 32768, // End of TO/GA
         };
+
         public Throttle1SetEventNotification(Throttle1SetEvent e) : base(e, map) { }
+    }
+#endif
+
+#if true
+    [Component]
+    public class Throttle2SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE2_SET";
     }
 
     [Component]
@@ -136,7 +111,20 @@ namespace Controlzmo.Systems.ThrustLevers
             [32767] = 32768, // Start of TO/GA
             [32768] = 32768, // End of TO/GA
         };
-        public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e, map) { }
+
+private readonly ILogger<Throttle2SetEventNotification> _log;
+        public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> _log)
+            : base(e, map)
+        {
+            this._log = _log;
+        }
+
+        protected override uint MapAxis(uint raw)
+        {
+            uint mapped = base.MapAxis(raw);
+_log.LogDebug($"Mapped {raw} to {mapped}");
+            return mapped;
+        }
     }
 #endif
 }

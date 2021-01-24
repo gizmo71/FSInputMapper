@@ -33,4 +33,10 @@ connection.start().then(function () {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
+    $("#frottle").on("keypress", function (event) {
+        if (event.which == 13) {
+            connection.invoke("SetFrottle", Number.parseInt(event.target.value)).catch(errorHandler);
+            event.preventDefault();
+        }
+    });
 }).catch(errorHandler);
