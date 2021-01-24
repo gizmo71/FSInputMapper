@@ -5,7 +5,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
-#if true
+#if false
     [Component]
     public class Throttle1SetEvent : IEvent
     {
