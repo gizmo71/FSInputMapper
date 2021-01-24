@@ -33,12 +33,12 @@ namespace SimConnectzmo
         {
             if (bw == null)
             {
-_logger.LogDebug("Starting background worker");
+//_logger.LogDebug("Starting background worker");
                 bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
                 bw.DoWork += Donkey;
                 bw.RunWorkerAsync();
             }
-else _logger.LogDebug("Existing background worker");
+//else _logger.LogDebug("Existing background worker");
         }
 
         private const uint WM_USER_SIMCONNECT = 0x0402;
@@ -56,10 +56,9 @@ else _logger.LogDebug("Existing background worker");
                     if (MessageSignal.WaitOne(5_000))
                     {
                         esc.ReceiveMessage();
-                        _logger.LogInformation("Got somet' from SimConnect");
+//_logger.LogInformation("Got somet' from SimConnect");
                     }
-                    else
-                        _logger.LogDebug("Got nowt from SimConnect");
+//else _logger.LogDebug("Got nowt from SimConnect");
                 }
             }
             catch (Exception e)
