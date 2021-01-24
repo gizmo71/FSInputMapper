@@ -5,6 +5,18 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
+    [Component]
+    public class Throttle1SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE1_SET";
+    }
+
+    [Component]
+    public class Throttle2SetEvent : IEvent
+    {
+        public string SimEvent() => "THROTTLE2_SET";
+    }
+
     public abstract class ThrottleSetEventNotification : IEventNotification
     {
         protected const uint MAGNITUDE_RANGE = 0x4000u;
@@ -23,12 +35,13 @@ namespace Controlzmo.Systems.ThrustLevers
         {
             var shifted = data.dwData + MAGNITUDE_RANGE;
             var mapped = MapAxis(shifted);
-            simConnect?.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
+            if (mapped != null)
+                simConnect?.SendEvent(trigger, (uint)mapped - MAGNITUDE_RANGE);
         }
 
         private readonly KeyValuePair<uint, uint> DUMMY = new(MAGNITUDE_RANGE, MAGNITUDE_RANGE);
 
-        protected virtual uint MapAxis(uint raw)
+        protected virtual uint? MapAxis(uint raw)
         {
             var start = DUMMY;
             var end = DUMMY;
@@ -48,12 +61,20 @@ namespace Controlzmo.Systems.ThrustLevers
         }
     }
 
-#if false
-    [Component]
-    public class Throttle1SetEvent : IEvent
-    {
-        public string SimEvent() => "THROTTLE1_SET";
-    }
+/** ThrottleConfiguration.ini
+[Throttle]
+Log = true
+Enabled = true
+ReverseOnAxis = true
+ReverseIdle = true
+DetentDeadZone = 2.5
+DetentReverseIdle = -0.90
+DetentReverseFull = -1.00
+DetentIdle = -0.42
+DetentClimb = 0.06
+DetentFlexMct = 0.53
+DetentTakeOffGoAround = 1.00
+*/
 
     [Component]
     public class Throttle1SetEventNotification : ThrottleSetEventNotification
@@ -79,14 +100,8 @@ namespace Controlzmo.Systems.ThrustLevers
         };
 
         public Throttle1SetEventNotification(Throttle1SetEvent e) : base(e, map) { }
-    }
-#endif
 
-#if true
-    [Component]
-    public class Throttle2SetEvent : IEvent
-    {
-        public string SimEvent() => "THROTTLE2_SET";
+        protected override uint? MapAxis(uint raw) => null;
     }
 
     [Component]
@@ -112,19 +127,8 @@ namespace Controlzmo.Systems.ThrustLevers
             [32768] = 32768, // End of TO/GA
         };
 
-private readonly ILogger<Throttle2SetEventNotification> _log;
-        public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> _log)
-            : base(e, map)
-        {
-            this._log = _log;
-        }
+        public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e, map) { }
 
-        protected override uint MapAxis(uint raw)
-        {
-            uint mapped = base.MapAxis(raw);
-_log.LogDebug($"Mapped {raw} to {mapped}");
-            return mapped;
-        }
+        protected override uint? MapAxis(uint raw) => raw;
     }
-#endif
 }
