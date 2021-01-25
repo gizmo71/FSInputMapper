@@ -28,6 +28,8 @@ private readonly IEvent frottle;
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             _logger = serviceProvider.GetRequiredService<ILogger<ControlzmoHub>>();
 frottle = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle1SetEvent>();
+_ = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle1SetEventNotification>();
+_ = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle2SetEventNotification>();
 
             settables = serviceProvider
                 .GetServices<ISettable>()

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+
+using UintRange = System.Tuple<uint, uint>;
 
 namespace Controlzmo.Systems.ThrustLevers
 {
@@ -27,6 +30,37 @@ namespace Controlzmo.Systems.ThrustLevers
         {
             this.trigger = trigger;
             this.raw2fs = raw2fs;
+        }
+
+        protected ThrottleSetEventNotification(IEvent trigger,
+            SortedDictionary<UintRange, UintRange> tuples,
+            ILogger logger) : this(trigger, explode(tuples))
+        {
+            foreach (var entry in raw2fs)
+                logger.LogDebug($"Map {entry.Key} -> {entry.Value}");
+        }
+
+        private static SortedDictionary<uint, uint> explode(SortedDictionary<UintRange, UintRange> tuples)
+        {
+            SortedDictionary<uint, uint> raw2fs = new();
+            foreach (UintRange rawTuple in tuples.Keys)
+            {
+                UintRange mappedTuple = tuples[rawTuple];
+                if (rawTuple.Item1 == rawTuple.Item2)
+                    throw new ArgumentException($"{rawTuple} => {mappedTuple} must have different raw values");
+                if (rawTuple.Item1 > 0)
+                {
+                    raw2fs[rawTuple.Item1 - 1] = mappedTuple.Item1 - 1;
+                }
+                raw2fs[rawTuple.Item1] = mappedTuple.Item1;
+                raw2fs[rawTuple.Item2] = mappedTuple.Item2;
+                if (rawTuple.Item2 < MAGNITUDE_RANGE * 2)
+                {
+                    raw2fs[rawTuple.Item2 + 1] = mappedTuple.Item2 + 1;
+                }
+
+            }
+            return raw2fs;
         }
 
         public IEvent GetEvent() => trigger;
@@ -59,9 +93,8 @@ namespace Controlzmo.Systems.ThrustLevers
             double inputFraction = (raw - start.Key) / (end.Key - (double)start.Key);
             return start.Value + (uint)(inputFraction * (end.Value - start.Value));
         }
-    }
 
-/** ThrottleConfiguration.ini
+/* ThrottleConfiguration.ini
 [Throttle]
 Log = true
 Enabled = true
@@ -73,13 +106,19 @@ DetentReverseFull = -1.00
 DetentIdle = -0.42
 DetentClimb = 0.06
 DetentFlexMct = 0.53
-DetentTakeOffGoAround = 1.00
-*/
+DetentTakeOffGoAround = 1.00 */
+        protected static readonly UintRange MAX_REV = new (0, 273);
+        protected static readonly UintRange IDLE_REV = new(1366, 5570);
+        protected static readonly UintRange IDLE = new(5571, 9723);
+        protected static readonly UintRange CL = new(17147, 20575);
+        protected static readonly UintRange FLX_MCT = new(21859, 28917);
+        protected static readonly UintRange TO_GA = new(31228, 32768);
+    }
 
     [Component]
     public class Throttle1SetEventNotification : ThrottleSetEventNotification
     {
-        private static SortedDictionary<uint, uint> map = new SortedDictionary<uint, uint>
+        private static SortedDictionary<uint, uint> mapOld = new ()
         {
             [0] = 13220, // Max reverse
             [7999] = 16100, // Idle reverse
@@ -98,16 +137,25 @@ DetentTakeOffGoAround = 1.00
             [32767] = 32768, // Start of TO/GA
             [32768] = 32768, // End of TO/GA
         };
+        private static SortedDictionary<UintRange, UintRange> map = new ()
+        {
+            [new UintRange(0, 1999)] = MAX_REV,
+            [new UintRange(7000, 7999)] = IDLE_REV,
+            [new UintRange(8000, 9200)] = IDLE,
+            [new UintRange(16601, 17000)] = CL,
+            [new UintRange(24100, 25500)] = FLX_MCT,
+            [new UintRange(32767, 32768)] = TO_GA,
+        };
 
-        public Throttle1SetEventNotification(Throttle1SetEvent e) : base(e, map) { }
+        public Throttle1SetEventNotification(Throttle1SetEvent e, ILogger<Throttle1SetEventNotification> logger) : base(e, map, logger) { }
 
-        protected override uint? MapAxis(uint raw) => null;
+        //protected override uint? MapAxis(uint raw) => null;
     }
 
     [Component]
     public class Throttle2SetEventNotification : ThrottleSetEventNotification
     {
-        private static SortedDictionary<uint, uint> map = new SortedDictionary<uint, uint>
+        private static SortedDictionary<uint, uint> mapOld = new ()
         {
             [0] = 13220, // Max reverse
             [7999] = 16100, // Idle reverse
@@ -126,9 +174,18 @@ DetentTakeOffGoAround = 1.00
             [32767] = 32768, // Start of TO/GA
             [32768] = 32768, // End of TO/GA
         };
+        private static SortedDictionary<UintRange, UintRange> map = new ()
+        {
+            [new UintRange(0, 1999)] = MAX_REV,
+            [new UintRange(7000, 7999)] = IDLE_REV,
+            [new UintRange(8000, 9200)] = IDLE,
+            [new UintRange(16601, 17000)] = CL,
+            [new UintRange(23950, 25500)] = FLX_MCT,
+            [new UintRange(32767, 32768)] = TO_GA,
+        };
 
-        public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e, map) { }
+    public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> logger) : base(e, map, logger) { }
 
-        protected override uint? MapAxis(uint raw) => raw;
+        //protected override uint? MapAxis(uint raw) => null;
     }
 }
