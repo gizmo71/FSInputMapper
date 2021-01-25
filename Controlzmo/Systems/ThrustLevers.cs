@@ -139,11 +139,11 @@ DetentTakeOffGoAround = 1.00 */
         };
         private static SortedDictionary<UintRange, UintRange> map = new ()
         {
-            [new UintRange(0, 1999)] = MAX_REV,
-            [new UintRange(7000, 7999)] = IDLE_REV,
+            [new UintRange(0, 299)] = MAX_REV,
+            [new UintRange(4000, 7999)] = IDLE_REV,
             [new UintRange(8000, 9200)] = IDLE,
             [new UintRange(16601, 17000)] = CL,
-            [new UintRange(24100, 25500)] = FLX_MCT,
+            [new UintRange(23900, 25700)] = FLX_MCT,
             [new UintRange(32767, 32768)] = TO_GA,
         };
 
@@ -176,11 +176,11 @@ DetentTakeOffGoAround = 1.00 */
         };
         private static SortedDictionary<UintRange, UintRange> map = new ()
         {
-            [new UintRange(0, 1999)] = MAX_REV,
-            [new UintRange(7000, 7999)] = IDLE_REV,
+            [new UintRange(0, 299)] = MAX_REV,
+            [new UintRange(4000, 7999)] = IDLE_REV,
             [new UintRange(8000, 9200)] = IDLE,
             [new UintRange(16601, 17000)] = CL,
-            [new UintRange(23950, 25500)] = FLX_MCT,
+            [new UintRange(23750, 25700)] = FLX_MCT,
             [new UintRange(32767, 32768)] = TO_GA,
         };
 
