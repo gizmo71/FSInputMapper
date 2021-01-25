@@ -125,8 +125,6 @@ DetentTakeOffGoAround = 1.00 */
         };
 
         public Throttle1SetEventNotification(Throttle1SetEvent e, ILogger<Throttle1SetEventNotification> logger) : base(e, map, logger) { }
-
-        //protected override uint? MapAxis(uint raw) => null;
     }
 
     [Component]
@@ -142,8 +140,6 @@ DetentTakeOffGoAround = 1.00 */
             [new UintRange(32767, 32768)] = TO_GA,
         };
 
-    public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> logger) : base(e, map, logger) { }
-
-        //protected override uint? MapAxis(uint raw) => null;
+        public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> logger) : base(e, map, logger) { }
     }
 }
