@@ -11,6 +11,13 @@ namespace Controlzmo.Systems.ThrustLevers
         public string SimEvent() => "AUTO_THROTTLE_ARM";
     }
 
+    // Use a different binding to avoid clashing with FBW A32NX.
+    [Component]
+    public class AutothrustArmEvent : IEvent
+    {
+        public string SimEvent() => "AP_N1_HOLD";
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AutothrustState
     {
@@ -39,10 +46,10 @@ namespace Controlzmo.Systems.ThrustLevers
     [Component]
     public class AutothrustArmEventNotification : IEventNotification
     {
-        private readonly AutothrustArmToggleEvent trigger;
+        private readonly AutothrustArmEvent trigger;
         private readonly ArmAutothrustListener listener;
 
-        public AutothrustArmEventNotification(ArmAutothrustListener listener, AutothrustArmToggleEvent trigger)
+        public AutothrustArmEventNotification(ArmAutothrustListener listener, AutothrustArmEvent trigger)
         {
             this.listener = listener;
             this.trigger = trigger;
@@ -51,8 +58,6 @@ namespace Controlzmo.Systems.ThrustLevers
         public IEvent GetEvent() => trigger;
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
-        {
-            simConnect.RequestDataOnSimObject(listener, SIMCONNECT_PERIOD.ONCE);
-        }
+            => simConnect.RequestDataOnSimObject(listener, SIMCONNECT_PERIOD.ONCE);
     }
 }
