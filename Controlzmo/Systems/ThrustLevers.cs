@@ -26,16 +26,12 @@ namespace Controlzmo.Systems.ThrustLevers
         private readonly IEvent trigger;
         private readonly IReadOnlyDictionary<uint, uint> raw2fs;
 
-        protected ThrottleSetEventNotification(IEvent trigger, SortedDictionary<uint, uint> raw2fs)
-        {
-            this.trigger = trigger;
-            this.raw2fs = raw2fs;
-        }
-
         protected ThrottleSetEventNotification(IEvent trigger,
             SortedDictionary<UintRange, UintRange> tuples,
-            ILogger logger) : this(trigger, explode(tuples))
+            ILogger logger)
         {
+            this.trigger = trigger;
+            this.raw2fs = explode(tuples);
             foreach (var entry in raw2fs)
                 logger.LogDebug($"Map {entry.Key} -> {entry.Value}");
         }
@@ -118,25 +114,6 @@ DetentTakeOffGoAround = 1.00 */
     [Component]
     public class Throttle1SetEventNotification : ThrottleSetEventNotification
     {
-        private static SortedDictionary<uint, uint> mapOld = new ()
-        {
-            [0] = 13220, // Max reverse
-            [7999] = 16100, // Idle reverse
-            [8000] = 16384, // Start of idle
-            [9200] = 16384, // End of idle
-            [9201] = 16550,
-            [16600] = 29500,
-            [16601] = 31000, // Start of climb
-            [17000] = 31000, // End of climb
-            [17001] = 31151,
-            [24099] = 31780,
-            [24100] = 32000, // Start of Flex/MCT
-            [25500] = 32000, // End of Flex/MCT
-            [25501] = 32210,
-            [32766] = 32758,
-            [32767] = 32768, // Start of TO/GA
-            [32768] = 32768, // End of TO/GA
-        };
         private static SortedDictionary<UintRange, UintRange> map = new ()
         {
             [new UintRange(0, 299)] = MAX_REV,
@@ -155,25 +132,6 @@ DetentTakeOffGoAround = 1.00 */
     [Component]
     public class Throttle2SetEventNotification : ThrottleSetEventNotification
     {
-        private static SortedDictionary<uint, uint> mapOld = new ()
-        {
-            [0] = 13220, // Max reverse
-            [7999] = 16100, // Idle reverse
-            [8000] = 16384, // Start of idle
-            [9200] = 16384, // End of idle
-            [9201] = 16550,
-            [16600] = 29500,
-            [16601] = 31000, // Start of climb
-            [17000] = 31000, // End of climb
-            [17001] = 31151,
-            [23949] = 31780,
-            [23950] = 32000, // Start of Flex/MCT
-            [25500] = 32000, // End of Flex/MCT
-            [25501] = 32210,
-            [32766] = 32758,
-            [32767] = 32768, // Start of TO/GA
-            [32768] = 32768, // End of TO/GA
-        };
         private static SortedDictionary<UintRange, UintRange> map = new ()
         {
             [new UintRange(0, 299)] = MAX_REV,
