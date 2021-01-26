@@ -26,14 +26,10 @@ namespace Controlzmo.Systems.ThrustLevers
         private readonly IEvent trigger;
         private readonly IReadOnlyDictionary<uint, uint> raw2fs;
 
-        protected ThrottleSetEventNotification(IEvent trigger,
-            SortedDictionary<UintRange, UintRange> tuples,
-            ILogger logger)
+        protected ThrottleSetEventNotification(IEvent trigger, SortedDictionary<UintRange, UintRange> tuples)
         {
             this.trigger = trigger;
             this.raw2fs = explode(tuples);
-            foreach (var entry in raw2fs)
-                logger.LogDebug($"Map {entry.Key} -> {entry.Value}");
         }
 
         private static SortedDictionary<uint, uint> explode(SortedDictionary<UintRange, UintRange> tuples)
@@ -124,7 +120,7 @@ DetentTakeOffGoAround = 1.00 */
             [new UintRange(32767, 32768)] = TO_GA,
         };
 
-        public Throttle1SetEventNotification(Throttle1SetEvent e, ILogger<Throttle1SetEventNotification> logger) : base(e, map, logger) { }
+        public Throttle1SetEventNotification(Throttle1SetEvent e) : base(e, map) { }
     }
 
     [Component]
@@ -140,6 +136,6 @@ DetentTakeOffGoAround = 1.00 */
             [new UintRange(32767, 32768)] = TO_GA,
         };
 
-        public Throttle2SetEventNotification(Throttle2SetEvent e, ILogger<Throttle2SetEventNotification> logger) : base(e, map, logger) { }
+        public Throttle2SetEventNotification(Throttle2SetEvent e) : base(e, map) { }
     }
 }
