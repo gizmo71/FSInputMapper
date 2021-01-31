@@ -50,6 +50,11 @@ namespace Controlzmo.Hubs
             await Task.CompletedTask;
         }
 #endif
+        public async Task SetComRadio(int radio, string frequency)
+        {
+            _logger.LogDebug($"TODO: Set COM{radio} standby to {frequency} and then switching");
+            await Task.CompletedTask;
+        }
 
         public async Task SendAll()
         {

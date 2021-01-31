@@ -39,4 +39,14 @@ connection.start().then(function () {
             event.preventDefault();
         }
     });
+    $("#com2standby").on("change", function (event) {
+        event.target.value = event.target.value.replace(',', '.');
+    });
+    $("#com2swap").on("click", function (event) {
+        var com2standby = $("#com2standby").get(0);
+        if (com2standby.reportValidity()) {
+            connection.invoke("SetComRadio", 2, com2standby.value).catch(errorHandler);
+            com2standby.select();
+        }
+    });
 }).catch(errorHandler);
