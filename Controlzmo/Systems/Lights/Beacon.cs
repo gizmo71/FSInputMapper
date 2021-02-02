@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class BeaconLightsSetter : ISettable
+    public class BeaconLightsSetter : ISettable<bool>
     {
         private readonly ToggleBeaconLightsEvent toggleBeaconLightsEvent;
 

@@ -54,7 +54,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class LandingLightsSetter : ISettable
+    public class LandingLightsSetter : ISettable<bool>
     {
         private readonly SetLandingLightsEvent setLandingLightsEvent;
 

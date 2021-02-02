@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class WingIceLightsSetter : ISettable
+    public class WingIceLightsSetter : ISettable<bool>
     {
         private readonly ToggleWingIceLightsEvent toggleWingIceLightsEvent;
 

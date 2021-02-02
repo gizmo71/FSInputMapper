@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class TaxiTurnoffLightsSetter : ISettable
+    public class TaxiTurnoffLightsSetter : ISettable<bool>
     {
         private readonly SetTaxiTurnoffLightsEvent setTaxiTurnoffLightsEvent;
 

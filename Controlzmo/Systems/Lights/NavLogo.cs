@@ -54,7 +54,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class LogoNavLightsSetter : ISettable
+    public class LogoNavLightsSetter : ISettable<bool>
     {
         private readonly SetLogoLightsEvent setLogoLightsEvent;
         private readonly SetNavLightsEvent setNavLightsEvent;

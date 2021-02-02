@@ -49,7 +49,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class StrobeLightsSetter : ISettable
+    public class StrobeLightsSetter : ISettable<bool>
     {
         private readonly SetStrobeLightsEvent setStrobeLightsEvent;
 

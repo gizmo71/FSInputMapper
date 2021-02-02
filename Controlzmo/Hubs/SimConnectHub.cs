@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -58,7 +59,7 @@ namespace Controlzmo.Hubs
             await Task.CompletedTask;
         }
 
-        public async Task SetInSim(string item, object value)
+        public async Task SetInSim(string item, JsonElement value)
         {
             ExtendedSimConnect? simConnect = holder.SimConnect;
             if (simConnect == null)
@@ -67,8 +68,10 @@ namespace Controlzmo.Hubs
                 return;
             }
 
-            _logger.LogDebug($"Setting {item} to {value} at {System.DateTime.Now}");
-            settables[item].SetInSim(simConnect!, (bool)value);
+            ISettable rawSettable = settables[item];
+            var typedValue = JsonSerializer.Deserialize(value.GetRawText(), rawSettable.GetValueType());
+            _logger.LogDebug($"Setting {item} to {typedValue}");
+            rawSettable.SetInSim(simConnect!, typedValue);
 
             await Task.CompletedTask;
         }
