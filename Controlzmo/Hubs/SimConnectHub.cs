@@ -50,11 +50,6 @@ namespace Controlzmo.Hubs
             await Task.CompletedTask;
         }
 #endif
-        public async Task SetComRadio(int radio, string frequency)
-        {
-            _logger.LogDebug($"TODO: Set COM{radio} standby to {frequency} and then switching");
-            await Task.CompletedTask;
-        }
 
         public async Task SendAll()
         {
@@ -63,7 +58,7 @@ namespace Controlzmo.Hubs
             await Task.CompletedTask;
         }
 
-        public async Task SetInSim(string item, bool value)
+        public async Task SetInSim(string item, object value)
         {
             ExtendedSimConnect? simConnect = holder.SimConnect;
             if (simConnect == null)
@@ -73,7 +68,7 @@ namespace Controlzmo.Hubs
             }
 
             _logger.LogDebug($"Setting {item} to {value} at {System.DateTime.Now}");
-            settables[item].SetInSim(simConnect!, value);
+            settables[item].SetInSim(simConnect!, (bool)value);
 
             await Task.CompletedTask;
         }

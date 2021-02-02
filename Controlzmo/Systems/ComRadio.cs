@@ -28,11 +28,13 @@ namespace Controlzmo.Systems
     [Component]
     public class ComRadioListener : DataListener<ComData>, IRequestDataOnOpen
     {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger _logger;
 
-        public ComRadioListener(ILogger<ComRadioListener> _logger)
+        public ComRadioListener(ILogger<ComRadioListener> _logger, IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
             this._logger = _logger;
+            this.hub = hub;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
@@ -46,33 +48,45 @@ namespace Controlzmo.Systems
         }
     }
 
-#if false
     [Component]
     public class Com1StandbyRadioSetEvent : IEvent
     {
         // In Hz, so 123.245 would be 123245000 - possibly in BCD (effectively hex)
-        public string SimEvent() { return "COM_STBY_RADIO_SET"; }
+        public string SimEvent() => "COM_STBY_RADIO_SET";
+//TODO: if we can't get that to work with 8.33kHz spacing, try COM_RADIO_WHOLE_INC/COM_RADIO_WHOLE_DEC and COM_RADIO_FRACT_INC/COM_RADIO_FRACT_DEC
     }
-    //TODO: if we can't get that to work with 8.33kHz spacing, try COM_RADIO_WHOLE_INC/COM_RADIO_WHOLE_DEC and COM_RADIO_FRACT_INC/COM_RADIO_FRACT_DEC
 
     [Component]
     public class Com2StandbyRadioSetEvent : IEvent
     {
-        public string SimEvent() { return "COM2_STBY_RADIO_SET"; }
+        public string SimEvent() => "COM2_STBY_RADIO_SET";
+    }
+
+    [Component]
+    public class Com3StandbyRadioSetEvent : IEvent
+    {
+        public string SimEvent() => "COM3_STBY_RADIO_SET";
     }
 
     [Component]
     public class Com1StandbyRadioSwapEvent : IEvent
     {
-        public string SimEvent() { return "COM_STBY_RADIO_SWAP"; }
+        public string SimEvent() => "COM_STBY_RADIO_SWAP";
     }
 
     [Component]
     public class Com2StandbyRadioSwapEvent : IEvent
     {
-        public string SimEvent() { return "COM2_RADIO_SWAP"; }
+        public string SimEvent() => "COM2_RADIO_SWAP";
     }
 
+    [Component]
+    public class Com3StandbyRadioSwapEvent : IEvent
+    {
+        public string SimEvent() => "COM3_RADIO_SWAP";
+    }
+
+#if false
     [Component]
     public class ComRadioSystem
     {
