@@ -53,7 +53,6 @@ namespace Controlzmo.Systems
     {
         // In Hz, so 123.245 would be 123245000 - possibly in BCD (effectively hex)
         public string SimEvent() => "COM_STBY_RADIO_SET";
-//TODO: if we can't get that to work with 8.33kHz spacing, try COM_RADIO_WHOLE_INC/COM_RADIO_WHOLE_DEC and COM_RADIO_FRACT_INC/COM_RADIO_FRACT_DEC
     }
 
     [Component]
@@ -86,37 +85,63 @@ namespace Controlzmo.Systems
         public string SimEvent() => "COM3_RADIO_SWAP";
     }
 
-#if false
     [Component]
-    public class ComRadioSystem
+    public class Com1Swap : ISettable<object>
     {
-        private readonly Com1StandbyRadioSetEvent com1StandbyRadioSetEvent;
-        private readonly Com1StandbyRadioSwapEvent com1StandbyRadioSwapEvent;
-        private readonly SimConnectHolder sch;
+        private readonly Com1StandbyRadioSwapEvent swapEvent;
 
-        public ComRadioSystem(Com1StandbyRadioSetEvent com1StandbyRadioSetEvent, Com1StandbyRadioSwapEvent com1StandbyRadioSwapEvent, SimConnectHolder sch)
-        {
-            this.com1StandbyRadioSetEvent = com1StandbyRadioSetEvent;
-            this.com1StandbyRadioSwapEvent = com1StandbyRadioSwapEvent;
-            this.sch = sch;
-        }
+        public Com1Swap(Com1StandbyRadioSwapEvent swapEvent) => this.swapEvent = swapEvent;
 
-        public string SetCom1Standby(Decimal newFrequency)
+        public string GetId() => "com1swap";
+
+        public void SetInSim(ExtendedSimConnect simConnect, object? _) => simConnect.SendEvent(swapEvent);
+    }
+
+    [Component]
+    public class Com2Swap : ISettable<object>
+    {
+        private readonly Com2StandbyRadioSwapEvent swapEvent;
+
+        public Com2Swap(Com2StandbyRadioSwapEvent swapEvent) => this.swapEvent = swapEvent;
+
+        public string GetId() => "com2swap";
+
+        public void SetInSim(ExtendedSimConnect simConnect, object? _) => simConnect.SendEvent(swapEvent);
+    }
+
+    [Component]
+    public class Com3Swap : ISettable<object>
+    {
+        private readonly Com3StandbyRadioSwapEvent swapEvent;
+
+        public Com3Swap(Com3StandbyRadioSwapEvent swapEvent) => this.swapEvent = swapEvent;
+
+        public string GetId() => "com3swap";
+
+        public void SetInSim(ExtendedSimConnect simConnect, object? _) => simConnect.SendEvent(swapEvent);
+    }
+
+    [Component]
+    public class Com2Standby : ISettable<string>
+    {
+        private readonly Com2StandbyRadioSetEvent setEvent;
+
+        public Com2Standby(Com2StandbyRadioSetEvent setEvent) => this.setEvent = setEvent;
+
+        public string GetId() => "com2standby";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? newFrequencyString)
         {
+            var newFrequency = Decimal.Parse(newFrequencyString!);
             uint kHz = Decimal.ToUInt32(Decimal.Multiply(newFrequency, new Decimal(1000)));
             string bcdHex = kHz.ToString("D6");
             // Currently, MSFS doesn't support setting the first or last digit directly. :-(
+//TODO: if we can't get this to work with 8.33kHz spacing, try COM_RADIO_WHOLE_INC/COM_RADIO_WHOLE_DEC and COM_RADIO_FRACT_INC/COM_RADIO_FRACT_DEC
             bcdHex = bcdHex.Substring(1, 4);
 //throw new Exception($"hex {bcdHex}");
             uint bcd = uint.Parse(bcdHex, System.Globalization.NumberStyles.HexNumber);
-            sch.SimConnect?.SendEvent(com1StandbyRadioSetEvent, bcd);
-            return bcdHex;
-        }
-
-        public void SwapCom1()
-        {
-            sch.SimConnect?.SendEvent(com1StandbyRadioSwapEvent);
+            simConnect.SendEvent(setEvent, bcd);
+            //return bcdHex;
         }
     }
-#endif
 }

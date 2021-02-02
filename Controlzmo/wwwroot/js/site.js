@@ -40,7 +40,7 @@ connection.start().then(function () {
         event.preventDefault();
     });
     $(".sendButton").on("click", function (event) {
-        connection.invoke("SetInSim", event.target.id, true).catch(errorHandler);
+        connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         event.preventDefault();
     });
     /*$("#frottle").on("keypress", function (event) {
