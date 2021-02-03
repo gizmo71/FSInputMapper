@@ -65,7 +65,7 @@ namespace Controlzmo.Hubs
             if (simConnect == null)
             {
                 _logger.LogError($"Can't set {item} to {value}; no SimConnection");
-                return;
+//                return;
             }
 
             ISettable rawSettable = settables[item];
