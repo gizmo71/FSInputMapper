@@ -44,6 +44,7 @@ namespace Controlzmo.Systems.ComRadio
             var com1 = String.Format("COM1: Active {0:X06}\nStandby {1:X06}", data.com1ActiveFrequency >> 4, data.com1StandbyFrequency >> 4);
             var com2 = String.Format("COM2: Active {0:X06}\nStandby {1:X06}", data.com2ActiveFrequency >> 4, data.com2StandbyFrequency >> 4);
             var com3 = String.Format("COM3: Active {0:X06}\nStandby {1:X06}", data.com3ActiveFrequency >> 4, data.com3StandbyFrequency >> 4);
+            hub.Clients.All.SetFromSim("com1active", String.Format("{0:X06}", data.com1ActiveFrequency >> 4));
             _logger.LogDebug($"{com1}\n{com2}\n{com3}");
         }
     }

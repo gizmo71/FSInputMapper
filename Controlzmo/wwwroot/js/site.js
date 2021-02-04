@@ -20,10 +20,14 @@ connection.on("ShowMessage", function (message) {
 });
 
 connection.on("SetFromSim", function (name, value) {
-    var jqCheckbox = $("#" + name);
-    if (value != null)
-        jqCheckbox.prop('checked', value);
-    jqCheckbox.prop('disabled', value == null);
+    var jqInput = $("#" + name);
+    if (value != null) {
+        if (jqInput.type = 'checkbox')
+            jqInput.prop('checked', value);
+        else
+            jqInput.prop('value', value);
+    }
+    jqInput.prop('disabled', value == null);
 });
 
 connection.start().then(function () {

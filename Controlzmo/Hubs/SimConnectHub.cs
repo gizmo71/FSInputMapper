@@ -16,7 +16,7 @@ namespace Controlzmo.Hubs
     public partial interface IControlzmoHub
     {
         public Task ShowMessage(string message);
-        public Task SetFromSim(string name, bool? value);
+        public Task SetFromSim(string name, object? value);
     }
 
     public partial class ControlzmoHub : Hub<IControlzmoHub>
