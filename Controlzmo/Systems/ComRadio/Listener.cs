@@ -29,11 +29,9 @@ namespace Controlzmo.Systems.ComRadio
     public class ComRadioListener : DataListener<ComData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly ILogger _logger;
 
-        public ComRadioListener(ILogger<ComRadioListener> _logger, IHubContext<ControlzmoHub, IControlzmoHub> hub)
+        public ComRadioListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
-            this._logger = _logger;
             this.hub = hub;
         }
 
@@ -41,11 +39,16 @@ namespace Controlzmo.Systems.ComRadio
 
         public override void Process(ExtendedSimConnect simConnect, ComData data)
         {
-            var com1 = String.Format("COM1: Active {0:X06}\nStandby {1:X06}", data.com1ActiveFrequency >> 4, data.com1StandbyFrequency >> 4);
-            var com2 = String.Format("COM2: Active {0:X06}\nStandby {1:X06}", data.com2ActiveFrequency >> 4, data.com2StandbyFrequency >> 4);
-            var com3 = String.Format("COM3: Active {0:X06}\nStandby {1:X06}", data.com3ActiveFrequency >> 4, data.com3StandbyFrequency >> 4);
-            hub.Clients.All.SetFromSim("com1active", String.Format("{0:X06}", data.com1ActiveFrequency >> 4));
-            _logger.LogDebug($"{com1}\n{com2}\n{com3}");
+            hub.Clients.All.SetFromSim("com1active", FormatFrequency(data.com1ActiveFrequency));
+            hub.Clients.All.SetFromSim("com1standby", FormatFrequency(data.com1StandbyFrequency));
+
+            hub.Clients.All.SetFromSim("com2active", FormatFrequency(data.com2ActiveFrequency));
+            hub.Clients.All.SetFromSim("com2standby", FormatFrequency(data.com2StandbyFrequency));
+
+            hub.Clients.All.SetFromSim("com3active", FormatFrequency(data.com3ActiveFrequency));
+            hub.Clients.All.SetFromSim("com3standby", FormatFrequency(data.com3StandbyFrequency));
         }
+
+        private string FormatFrequency(int bcdHz) => String.Format("{0:X03}.{1:X03}", (bcdHz >> 16) & 0xFFF, (bcdHz >> 4) & 0xFFF);
     }
 }

@@ -22,7 +22,7 @@ connection.on("ShowMessage", function (message) {
 connection.on("SetFromSim", function (name, value) {
     var jqInput = $("#" + name);
     if (value != null) {
-        if (jqInput.type = 'checkbox')
+        if (jqInput.type == 'checkbox')
             jqInput.prop('checked', value);
         else
             jqInput.prop('value', value);
