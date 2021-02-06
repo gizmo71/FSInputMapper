@@ -68,10 +68,8 @@ namespace Controlzmo.Systems.ComRadio
             uint bcdCentre = uint.Parse(bcdHex.Substring(1, 4), System.Globalization.NumberStyles.HexNumber);
             simConnect.SendEvent(setEvent, bcdCentre);
             if (NeedsBump.IsMatch(bcdHex)) {
-Console.WriteLine("Sending bump");
                 simConnect.SendEvent(bumpEvent);
             }
-else Console.WriteLine("Not sending bump");
         }
     }
 
