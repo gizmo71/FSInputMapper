@@ -65,12 +65,13 @@ namespace Controlzmo.Systems.ComRadio
             var newFrequency = Decimal.Parse(newFrequencyString!);
             uint kHz = Decimal.ToUInt32(Decimal.Multiply(newFrequency, new Decimal(1000)));
             string bcdHex = kHz.ToString("D6");
-            bcdHex = bcdHex.Substring(1, 4);
-            uint bcd = uint.Parse(bcdHex, System.Globalization.NumberStyles.HexNumber);
-            simConnect.SendEvent(setEvent, bcd);
+            uint bcdCentre = uint.Parse(bcdHex.Substring(1, 4), System.Globalization.NumberStyles.HexNumber);
+            simConnect.SendEvent(setEvent, bcdCentre);
             if (NeedsBump.IsMatch(bcdHex)) {
+Console.WriteLine("Sending bump");
                 simConnect.SendEvent(bumpEvent);
             }
+else Console.WriteLine("Not sending bump");
         }
     }
 
