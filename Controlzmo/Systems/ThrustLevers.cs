@@ -131,7 +131,7 @@ DetentTakeOffGoAround = 1.00 */
             [new UintRange(0, 299)] = MAX_REV,
             [new UintRange(4000, 7999)] = IDLE_REV,
             [new UintRange(8000, 9200)] = IDLE,
-            [new UintRange(16601, 17000)] = CL,
+            [new UintRange(16551, 17000)] = CL,
             [new UintRange(23750, 25700)] = FLX_MCT,
             [new UintRange(32767, 32768)] = TO_GA,
         };
