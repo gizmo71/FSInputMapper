@@ -57,7 +57,6 @@ namespace Controlzmo.Systems.ComRadio
         public abstract string GetId();
 
         // https://www.caa.co.uk/General-aviation/Aircraft-ownership-and-maintenance/8-33-kHz-radios/
-        // 00, 05, 10, 15, 25, 30, 35, 40, 50, 55, 60, 65, 75, 80. 85, 90
         private static readonly Regex NeedsBump = new Regex(@"[013568]5$", RegexOptions.Compiled);
 
         public void SetInSim(ExtendedSimConnect simConnect, string? newFrequencyString)
