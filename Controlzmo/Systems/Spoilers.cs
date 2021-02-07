@@ -41,7 +41,7 @@ namespace Controlzmo.Systems.Spoilers
             SpoilerHandle newPosition = new();
             if (spoilerData.spoilersArmed != 0)
                 simConnect.SendEvent(toggleArmSpoiler);
-            else if (spoilerData.spoilersHandlePosition < 100)
+            else if (spoilerData.spoilersHandlePosition <= 100)
                 newPosition.spoilersHandlePosition = Math.Min(spoilerData.spoilersHandlePosition + 25, 100);
             spoilerHandleSender.Send(simConnect, newPosition);
         }
