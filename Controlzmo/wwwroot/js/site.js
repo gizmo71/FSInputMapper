@@ -26,13 +26,6 @@ function errorHandler(err) {
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").build();
 
-connection.on("ShowMessage", function (message) {
-    var messagesList = $("#messagesList");
-    messagesList.children("li").slice(0, 1 - 5).remove();
-    var timestamp = new Date().toLocaleTimeString([], { timeStyle: 'medium' });
-    messagesList.append($("<li/>", { text: timestamp + ": " + message }))
-});
-
 connection.on("SetFromSim", function (name, value) {
     var jqInput = $("#" + name);
     if (value != null) {

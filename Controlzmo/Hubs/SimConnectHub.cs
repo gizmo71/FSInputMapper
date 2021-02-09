@@ -15,7 +15,6 @@ namespace Controlzmo.Hubs
     // server to client messages
     public partial interface IControlzmoHub
     {
-        public Task ShowMessage(string message);
         public Task SetFromSim(string name, object? value);
     }
 
