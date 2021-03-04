@@ -16,7 +16,7 @@ namespace SimConnectzmo
                 {
                     if (simConnect != null)
                     {
-                        simConnect.Dispose();
+                        // This causes an ucatchable System.AccessViolationException: simConnect.Dispose();
                     }
                     simConnect = value;
                 }
