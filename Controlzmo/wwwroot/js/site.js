@@ -29,7 +29,7 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").b
 connection.on("SetFromSim", function (name, value) {
     var jqInput = $("#" + name);
     if (value != null) {
-        if (jqInput.type == 'checkbox')
+        if (jqInput.prop("type") == 'checkbox')
             jqInput.prop('checked', value);
         else
             jqInput.prop('value', value);
