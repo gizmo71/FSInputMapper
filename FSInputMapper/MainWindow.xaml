@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FSInputMapper"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="FSInputMapper" Height="250" Width="800">
+        Title="FSInputMapper" Height="250" Width="710">
     <Window.Resources>
         <local:ModeBackgroundConverter x:Key="ModeBackgroundConverter" />
         <sys:Boolean x:Key="True">True</sys:Boolean>
@@ -20,7 +20,7 @@
         <sys:Int16 x:Key="Minus100">-100</sys:Int16>
         <sys:Int16 x:Key="Minus1000">-1000</sys:Int16>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="0,0,10,0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="800*"/>
         </Grid.ColumnDefinitions>
@@ -103,12 +103,6 @@
         <Button Content="Start" Margin="579,60,0,0" Width="75" HorizontalAlignment="Left" VerticalAlignment="Top"
             Click="ApuStart"/>
 
-        <Label Content="COM1" HorizontalAlignment="Left" Margin="669,16,0,0" VerticalAlignment="Top"/>
-        <TextBox HorizontalAlignment="Left" Margin="669,39,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="96"
-            Text="{Binding Com1StandbyFrequency, Mode=TwoWay}" />
-        <Button Content="Swap" HorizontalAlignment="Left" Margin="733,19,0,0" VerticalAlignment="Top" Width="32"
-            Click="Com1Swap" RenderTransformOrigin="9.752,-1.588"/>
-
         <Button Content="GS" HorizontalAlignment="Left" Margin="351,102,0,0" VerticalAlignment="Top" Width="35"
             Background="{Binding AutopilotGs, Converter={StaticResource ModeBackgroundConverter}, ConverterParameter={StaticResource True}}"
             Click="FcuGsClicked"/>
@@ -116,10 +110,10 @@
                 Background="{Binding AutopilotAppr,Converter={StaticResource ModeBackgroundConverter},ConverterParameter={StaticResource True}}"
                 Click="FcuApprClicked"/>
 
-        <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="612,88,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
+        <CheckBox Content="Connected" HorizontalAlignment="Left" Margin="580,97,0,0" VerticalAlignment="Top" IsChecked="{Binding IsConnected,Mode=OneWay}"
                   IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="{Binding ConnectionError}"/>
 
-        <TextBox HorizontalAlignment="Left" Margin="309,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="461" Height="74" />
+        <TextBox HorizontalAlignment="Left" Margin="16,130,0,0" Text="{Binding Path=DebugConsoleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="658" Height="74" />
 
     </Grid>
 </Window>

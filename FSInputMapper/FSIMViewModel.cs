@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using FSInputMapper.Systems.Fcu;
-using FSInputMapper.Systems.Lights;
 
 namespace FSInputMapper
 {
@@ -135,15 +134,6 @@ namespace FSInputMapper
                     OnPropertyChange(nameof(IsConnected));
                     break;
             }
-        }
-        #endregion
-        #region ComRadio
-
-        private Decimal com1StandbyFrequency = Decimal.Zero;
-        public Decimal Com1StandbyFrequency
-        {
-            get { return com1StandbyFrequency; }
-            set { if (com1StandbyFrequency != value) { com1StandbyFrequency = value; OnPropertyChange(); } }
         }
         #endregion
 
