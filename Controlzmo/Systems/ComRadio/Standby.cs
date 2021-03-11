@@ -61,6 +61,7 @@ namespace Controlzmo.Systems.ComRadio
 
         public void SetInSim(ExtendedSimConnect simConnect, string? newFrequencyString)
         {
+// LVAR A32NX_RMP_L_VHF2_STANDBY might allow setting directly
             var newFrequency = Decimal.Parse(newFrequencyString!);
             uint kHz = Decimal.ToUInt32(Decimal.Multiply(newFrequency, new Decimal(1000)));
             string bcdHex = kHz.ToString("D6");
