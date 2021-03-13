@@ -9,6 +9,7 @@ namespace Controlzmo.Systems.ComRadio
     public class Com1StandbyRadioSetEvent : IEvent
     {
         public string SimEvent() => "COM_STBY_RADIO_SET";
+        // or with more precision?   COM_STBY_RADIO_SET_HZ
     }
 
     [Component]
@@ -21,6 +22,8 @@ namespace Controlzmo.Systems.ComRadio
     public class Com2StandbyRadioSetEvent : IEvent
     {
         public string SimEvent() => "COM2_STBY_RADIO_SET";
+        // or with more precision?   COM2_STBY_RADIO_SET_HZ
+        // If we could set LVars, L:A32NX_RMP_L_VHF2_STANDBY_FREQUENCY
     }
 
     [Component]
