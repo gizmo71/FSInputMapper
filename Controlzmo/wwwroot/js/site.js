@@ -1,5 +1,9 @@
 ﻿"use strict";
 
+$(function () {
+    $("#tabs").tabs();
+});
+
 var noSleep = new NoSleep();
 document.addEventListener('click', function enableNoSleep() {
     document.removeEventListener('click', enableNoSleep, false);

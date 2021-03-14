@@ -353,3 +353,4 @@ simconnect.dll
 {Run FSInputMapper.exe}.lnk
 /Controlzmo/wwwroot/js/nosleep/
 /Controlzmo/wwwroot/js/signalr/
+/Controlzmo/wwwroot/js/jqueryui/

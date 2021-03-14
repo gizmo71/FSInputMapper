@@ -3,6 +3,13 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
+      "library": "jqueryui@1.12.1",
+      "destination": "wwwroot/js/jqueryui/",
+      "files": [
+        "jquery-ui.js"
+      ]
+    },
+    {
       "provider": "unpkg",
       "library": "@microsoft/signalr@latest",
       "destination": "wwwroot/js/signalr/",
