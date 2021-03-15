@@ -37,7 +37,7 @@ namespace Controlzmo.Systems.ComRadio
     [Component]
     public class Com3RxToggle : AbstractButton
     {
-        public Com3RxToggle(Com3StandbyRadioSwapEvent toggleEvent) : base(toggleEvent) { }
+        public Com3RxToggle(Com3RxToggleEvent toggleEvent) : base(toggleEvent) { }
         public override string GetId() => "com3rxToggle";
     }
 }
