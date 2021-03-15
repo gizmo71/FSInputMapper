@@ -169,10 +169,10 @@ System.Console.Error.WriteLine($"Set group priorities {GetLastSentPacketID()}");
                 group = (GROUP)SIMCONNECT_GROUP_PRIORITY_STANDARD;
                 flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             }
-//_logging.LogDebug($"event {eventToSend} group " + (group != null ? group.ToString() : "none") + $" data {data}", "SendEvent", MessageBoxButton.OK, MessageBoxImage.Warning);
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
             TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data, group, flags);
+_logging.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentPacketID()}");
         }
 
         public void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
