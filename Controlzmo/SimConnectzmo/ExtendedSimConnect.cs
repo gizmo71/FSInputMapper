@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,17 @@ namespace SimConnectzmo
         private Dictionary<IEvent, EVENT>? eventToEnum;
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
 
+        // https://www.fsdeveloper.com/forum/threads/simconnect-getlastsentpacketid-for-managed-code.438397/
+        [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
+        private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
+        private readonly IntPtr hSimConnect;
+        UInt32 GetLastSentPacketID()
+        {
+            UInt32 dwSendID;
+            SimConnect_GetLastSentPacketID(hSimConnect, out dwSendID);
+            return dwSendID;
+        }
+
         internal ExtendedSimConnect(string szName, uint UserEventWin32, WaitHandle waitHandle)
             : base(szName, hWnd, UserEventWin32, waitHandle, 0) // 6 for over IP - can we make it timeout easier?
         {
@@ -32,6 +44,15 @@ namespace SimConnectzmo
             OnRecvQuit += Handle_OnRecvQuit;
             OnRecvSimobjectData += Handle_OnRecvSimobjectData;
             OnRecvEvent += Handle_OnRecvEvent;
+            OnRecvException += Handle_Exception;
+
+            FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
+            hSimConnect = (IntPtr)fiSimConnect!.GetValue(this)!;
+        }
+
+        private void Handle_Exception(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
+        {
+            _logging.LogError($"Got exception {data.dwException} packet {data.dwSendID}");
         }
 
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
