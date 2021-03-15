@@ -7,11 +7,11 @@ namespace SimConnectzmo
     public class SimVarAttribute : Attribute
     {
         public readonly string Variable;
-        public readonly string Units;
+        public readonly string? Units;
         public readonly SIMCONNECT_DATATYPE Type;
         public readonly float Epsilon;
 
-        public SimVarAttribute(string variable, string units, SIMCONNECT_DATATYPE type, float epsilon)
+        public SimVarAttribute(string variable, string? units, SIMCONNECT_DATATYPE type, float epsilon)
         {
             Variable = variable;
             Units = units;
