@@ -120,20 +120,30 @@ namespace SimConnectzmo
                 }
                 GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
                     .Invoke(this, new object[] { type2Struct.Value });
+System.Console.Error.WriteLine($"Registered struct {type2Struct.Key} {GetLastSentPacketID()}");
             }
         }
 
         private void MapClientEvents()
         {
             foreach (var eventToEnum in eventToEnum!)
+            {
                 MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
+System.Console.Error.WriteLine($"Mapped client to sim event {eventToEnum.Key} {GetLastSentPacketID()}");
+            }
+System.Console.Error.WriteLine($"... and now notifications to events...");
             foreach (var notificationToEvent in notificationsToEvent!)
+            {
                 AddClientEventToNotificationGroup(GROUP.JUST_MASKABLE, notificationToEvent.Value, true);
+System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificationToEvent.Value} {GetLastSentPacketID()}");
+            }
         }
 
         private void SetGroupPriorities()
         {
+            //TODO: Avoid doing this if there aren't any (at the time of writing they'd all gone to standalone WASM.)
             SetNotificationGroupPriority(GROUP.JUST_MASKABLE, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
+System.Console.Error.WriteLine($"Set group priorities {GetLastSentPacketID()}");
         }
 
         public void SendDataOnSimObject<StructType>(StructType data)
@@ -173,6 +183,7 @@ namespace SimConnectzmo
                             ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
                             : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
             RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSentPacketID()}");
         }
 
         private void Handle_OnRecvSimobjectData(SimConnect _, SIMCONNECT_RECV_SIMOBJECT_DATA data)
