@@ -8,14 +8,15 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Pushback
 {
-    /*A32NX EFB notes
-    // The final number in use*SimVar is maximum stale time in milliseconds.
+    /*A32NX EFB notes; the final number in use*SimVar is maximum stale time in milliseconds.
     const [tugHeading, setTugHeading] = useSplitSimVar('PLANE HEADING DEGREES TRUE', 'degrees', 'K:KEY_TUG_HEADING', 'UINT32', 1000);
     const [pushBack, setPushBack] = useSplitSimVar('PUSHBACK STATE', 'enum', 'K:TOGGLE_PUSHBACK', 'bool', 1000);
     const [pushBackWait, setPushBackWait] = useSimVar('Pushback Wait', 'bool', 100);
     const [pushBackAttached] = useSimVar('Pushback Attached', 'bool', 1000);
     const [tugDirection, setTugDirection] = useState(0);
     const [tugActive, setTugActive] = useState(false); */
+
+    // See also https://github.com/metindikbas/msfs-pushback-helper-app/
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct PushbackStateData
@@ -81,6 +82,15 @@ namespace Controlzmo.Systems.Pushback
         [SimVar("PUSHBACK ATTACHED", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         // State 0 and this as 1 immediately after toggling pushback, even before tug is attached.
         public int pushbackAttached;
+
+        [SimVar("Brake Parking Position", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int parkingBrakePosition;
+        /*simClient.AddToDataDefinition(DefinitionsEnum.VelocityX, "Velocity Body X", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          simClient.AddToDataDefinition(DefinitionsEnum.VelocityY, "Velocity Body Y", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          simClient.AddToDataDefinition(DefinitionsEnum.VelocityZ, "Velocity Body Z", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          simClient.AddToDataDefinition(DefinitionsEnum.RotationX, "Rotation Velocity Body X", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          simClient.AddToDataDefinition(DefinitionsEnum.RotationY, "Rotation Velocity Body Y", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+          simClient.AddToDataDefinition(DefinitionsEnum.RotationZ, "Rotation Velocity Body Z", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);*/
     };
 
     [Component]
@@ -97,7 +107,7 @@ namespace Controlzmo.Systems.Pushback
 
         public override void Process(ExtendedSimConnect simConnect, PushbackData data)
         {
-            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState} attached={data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle}, heading={data.trueHeading}");
+            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState} attached={data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle}, heading={data.trueHeading}, parkBrake={data.parkingBrakePosition}");
             hub.Clients.All.SetFromSim("pushbackState", data.pushbackState);
             hub.Clients.All.SetFromSim("pushbackAngle", data.pushbackAngle);
             hub.Clients.All.SetFromSim("trueHeading", data.trueHeading);
@@ -138,6 +148,7 @@ namespace Controlzmo.Systems.Pushback
     {
         // **Triggers tug**, and sets desired speed, in feet per second.
         // The speed can be both positive (forward movement) and negative (backward movement).
+        // Can't see any evidence of this actually doing anything.
         public string SimEvent() => "KEY_TUG_SPEED";
     }
 
