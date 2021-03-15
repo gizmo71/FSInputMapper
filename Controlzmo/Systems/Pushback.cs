@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -14,16 +15,61 @@ namespace Controlzmo.Systems.Pushback
     const [pushBackWait, setPushBackWait] = useSimVar('Pushback Wait', 'bool', 100);
     const [pushBackAttached] = useSimVar('Pushback Attached', 'bool', 1000);
     const [tugDirection, setTugDirection] = useState(0);
-    const [tugActive, setTugActive] = useState(false);
+    const [tugActive, setTugActive] = useState(false); */
 
-    */
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct PushbackStateData
+    {
+        [SimVar("PUSHBACK STATE", null, SIMCONNECT_DATATYPE.STRING32, 0.5f)]
+        public string pushbackState;
+    }
+
+    [Component]
+    public class PushbackState : DataSender<PushbackStateData>, ISettable<string?>
+    {
+        public string GetId() => "pushbackState";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? value)
+        {
+            Console.Error.WriteLine($"Got S {value}");
+            // Doesn't seem to have any effect.
+            Send(simConnect, new PushbackStateData { pushbackState = $"SELECT_{Int32.Parse(value!)}" });
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct PushbackWaitData
+    {
+        [SimVar("PUSHBACK WAIT", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        // In theory this should say true if waiting for the tug after calling it, but doesn't seem to work.
+        // The EFB code suggests that after calling the tug, this variable is no longer useful, which matches observations.
+        public int pushbackWait;
+    }
+
+    [Component]
+    public class PushbackWait : DataSender<PushbackWaitData>, ISettable<string?>
+    {
+        public string GetId() => "pushbackWait";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? value)
+        {
+            Console.Error.WriteLine($"Got W {value}");
+            Send(simConnect, new PushbackWaitData { pushbackWait = Int32.Parse(value!) });
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct PushbackData
     {
         [SimVar("PUSHBACK STATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         // 3 = not attached? 0 = straight, P3D says 1=left and 2=right but doesn't seem to match
-        // In theory this is settable.
+        // In theory this is settable. Starts out as 3.
         public int pushbackState;
+
+        [SimVar("PUSHBACK WAIT", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        // In theory this should say true if waiting for the tug after calling it, but doesn't seem to work.
+        // The EFB code suggests that after calling the tug, this variable is no longer useful, which matches observations.
+        public int pushbackWait;
 
         [SimVar("PUSHBACK ANGLE", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.01f)]
         // Not settable; default values seem to be 20 (tail to the right, heading decreasing) or -20 (tail to the left, heading increasing)
@@ -33,44 +79,9 @@ namespace Controlzmo.Systems.Pushback
         public int trueHeading;
 
         [SimVar("PUSHBACK ATTACHED", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        // Doesn't seem to do anything; may not be a real variable...
+        // State 0 and this as 1 immediately after toggling pushback, even before tug is attached.
         public int pushbackAttached;
-
-        [SimVar("PUSHBACK WAIT", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        // In theory this should say true if waiting for the tug after calling it, but doesn't seem to work.
-        // The EFB code suggests that after calling the tug, this variable is no longer useful.
-        public int pushbackWait;
     };
-
-    [Component]
-    public class TugHeadingEvent : IEvent
-    {
-        // **Triggers tug** and sets the desired heading.
-        // The units are a 32 bit integer (0 to 4294967295) which represent 0 to 360 degrees.
-        // To set a 45 degree angle, for example, set the value to 4294967295 / 8.
-        // Or ((90or270+planeTrueHeading) * 11930465) & 0xffffffff
-        public string SimEvent() => "TUG_HEADING";
-    }
-
-    [Component]
-    public class TugSpeedEvent : IEvent
-    {
-        // **Triggers tug**, and sets desired speed, in feet per second.
-        // The speed can be both positive (forward movement) and negative (backward movement).
-        public string SimEvent() => "TUG_SPEED";
-    }
-
-    [Component]
-    public class TugToggleEvent : IEvent
-    {
-        public string SimEvent() => "TOGGLE_PUSHBACK";
-    }
-
-    [Component]
-    public class TugDisableEvent : IEvent
-    {
-        public string SimEvent() => "TUG_DISABLE";
-    }
 
     [Component]
     public class PushbackListener : DataListener<PushbackData>, IRequestDataOnOpen
@@ -86,8 +97,94 @@ namespace Controlzmo.Systems.Pushback
 
         public override void Process(ExtendedSimConnect simConnect, PushbackData data)
         {
-            System.Console.Error.WriteLine($"Pushback: state/attached={data.pushbackState}/{data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle}, heading={data.trueHeading}");
-            //hub.Clients.All.SetFromSim("lightsBeacon", data.beaconSwitch == 1);
+            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState} attached={data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle}, heading={data.trueHeading}");
+            hub.Clients.All.SetFromSim("pushbackState", data.pushbackState);
+            hub.Clients.All.SetFromSim("pushbackAngle", data.pushbackAngle);
+            hub.Clients.All.SetFromSim("trueHeading", data.trueHeading);
         }
+    }
+
+    [Component]
+    public class TugHeadingEvent : IEvent
+    {
+        // **Triggers tug** and sets the desired heading.
+        // The units are a 32 bit integer (0 to 4294967295) which represent 0 to 360 degrees.
+        // To set a 45 degree angle, for example, set the value to 4294967295 / 8.
+        // Or ((90or270+planeTrueHeading) * 11930465) & 0xffffffff
+        public string SimEvent() => "KEY_TUG_HEADING";
+    }
+
+    [Component]
+    public class TugHeading : ISettable<string?>
+    {
+        private readonly IEvent setEvent;
+
+        public TugHeading(TugHeadingEvent setEvent)
+        {
+            this.setEvent = setEvent;
+        }
+
+        public string GetId() => "tugHeading";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? degreesAsString)
+        {
+            var degrees = UInt32.Parse(degreesAsString!) % 360;
+            simConnect.SendEvent(setEvent, (degrees * 11930465) & 0xffffffff);
+        }
+    }
+
+    [Component]
+    public class TugSpeedEvent : IEvent
+    {
+        // **Triggers tug**, and sets desired speed, in feet per second.
+        // The speed can be both positive (forward movement) and negative (backward movement).
+        public string SimEvent() => "KEY_TUG_SPEED";
+    }
+
+    [Component]
+    public class TugSpeed : ISettable<string?>
+    {
+        private readonly IEvent setEvent;
+
+        public TugSpeed(TugSpeedEvent setEvent)
+        {
+            this.setEvent = setEvent;
+        }
+
+        public string GetId() => "tugSpeed";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? newSpeed)
+        {
+            var newSpeedFtPerSecond = Int32.Parse(newSpeed!);
+            simConnect.SendEvent(setEvent, (uint)newSpeedFtPerSecond);
+        }
+    }
+
+    [Component]
+    public class TugToggleEvent : IEvent
+    {
+        public string SimEvent() => "TOGGLE_PUSHBACK";
+    }
+
+    [Component]
+    public class TugToggle : AbstractButton
+    {
+        public TugToggle(TugToggleEvent toggleEvent) : base(toggleEvent) { }
+
+        public override string GetId() => "tugToggle";
+    }
+
+    [Component]
+    public class TugDisableEvent : IEvent
+    {
+        public string SimEvent() => "TUG_DISABLE";
+    }
+
+    [Component]
+    public class TugDisable : AbstractButton
+    {
+        public TugDisable(TugDisableEvent disableEvent) : base(disableEvent) { }
+
+        public override string GetId() => "tugDisable";
     }
 }

@@ -52,4 +52,27 @@
         </div-->
     </div>
 
-</div>
+    <div id="tabs-pushback">
+        <div>
+            State <input id="pushbackState" readonly size="7" />
+            Angle <input id="pushbackAngle" readonly size="7" />
+            True Hdg<input id="trueHeading" readonly size="7" />
+            <br />
+            Wait
+            <input type="button" id="pushbackWait" value="0" class="sendButton" />
+            <input type="button" id="pushbackWait" value="1" class="sendButton" />
+            State
+            <input type="button" id="pushbackState" value="0" class="sendButton" />
+            <input type="button" id="pushbackState" value="1" class="sendButton" />
+            <input type="button" id="pushbackState" value="2" class="sendButton" />
+            <input type="button" id="pushbackState" value="3" class="sendButton" />
+        </div>
+        <div>
+            <input type="button" id="tugToggle" value="Toggle" class="sendButton" />
+            <label for="tugHeading">HDG</label>
+            <input id="tugHeading" size="3" class="sendText" />
+            <label for="tugSpeed">Speed</label>
+            <input id="tugSpeed" size="3" class="sendText" />
+            <input type="button" id="tugDisable" value="Disable" class="sendButton" />
+        </div>
+    </div>
