@@ -79,16 +79,19 @@ namespace Controlzmo.Systems.Pushback
         [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.01f)]
         public int trueHeading;
 
+        [SimVar("GROUND VELOCITY", "Knots", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float groundKnots;
+
+        [SimVar("TOTAL WORLD VELOCITY", "Feet per second", SIMCONNECT_DATATYPE.FLOAT32, 0.2f)]
+        public float velocityTotal;
+
         [SimVar("PUSHBACK ATTACHED", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         // State 0 and this as 1 immediately after toggling pushback, even before tug is attached.
         public int pushbackAttached;
 
         [SimVar("Brake Parking Position", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int parkingBrakePosition;
-        /*simClient.AddToDataDefinition(DefinitionsEnum.VelocityX, "Velocity Body X", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-          simClient.AddToDataDefinition(DefinitionsEnum.VelocityY, "Velocity Body Y", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-          simClient.AddToDataDefinition(DefinitionsEnum.VelocityZ, "Velocity Body Z", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
-          simClient.AddToDataDefinition(DefinitionsEnum.RotationX, "Rotation Velocity Body X", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
+        /*simClient.AddToDataDefinition(DefinitionsEnum.RotationX, "Rotation Velocity Body X", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
           simClient.AddToDataDefinition(DefinitionsEnum.RotationY, "Rotation Velocity Body Y", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);
           simClient.AddToDataDefinition(DefinitionsEnum.RotationZ, "Rotation Velocity Body Z", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);*/
     };
@@ -107,7 +110,8 @@ namespace Controlzmo.Systems.Pushback
 
         public override void Process(ExtendedSimConnect simConnect, PushbackData data)
         {
-            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState} attached={data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle}, heading={data.trueHeading}, parkBrake={data.parkingBrakePosition}");
+            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState} attached={data.pushbackAttached} wait={data.pushbackWait}, angle={data.pushbackAngle},\n"
+                + $"\theading={data.trueHeading}, knots={data.groundKnots}, parkBrake={data.parkingBrakePosition}, velocity={data.velocityTotal}");
             hub.Clients.All.SetFromSim("pushbackState", data.pushbackState);
             hub.Clients.All.SetFromSim("pushbackAngle", data.pushbackAngle);
             hub.Clients.All.SetFromSim("trueHeading", data.trueHeading);
