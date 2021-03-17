@@ -117,6 +117,7 @@ namespace SimConnectzmo
                         throw new NullReferenceException($"No DataField for {type2Struct.Key}.{field.Name}");
                     AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
                         dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
+System.Console.Error.WriteLine($"Registered field {type2Struct.Key}.{field.Name} {GetLastSentPacketID()}");
                 }
                 GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
                     .Invoke(this, new object[] { type2Struct.Value });
