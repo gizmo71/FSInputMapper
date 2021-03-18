@@ -153,7 +153,26 @@ namespace Controlzmo.Systems.Pushback
         // **Triggers tug**, and sets desired speed, in feet per second.
         // The speed can be both positive (forward movement) and negative (backward movement).
         // Can't see any evidence of this actually doing anything.
-        public string SimEvent() => "KEY_TUG_SPEED";
+        public string SimEvent() => "KEY_TUG_SPEED"; // Does appear to need the KEY_ prefix, and negatives are impossible...
+    }
+
+    [Component]
+    public class TugSpeedEventListener : IEventNotification
+    {
+        private readonly IEvent setEvent;
+
+        public TugSpeedEventListener(IEvent setEvent) { this.setEvent = setEvent; }
+
+        public IEvent GetEvent()
+        {
+            return setEvent;
+        }
+
+        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        {
+            Console.Error.WriteLine($"RX set speed ${data.dwData}");
+            //simConnect.SendEvent(setEvent, 0);
+        }
     }
 
     [Component]
