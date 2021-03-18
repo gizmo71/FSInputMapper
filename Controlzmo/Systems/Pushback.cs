@@ -96,7 +96,7 @@ namespace Controlzmo.Systems.Pushback
           simClient.AddToDataDefinition(DefinitionsEnum.RotationZ, "Rotation Velocity Body Z", "feet per second", SIMCONNECT_DATATYPE.FLOAT64, 0.0f, SimConnect.SIMCONNECT_UNUSED);*/
     };
 
-    [Component]
+    //[Component]
     public class PushbackListener : DataListener<PushbackData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
