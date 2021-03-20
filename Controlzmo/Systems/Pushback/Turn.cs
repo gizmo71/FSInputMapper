@@ -48,6 +48,7 @@ namespace Controlzmo.Systems.Pushback
             }
             else if (data.pushbackState == 0)
             {
+                //TODO: do we need to set the tug heading to the real heading one last time? Is it too late here?
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             }
         }
