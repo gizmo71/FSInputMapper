@@ -46,20 +46,28 @@ namespace Controlzmo.Systems.Pushback
         public UInt32 ToData(Double degrees) => ((UInt32)(degrees * 11930465)) & 0xffffffff;
     }
 
+    //TODO: consider being able to set this using the rudder input
     [Component]
     public class TugHeading : ISettable<string?>
     {
         private readonly TugHeadingEvent setEvent;
+        private readonly PushbackToggleListener stateListener;
 
-        public TugHeading(TugHeadingEvent setEvent)
+        public TugHeading(TugHeadingEvent setEvent, PushbackToggleListener stateListener)
         {
             this.setEvent = setEvent;
+            this.stateListener = stateListener;
         }
 
         public string GetId() => "tugHeading";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? degreesAsString)
         {
+            if (!stateListener.IsPushbackActive)
+            {
+                Console.Error.WriteLine("Pushback not active");
+                return;
+            }
             //TODO: request PushbackTurnData and only then send the event if state 0, based on relative heading.
             // Alternatively, track the state, since we can't signal desired heading to the data listener.
             var degrees = Double.Parse(degreesAsString!) % 360.0;

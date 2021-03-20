@@ -9,23 +9,29 @@ namespace Controlzmo.Systems.Pushback
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct PushbackStateData
     {
-        [SimVar("PUSHBACK STATE", null, SIMCONNECT_DATATYPE.STRING32, 0.5f)]
-        public string pushbackState;
+        [SimVar("PUSHBACK STATE", null, SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public uint pushbackState;
     }
 
     [Component]
-    public class PushbackToggleListener : DataListener<PushbackStateData>
+    public class PushbackToggleListener : DataListener<PushbackStateData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+
+        bool isPushbackActive;
+        public bool IsPushbackActive => isPushbackActive;
 
         public PushbackToggleListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
             this.hub = hub;
         }
 
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
+
         public override void Process(ExtendedSimConnect simConnect, PushbackStateData data)
         {
-            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState}");
+System.Console.Error.WriteLine($"Pushback: state={data.pushbackState}");
+            isPushbackActive = data.pushbackState != 3;
         }
     }
 
@@ -38,11 +44,15 @@ namespace Controlzmo.Systems.Pushback
     [Component]
     public class TugToggleEventListener : IEventNotification, ISettable<object>
     {
-        private readonly IEvent tugToggleEvent;
+        private readonly TugToggleEvent tugToggleEvent;
+        private readonly TugDisableEvent tugDisableEvent;
+        private readonly PushbackToggleListener stateListener;
 
-        public TugToggleEventListener(TugToggleEvent tugToggleEvent)
+        public TugToggleEventListener(TugToggleEvent tugToggleEvent, TugDisableEvent tugDisableEvent, PushbackToggleListener stateListener)
         {
             this.tugToggleEvent = tugToggleEvent;
+            this.tugDisableEvent = tugDisableEvent;
+            this.stateListener = stateListener;
         }
 
         public IEvent GetEvent() => tugToggleEvent; // From game
@@ -56,8 +66,8 @@ namespace Controlzmo.Systems.Pushback
 
         public void SetInSim(ExtendedSimConnect simConnect, object? _)
         {
-            //TODO: request state data and issue either the same event if >0 or the disable one if 0
-            simConnect.SendEvent(tugToggleEvent);
+            simConnect.SendEvent(stateListener.IsPushbackActive ? tugDisableEvent : tugToggleEvent);
+            //TODO: if enabling, do we need to set the direction to current heading?
         }
     }
 
