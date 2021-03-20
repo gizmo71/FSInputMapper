@@ -9,26 +9,15 @@ namespace Controlzmo.Systems.Pushback
 {
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct TrueHeadingData
+    public struct TugHeadingData
     {
+        [SimVar("PUSHBACK STATE", null, SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public uint pushbackState;
         [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
         public float trueHeading;
-        [SimVar("RUDDER POSITION", "Position", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
-        public float rudderPosition;
-        [SimVar("RUDDER PEDAL POSITION", "Position", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        [SimVar("RUDDER PEDAL POSITION", "Position", SIMCONNECT_DATATYPE.FLOAT32, 0.02f)]
         public float rudderPedalPosition;
-        [SimVar("STEER INPUT CONTROL", "Percent over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
-        public float steerPosition;
     };
-
-    [Component]
-    public class TrueHeadingListener : DataListener<TrueHeadingData>
-    {
-        public override void Process(ExtendedSimConnect simConnect, TrueHeadingData data)
-        {
-            System.Console.Error.WriteLine($"True heading={data.trueHeading}, pedal {data.rudderPosition} pos {data.rudderPedalPosition}");
-        }
-    }
 
     [Component]
     public class TugHeadingEvent : IEvent
@@ -39,30 +28,24 @@ namespace Controlzmo.Systems.Pushback
         public UInt32 ToData(Double degrees) => ((UInt32)(degrees * 11930465)) & 0xffffffff;
     }
 
-    //TODO: consider being able to set this using the rudder input - won't be able to look away, obviously.
     [Component]
-    public class TugHeading : ISettable<string?>
+    public class TugHeadingListener : DataListener<TugHeadingData>
     {
         private readonly TugHeadingEvent setEvent;
-        private readonly PushbackState state;
 
-        public TugHeading(TugHeadingEvent setEvent, PushbackState state)
+        public TugHeadingListener(TugHeadingEvent setEvent)
         {
             this.setEvent = setEvent;
-            this.state = state;
         }
 
-        public string GetId() => "tugHeading";
-
-        public void SetInSim(ExtendedSimConnect simConnect, string? degreesAsString)
+        public override void Process(ExtendedSimConnect simConnect, TugHeadingData data)
         {
-            if (!state.IsPushbackActive)
+            System.Console.Error.WriteLine($"State={data.pushbackState}, True heading={data.trueHeading}, rudder pedal {data.rudderPedalPosition}");
+            if (data.pushbackState == 0)
             {
-                Console.Error.WriteLine("Pushback not active");
-                return;
+                var degrees = (data.trueHeading + 360.0 - data.rudderPedalPosition * 50.0) % 360.0;
+                simConnect.SendEvent(setEvent, setEvent.ToData(degrees));
             }
-            var degrees = Double.Parse(degreesAsString!) % 360.0;
-            simConnect.SendEvent(setEvent, setEvent.ToData(degrees));
         }
     }
 }

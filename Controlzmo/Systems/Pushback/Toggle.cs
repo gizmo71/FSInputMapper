@@ -28,13 +28,13 @@ namespace Controlzmo.Systems.Pushback
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly PushbackState state;
-        private readonly TrueHeadingListener headingListener;
+        private readonly TugHeadingListener headingListener;
 
         public PushbackStateListener(IServiceProvider serviceProvider)
         {
             this.hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             this.state = serviceProvider.GetRequiredService<PushbackState>();
-            this.headingListener = serviceProvider.GetRequiredService<TrueHeadingListener>();
+            this.headingListener = serviceProvider.GetRequiredService<TugHeadingListener>();
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
@@ -60,7 +60,7 @@ namespace Controlzmo.Systems.Pushback
     }
 
     [Component]
-    public class TugToggleEventListener : IEventNotification, ISettable<object>
+    public class TugToggleEventListener : IEventNotification
     {
         private readonly TugToggleEvent tugToggleEvent;
         private readonly TugDisableEvent tugDisableEvent;
@@ -73,16 +73,9 @@ namespace Controlzmo.Systems.Pushback
             this.state = serviceProvider.GetRequiredService<PushbackState>();
         }
 
-        public IEvent GetEvent() => tugToggleEvent; // From game
+        public IEvent GetEvent() => tugToggleEvent;
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
-        {
-            SetInSim(simConnect, null);
-        }
-
-        public string GetId() => "tugToggle"; // From our UI
-
-        public void SetInSim(ExtendedSimConnect simConnect, object? _)
         {
             simConnect.SendEvent(state.IsPushbackActive ? tugDisableEvent : tugToggleEvent);
         }
