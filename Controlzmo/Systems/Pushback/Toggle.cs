@@ -30,9 +30,14 @@ namespace Controlzmo.Systems.Pushback
 
         public override void Process(ExtendedSimConnect simConnect, PushbackStateData data)
         {
-System.Console.Error.WriteLine($"Pushback: state={data.pushbackState}");
             isPushbackActive = data.pushbackState != 3;
         }
+    }
+
+    [Component]
+    public class TugDisableEvent : IEvent
+    {
+        public string SimEvent() => "TUG_DISABLE";
     }
 
     [Component]
@@ -67,13 +72,6 @@ System.Console.Error.WriteLine($"Pushback: state={data.pushbackState}");
         public void SetInSim(ExtendedSimConnect simConnect, object? _)
         {
             simConnect.SendEvent(stateListener.IsPushbackActive ? tugDisableEvent : tugToggleEvent);
-            //TODO: if enabling, do we need to set the direction to current heading?
         }
-    }
-
-    [Component]
-    public class TugDisableEvent : IEvent
-    {
-        public string SimEvent() => "TUG_DISABLE";
     }
 }
