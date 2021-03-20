@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -9,28 +8,21 @@ namespace Controlzmo.Systems.Pushback
 {
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct PushbackTurnData
+    public struct TrueHeadingData
     {
-        [SimVar("PUSHBACK STATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int pushbackState;
-
-        [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.01f)]
+        [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int trueHeading;
     };
 
     [Component]
-    public class PushbackTurnListener : DataListener<PushbackTurnData>
+    public class TrueHeadingListener : DataListener<TrueHeadingData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        //TODO: only needed whilst pushback active?
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
-        public PushbackTurnListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
+        public override void Process(ExtendedSimConnect simConnect, TrueHeadingData data)
         {
-            this.hub = hub;
-        }
-
-        public override void Process(ExtendedSimConnect simConnect, PushbackTurnData data)
-        {
-            System.Console.Error.WriteLine($"Pushback: state={data.pushbackState}, heading={data.trueHeading}");
+            System.Console.Error.WriteLine($"True heading={data.trueHeading}");
         }
     }
 
