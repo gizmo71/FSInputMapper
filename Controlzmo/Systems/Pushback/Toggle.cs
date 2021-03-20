@@ -24,52 +24,55 @@ namespace Controlzmo.Systems.Pushback
     }
 
     [Component]
-    public class PushbackStateListener : DataListener<PushbackStateData>, IRequestDataOnOpen
-    {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly PushbackState state;
-        private readonly TugHeadingListener headingListener;
-
-        public PushbackStateListener(IServiceProvider serviceProvider)
-        {
-            this.hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            this.state = serviceProvider.GetRequiredService<PushbackState>();
-            this.headingListener = serviceProvider.GetRequiredService<TugHeadingListener>();
-        }
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
-
-        public override void Process(ExtendedSimConnect simConnect, PushbackStateData data)
-        {
-            state.IsPushbackActive = data.pushbackState != 3;
-            var period = state.IsPushbackActive ? SIMCONNECT_PERIOD.VISUAL_FRAME : SIMCONNECT_PERIOD.NEVER;
-            simConnect.RequestDataOnSimObject(headingListener, period);
-        }
-    }
-
-    [Component]
     public class TugDisableEvent : IEvent
     {
         public string SimEvent() => "TUG_DISABLE";
     }
 
     [Component]
+    public class PushbackStateListener : DataListener<PushbackStateData>, IRequestDataOnOpen
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly PushbackState state;
+        private readonly TugHeadingListener headingListener;
+        private readonly TugDisableEvent tugDisableEvent;
+
+        public PushbackStateListener(IServiceProvider serviceProvider)
+        {
+            this.hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            this.state = serviceProvider.GetRequiredService<PushbackState>();
+            this.headingListener = serviceProvider.GetRequiredService<TugHeadingListener>();
+            this.tugDisableEvent = serviceProvider.GetRequiredService<TugDisableEvent>();
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
+
+        public override void Process(ExtendedSimConnect simConnect, PushbackStateData data)
+        {
+            if (state.IsPushbackActive = data.pushbackState != 3)
+                headingListener.OnPushbackStart(simConnect);
+            else
+                simConnect.SendEvent(tugDisableEvent);
+        }
+    }
+
+//TODO: can we just remove this?
+
+    //[Component]
     public class TugToggleEvent : IEvent
     {
         public string SimEvent() => "TOGGLE_PUSHBACK";
     }
 
-    [Component]
+    //[Component]
     public class TugToggleEventListener : IEventNotification
     {
         private readonly TugToggleEvent tugToggleEvent;
-        private readonly TugDisableEvent tugDisableEvent;
         private readonly PushbackState state;
 
         public TugToggleEventListener(IServiceProvider serviceProvider)
         {
             this.tugToggleEvent = serviceProvider.GetRequiredService<TugToggleEvent>();
-            this.tugDisableEvent = serviceProvider.GetRequiredService<TugDisableEvent>();
             this.state = serviceProvider.GetRequiredService<PushbackState>();
         }
 
@@ -77,7 +80,7 @@ namespace Controlzmo.Systems.Pushback
 
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
-            simConnect.SendEvent(state.IsPushbackActive ? tugDisableEvent : tugToggleEvent);
+            simConnect.SendEvent(tugToggleEvent);
         }
     }
 }

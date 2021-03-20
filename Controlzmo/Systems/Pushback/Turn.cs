@@ -41,11 +41,20 @@ namespace Controlzmo.Systems.Pushback
         public override void Process(ExtendedSimConnect simConnect, TugHeadingData data)
         {
             System.Console.Error.WriteLine($"State={data.pushbackState}, True heading={data.trueHeading}, rudder pedal {data.rudderPedalPosition}");
-            if (data.pushbackState == 0)
+            if (data.pushbackState != 3)
             {
                 var degrees = (data.trueHeading + 360.0 - data.rudderPedalPosition * 50.0) % 360.0;
                 simConnect.SendEvent(setEvent, setEvent.ToData(degrees));
             }
+            else if (data.pushbackState == 0)
+            {
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
+            }
+        }
+
+        internal void OnPushbackStart(ExtendedSimConnect simConnect)
+        {
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
         }
     }
 }
