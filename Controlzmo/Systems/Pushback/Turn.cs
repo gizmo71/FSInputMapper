@@ -11,8 +11,14 @@ namespace Controlzmo.Systems.Pushback
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct TrueHeadingData
     {
-        [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int trueHeading;
+        [SimVar("PLANE HEADING DEGREES TRUE", "Degrees", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        public float trueHeading;
+        [SimVar("RUDDER POSITION", "Position", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float rudderPosition;
+        [SimVar("RUDDER PEDAL POSITION", "Position", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float rudderPedalPosition;
+        [SimVar("STEER INPUT CONTROL", "Percent over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float steerPosition;
     };
 
     [Component]
@@ -20,7 +26,7 @@ namespace Controlzmo.Systems.Pushback
     {
         public override void Process(ExtendedSimConnect simConnect, TrueHeadingData data)
         {
-            System.Console.Error.WriteLine($"True heading={data.trueHeading}");
+            System.Console.Error.WriteLine($"True heading={data.trueHeading}, pedal {data.rudderPosition} pos {data.rudderPedalPosition}");
         }
     }
 
