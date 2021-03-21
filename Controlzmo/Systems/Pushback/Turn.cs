@@ -18,7 +18,7 @@ namespace Controlzmo.Systems.Pushback
         public float rudderPedalPosition;
     };
 
-    [Component]
+    //[Component]
     public class TugHeadingEvent : IEvent
     {
         // Argument is an unsigned 32 bit integer which represents 0 to 359.999 degrees min to max value.
@@ -27,7 +27,7 @@ namespace Controlzmo.Systems.Pushback
         public UInt32 ToData(Double degrees) => ((UInt32)(degrees * 11930465)) & 0xffffffff;
     }
 
-    [Component]
+    //[Component]
     public class TugHeadingListener : DataListener<TugHeadingData>
     {
         private readonly TugHeadingEvent setEvent;

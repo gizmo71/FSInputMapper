@@ -14,13 +14,13 @@ namespace Controlzmo.Systems.Pushback
         public uint pushbackState;
     }
 
-    [Component]
+    //[Component]
     public class TugDisableEvent : IEvent
     {
         public string SimEvent() => "TUG_DISABLE";
     }
 
-    [Component]
+    //[Component]
     public class PushbackStateListener : DataListener<PushbackStateData>, IRequestDataOnOpen
     {
         private readonly TugHeadingListener headingListener;
