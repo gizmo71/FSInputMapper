@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -41,21 +40,11 @@ namespace Controlzmo.Systems.Pushback
         public override void Process(ExtendedSimConnect simConnect, TugHeadingData data)
         {
             System.Console.Error.WriteLine($"State={data.pushbackState}, True heading={data.trueHeading}, rudder pedal {data.rudderPedalPosition}");
-            if (data.pushbackState != 3)
+            if (data.pushbackState == 0)
             {
                 var degrees = (data.trueHeading + 360.0 - data.rudderPedalPosition * 50.0) % 360.0;
                 simConnect.SendEvent(setEvent, setEvent.ToData(degrees));
             }
-            else if (data.pushbackState == 0)
-            {
-                //TODO: do we need to set the tug heading to the real heading one last time? Is it too late here?
-                simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
-            }
-        }
-
-        internal void OnPushbackStart(ExtendedSimConnect simConnect)
-        {
-            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
         }
     }
 }
