@@ -1,13 +1,16 @@
 ﻿// https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis
 var synth = window.speechSynthesis;
-var utterance = new SpeechSynthesisUtterance('eighty knots V1');
-//utterance.pitch = 1; // 0 to 2, with 1 as default
-utterance.rate = 1.25; // 0.1 to 10, with 1 as default
-synth.speak(utterance);
 
-utterance = new SpeechSynthesisUtterance('Rotate');
-utterance.rate = 1.25; // 0.1 to 10, with 1 as default
-synth.speak(utterance);
+function testTextToSpeech() {
+    var utterance = new SpeechSynthesisUtterance('eighty knots V1');
+    //utterance.pitch = 1; // 0 to 2, with 1 as default
+    utterance.rate = 1.25; // 0.1 to 10, with 1 as default
+    synth.speak(utterance);
+
+    utterance = new SpeechSynthesisUtterance('Rotate');
+    utterance.rate = 1.25; // 0.1 to 10, with 1 as default
+    synth.speak(utterance);
+}
 
 /*
 If this works on the phone, consider getting L:AIRLINER_V1_SPEED and L:AIRLINER_VR_SPEED and calling them.
