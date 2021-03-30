@@ -80,6 +80,7 @@ namespace SimConnectzmo
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
+//TODO: turn this into a proper injected wotsit
 serviceProvider.GetRequiredService<Bob>().Wurbleise(this);
 
             return this;

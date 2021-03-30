@@ -32,17 +32,15 @@ namespace Controlzmo.Systems.PilotMonitoring
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] //TODO: is this needed?
         private const string VSpeedsClientDataName = "Controlzmo.VSpeeds";
 
-        private readonly IServiceProvider serviceProvider;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
         public Bob(IServiceProvider serviceProvider)
         {
-            this.serviceProvider = serviceProvider;
+            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
         internal void Wurbleise(ExtendedSimConnect simConnect)
         {
-            serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>().Clients.All.Speak("connected to sim");
-
             simConnect.MapClientDataNameToID(VSpeedsClientDataName, CLIENT_ENUM.PLACEHOLDER);
 System.Console.Error.WriteLine($"Mapped client data name {simConnect.GetLastSentPacketID()}");
             simConnect.CreateClientData(CLIENT_ENUM.PLACEHOLDER, (uint)Marshal.SizeOf(typeof(VSpeedsCallData)), SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
@@ -61,13 +59,61 @@ System.Console.Error.WriteLine($"Added double to client data def {simConnect.Get
 
         private void GotSome(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
-System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}");
+System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
             switch ((CLIENT_ENUM)data.dwRequestID)
             {
                 case CLIENT_ENUM.PLACEHOLDER:
                     VSpeedsCallData callData = (VSpeedsCallData)data.dwData[0];
-System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr}");
+                    MaybeCall(callData);
                     break;
+            }
+        }
+
+        bool above80 = false;
+        bool aboveV1 = false;
+        bool aboveVR = false;
+
+        private void MaybeCall(VSpeedsCallData callData)
+        {
+            System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr}");
+
+            if (80.0 > 0 && callData.airspeed >= 80.0)
+            {
+                if (!above80)
+                {
+                    hubContext.Clients.All.Speak("eighty knots");
+                    above80 = true;
+                }
+            }
+            else
+            {
+                above80 = false;
+            }
+
+            if (callData.v1 > 0 && callData.airspeed >= callData.v1)
+            {
+                if (!aboveV1)
+                {
+                    hubContext.Clients.All.Speak("vee one");
+                    aboveV1 = true;
+                }
+            }
+            else
+            {
+                aboveV1 = false;
+            }
+
+            if (callData.vr > 0 && callData.airspeed >= callData.vr)
+            {
+                if (!aboveVR)
+                {
+                    hubContext.Clients.All.Speak("rotate");
+                    aboveVR = true;
+                }
+            }
+            else
+            {
+                aboveVR = false;
             }
         }
     }
