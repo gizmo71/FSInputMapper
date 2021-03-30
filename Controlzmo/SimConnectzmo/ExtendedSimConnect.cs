@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Controlzmo.Systems.PilotMonitoring;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -30,7 +31,8 @@ namespace SimConnectzmo
         [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
         private readonly IntPtr hSimConnect;
-        UInt32 GetLastSentPacketID()
+
+        public UInt32 GetLastSentPacketID()
         {
             UInt32 dwSendID;
             SimConnect_GetLastSentPacketID(hSimConnect, out dwSendID);
@@ -77,6 +79,8 @@ namespace SimConnectzmo
 
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
+
+serviceProvider.GetRequiredService<Bob>().Wurbleise(this);
 
             return this;
         }
