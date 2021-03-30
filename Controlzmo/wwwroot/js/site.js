@@ -42,6 +42,14 @@ connection.on("SetFromSim", function (name, value) {
     jqInput.prop('disabled', value == null);
 });
 
+connection.on("Speak", function (text) {
+    // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis
+    var utterance = new SpeechSynthesisUtterance(text);
+    //utterance.pitch = 1; // 0 to 2, with 1 as default
+    utterance.rate = 1.25; // 0.1 to 10, with 1 as default
+    window.speechSynthesis.speak(utterance);
+});
+
 connection.start().then(function () {
     // Called when connection established - may want to disable things until this is received.
     connection.invoke("SendAll").catch(errorHandler);
