@@ -16,17 +16,18 @@ namespace Controlzmo.Systems.PilotMonitoring
         public double airspeed;
         public double v1;
         public double vr;
+        public Int32 phase;
     };
 
     [Component]
-    public class Bob
+    public class TakeOffSpeedsListener
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] //TODO: is this needed?
         private const string VSpeedsClientDataName = "Controlzmo.VSpeeds";
 
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
-        public Bob(IServiceProvider serviceProvider)
+        public TakeOffSpeedsListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
@@ -42,6 +43,7 @@ System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPack
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
 
             simConnect.OnRecvClientData += GotSome;
@@ -51,7 +53,7 @@ System.Console.Error.WriteLine($"Added double to client data def {simConnect.Get
 
         private void GotSome(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
-System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
+//System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
             switch ((CLIENT_ENUM)data.dwRequestID)
             {
                 case CLIENT_ENUM.PLACEHOLDER:
@@ -61,52 +63,26 @@ System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwReq
             }
         }
 
-        bool above80 = false;
-        bool aboveV1 = false;
-        bool aboveVR = false;
+        bool wasAbove80 = false;
+        bool wasAboveV1 = false;
+        bool wasAboveVR = false;
 
         private void MaybeCall(VSpeedsCallData callData)
         {
-            System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr}");
+System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr} phase {callData.phase}");
+            setAndCallIfRequired(80, callData.airspeed, "eighty knots", ref wasAbove80);
+            setAndCallIfRequired(callData.v1, callData.airspeed, "vee one", ref wasAboveV1);
+            setAndCallIfRequired(callData.vr, callData.airspeed, "rotate", ref wasAboveVR);
+        }
 
-            if (80.0 > 0 && callData.airspeed >= 80.0)
+        private void setAndCallIfRequired(double calledSpeed, double actualSpeed, string call, ref bool wasAbove)
+        {
+            bool isAbove = calledSpeed > 0 && actualSpeed >= calledSpeed;
+            if (isAbove && !wasAbove)
             {
-                if (!above80)
-                {
-                    hubContext.Clients.All.Speak("eighty knots");
-                    above80 = true;
-                }
+                hubContext.Clients.All.Speak(call);
             }
-            else
-            {
-                above80 = false;
-            }
-
-            if (callData.v1 > 0 && callData.airspeed >= callData.v1)
-            {
-                if (!aboveV1)
-                {
-                    hubContext.Clients.All.Speak("vee one");
-                    aboveV1 = true;
-                }
-            }
-            else
-            {
-                aboveV1 = false;
-            }
-
-            if (callData.vr > 0 && callData.airspeed >= callData.vr)
-            {
-                if (!aboveVR)
-                {
-                    hubContext.Clients.All.Speak("rotate");
-                    aboveVR = true;
-                }
-            }
-            else
-            {
-                aboveVR = false;
-            }
+            wasAbove = isAbove;
         }
     }
 }

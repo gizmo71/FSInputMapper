@@ -81,7 +81,7 @@ namespace SimConnectzmo
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
 //TODO: turn this into a proper injected wotsit
-serviceProvider.GetRequiredService<Bob>().Wurbleise(this);
+serviceProvider.GetRequiredService<TakeOffSpeedsListener>().Wurbleise(this);
 
             return this;
         }
