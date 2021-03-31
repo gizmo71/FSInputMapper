@@ -12,9 +12,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     public struct DecelData
     {
         [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public double onGround;
-        [SimVar("AUTO BRAKE SWITCH CB", "Enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 autoBrakeSwitch;
+        public Int32 onGround;
+        [SimVar("AUTO BRAKE SWITCH CB", "Enum", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float autoBrakeSwitch; // 0 for any on and 1 for off WTF?!
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 1.5f)]
         public double accelerationZ;
     };
@@ -36,7 +36,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
 System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround {data.onGround} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}");
             bool isDecel = data.onGround == 1
-                && data.autoBrakeSwitch > 1
+                && data.autoBrakeSwitch != 1
                 && (-3) > data.accelerationZ;
             if (!wasDecel && isDecel)
                 hubContext.Clients.All.Speak("decel");
