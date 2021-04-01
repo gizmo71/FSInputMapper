@@ -17,6 +17,10 @@ namespace Controlzmo.Systems.PilotMonitoring
         public float autoBrakeSwitch; // 0 for any on and 1 for off WTF?!
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 1.5f)]
         public double accelerationZ;
+        [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        public float spoilersLeft;
+        [SimVar("SPOILERS RIGHT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        public float spoilersRight;
     };
 
     [Component]
@@ -34,12 +38,15 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, DecelData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround {data.onGround} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}");
+System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround {data.onGround} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}"
+// 0 is down and 1 is up
+    + $"\n\tSpoilers left {data.spoilersLeft} right {data.spoilersRight}");
             bool isDecel = data.onGround == 1
                 && data.autoBrakeSwitch != 1
                 && (-3) > data.accelerationZ;
+//TODO: need minimum speed too - otherwise we get it with all braking. Perhaps it should only be said once after ground latches on?
             if (!wasDecel && isDecel)
-                hubContext.Clients.All.Speak("decel");
+                hubContext.Clients.All.Speak("decell");
             wasDecel = isDecel;
         }
     }

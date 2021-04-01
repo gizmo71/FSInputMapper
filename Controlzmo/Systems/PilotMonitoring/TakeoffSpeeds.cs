@@ -16,7 +16,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public double airspeed;
         public double v1;
         public double vr;
-        public Int32 phase;
+        public double autobrake;
     };
 
     [Component]
@@ -43,8 +43,8 @@ System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPack
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
 
             simConnect.OnRecvClientData += GotSome;
             simConnect.RequestClientData(CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER,
@@ -53,7 +53,7 @@ System.Console.Error.WriteLine($"Added double to client data def {simConnect.Get
 
         private void GotSome(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
-//System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
+System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
             switch ((CLIENT_ENUM)data.dwRequestID)
             {
                 case CLIENT_ENUM.PLACEHOLDER:
@@ -69,7 +69,7 @@ System.Console.Error.WriteLine($"Added double to client data def {simConnect.Get
 
         private void MaybeCall(VSpeedsCallData callData)
         {
-System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr} phase {callData.phase}");
+System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr} - autobrake {callData.autobrake}");
             setAndCallIfRequired(80, callData.airspeed, "eighty knots", ref wasAbove80);
             setAndCallIfRequired(callData.v1, callData.airspeed, "vee one", ref wasAboveV1);
             setAndCallIfRequired(callData.vr, callData.airspeed, "rotate", ref wasAboveVR);
