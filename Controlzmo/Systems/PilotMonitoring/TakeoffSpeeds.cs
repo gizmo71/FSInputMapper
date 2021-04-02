@@ -13,10 +13,12 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct VSpeedsCallData
     {
-        public double airspeed;
-        public double v1;
-        public double vr;
-        public double autobrake;
+        public Int16 v1;
+        public Int16 vr;
+        public Byte autobrake;
+        public Byte radar;
+        public Byte pws;
+        public Byte tcas;
     };
 
     [Component]
@@ -40,10 +42,12 @@ System.Console.Error.WriteLine($"Mapped client data name {simConnect.GetLastSent
 System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPacketID()}");
             simConnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, VSpeedsCallData>(CLIENT_ENUM.PLACEHOLDER);
 
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
 
             simConnect.OnRecvClientData += GotSome;
@@ -69,10 +73,10 @@ System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwReq
 
         private void MaybeCall(VSpeedsCallData callData)
         {
-System.Console.Error.WriteLine($"Airspeed {callData.airspeed} V1 {callData.v1} VR {callData.vr} - autobrake {callData.autobrake}");
-            setAndCallIfRequired(80, callData.airspeed, "eighty knots", ref wasAbove80);
-            setAndCallIfRequired(callData.v1, callData.airspeed, "vee one", ref wasAboveV1);
-            setAndCallIfRequired(callData.vr, callData.airspeed, "rotate", ref wasAboveVR);
+System.Console.Error.WriteLine($"Airspeed V1 {callData.v1} VR {callData.vr} - autobrake {callData.autobrake} - radar/pws {callData.radar}/{callData.pws} TCAS {callData.tcas}");
+            setAndCallIfRequired(80, 66, "eighty knots", ref wasAbove80);
+            setAndCallIfRequired(callData.v1, 66, "vee one", ref wasAboveV1);
+            setAndCallIfRequired(callData.vr, 66, "rotate", ref wasAboveVR);
         }
 
         private void setAndCallIfRequired(double calledSpeed, double actualSpeed, string call, ref bool wasAbove)

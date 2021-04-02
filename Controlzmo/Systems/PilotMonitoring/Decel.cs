@@ -13,6 +13,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 onGround;
+        [SimVar("ON ANY RUNWAY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 onRunway;
         [SimVar("AUTO BRAKE SWITCH CB", "Enum", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
         public float autoBrakeSwitch; // 0 for any on and 1 for off WTF?!
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 1.5f)]
@@ -38,7 +40,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, DecelData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround {data.onGround} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}"
+System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround/RWY {data.onGround}/{data.onRunway} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}"
 // 0 is down and 1 is up
     + $"\n\tSpoilers left {data.spoilersLeft} right {data.spoilersRight}");
             bool isDecel = data.onGround == 1
