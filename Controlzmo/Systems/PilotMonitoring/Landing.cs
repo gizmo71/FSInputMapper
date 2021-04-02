@@ -26,29 +26,46 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly LocalVarsListener localVarsListener;
 
-        private bool wasDecel = false;
-        private bool wasSpoilers = false;
+        private bool? wasDecel = null;
+        private bool? wasSpoilers = null;
 
         public LandingListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
+            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
+        }
+
+        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        {
+            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
+            wasDecel = wasSpoilers = isOnGround ? false : null;
         }
 
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}"
-    + $"\n\tSpoilers left {data.spoilersLeft} right {data.spoilersRight}");
-            bool isDecel = localVarsListener.localVars.autobrake > 0 && (-3) > data.accelerationZ;
-//TODO: need minimum speed too - otherwise we get it with all braking. Perhaps it should only be said once after ground latches on?
-            if (!wasDecel && isDecel)
-                hubContext.Clients.All.Speak("decell");
-            wasDecel = isDecel;
+System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}");
+            if (wasDecel == false && localVarsListener.localVars.autobraking == 1)
+            {
+                var requiredDecel = localVarsListener.localVars.autobrake * -2;
+                bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
+                if (isDecel)
+                {
+                    hubContext.Clients.All.Speak("Decell!");
+                    wasDecel = true;
+                }
+            }
 
-            bool isSpoilers = data.spoilersLeft > .675 && data.spoilersRight > .675;
-            if (!wasSpoilers && isSpoilers)
-                hubContext.Clients.All.Speak("spoilers");
-            wasSpoilers = isSpoilers;
+System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilersLeft} right {data.spoilersRight}");
+            if (wasSpoilers == false)
+            {
+                bool isSpoilers = data.spoilersLeft > .675 && data.spoilersRight > .675;
+                if (isSpoilers)
+                {
+                    hubContext.Clients.All.Speak("Spoilers!");
+                    wasSpoilers = true;
+                }
+            }
         }
     }
 }

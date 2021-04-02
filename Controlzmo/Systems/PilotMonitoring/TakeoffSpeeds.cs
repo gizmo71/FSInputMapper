@@ -29,6 +29,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
+            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
+        }
+ 
+        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        {
+            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
+            wasAbove80 = wasAboveV1 = wasAboveVR = false;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)

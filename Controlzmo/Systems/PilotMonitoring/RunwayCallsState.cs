@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -17,14 +19,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class RunwayCallsStateListener : DataListener<RunwayCallsStateData>, IRequestDataOnOpen
     {
-        private readonly TakeOffListener takeOffListener;
-        private readonly LandingListener landingListener;
-
-        public RunwayCallsStateListener(IServiceProvider serviceProvider)
-        {
-            takeOffListener = serviceProvider.GetRequiredService<TakeOffListener>();
-            landingListener = serviceProvider.GetRequiredService<LandingListener>();
-        }
+        public delegate void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround);
+        public event OnGroundHandler? onGroundHandlers;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
@@ -32,11 +28,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
 System.Console.Error.WriteLine($"Runway calls state: {data.onGround}");
             var period = data.onGround == 1 ? SIMCONNECT_PERIOD.VISUAL_FRAME : SIMCONNECT_PERIOD.NEVER;
-//TODO: tell each listener the state, so that it can make adjustments
-// e.g. TO one can set all flags true once airbourne, regardleess of whether calls made.
-// Landing one can set all flags false once airbourne, and latch decel on when back on ground.
-            simConnect.RequestDataOnSimObject(takeOffListener, period);
-            simConnect.RequestDataOnSimObject(landingListener, period);
+            onGroundHandlers?.Invoke(simConnect, data.onGround == 1);
         }
     }
 }
