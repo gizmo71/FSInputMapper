@@ -8,15 +8,10 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
+    /*On landing, would be good to detect reversers (how? A32NX_AUTOTHRUST_REVERSE:1/2?)*/
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct DecelData
+    public struct LandingData
     {
-        [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 onGround;
-        [SimVar("ON ANY RUNWAY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 onRunway;
-        [SimVar("AUTO BRAKE SWITCH CB", "Enum", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
-        public float autoBrakeSwitch; // 0 for any on and 1 for off WTF?!
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 1.5f)]
         public double accelerationZ;
         [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
@@ -26,30 +21,36 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class DecelListener : DataListener<DecelData>, IRequestDataOnOpen
+    public class LandingListener : DataListener<LandingData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private bool wasDecel = false;
+        private readonly LocalVarsListener localVarsListener;
 
-        public DecelListener(IServiceProvider serviceProvider)
+        private bool wasDecel = false;
+        private bool wasSpoilers = false;
+
+        public LandingListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
-        public override void Process(ExtendedSimConnect simConnect, DecelData data)
+        public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} - now onGround/RWY {data.onGround}/{data.onRunway} autoBrakeSwitch {data.autoBrakeSwitch} rate {data.accelerationZ}"
-// 0 is down and 1 is up
+System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}"
     + $"\n\tSpoilers left {data.spoilersLeft} right {data.spoilersRight}");
-            bool isDecel = data.onGround == 1
-                && data.autoBrakeSwitch != 1
-                && (-3) > data.accelerationZ;
+            bool isDecel = localVarsListener.localVars.autobrake > 0 && (-3) > data.accelerationZ;
 //TODO: need minimum speed too - otherwise we get it with all braking. Perhaps it should only be said once after ground latches on?
             if (!wasDecel && isDecel)
                 hubContext.Clients.All.Speak("decell");
             wasDecel = isDecel;
+
+            bool isSpoilers = data.spoilersLeft > .675 && data.spoilersRight > .675;
+            if (!wasSpoilers && isSpoilers)
+                hubContext.Clients.All.Speak("spoilers");
+            wasSpoilers = isSpoilers;
         }
     }
 }
