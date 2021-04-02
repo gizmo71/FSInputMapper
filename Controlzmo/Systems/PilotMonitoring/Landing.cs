@@ -8,7 +8,10 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    /*On landing, would be good to detect reversers (how? A32NX_AUTOTHRUST_REVERSE:1/2?)*/
+    /* Would be good to detect reversers for "Rev Green"
+     * How? A32NX_AUTOTHRUST_REVERSE:1/2?
+     * TURB ENG REVERSE NOZZLE PERCENT:index?
+     */
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
