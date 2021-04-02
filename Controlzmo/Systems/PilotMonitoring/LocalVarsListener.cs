@@ -13,6 +13,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int16 v1;
         public Int16 vr;
         public Byte autobrake;
+        public Byte autobraking;
         public Byte radar;
         public Byte pws;
         public Byte tcas;
@@ -40,6 +41,7 @@ System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPack
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
             simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
+            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
 System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
 
             simConnect.OnRecvClientData += GotSome;
@@ -54,7 +56,7 @@ System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwReq
             {
                 case CLIENT_ENUM.PLACEHOLDER:
                     localVars = (LocalVarsData)data.dwData[0];
-System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; radar/PWS {localVars.radar}/{localVars.pws}, TCAS {localVars.tcas}");
+System.Console.Error.WriteLine($"LVars updated to autobrake/ing {localVars.autobrake}/{localVars.autobraking}; radar/PWS {localVars.radar}/{localVars.pws}, TCAS {localVars.tcas}");
                     break;
             }
         }
