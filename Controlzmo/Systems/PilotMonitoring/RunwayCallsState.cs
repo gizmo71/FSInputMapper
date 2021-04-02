@@ -9,10 +9,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct RunwayCallsStateData
     {
+        // Would like to use "ON ANY RUNWAY" but it's just not reliable. :-(
         [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 onGround;
-        [SimVar("ON ANY RUNWAY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 onRunway;
     };
 
     [Component]
@@ -31,8 +30,11 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, RunwayCallsStateData data)
         {
-System.Console.Error.WriteLine($"Runway calls state: {data.onGround}/{data.onRunway}");
-            var period = data.onRunway == 1 ? SIMCONNECT_PERIOD.VISUAL_FRAME : SIMCONNECT_PERIOD.NEVER;
+System.Console.Error.WriteLine($"Runway calls state: {data.onGround}");
+            var period = data.onGround == 1 ? SIMCONNECT_PERIOD.VISUAL_FRAME : SIMCONNECT_PERIOD.NEVER;
+//TODO: tell each listener the state, so that it can make adjustments
+// e.g. TO one can set all flags true once airbourne, regardleess of whether calls made.
+// Landing one can set all flags false once airbourne, and latch decel on when back on ground.
             simConnect.RequestDataOnSimObject(takeOffListener, period);
             simConnect.RequestDataOnSimObject(landingListener, period);
         }

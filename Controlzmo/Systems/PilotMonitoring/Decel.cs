@@ -12,16 +12,16 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
-        [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 1.5f)]
+        [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 0.25f)]
         public double accelerationZ;
-        [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
         public float spoilersLeft;
-        [SimVar("SPOILERS RIGHT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        [SimVar("SPOILERS RIGHT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
         public float spoilersRight;
     };
 
     [Component]
-    public class LandingListener : DataListener<LandingData>, IRequestDataOnOpen
+    public class LandingListener : DataListener<LandingData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly LocalVarsListener localVarsListener;
@@ -34,8 +34,6 @@ namespace Controlzmo.Systems.PilotMonitoring
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
         }
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
