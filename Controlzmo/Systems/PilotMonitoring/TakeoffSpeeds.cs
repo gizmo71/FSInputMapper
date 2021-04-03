@@ -36,6 +36,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
+//TODO: don't reset these if we were previously in the air, otherwise the 35/80 calls will sound again.
             wasAbove35 = wasAbove80 = wasAboveV1 = wasAboveVR = false;
         }
 
