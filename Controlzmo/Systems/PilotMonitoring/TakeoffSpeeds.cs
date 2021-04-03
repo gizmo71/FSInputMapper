@@ -21,7 +21,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly LocalVarsListener localVarsListener;
 
-        bool? wasAbove35 = null;
+        bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
         bool? wasAboveV1 = null;
         bool? wasAboveVR = null;
@@ -36,15 +36,15 @@ namespace Controlzmo.Systems.PilotMonitoring
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
-            wasAbove35 = wasAbove80 = wasAboveV1 = wasAboveVR = null;
+            wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = null;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
 System.Console.Error.WriteLine($"Takeoff: KIAS {data.kias}, V1/VR {localVarsListener.localVars.v1}/{localVarsListener.localVars.vr}");
             if (data.kias < 30)
-                wasAbove35 = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            setAndCallIfRequired(35, data.kias, "airspeed alive", ref wasAbove35);
+                wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
+            setAndCallIfRequired(31, data.kias, "airspeed alive", ref wasAirspeedAlive);
             setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
             setAndCallIfRequired(localVarsListener.localVars.v1, data.kias, "vee one", ref wasAboveV1);
             setAndCallIfRequired(localVarsListener.localVars.vr, data.kias, "rotate", ref wasAboveVR);
