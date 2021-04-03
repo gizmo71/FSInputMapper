@@ -21,6 +21,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public float spoilersLeft;
         [SimVar("SPOILERS RIGHT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
         public float spoilersRight;
+        [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
+        public Int32 kias;
     };
 
     [Component]
@@ -41,15 +43,21 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
+            SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
+            simConnect.RequestDataOnSimObject(this, period);
             wasDecel = wasSpoilers = isOnGround ? false : null;
         }
 
+        private const double MIN_SPOILER_DEPLOYMENT = .9;
+
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}");
-//TODO: have a minimum speed before decel listener is armed
-            if (wasDecel == false /*&& localVarsListener.localVars.autobraking == 1*/)
+System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
+            if (wasDecel == null && data.kias >= 80)
+            {
+                wasDecel = false;
+            }
+            if (wasDecel == false)
             {
                 var requiredDecel = localVarsListener.localVars.autobrake * -2;
                 bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
@@ -63,7 +71,7 @@ System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}
 System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilersLeft} right {data.spoilersRight}");
             if (wasSpoilers == false)
             {
-                bool isSpoilers = data.spoilersLeft > .675 && data.spoilersRight > .675;
+                bool isSpoilers = data.spoilersLeft > MIN_SPOILER_DEPLOYMENT && data.spoilersRight > MIN_SPOILER_DEPLOYMENT;
                 if (isSpoilers)
                 {
                     hubContext.Clients.All.Speak("Spoilers!");
