@@ -48,7 +48,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
 System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}");
-            if (wasDecel == false && localVarsListener.localVars.autobraking == 1)
+//TODO: have a minimum speed before decel listener is armed
+            if (wasDecel == false /*&& localVarsListener.localVars.autobraking == 1*/)
             {
                 var requiredDecel = localVarsListener.localVars.autobrake * -2;
                 bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
