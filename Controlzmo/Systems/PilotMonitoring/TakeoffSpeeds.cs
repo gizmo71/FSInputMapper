@@ -11,8 +11,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct TakeOffData
     {
-        [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
-        public float kias;
+        [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        public Int32 kias;
     };
 
     [Component]
@@ -35,7 +35,8 @@ namespace Controlzmo.Systems.PilotMonitoring
  
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
+            SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
+            simConnect.RequestDataOnSimObject(this, period);
             wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = null;
         }
 
@@ -50,10 +51,9 @@ System.Console.Error.WriteLine($"Takeoff: KIAS {data.kias}, V1/VR {localVarsList
             setAndCallIfRequired(localVarsListener.localVars.vr, data.kias, "rotate", ref wasAboveVR);
         }
 
-        private void setAndCallIfRequired(short calledSpeed, float actualSpeed, string call, ref bool? wasAbove)
+        private void setAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
         {
-            bool isAbove = calledSpeed > 0 && actualSpeed >= calledSpeed;
-            if (isAbove && wasAbove == false)
+            if (wasAbove == false && calledSpeed > 0 && actualSpeed >= calledSpeed)
             {
                 hubContext.Clients.All.Speak(call);
                 wasAbove = true;
