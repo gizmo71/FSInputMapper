@@ -45,7 +45,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasDecel = wasSpoilers = isOnGround ? false : null;
+            wasDecel = null;
+            wasSpoilers = isOnGround ? false : null;
         }
 
         private const double MIN_SPOILER_DEPLOYMENT = .9;
