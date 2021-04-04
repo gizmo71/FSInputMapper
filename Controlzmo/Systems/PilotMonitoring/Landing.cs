@@ -8,10 +8,6 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    /* Would be good to detect reversers for "Rev Green"
-     * How? A32NX_AUTOTHRUST_REVERSE:1/2?
-     * TURB ENG REVERSE NOZZLE PERCENT:index?
-     */
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
@@ -23,6 +19,10 @@ namespace Controlzmo.Systems.PilotMonitoring
         public float spoilersRight;
         [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 kias;
+        [SimVar("TURB ENG REVERSE NOZZLE PERCENT:1", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
+        public Int32 rev1;
+        [SimVar("TURB ENG REVERSE NOZZLE PERCENT:2", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
+        public Int32 rev2;
     };
 
     [Component]
@@ -79,6 +79,9 @@ System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilers
                     wasSpoilers = true;
                 }
             }
+
+System.Console.Error.WriteLine($"Reversers: one {data.rev1} two {data.rev2}");
+            //TODO: "rev green"?
         }
     }
 }
