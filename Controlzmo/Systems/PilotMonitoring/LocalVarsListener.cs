@@ -13,9 +13,9 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int16 v1;
         public Int16 vr;
         public Byte autobrake;
-        // Doesn't work. :-( public Byte autobraking;
         public Byte radar;
-        public Byte pws;
+        [MarshalAs(UnmanagedType.I1)]
+        public bool pws;
         public Byte tcas;
     };
 
