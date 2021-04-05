@@ -32,10 +32,7 @@ namespace Controlzmo.Systems.Lights
             this._logging = _logging;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod()
-        {
-            return SIMCONNECT_PERIOD.VISUAL_FRAME;
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, TaxiTurnoffLightData data)
         {
