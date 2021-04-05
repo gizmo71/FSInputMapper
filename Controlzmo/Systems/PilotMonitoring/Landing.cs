@@ -33,6 +33,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
+        private bool? wasRevGreen = null;
 
         public LandingListener(IServiceProvider serviceProvider)
         {
@@ -54,10 +55,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
 System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
-            if (wasDecel == null && data.kias >= 80)
-            {
-                wasDecel = false;
-            }
+            if (wasDecel == null && data.kias >= 80) wasDecel = false;
             if (wasDecel == false)
             {
                 var requiredDecel = localVarsListener.localVars.autobrake * -2;
@@ -81,7 +79,12 @@ System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilers
             }
 
 System.Console.Error.WriteLine($"Reversers: one {data.rev1} two {data.rev2}");
-            //TODO: "rev green"?
+            if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
+            if (wasRevGreen == false && data.rev1 > 0 && data.rev2 > 0)
+            {
+                hubContext.Clients.All.Speak("Rev Green");
+                wasRevGreen = true;
+            }
         }
     }
 }
