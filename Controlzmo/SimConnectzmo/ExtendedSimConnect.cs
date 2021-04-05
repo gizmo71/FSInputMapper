@@ -133,11 +133,16 @@ System.Console.Error.WriteLine($"Registered struct {type2Struct.Key} {GetLastSen
             }
         }
 
-        internal void RegisterClientDataStruct(Type type, Enum id)
+        internal void RegisterClientDataStruct(string clientDataName, Type type, Enum id)
         {
+            MapClientDataNameToID(clientDataName, id);
+System.Console.Error.WriteLine($"Mapped client data {clientDataName} to {id}: {GetLastSentPacketID()}");
+            CreateClientData(id, (uint)Marshal.SizeOf(type), SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
+System.Console.Error.WriteLine($"Created client data for {type}: {GetLastSentPacketID()}");
+
             GetType().GetMethod("RegisterStruct")!.MakeGenericMethod(typeof(SIMCONNECT_RECV_CLIENT_DATA), type)
                 .Invoke(this, new object[] { id });
-System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()}");
+System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID()}");
 
             foreach (FieldInfo field in type.GetFields())
             {
@@ -149,16 +154,16 @@ System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()
                     throw new NullReferenceException($"No MarshalAsAttribute for {type}.{field.Name}");
 
                 uint clientDataType;
-                if (marshallAs.Value == UnmanagedType.I1)
+                if (marshallAs.Value == UnmanagedType.I1 || marshallAs.Value == UnmanagedType.U1)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
-                else if (marshallAs.Value == UnmanagedType.I2)
+                else if (marshallAs.Value == UnmanagedType.I2 || marshallAs.Value == UnmanagedType.U2)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
                 else
                     throw new NullReferenceException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
 
                 AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
                     clientDataType, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Registered client field {type}.{field.Name} {GetLastSentPacketID()}");
+System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {GetLastSentPacketID()}");
             }
 
         }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    internal enum CLIENT_ENUM { PLACEHOLDER = 123 }
+    internal enum TEMP_ENUM { PLACEHOLDER = 123 }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LocalVarsData
@@ -41,24 +40,20 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         internal void Wurbleise(ExtendedSimConnect simConnect)
         {
-            simConnect.MapClientDataNameToID(VSpeedsClientDataName, CLIENT_ENUM.PLACEHOLDER);
-System.Console.Error.WriteLine($"Mapped client data name {simConnect.GetLastSentPacketID()}");
-            simConnect.CreateClientData(CLIENT_ENUM.PLACEHOLDER, (uint)Marshal.SizeOf(typeof(LocalVarsData)), SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
-System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPacketID()}");
-
-            simConnect.RegisterClientDataStruct(typeof(LocalVarsData), CLIENT_ENUM.PLACEHOLDER);
+            simConnect.RegisterClientDataStruct(VSpeedsClientDataName, typeof(LocalVarsData), TEMP_ENUM.PLACEHOLDER);
 
             simConnect.OnRecvClientData += GotSome;
-            simConnect.RequestClientData(CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER,
+            simConnect.RequestClientData(TEMP_ENUM.PLACEHOLDER, TEMP_ENUM.PLACEHOLDER, TEMP_ENUM.PLACEHOLDER,
                 SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET, SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
+System.Console.Error.WriteLine($"Requested client data for: {simConnect.GetLastSentPacketID()}");
         }
 
         private void GotSome(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
         {
 System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
-            switch ((CLIENT_ENUM)data.dwRequestID)
+            switch ((TEMP_ENUM)data.dwRequestID)
             {
-                case CLIENT_ENUM.PLACEHOLDER:
+                case TEMP_ENUM.PLACEHOLDER:
                     localVars = (LocalVarsData)data.dwData[0];
 System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; radar/PWS {localVars.radar}/{localVars.pws}, TCAS {localVars.tcas}");
                     break;
