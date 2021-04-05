@@ -5,8 +5,6 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    internal enum TEMP_ENUM { PLACEHOLDER = 123 }
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LocalVarsData
     {
@@ -31,33 +29,21 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class LocalVarsListener
+    public class LocalVarsListener : DataListener<LocalVarsData>, IClientData, IRequestDataOnOpen
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string VSpeedsClientDataName = "Controlzmo.VSpeeds";
 
-        internal LocalVarsData localVars;
+        public LocalVarsData localVars;
 
-        internal void Wurbleise(ExtendedSimConnect simConnect)
+        public string GetClientDataName() => VSpeedsClientDataName;
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => (SIMCONNECT_PERIOD)SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET;
+
+        public override void Process(ExtendedSimConnect simConnect, LocalVarsData localVars)
         {
-            simConnect.RegisterClientDataStruct(VSpeedsClientDataName, typeof(LocalVarsData), TEMP_ENUM.PLACEHOLDER);
-
-            simConnect.OnRecvClientData += GotSome;
-            simConnect.RequestClientData(TEMP_ENUM.PLACEHOLDER, TEMP_ENUM.PLACEHOLDER, TEMP_ENUM.PLACEHOLDER,
-                SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET, SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED, 0, 0, 0);
-System.Console.Error.WriteLine($"Requested client data for: {simConnect.GetLastSentPacketID()}");
-        }
-
-        private void GotSome(SimConnect sender, SIMCONNECT_RECV_CLIENT_DATA data)
-        {
-System.Console.Error.WriteLine($"Got me some client data, request ID {data.dwRequestID}; define ID {data.dwDefineID}; object {data.dwObjectID}");
-            switch ((TEMP_ENUM)data.dwRequestID)
-            {
-                case TEMP_ENUM.PLACEHOLDER:
-                    localVars = (LocalVarsData)data.dwData[0];
 System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; radar/PWS {localVars.radar}/{localVars.pws}, TCAS {localVars.tcas}");
-                    break;
-            }
+            this.localVars = localVars;
         }
     }
 }

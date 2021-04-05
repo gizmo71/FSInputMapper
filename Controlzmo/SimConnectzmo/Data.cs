@@ -8,6 +8,11 @@ namespace SimConnectzmo
         public abstract Type GetStructType();
     }
 
+    public interface IClientData : IData
+    {
+        public abstract string GetClientDataName();
+    }
+
     public interface IDataListener : IData
     {
         public abstract void Process(ExtendedSimConnect simConnect, object data);

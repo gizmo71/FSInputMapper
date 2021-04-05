@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Controlzmo.Systems.PilotMonitoring;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -23,6 +22,7 @@ namespace SimConnectzmo
         private ILogger<ExtendedSimConnect>? _logging;
 
         private Dictionary<Type, STRUCT>? typeToStruct;
+        private Dictionary<Type, string>? typeToClientDataName;
         private Dictionary<IDataListener, REQUEST>? typeToRequest;
         private Dictionary<IEvent, EVENT>? eventToEnum;
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
@@ -45,6 +45,7 @@ namespace SimConnectzmo
             OnRecvOpen += Handle_OnRecvOpen;
             OnRecvQuit += Handle_OnRecvQuit;
             OnRecvSimobjectData += Handle_OnRecvSimobjectData;
+            OnRecvClientData += Handle_OnRecvSimobjectData;
             OnRecvEvent += Handle_OnRecvEvent;
             OnRecvException += Handle_Exception;
 
@@ -57,10 +58,8 @@ namespace SimConnectzmo
             _logging.LogError($"Got exception {data.dwException} packet {data.dwSendID}");
         }
 
-private IServiceProvider sp;
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
         {
-sp = serviceProvider;
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
 
             typeToStruct = serviceProvider
@@ -68,6 +67,13 @@ sp = serviceProvider;
                 .Select(candidate => candidate.GetStructType())
                 .Distinct()
                 .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
+                .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
+
+            typeToClientDataName = serviceProvider
+                .GetServices<IClientData>()
+                .Select((clientData, index) => new ValueTuple<Type, string>(
+                    clientData.GetStructType(), clientData.GetClientDataName()))
+                .Distinct()
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             typeToRequest = serviceProvider.GetServices<IDataListener>()
@@ -90,9 +96,6 @@ sp = serviceProvider;
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
-
-            //TODO: turn this into a proper injected wotsit
-            sp.GetRequiredService<LocalVarsListener>().Wurbleise(this);
 
             TriggerInitialRequests();
         }
@@ -118,22 +121,33 @@ sp = serviceProvider;
         {
             foreach (var type2Struct in typeToStruct!)
             {
-                foreach (FieldInfo field in type2Struct.Key.GetFields())
-                {
-                    var dataField = field.GetCustomAttribute<SimVarAttribute>();
-                    if (dataField == null)
-                        throw new NullReferenceException($"No SimVarAttribute for {type2Struct.Key}.{field.Name}");
-                    AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
-                        dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Registered field {type2Struct.Key}.{field.Name} {GetLastSentPacketID()}");
-                }
-                GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type2Struct.Key)
-                    .Invoke(this, new object[] { type2Struct.Value });
-System.Console.Error.WriteLine($"Registered struct {type2Struct.Key} {GetLastSentPacketID()}");
+                Type type = type2Struct.Key;
+                STRUCT id = type2Struct.Value;
+                string? clientDataName = null;
+                if (typeToClientDataName?.TryGetValue(type, out clientDataName) == true)
+                    RegisterClientDataStruct(clientDataName!, type, id);
+                else
+                    RegisterDataStruct(type, id);
             }
         }
 
-        internal void RegisterClientDataStruct(string clientDataName, Type type, Enum id)
+        private void RegisterDataStruct(Type type, STRUCT id)
+        {
+            foreach (FieldInfo field in type.GetFields())
+            {
+                var dataField = field.GetCustomAttribute<SimVarAttribute>();
+                if (dataField == null)
+                    throw new NullReferenceException($"No SimVarAttribute for {type}.{field.Name}");
+                AddToDataDefinition(id, dataField.Variable, dataField.Units,
+                    dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
+System.Console.Error.WriteLine($"Registered field {type}.{field.Name} {GetLastSentPacketID()}");
+            }
+            GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type)
+                .Invoke(this, new object[] { id });
+System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()}");
+        }
+
+        private void RegisterClientDataStruct(string clientDataName, Type type, Enum id)
         {
             MapClientDataNameToID(clientDataName, id);
 System.Console.Error.WriteLine($"Mapped client data {clientDataName} to {id}: {GetLastSentPacketID()}");
@@ -159,7 +173,7 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
                 else if (marshallAs.Value == UnmanagedType.I2 || marshallAs.Value == UnmanagedType.U2)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
                 else
-                    throw new NullReferenceException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
+                    throw new ArgumentException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
 
                 AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
                     clientDataType, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
@@ -219,14 +233,26 @@ System.Console.Error.WriteLine($"Set group priorities {GetLastSentPacketID()}");
 _logging.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentPacketID()}");
         }
 
-        public void RequestDataOnSimObject(IDataListener data, SIMCONNECT_PERIOD period)
+        public void RequestDataOnSimObject(IDataListener data, Enum period)
         {
             REQUEST request = typeToRequest![data];
             STRUCT structId = typeToStruct![data.GetStructType()];
-            SIMCONNECT_DATA_REQUEST_FLAG flag = period == SIMCONNECT_PERIOD.ONCE
-                            ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-                            : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
-            RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, period, flag, 0, 0, 0);
+            if (typeToClientDataName?.ContainsKey(data.GetStructType()) == true)
+            {
+                SIMCONNECT_CLIENT_DATA_PERIOD clientPeriod = (SIMCONNECT_CLIENT_DATA_PERIOD)period;
+                SIMCONNECT_CLIENT_DATA_REQUEST_FLAG flag = clientPeriod == SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET
+                    ? SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED
+                    : SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.DEFAULT;
+                RequestClientData(structId, request, structId, clientPeriod, flag, 0, 0, 0);
+            }
+            else
+            {
+                SIMCONNECT_PERIOD simPeriod = (SIMCONNECT_PERIOD)period;
+                SIMCONNECT_DATA_REQUEST_FLAG flag = simPeriod == SIMCONNECT_PERIOD.ONCE
+                                ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+                                : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+                RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, simPeriod, flag, 0, 0, 0);
+            }
 System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSentPacketID()}");
         }
 
