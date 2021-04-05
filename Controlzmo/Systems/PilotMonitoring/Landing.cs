@@ -54,7 +54,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
+//System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
             if (wasDecel == null && data.kias >= 80) wasDecel = false;
             if (wasDecel == false)
             {
@@ -67,7 +67,7 @@ System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ}
                 }
             }
 
-System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilersLeft} right {data.spoilersRight}");
+//System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilersLeft} right {data.spoilersRight}");
             if (wasSpoilers == false)
             {
                 bool isSpoilers = data.spoilersLeft > MIN_SPOILER_DEPLOYMENT && data.spoilersRight > MIN_SPOILER_DEPLOYMENT;
@@ -78,7 +78,7 @@ System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilers
                 }
             }
 
-System.Console.Error.WriteLine($"Reversers: one {data.rev1} two {data.rev2}");
+//System.Console.Error.WriteLine($"Reversers: one {data.rev1} two {data.rev2}");
             if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
             if (wasRevGreen == false && data.rev1 > 0 && data.rev2 > 0)
             {
