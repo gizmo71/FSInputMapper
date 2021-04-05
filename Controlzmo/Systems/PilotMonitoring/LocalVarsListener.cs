@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -10,12 +11,23 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LocalVarsData
     {
+        [MarshalAs(UnmanagedType.I2)]
+        [ClientVar(0.5f)]
         public Int16 v1;
+        [MarshalAs(UnmanagedType.I2)]
+        [ClientVar(0.5f)]
         public Int16 vr;
+        [MarshalAs(UnmanagedType.I1)]
+        [ClientVar(0.5f)]
         public Byte autobrake;
+        [MarshalAs(UnmanagedType.I1)]
+        [ClientVar(0.5f)]
         public Byte radar;
+        [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I1)]
         public bool pws;
+        [ClientVar(0.5f)]
+        [MarshalAs(UnmanagedType.I1)]
         public Byte tcas;
     };
 
@@ -33,15 +45,8 @@ namespace Controlzmo.Systems.PilotMonitoring
 System.Console.Error.WriteLine($"Mapped client data name {simConnect.GetLastSentPacketID()}");
             simConnect.CreateClientData(CLIENT_ENUM.PLACEHOLDER, (uint)Marshal.SizeOf(typeof(LocalVarsData)), SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
 System.Console.Error.WriteLine($"Created client data {simConnect.GetLastSentPacketID()}");
-            simConnect.RegisterStruct<SIMCONNECT_RECV_CLIENT_DATA, LocalVarsData>(CLIENT_ENUM.PLACEHOLDER);
 
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-            simConnect.AddToClientDataDefinition(CLIENT_ENUM.PLACEHOLDER, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO, SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8, 0.5f, SimConnect.SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Added double to client data def {simConnect.GetLastSentPacketID()}");
+            simConnect.RegisterClientDataStruct(typeof(LocalVarsData), CLIENT_ENUM.PLACEHOLDER);
 
             simConnect.OnRecvClientData += GotSome;
             simConnect.RequestClientData(CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER, CLIENT_ENUM.PLACEHOLDER,

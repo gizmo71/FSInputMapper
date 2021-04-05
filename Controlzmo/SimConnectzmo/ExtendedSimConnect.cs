@@ -120,7 +120,7 @@ serviceProvider.GetRequiredService<LocalVarsListener>().Wurbleise(this);
                 {
                     var dataField = field.GetCustomAttribute<SimVarAttribute>();
                     if (dataField == null)
-                        throw new NullReferenceException($"No DataField for {type2Struct.Key}.{field.Name}");
+                        throw new NullReferenceException($"No SimVarAttribute for {type2Struct.Key}.{field.Name}");
                     AddToDataDefinition(type2Struct.Value, dataField.Variable, dataField.Units,
                         dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
 System.Console.Error.WriteLine($"Registered field {type2Struct.Key}.{field.Name} {GetLastSentPacketID()}");
@@ -129,6 +129,36 @@ System.Console.Error.WriteLine($"Registered field {type2Struct.Key}.{field.Name}
                     .Invoke(this, new object[] { type2Struct.Value });
 System.Console.Error.WriteLine($"Registered struct {type2Struct.Key} {GetLastSentPacketID()}");
             }
+        }
+
+        internal void RegisterClientDataStruct(Type type, Enum id)
+        {
+            GetType().GetMethod("RegisterStruct")!.MakeGenericMethod(typeof(SIMCONNECT_RECV_CLIENT_DATA), type)
+                .Invoke(this, new object[] { id });
+System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()}");
+
+            foreach (FieldInfo field in type.GetFields())
+            {
+                var clientVar = field.GetCustomAttribute<ClientVarAttribute>();
+                if (clientVar == null)
+                    throw new NullReferenceException($"No ClientVarAttribute for {type}.{field.Name}");
+                var marshallAs = field.GetCustomAttribute<MarshalAsAttribute>();
+                if (marshallAs == null)
+                    throw new NullReferenceException($"No MarshalAsAttribute for {type}.{field.Name}");
+
+                uint clientDataType;
+                if (false && marshallAs.ArraySubType == UnmanagedType.I1)
+                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
+                else if (marshallAs.ArraySubType == UnmanagedType.I2)
+                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
+                else
+                    throw new NullReferenceException($"Can't infer type from {marshallAs} for {type}.{field.Name}");
+
+                AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
+                    clientDataType, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+System.Console.Error.WriteLine($"Registered client field {type}.{field.Name} {GetLastSentPacketID()}");
+            }
+
         }
 
         private void MapClientEvents()
