@@ -57,8 +57,10 @@ namespace SimConnectzmo
             _logging.LogError($"Got exception {data.dwException} packet {data.dwSendID}");
         }
 
+private IServiceProvider sp;
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
         {
+sp = serviceProvider;
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
 
             typeToStruct = serviceProvider
@@ -80,9 +82,6 @@ namespace SimConnectzmo
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
-//TODO: turn this into a proper injected wotsit
-serviceProvider.GetRequiredService<LocalVarsListener>().Wurbleise(this);
-
             return this;
         }
 
@@ -91,6 +90,9 @@ serviceProvider.GetRequiredService<LocalVarsListener>().Wurbleise(this);
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
+
+            //TODO: turn this into a proper injected wotsit
+            sp.GetRequiredService<LocalVarsListener>().Wurbleise(this);
 
             TriggerInitialRequests();
         }
@@ -147,12 +149,12 @@ System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()
                     throw new NullReferenceException($"No MarshalAsAttribute for {type}.{field.Name}");
 
                 uint clientDataType;
-                if (false && marshallAs.ArraySubType == UnmanagedType.I1)
+                if (marshallAs.Value == UnmanagedType.I1)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
-                else if (marshallAs.ArraySubType == UnmanagedType.I2)
+                else if (marshallAs.Value == UnmanagedType.I2)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
                 else
-                    throw new NullReferenceException($"Can't infer type from {marshallAs} for {type}.{field.Name}");
+                    throw new NullReferenceException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
 
                 AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
                     clientDataType, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);

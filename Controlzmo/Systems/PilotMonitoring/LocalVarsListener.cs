@@ -34,7 +34,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class LocalVarsListener
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] //TODO: is this needed?
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string VSpeedsClientDataName = "Controlzmo.VSpeeds";
 
         internal LocalVarsData localVars;
