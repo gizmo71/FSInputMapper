@@ -1,10 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -26,7 +24,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, RunwayCallsStateData data)
         {
-System.Console.Error.WriteLine($"Runway calls state: {data.onGround}");
+//System.Console.Error.WriteLine($"Runway calls state: {data.onGround}");
             var period = data.onGround == 1 ? SIMCONNECT_PERIOD.VISUAL_FRAME : SIMCONNECT_PERIOD.NEVER;
             onGroundHandlers?.Invoke(simConnect, data.onGround == 1);
         }
