@@ -172,6 +172,8 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
                 else if (marshallAs.Value == UnmanagedType.I2 || marshallAs.Value == UnmanagedType.U2)
                     clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
+                else if (marshallAs.Value == UnmanagedType.I4 || marshallAs.Value == UnmanagedType.U4)
+                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT32;
                 else
                     throw new ArgumentException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
 
