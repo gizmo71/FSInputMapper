@@ -11,6 +11,9 @@ namespace Controlzmo.Systems.PilotMonitoring
         [MarshalAs(UnmanagedType.I4)]
         [ClientVar(0.5f)]
         public Int32 id;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        [ClientVar(0f)]
+        public string data;
     };
 
     [Component]
@@ -25,7 +28,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, JetBridgeData data)
         {
-System.Console.Error.WriteLine($"JetBridge reply ID {data.id}");
+System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         }
     }
 }

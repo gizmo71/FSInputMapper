@@ -167,18 +167,20 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
                 if (marshallAs == null)
                     throw new NullReferenceException($"No MarshalAsAttribute for {type}.{field.Name}");
 
-                uint clientDataType;
+                uint clientTypeOrSize;
                 if (marshallAs.Value == UnmanagedType.I1 || marshallAs.Value == UnmanagedType.U1)
-                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT8;
                 else if (marshallAs.Value == UnmanagedType.I2 || marshallAs.Value == UnmanagedType.U2)
-                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
                 else if (marshallAs.Value == UnmanagedType.I4 || marshallAs.Value == UnmanagedType.U4)
-                    clientDataType = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT32;
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT32;
+                else if (marshallAs.Value == UnmanagedType.ByValTStr)
+                    clientTypeOrSize = (uint)marshallAs.SizeConst;
                 else
                     throw new ArgumentException($"Can't infer type from {marshallAs.MarshalTypeRef}/{marshallAs.Value} for {type}.{field.Name}");
 
                 AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
-                    clientDataType, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
+                    clientTypeOrSize, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
 System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {GetLastSentPacketID()}");
             }
 
