@@ -191,13 +191,13 @@ System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {G
             foreach (var eventToEnum in eventToEnum!)
             {
                 MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
-System.Console.Error.WriteLine($"Mapped client to sim event {eventToEnum.Key} {GetLastSentPacketID()}");
+System.Console.Error.WriteLine($"Mapped client to sim event {eventToEnum.Key}: {GetLastSentPacketID()}");
             }
 System.Console.Error.WriteLine($"... and now notifications to events...");
             foreach (var notificationToEvent in notificationsToEvent!)
             {
                 AddClientEventToNotificationGroup(GROUP.JUST_MASKABLE, notificationToEvent.Value, true);
-System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificationToEvent.Value} {GetLastSentPacketID()}");
+System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificationToEvent.Value}: {GetLastSentPacketID()}");
             }
         }
 
@@ -205,14 +205,22 @@ System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificatio
         {
             //TODO: Avoid doing this if there aren't any (at the time of writing they'd all gone to standalone WASM.)
             SetNotificationGroupPriority(GROUP.JUST_MASKABLE, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
-System.Console.Error.WriteLine($"Set group priorities {GetLastSentPacketID()}");
+System.Console.Error.WriteLine($"Set group priorities: {GetLastSentPacketID()}");
         }
 
         public void SendDataOnSimObject<StructType>(StructType data)
             where StructType : struct
         {
             STRUCT id = typeToStruct![typeof(StructType)];
-            SetDataOnSimObject(id, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
+            if (typeToClientDataName?.ContainsKey(data.GetType()) == true)
+            {
+                SetClientData(id, id, SIMCONNECT_CLIENT_DATA_SET_FLAG.DEFAULT, 0, data);
+            }
+            else
+            {
+                SetDataOnSimObject(id, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
+            }
+System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}: {GetLastSentPacketID()}");
         }
 
         public void SendEvent(IEvent eventToSend, uint data = 0u, bool slow = false, bool fast = false)
