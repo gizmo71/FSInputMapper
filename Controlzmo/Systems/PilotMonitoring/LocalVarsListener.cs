@@ -5,7 +5,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1/*, Size = 16*/)]
     public struct LocalVarsData
     {
         [MarshalAs(UnmanagedType.I2)]
@@ -26,6 +26,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I1)]
         public Byte tcas;
+        [MarshalAs(UnmanagedType.I1)]
+        public Byte tcasTraffic;
     };
 
     [Component]
@@ -42,7 +44,8 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LocalVarsData localVars)
         {
-System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; radar/PWS {localVars.radar}/{localVars.pws}, TCAS {localVars.tcas}");
+System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; V1/VR {localVars.v1}/{localVars.vr}");
+System.Console.Error.WriteLine($"radar/PWS {localVars.radar}/{localVars.pws}, TCAS/traffic {localVars.tcas}/{localVars.tcasTraffic}");
             this.localVars = localVars;
         }
     }
