@@ -26,6 +26,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I1)]
         public Byte tcas;
+        [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I1)]
         public Byte tcasTraffic;
     };
