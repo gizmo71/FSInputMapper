@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Controlzmo.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -37,7 +39,14 @@ namespace Controlzmo.Systems.PilotMonitoring
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string VSpeedsClientDataName = "Controlzmo.VSpeeds";
 
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+
         public LocalVarsData localVars;
+
+        public LocalVarsListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
+        {
+            this.hub = hub;
+        }
 
         public string GetClientDataName() => VSpeedsClientDataName;
 
@@ -48,6 +57,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; V1/VR {localVars.v1}/{localVars.vr}");
 System.Console.Error.WriteLine($"radar/PWS {localVars.radar}/{localVars.pws}, TCAS/traffic {localVars.tcas}/{localVars.tcasTraffic}");
             this.localVars = localVars;
+            hub.Clients.All.SetFromSim("radarSys", localVars.radar);
         }
     }
 }

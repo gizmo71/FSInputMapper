@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -60,6 +59,24 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         {
             var data = new JetBridgeNoUplinkData { id = new Random().Next(), data = $"x{codeToExecute}" };
             simConnect.SendDataOnSimObject(data);
+        }
+    }
+
+    [Component]
+    public class RadarSys : ISettable<string?>
+    {
+        private readonly TransponderState jetbridge;
+
+        public RadarSys(TransponderState jetbridge)
+        {
+            this.jetbridge = jetbridge;
+        }
+
+        public string GetId() => "radarSys";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? pos)
+        {
+            jetbridge.SetInSim(simConnect, $"{pos} (>L:XMLVAR_A320_WeatherRadar_Sys)");
         }
     }
 }
