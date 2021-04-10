@@ -12,46 +12,59 @@ using SimConnectzmo;
   Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
   If Alt Rptg is On, only 4 will set it to On.
   If Alt Rptg is Off, only 3 will set it to On.
-* xpndr code (`TRANSPONDER CODE:1` readonly, `K:XPNDR_SET`+BCD16 works)
 * alt mode (`I:XMLVAR_ALT_MODE_REQUESTED`, `I:XMLVAR_Auto`, 1 if Auto, 0 if On or Stby - can't set at all)
 * Ident? (local event `A320_Neo_ATC_BTN_IDENT`?) */
 namespace Controlzmo.Systems.Transponder
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct TransponderStateData
+    public struct TransponderCodeData
     {
-        [SimVar("TRANSPONDER STATE:1", "Enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 state;
+        [SimVar("TRANSPONDER CODE:1", "BCD16", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 bcd16;
     };
 
     [Component]
-    public class TransponderStateListener : DataListener<TransponderStateData>, IRequestDataOnOpen
+    public class TransponderCodeListener : DataListener<TransponderCodeData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public TransponderStateListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
+        public TransponderCodeListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
             this.hub = hub;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
-        public override void Process(ExtendedSimConnect simConnect, TransponderStateData data)
+        public override void Process(ExtendedSimConnect simConnect, TransponderCodeData data)
         {
-            hub.Clients.All.SetFromSim("xpndr", data.state);
+
+            hub.Clients.All.SetFromSim(TransponderCode.id, $"{data.bcd16:X}");
         }
     }
 
     [Component]
-    public class TransponderState : ISettable<string?>
+    public class SetTransponderCodeEvent : IEvent
     {
-        public string GetId() => "xpndr";
+        public string SimEvent() => "XPNDR_SET";
+    }
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? newModeString)
+    [Component]
+    public class TransponderCode : ISettable<string?>
+    {
+        internal const string id = "xpndrCode";
+
+        private readonly SetTransponderCodeEvent setEvent;
+
+        public TransponderCode(SetTransponderCodeEvent setEvent)
         {
-            //TODO: convert to BCD?
-            var newState = new TransponderStateData { state = Int32.Parse(newModeString!) };
-            simConnect.SendDataOnSimObject(newState);
+            this.setEvent = setEvent;
+        }
+
+        public string GetId() => id;
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? code)
+        {
+            simConnect.SendEvent(setEvent, Convert.ToUInt32(code, 16));
         }
     }
 
