@@ -29,14 +29,27 @@
             <td colspan="6"><input id="jetbridge" maxlength="128" class="sendText" style="width: 100%" /></td>
         </tr>
         <tr>
-            <td><input size="1" id="radarSys" class="sendText" disabled /></td>
+            <td><select id="radarSys" class="sendText" disabled>
+                <option value="0">1</option>
+                <option value="1">Off</option>
+                <option value="2">2</option>
+            </select></td>
             <th><label for="radarSys">Radar</label></th>
-            <td><input type="checkbox" id="predictiveWindshear" class="sendBoolean" /></td>
+            <td><input type="checkbox" id="predictiveWindshear" class="sendBoolean" disabled /></td>
             <th><label for="predictiveWindshear">Predictive Windshear</label></th>
-            <td><input size="1" id="tcasTraffic" class="sendText" /></td>
+            <td><select id="tcasTraffic" class="sendText" disabled>
+                <option value="0">Thrt</option>
+                <option value="1">All</option>
+                <option value="2">Abv</option>
+                <option value="2">Blw</option>
+            </select></td>
             <th><label for="tcasTraffic">Traffic</label></th>
-            <td><input size="1" id="tcas" class="sendText" /></td>
-            <th><label for="tcas">TCAS</label></th>
+            <td><select id="tcasMode" class="sendText" disabled>
+                <option value="0">Stby</option>
+                <option value="1">TA</option>
+                <option value="2">TA/RA</option>
+            </select></td>
+            <th><label for="tcasMode">TCAS</label></th>
         </tr>
     </table>
 

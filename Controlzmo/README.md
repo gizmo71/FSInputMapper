@@ -33,17 +33,5 @@ Other useful things?
 Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INPUT CONTROL` in air.
 
 Things from takeoff/after landing:
-* Radar (`L:XMLVAR_A320_WeatherRadar_Sys` settable 0-2) & PWS (`L:A32NX_SWITCH_RADAR_PWS_Position` settable 0,1)
-* xpndr mode (settable `TRANSPONDER STATE:1` 1 Stby or Auto, 3 on without Alt Rptg, 4 on with Alt Rptg)
-  1 is standby or auto, 3/4 appear to be "On" in sim with alt rptg in off/on respectively, but if one, doesn't report the other when alt rptg is switched :-(
-  In auto, is unsettable. It's likely that the value changes once airbourne if in standby.
-  Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
-  If Alt Rptg is On, only 4 will set it to On.
-  If Alt Rptg is Off, only 3 will set it to On.
-* xpndr code (`TRANSPONDER CODE:1` readonly, `K:XPNDR_SET`+BCD16 works)
-* alt mode (`I:XMLVAR_ALT_MODE_REQUESTED`, `I:XMLVAR_Auto`, 1 if Auto, 0 if On or Stby - can't set at all)
-* Ident? (local event `A320_Neo_ATC_BTN_IDENT`?)
-* TCAS (`L:A32NX_SWITCH_TCAS_Position` 0-2 and `L:A32NX_SWITCH_TCAS_Traffic_Position` 0-3, both settable)
-
 * APU master/start (& bleed?) - `L:A32NX_APU_BLEED_AIR_VALVE_OPEN`,  lots of things with `L:*_OVHD_APU_*`
 * States: `L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE`, `L:A32NX_OVHD_APU_START_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`

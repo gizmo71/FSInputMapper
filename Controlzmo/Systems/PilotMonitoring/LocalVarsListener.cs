@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.Radar;
+using Controlzmo.Systems.Transponder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -57,7 +59,10 @@ namespace Controlzmo.Systems.PilotMonitoring
 System.Console.Error.WriteLine($"LVars updated to autobrake {localVars.autobrake}; V1/VR {localVars.v1}/{localVars.vr}");
 System.Console.Error.WriteLine($"radar/PWS {localVars.radar}/{localVars.pws}, TCAS/traffic {localVars.tcas}/{localVars.tcasTraffic}");
             this.localVars = localVars;
-            hub.Clients.All.SetFromSim("radarSys", localVars.radar);
+            hub.Clients.All.SetFromSim(RadarSys.id, localVars.radar);
+            hub.Clients.All.SetFromSim(PredictiveWindshearSys.id, localVars.pws);
+            hub.Clients.All.SetFromSim(TcasMode.id, localVars.tcas);
+            hub.Clients.All.SetFromSim(TcasTraffic.id, localVars.tcasTraffic);
         }
     }
 }

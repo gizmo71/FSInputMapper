@@ -46,37 +46,38 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
     };
 
     [Component]
-    public class TransponderState : DataSender<JetBridgeNoUplinkData>, IClientData, ISettable<string?>
+    public class JetBridgeSender : DataSender<JetBridgeNoUplinkData>, IClientData
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         private const string DownlinkClientDataName = "theomessin.jetbridge.uplink";
 
-        public string GetId() => "jetbridge";
+        private readonly Random random = new Random();
 
         public string GetClientDataName() => DownlinkClientDataName;
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? codeToExecute)
+        public int Execute(ExtendedSimConnect simConnect, string code)
         {
-            var data = new JetBridgeNoUplinkData { id = new Random().Next(), data = $"x{codeToExecute}" };
+            var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"x{code}" };
             simConnect.SendDataOnSimObject(data);
+            return data.id;
         }
     }
 
     [Component]
-    public class RadarSys : ISettable<string?>
+    public class JetBridge : ISettable<string?>
     {
-        private readonly TransponderState jetbridge;
+        private readonly JetBridgeSender sender;
 
-        public RadarSys(TransponderState jetbridge)
+        public JetBridge(JetBridgeSender sender)
         {
-            this.jetbridge = jetbridge;
+            this.sender = sender;
         }
 
-        public string GetId() => "radarSys";
+        public string GetId() => "jetbridge";
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? pos)
+        public void SetInSim(ExtendedSimConnect simConnect, string? codeToExecute)
         {
-            jetbridge.SetInSim(simConnect, $"{pos} (>L:XMLVAR_A320_WeatherRadar_Sys)");
+            sender.Execute(simConnect, codeToExecute!);
         }
     }
 }
