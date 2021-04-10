@@ -27,7 +27,7 @@ namespace Controlzmo.Systems.Radar
     }
 
     [Component]
-    public class PredictiveWindshearSys : ISettable<string?>
+    public class PredictiveWindshearSys : ISettable<bool?>
     {
         public const string id = "predictiveWindshear";
 
@@ -40,10 +40,10 @@ namespace Controlzmo.Systems.Radar
 
         public string GetId() => id;
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? posString)
+        public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)
         {
-            var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:A32NX_SWITCH_RADAR_PWS_Position)");
+            var value = isAuto == true ? 1 : 0;
+            jetbridge.Execute(simConnect, $"{value} (>L:A32NX_SWITCH_RADAR_PWS_Position)");
         }
     }
 }
