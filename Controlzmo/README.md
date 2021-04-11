@@ -35,6 +35,6 @@ Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INP
 Things from takeoff/after landing:
 * APU master/start (& bleed?) - `L:A32NX_APU_BLEED_AIR_VALVE_OPEN` (not settable),  lots of things with `L:*_OVHD_APU_*`
 * States: `L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE`, `L:A32NX_OVHD_APU_START_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-* Master toggle: 0/1 (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)
-* Press start: 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON) but only when L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE?
-* Toggle bleed with 0/1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON)
+* Master toggle: 0/`1 (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)`; check with `(L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON, Bool)`
+* Press start: `1 (>L:A32NX_OVHD_APU_START_PB_IS_ON`) but only when `(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool)`
+* Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
