@@ -9,7 +9,42 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1/*, Size = 16*/)]
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct LVarData
+    {
+/*	char varName[52];
+    int32_t id; // One of LVAR_POLL_* on input; -1 on output if variable not defined.
+    double value; // On request, sets the "current" value.
+SimConnect_MapClientDataNameToID(g_hSimConnect, "Controlzmo.LVarRequest", CLIENT_DATA_ID_LVAR_REQUEST);
+SimConnect_MapClientDataNameToID(g_hSimConnect, "", CLIENT_DATA_ID_LVAR_RESPONSE);*/
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
+        [ClientVar(0.5f)]
+        public string name;
+        [ClientVar(0.5f)]
+        [MarshalAs(UnmanagedType.I4)]
+        public Int32 id;
+        [ClientVar(0.5f)]
+        [MarshalAs(UnmanagedType.R8)]
+        public double value;
+    };
+
+    [Component]
+    public class LVarListener : DataListener<LVarData>, IRequestDataOnOpen
+    {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
+        private const string ClientDataName = "Controlzmo.LVarResponse";
+
+        public string GetClientDataName() => ClientDataName;
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => (SIMCONNECT_PERIOD)SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET;
+
+        public override void Process(ExtendedSimConnect simConnect, LVarData data)
+        {
+            System.Console.Error.WriteLine($"LVar {data.name} ({data.id}) = {data.value}");
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LocalVarsData
     {
         [MarshalAs(UnmanagedType.I2)]
