@@ -67,4 +67,6 @@ namespace Controlzmo.SimConnectzmo
             System.Console.Error.WriteLine($"LVar {data.name} ({data.id}) = {data.value}");
         }
     }
+
+    //TODO: new classes for listening for specific LVars, plugged in to request and deal with responses.
 }
