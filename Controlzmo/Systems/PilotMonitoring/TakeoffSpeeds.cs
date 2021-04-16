@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
+//TODO: how do we get the "thrust set" call?
+//TODO: "positive climb" would also be a PM call in some SOPs - consider go around too
+//TODO: "ten thousand" call - in both directions
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -23,6 +26,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
+        bool? wasAbove100 = null;
         bool? wasAboveV1 = null;
         bool? wasAboveVR = null;
 
@@ -37,7 +41,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = null;
+            wasAirspeedAlive = wasAbove80 = wasAbove100 = wasAboveV1 = wasAboveVR = null;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
@@ -47,6 +51,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
             setAndCallIfRequired(31, data.kias, "airspeed alive", ref wasAirspeedAlive);
             setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
+            setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
             setAndCallIfRequired(localVarsListener.localVars.v1, data.kias, "vee one", ref wasAboveV1);
             setAndCallIfRequired(localVarsListener.localVars.vr, data.kias, "rotate", ref wasAboveVR);
         }
