@@ -51,7 +51,7 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         private const string DownlinkClientDataName = "theomessin.jetbridge.uplink";
 
-        private readonly Random random = new Random();
+        private readonly Random random = new();
 
         public string GetClientDataName() => DownlinkClientDataName;
 
