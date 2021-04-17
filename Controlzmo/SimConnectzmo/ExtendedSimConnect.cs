@@ -35,7 +35,7 @@ namespace SimConnectzmo
         public UInt32 GetLastSentPacketID()
         {
             UInt32 dwSendID;
-            SimConnect_GetLastSentPacketID(hSimConnect, out dwSendID);
+            _= SimConnect_GetLastSentPacketID(hSimConnect, out dwSendID);
             return dwSendID;
         }
 
