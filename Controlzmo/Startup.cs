@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SimConnectzmo;
 
 namespace Controlzmo
 {
@@ -58,7 +59,7 @@ namespace Controlzmo
                 endpoints.MapHub<ControlzmoHub>("/hub/connectzmo");
             });
 
-            app.ApplicationServices.GetRequiredService<SimConnectzmo.Adapter>();
+            app.ApplicationServices.GetRequiredService<Adapter>();
         }
     }
 }
