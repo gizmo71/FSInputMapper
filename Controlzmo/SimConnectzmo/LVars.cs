@@ -8,8 +8,8 @@ namespace Controlzmo.SimConnectzmo
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LVarDataRequest
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
         [ClientVar(0.5f)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
         public string name;
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I4)]
@@ -41,8 +41,8 @@ namespace Controlzmo.SimConnectzmo
             int32_t id; // One of LVAR_POLL_* on input; -1 on output if variable not defined.
             double value; // On request, sets the "current" value.
         SimConnect_MapClientDataNameToID(g_hSimConnect, "Controlzmo.LVarRequest", CLIENT_DATA_ID_LVAR_REQUEST);*/
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
         [ClientVar(0.5f)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
         public string name;
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I4)]
@@ -53,7 +53,7 @@ namespace Controlzmo.SimConnectzmo
     };
 
     [Component]
-    public class LVarListener : DataListener<LVarDataResponse>, IRequestDataOnOpen
+    public class LVarListener : DataListener<LVarDataResponse>, IRequestDataOnOpen, IClientData
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string ClientDataName = "Controlzmo.LVarResponse";
