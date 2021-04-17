@@ -174,6 +174,12 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
                     clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT16;
                 else if (marshallAs.Value == UnmanagedType.I4 || marshallAs.Value == UnmanagedType.U4)
                     clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT32;
+                else if (marshallAs.Value == UnmanagedType.I8 || marshallAs.Value == UnmanagedType.U8)
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_INT64;
+                else if (marshallAs.Value == UnmanagedType.R4)
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT32;
+                else if (marshallAs.Value == UnmanagedType.R8)
+                    clientTypeOrSize = SimConnect.SIMCONNECT_CLIENTDATATYPE_FLOAT64;
                 else if (marshallAs.Value == UnmanagedType.ByValTStr)
                     clientTypeOrSize = (uint)marshallAs.SizeConst;
                 else
