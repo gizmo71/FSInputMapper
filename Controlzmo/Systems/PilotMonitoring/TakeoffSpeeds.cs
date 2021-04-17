@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -23,6 +24,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly LocalVarsListener localVarsListener;
+        private readonly LVarRequester lvarRequester;
 
         bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
@@ -34,6 +36,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
+            lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
  
@@ -42,6 +45,16 @@ namespace Controlzmo.Systems.PilotMonitoring
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
             wasAirspeedAlive = wasAbove80 = wasAbove100 = wasAboveV1 = wasAboveVR = null;
+            if (isOnGround)
+            {
+                //TODO: maybe only request when airspeed comes alive, and just once?
+                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 4000, -1.0);
+                lvarRequester.Request(simConnect, "AIRLINER_VR_SPEED", 4000, -1.0);
+            }
+            else
+            {
+                //TODO: cancel requesting
+            }
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)

@@ -20,7 +20,7 @@ namespace Controlzmo.SimConnectzmo
     };
 
     [Component]
-    public class LVarSender : DataSender<LVarDataRequest>, IClientData
+    public class LVarRequester : DataSender<LVarDataRequest>, IClientData
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         private const string ClientDataName = "Controlzmo.LVarRequest";
