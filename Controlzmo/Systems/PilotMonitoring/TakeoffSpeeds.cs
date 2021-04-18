@@ -48,8 +48,13 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isOnGround)
             {
                 //TODO: maybe only request when airspeed comes alive, and just once?
-                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 4000, -1.0);
                 lvarRequester.Request(simConnect, "AIRLINER_VR_SPEED", 4000, -1.0);
+                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 1000, -1.0);
+                lvarRequester.Request(simConnect, "XMLVAR_Autobrakes_Level", 167, -1.0);
+                lvarRequester.Request(simConnect, "XMLVAR_A320_WeatherRadar_Sys", 4000, -1.0);
+                lvarRequester.Request(simConnect, "A32NX_SWITCH_RADAR_PWS_Position",4000, -1.0);
+                lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Position", 4000, -1.0);
+                lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Traffic_Position", 4000, -1.0);
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -58,13 +59,20 @@ namespace Controlzmo.SimConnectzmo
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string ClientDataName = "Controlzmo.LVarResponse";
 
+        private readonly ILogger<LVarListener> _logging;
+
+        public LVarListener(ILogger<LVarListener> logging)
+        {
+            _logging = logging;
+        }
+
         public string GetClientDataName() => ClientDataName;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => (SIMCONNECT_PERIOD)SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET;
 
         public override void Process(ExtendedSimConnect simConnect, LVarDataResponse data)
         {
-            System.Console.Error.WriteLine($"LVar {data.name} ({data.id}) = {data.value}");
+            _logging.LogInformation($"LVar {data.name} ({data.id}) = {data.value}");
         }
     }
 
