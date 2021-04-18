@@ -37,6 +37,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
             lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
+            lvarRequester.LVarUpdated += UpdateLVar;
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
  
@@ -48,9 +49,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isOnGround)
             {
                 //TODO: maybe only request when airspeed comes alive, and just once?
+                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 4000, -1.0);
                 lvarRequester.Request(simConnect, "AIRLINER_VR_SPEED", 4000, -1.0);
-                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 1000, -1.0);
-                lvarRequester.Request(simConnect, "XMLVAR_Autobrakes_Level", 167, -1.0);
+                lvarRequester.Request(simConnect, "XMLVAR_Autobrakes_Level", 4000, -1.0);
                 lvarRequester.Request(simConnect, "XMLVAR_A320_WeatherRadar_Sys", 4000, -1.0);
                 lvarRequester.Request(simConnect, "A32NX_SWITCH_RADAR_PWS_Position",4000, -1.0);
                 lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Position", 4000, -1.0);
@@ -60,6 +61,11 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 //TODO: cancel requesting
             }
+        }
+
+        private void UpdateLVar(string name, double? newValue)
+        {
+System.Console.Error.WriteLine($"Updated LVar to TakeoffSpeeds: {name} = {newValue}");
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)

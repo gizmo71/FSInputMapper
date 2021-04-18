@@ -26,6 +26,9 @@ namespace Controlzmo.SimConnectzmo
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         private const string ClientDataName = "Controlzmo.LVarRequest";
 
+        public delegate void LVarUpdatedHandler(string name, double? _);
+        public LVarUpdatedHandler? LVarUpdated;
+
         public string GetClientDataName() => ClientDataName;
 
         public void Request(ExtendedSimConnect simConnect, string name, int milliseconds, double value)
@@ -59,11 +62,13 @@ namespace Controlzmo.SimConnectzmo
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string ClientDataName = "Controlzmo.LVarResponse";
 
-        private readonly ILogger<LVarListener> _logging;
+        private readonly ILogger<LVarListener> logging;
+        private readonly LVarRequester requester;
 
-        public LVarListener(ILogger<LVarListener> logging)
+        public LVarListener(ILogger<LVarListener> logging, LVarRequester requester)
         {
-            _logging = logging;
+            this.logging = logging;
+            this.requester = requester;
         }
 
         public string GetClientDataName() => ClientDataName;
@@ -72,7 +77,9 @@ namespace Controlzmo.SimConnectzmo
 
         public override void Process(ExtendedSimConnect simConnect, LVarDataResponse data)
         {
-            _logging.LogInformation($"LVar {data.name} ({data.id}) = {data.value}");
+            logging.LogInformation($"LVar {data.name} ({data.id}) = {data.value}");
+            if (requester.LVarUpdated != null)
+                requester.LVarUpdated(data.name, data.id == -1 ? null : data.value);
         }
     }
 
