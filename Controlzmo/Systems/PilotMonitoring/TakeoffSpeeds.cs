@@ -65,9 +65,9 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
 //System.Console.Error.WriteLine($"Takeoff: KIAS {data.kias}, V1/VR {localVarsListener.localVars.v1}/{localVarsListener.localVars.vr}");
-            if (data.kias < 30)
+            if (data.kias < 39)
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            setAndCallIfRequired(31, data.kias, "airspeed alive", ref wasAirspeedAlive);
+            setAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive);
             setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
             setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
             setAndCallIfRequired(localVarsListener.localVars.v1, data.kias, "vee one", ref wasAboveV1);
