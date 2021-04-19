@@ -30,6 +30,9 @@ Other useful things?
 * `L:XMLVAR_COM1_Volume_VHF_C` (starts at 0 but suspect that it does now't and COM2 is actually 'owning' the in-game volume)
 * `L:XMLVAR_COM_Transmit_Channel` (1, 2 or 3)
 
+`A32NX_FWC_FLIGHT_PHASE` isn't 100% reliable; goes through 3 and 4 on the first run, but sometimes a second takeoff run goes straight from 2 to 8, especially if using FLEX.
+See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
+
 Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INPUT CONTROL` in air.
 
 Things from takeoff/after landing:
