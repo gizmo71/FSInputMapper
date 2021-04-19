@@ -22,9 +22,14 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class TakeOffListener : DataListener<TakeOffData>
     {
+        private const string LVar_v1Speed = "AIRLINER_V1_SPEED";
+        private const string LVar_vrSpeed = "AIRLINER_VR_SPEED";
+
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly LocalVarsListener localVarsListener;
         private readonly LVarRequester lvarRequester;
+
+        Int16 v1 = -1;
+        Int16 vr = -1;
 
         bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
@@ -35,7 +40,6 @@ namespace Controlzmo.Systems.PilotMonitoring
         public TakeOffListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
             lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
             lvarRequester.LVarUpdated += UpdateLVar;
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
@@ -46,25 +50,15 @@ namespace Controlzmo.Systems.PilotMonitoring
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
             wasAirspeedAlive = wasAbove80 = wasAbove100 = wasAboveV1 = wasAboveVR = null;
-            if (isOnGround)
-            {
-                //TODO: maybe only request when airspeed comes alive, and just once?
-                lvarRequester.Request(simConnect, "AIRLINER_V1_SPEED", 4000, -1.0);
-                lvarRequester.Request(simConnect, "AIRLINER_VR_SPEED", 4000, -1.0);
-                lvarRequester.Request(simConnect, "XMLVAR_A320_WeatherRadar_Sys", 4000, -1.0);
-                lvarRequester.Request(simConnect, "A32NX_SWITCH_RADAR_PWS_Position",4000, -1.0);
-                lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Position", 4000, -1.0);
-                lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Traffic_Position", 4000, -1.0);
-            }
-            else
-            {
-                //TODO: cancel requesting
-            }
         }
 
         private void UpdateLVar(string name, double? newValue)
         {
-System.Console.Error.WriteLine($"Updated LVar to TakeoffSpeeds: {name} = {newValue}");
+            if (name == LVar_v1Speed)
+                v1 = (Int16?)newValue ?? -1;
+            else if (name == LVar_vrSpeed)
+                vr = (Int16?)newValue ?? -1;
+System.Console.Error.WriteLine($"Updated LVar in TakeoffSpeeds: {name} = {newValue}; v1/vr now {v1}/{vr}");
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
@@ -72,20 +66,26 @@ System.Console.Error.WriteLine($"Updated LVar to TakeoffSpeeds: {name} = {newVal
 //System.Console.Error.WriteLine($"Takeoff: KIAS {data.kias}, V1/VR {localVarsListener.localVars.v1}/{localVarsListener.localVars.vr}");
             if (data.kias < 39)
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            setAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive);
+            if (setAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive))
+            {
+                lvarRequester.Request(simConnect, LVar_v1Speed, 0, -1.0);
+                lvarRequester.Request(simConnect, LVar_vrSpeed, 0, -1.0);
+            }
             setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
             setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
-            setAndCallIfRequired(localVarsListener.localVars.v1, data.kias, "vee one", ref wasAboveV1);
-            setAndCallIfRequired(localVarsListener.localVars.vr, data.kias, "rotate", ref wasAboveVR);
+            setAndCallIfRequired(v1, data.kias, "vee one", ref wasAboveV1);
+            setAndCallIfRequired(vr, data.kias, "rotate", ref wasAboveVR);
         }
 
-        private void setAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
+        private bool setAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
         {
             if (wasAbove == false && calledSpeed > 0 && actualSpeed >= calledSpeed)
             {
                 hubContext.Clients.All.Speak(call);
                 wasAbove = true;
+                return true;
             }
+            return false;
         }
     }
 }

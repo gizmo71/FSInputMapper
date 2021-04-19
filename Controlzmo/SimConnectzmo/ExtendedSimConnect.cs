@@ -15,6 +15,11 @@ namespace SimConnectzmo
     internal enum EVENT { }
     internal enum GROUP { JUST_MASKABLE = 666 }
 
+    internal interface IOnSimConnection
+    {
+        public void OnConnection(ExtendedSimConnect simConnect);
+    }
+
     public class ExtendedSimConnect : SimConnect
     {
         private static readonly IntPtr hWnd = IntPtr.Zero;
@@ -26,6 +31,7 @@ namespace SimConnectzmo
         private Dictionary<IDataListener, REQUEST>? typeToRequest;
         private Dictionary<IEvent, EVENT>? eventToEnum;
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
+        private IEnumerable<IOnSimConnection>? onConnectionHandlers;
 
         // https://www.fsdeveloper.com/forum/threads/simconnect-getlastsentpacketid-for-managed-code.438397/
         [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -88,6 +94,8 @@ namespace SimConnectzmo
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
+            onConnectionHandlers = serviceProvider.GetServices<IOnSimConnection>();
+
             return this;
         }
 
@@ -110,6 +118,10 @@ namespace SimConnectzmo
                 // The above is an attempt to get the below to work when a web client connects after SimConnect already running.
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
             }
+
+            //TODO: can/should we convert the above into the below?
+            foreach (var handler in onConnectionHandlers!)
+                handler.OnConnection(this);
         }
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
