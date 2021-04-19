@@ -55,13 +55,10 @@ namespace Controlzmo.Systems.PilotMonitoring
                 lvarRequester.Request(simConnect, "A32NX_SWITCH_RADAR_PWS_Position",4000, -1.0);
                 lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Position", 4000, -1.0);
                 lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Traffic_Position", 4000, -1.0);
-lvarRequester.Request(simConnect, "XMLVAR_Autobrakes_Level", 0, -1.0);
             }
             else
             {
                 //TODO: cancel requesting
-                //TODO: move to landing thingy
-                lvarRequester.Request(simConnect, "XMLVAR_Autobrakes_Level", 4000, -1.0);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -29,9 +30,12 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class LandingListener : DataListener<LandingData>
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly LocalVarsListener localVarsListener;
+        private const string LVar_AutobrakesLevel = "XMLVAR_Autobrakes_Level";
 
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly LVarRequester lvarRequester;
+
+        private int autobrakeLevel = 0;
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
@@ -39,8 +43,17 @@ namespace Controlzmo.Systems.PilotMonitoring
         public LandingListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            localVarsListener = serviceProvider.GetRequiredService<LocalVarsListener>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
+            lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
+            lvarRequester.LVarUpdated += UpdateLVar;
+        }
+
+        private void UpdateLVar(string name, double? newValue)
+        {
+            if (name == LVar_AutobrakesLevel && newValue != null) {
+                autobrakeLevel = (int)newValue!;
+System.Console.Error.WriteLine($"Autobrake level reported via LVar as {autobrakeLevel}");
+            }
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -55,11 +68,15 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-//System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
-            if (wasDecel == null && data.kias >= 80) wasDecel = false;
-            if (wasDecel == false)
+            //System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
+            if (wasDecel == null && data.kias >= 80)
             {
-                var requiredDecel = localVarsListener.localVars.autobrake * -2;
+                lvarRequester.Request(simConnect, LVar_AutobrakesLevel, 0, 0.0);
+                wasDecel = false;
+            }
+            if (wasDecel == false && autobrakeLevel > 0)
+            {
+                var requiredDecel = autobrakeLevel * -2;
                 bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
                 if (isDecel)
                 {
