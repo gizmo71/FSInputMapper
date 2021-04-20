@@ -8,20 +8,9 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <table id="tabs">
-    <tr>
-        <th>
-            Select:
-            <ul>
-                <li><a href="#tabs-lights">Lights<br/>Radar<br />TCAS</a></li>
-                <li><a href="#tabs-radio">Radio</a></li>
-                <li><a href="#tabs-experiment">Experiment</a></li>
-            </ul>
-        </th>
-        <td style="width: 100%">
-            <main role="main" class="pb-3">@RenderBody()</main>
-        </td>
-    </tr></table>
+    <div style="width: 100%">
+        <main role="main" class="pb-3">@RenderBody()</main>
+    </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

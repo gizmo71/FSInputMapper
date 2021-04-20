@@ -3,7 +3,7 @@
     ViewData["Title"] = "Home page";
 }
 
-<table style="font-size: larger;" id="tabs-lights">
+<table style="font-size: larger;">
     <tr>
         <td><input type="checkbox" id="lightsStrobe" class="sendBoolean" disabled /></td>
         <th><label for="lightsStrobe">Strobes</label></th>
@@ -53,37 +53,32 @@
     </tr>
 </table>
 
-<!-- label for="frottle">Frottle</!--label><input id="frottle" disabled /-->
-
-<div id="tabs-radio">
-    <div>
-        <input type="button" id="com1rxToggle" value="Rx" class="sendButton" />
-        <label for="com1standby">COM1</label>
-        <input id="com1active" readonly size="7" />
-        <input type="button" id="com1swap" value="↔" class="sendButton" />
-        <input id="com1standby" is="com-frequency" class="sendText" />
-    </div>
-    <div>
-        <input type="button" id="com2rxToggle" value="Rx" class="sendButton" />
-        <label for="com2standby">COM2</label>
-        <input id="com2active" readonly size="7" />
-        <input type="button" id="com2swap" value="↔" class="sendButton" />
-        <input id="com2standby" is="com-frequency" class="sendText" />
-    </div>
-    <!-- div>
-        <input type="button" id="com3rxToggle" value="Rx" class="sendButton" />
-        <label for="com3standby">COM3</label>
-        <input id="com3active" readonly size="7" />
-        <input type="button" id="com3swap" value="↔" class="sendButton" />
-        <input id="com3standby" type="number" size="7" min="118.0" max="136.975" step="0.005" pattern="1[1-3]\d\.\d(\d[05]?)?" class="sendText" />
-    </div-->
-    <div>
-        <label for="xpndrCode">Transponder Code</label>
-        <input id="xpndrCode" size="4" maxlength="4" class="sendText" />
-    </div>
+<div style="float: left">
+    <input type="button" id="com1rxToggle" value="Rx" class="sendButton" />
+    <label for="com1standby">COM1</label>
+    <input id="com1active" readonly size="7" />
+    <input type="button" id="com1swap" value="↔" class="sendButton" />
+    <input id="com1standby" is="com-frequency" class="sendText" />
+<br/>
+    <input type="button" id="com2rxToggle" value="Rx" class="sendButton" />
+    <label for="com2standby">COM2</label>
+    <input id="com2active" readonly size="7" />
+    <input type="button" id="com2swap" value="↔" class="sendButton" />
+    <input id="com2standby" is="com-frequency" class="sendText" />
+</div>
+<!-- div>
+    <input type="button" id="com3rxToggle" value="Rx" class="sendButton" />
+    <label for="com3standby">COM3</label>
+    <input id="com3active" readonly size="7" />
+    <input type="button" id="com3swap" value="↔" class="sendButton" />
+    <input id="com3standby" type="number" size="7" min="118.0" max="136.975" step="0.005" pattern="1[1-3]\d\.\d(\d[05]?)?" class="sendText" />
+</div-->
+<div style="float: right">
+    <label for="xpndrCode">Transponder Code</label>
+    <input id="xpndrCode" size="4" maxlength="4" class="sendText" />
 </div>
 
-<div id="tabs-experiment">
+<div style="clear: both">
     <b><label for="jetbridge">JetBridge</label></b>
     <br/><input id="jetbridge" maxlength="128" class="sendText" style="width: 100%" />
 </div>
