@@ -41,10 +41,6 @@ namespace Controlzmo.SimConnectzmo
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LVarDataResponse
     {
-        /*	char varName[52];
-            int32_t id; // One of LVAR_POLL_* on input; -1 on output if variable not defined.
-            double value; // On request, sets the "current" value.
-        SimConnect_MapClientDataNameToID(g_hSimConnect, "Controlzmo.LVarRequest", CLIENT_DATA_ID_LVAR_REQUEST);*/
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 52)]
         public string name;
