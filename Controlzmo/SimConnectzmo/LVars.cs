@@ -1,11 +1,42 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.SimConnectzmo
 {
+    public abstract class LVar
+    {
+        private readonly LVarRequester requester;
+
+        protected virtual double? Value { get; set; }
+
+        protected LVar(IServiceProvider serviceProvider)
+        {
+            requester = serviceProvider.GetRequiredService<LVarRequester>();
+            requester.LVarUpdated += Update;
+        }
+
+        protected abstract string LVarName();
+        protected abstract int Milliseconds();
+        protected abstract double Default();
+
+        public static implicit operator double?(LVar lVar) => lVar.Value;
+
+        public void Request(ExtendedSimConnect simConnect)
+        {
+            requester.Request(simConnect, LVarName(), Milliseconds(), Default());
+        }
+
+        private void Update(string name, double? newValue)
+        {
+            if (name == LVarName())
+                Value = newValue;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LVarDataRequest
     {
@@ -20,8 +51,9 @@ namespace Controlzmo.SimConnectzmo
         public double value;
     };
 
+    //TODO: don't refer to this except in this namespace...
     [Component]
-    public class LVarRequester : DataSender<LVarDataRequest>, IClientData
+    internal class LVarRequester : DataSender<LVarDataRequest>, IClientData
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
         private const string ClientDataName = "Controlzmo.LVarRequest";
@@ -53,7 +85,7 @@ namespace Controlzmo.SimConnectzmo
     };
 
     [Component]
-    public class LVarListener : DataListener<LVarDataResponse>, IRequestDataOnOpen, IClientData
+    internal class LVarListener : DataListener<LVarDataResponse>, IRequestDataOnOpen, IClientData
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string ClientDataName = "Controlzmo.LVarResponse";

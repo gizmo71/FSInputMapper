@@ -9,33 +9,25 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.Radar
 {
     [Component]
-    public class RadarSys : ISettable<string?>, IOnSimConnection
+    public class RadarSys : LVar, IOnSimConnection, ISettable<string?>
     {
-        private const string id = "radarSys";
-
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly LVarRequester lvarRequester;
 
-        public RadarSys(IServiceProvider sp)
+        public RadarSys(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            (lvarRequester = sp.GetRequiredService<LVarRequester>()).LVarUpdated += UpdateLVar;
+            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
+            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public string GetId() => id;
+        protected override string LVarName() => "XMLVAR_A320_WeatherRadar_Sys";
+        protected override int Milliseconds() => 4000;
+        protected override double Default() => -1.0;
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            lvarRequester.Request(simConnect, "XMLVAR_A320_WeatherRadar_Sys", 4000, -1.0);
-        }
+        public string GetId() => "radarSys";
 
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == "XMLVAR_A320_WeatherRadar_Sys")
-                hub.Clients.All.SetFromSim(id, newValue);
-        }
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
@@ -47,8 +39,6 @@ namespace Controlzmo.Systems.Radar
     [Component]
     public class PredictiveWindshearSys : ISettable<bool?>, IOnSimConnection
     {
-        private const string id = "predictiveWindshear";
-
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly LVarRequester lvarRequester;
@@ -60,7 +50,7 @@ namespace Controlzmo.Systems.Radar
             (lvarRequester = sp.GetRequiredService<LVarRequester>()).LVarUpdated += UpdateLVar;
         }
 
-        public string GetId() => id;
+        public string GetId() => "predictiveWindshear";
 
         public void OnConnection(ExtendedSimConnect simConnect)
         {
@@ -70,7 +60,7 @@ namespace Controlzmo.Systems.Radar
         private void UpdateLVar(string name, double? newValue)
         {
             if (name == "A32NX_SWITCH_RADAR_PWS_Position")
-                hub.Clients.All.SetFromSim(id, newValue);
+                hub.Clients.All.SetFromSim(GetId(), newValue);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)

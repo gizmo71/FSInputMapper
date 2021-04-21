@@ -10,6 +10,16 @@ using SimConnectzmo;
 //TODO: call "70 knots" during braking
 namespace Controlzmo.Systems.PilotMonitoring
 {
+    [Component]
+    public class AutobrakeSetting : LVar
+    {
+        public AutobrakeSetting(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "XMLVAR_Autobrakes_Level";
+        protected override int Milliseconds() => 0;
+        protected override double Default() => -1.0;
+    }
+
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
@@ -30,12 +40,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class LandingListener : DataListener<LandingData>
     {
-        private const string LVar_AutobrakesLevel = "XMLVAR_Autobrakes_Level";
-
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly LVarRequester lvarRequester;
+        private readonly AutobrakeSetting autobrakeSetting;
 
-        private int autobrakeLevel = 0;
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
@@ -44,16 +51,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-            lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
-            lvarRequester.LVarUpdated += UpdateLVar;
-        }
-
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == LVar_AutobrakesLevel && newValue != null) {
-                autobrakeLevel = (int)newValue!;
-System.Console.Error.WriteLine($"Autobrake level reported via LVar as {autobrakeLevel}");
-            }
+            autobrakeSetting = serviceProvider.GetRequiredService<AutobrakeSetting>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -68,15 +66,14 @@ System.Console.Error.WriteLine($"Autobrake level reported via LVar as {autobrake
 
         public override void Process(ExtendedSimConnect simConnect, LandingData data)
         {
-            //System.Console.Error.WriteLine($"Decel: was {wasDecel} rate {data.accelerationZ} kias {data.kias}");
             if (wasDecel == null && data.kias >= 80)
             {
-                lvarRequester.Request(simConnect, LVar_AutobrakesLevel, 0, 0.0);
+                autobrakeSetting.Request(simConnect);
                 wasDecel = false;
             }
-            if (wasDecel == false && autobrakeLevel > 0)
+            else if (wasDecel == false && autobrakeSetting > 0)
             {
-                var requiredDecel = autobrakeLevel * -2;
+                var requiredDecel = autobrakeSetting * -2;
                 bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
                 if (isDecel)
                 {
@@ -85,7 +82,6 @@ System.Console.Error.WriteLine($"Autobrake level reported via LVar as {autobrake
                 }
             }
 
-//System.Console.Error.WriteLine($"Spoilers: was {wasSpoilers} left {data.spoilersLeft} right {data.spoilersRight}");
             if (wasSpoilers == false)
             {
                 bool isSpoilers = data.spoilersLeft > MIN_SPOILER_DEPLOYMENT && data.spoilersRight > MIN_SPOILER_DEPLOYMENT;
@@ -96,7 +92,6 @@ System.Console.Error.WriteLine($"Autobrake level reported via LVar as {autobrake
                 }
             }
 
-//System.Console.Error.WriteLine($"Reversers: one {data.rev1} two {data.rev2}");
             if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
             if (wasRevGreen == false && data.rev1 > 0 && data.rev2 > 0)
             {
