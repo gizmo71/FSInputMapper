@@ -15,7 +15,7 @@ namespace SimConnectzmo
     internal enum EVENT { }
     internal enum GROUP { JUST_MASKABLE = 666 }
 
-    internal interface IOnSimConnection
+    public interface IOnSimConnection
     {
         public void OnConnection(ExtendedSimConnect simConnect);
     }
