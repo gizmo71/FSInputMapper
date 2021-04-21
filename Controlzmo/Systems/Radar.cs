@@ -32,41 +32,35 @@ namespace Controlzmo.Systems.Radar
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:XMLVAR_A320_WeatherRadar_Sys)");
+            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
         }
     }
 
     [Component]
-    public class PredictiveWindshearSys : ISettable<bool?>, IOnSimConnection
+    public class PredictiveWindshearSys : LVar, ISettable<bool?>, IOnSimConnection
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly LVarRequester lvarRequester;
 
-        public PredictiveWindshearSys(IServiceProvider sp)
+        public PredictiveWindshearSys(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            (lvarRequester = sp.GetRequiredService<LVarRequester>()).LVarUpdated += UpdateLVar;
+            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
+            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
+
+        protected override string LVarName() => "A32NX_SWITCH_RADAR_PWS_Position";
+        protected override int Milliseconds() => 4000;
+        protected override double Default() => -1.0;
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "predictiveWindshear";
 
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            lvarRequester.Request(simConnect, "A32NX_SWITCH_RADAR_PWS_Position", 4000, -1.0);
-        }
-
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == "A32NX_SWITCH_RADAR_PWS_Position")
-                hub.Clients.All.SetFromSim(GetId(), newValue);
-        }
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)
         {
             var value = isAuto == true ? 1 : 0;
-            jetbridge.Execute(simConnect, $"{value} (>L:A32NX_SWITCH_RADAR_PWS_Position)");
+            jetbridge.Execute(simConnect, $"{value} (>L:{LVarName()})");
         }
     }
 }
