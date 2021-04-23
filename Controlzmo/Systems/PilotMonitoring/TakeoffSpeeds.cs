@@ -20,16 +20,29 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
+    public class V1Speed : LVar
+    {
+        public V1Speed(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "AIRLINER_V1_SPEED";
+        protected override int Milliseconds() => 0;
+        protected override double Default() => -1.0;
+    }
+
+    [Component]
+    public class VrSpeed : LVar
+    {
+        public VrSpeed(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "AIRLINER_VR_SPEED";
+        protected override int Milliseconds() => 0;
+        protected override double Default() => -1.0;
+    }
+
+    [Component]
     public class TakeOffListener : DataListener<TakeOffData>
     {
-        private const string LVar_v1Speed = "AIRLINER_V1_SPEED";
-        private const string LVar_vrSpeed = "AIRLINER_VR_SPEED";
-
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly LVarRequester lvarRequester;
-
-        Int16 v1 = -1;
-        Int16 vr = -1;
+        private readonly V1Speed v1Speed;
+        private readonly VrSpeed vrSpeed;
 
         bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
@@ -40,8 +53,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public TakeOffListener(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            lvarRequester = serviceProvider.GetRequiredService<LVarRequester>();
-            lvarRequester.LVarUpdated += UpdateLVar;
+            v1Speed = serviceProvider.GetRequiredService<V1Speed>();
+            vrSpeed = serviceProvider.GetRequiredService<VrSpeed>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
  
@@ -52,29 +65,19 @@ namespace Controlzmo.Systems.PilotMonitoring
             wasAirspeedAlive = wasAbove80 = wasAbove100 = wasAboveV1 = wasAboveVR = null;
         }
 
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == LVar_v1Speed)
-                v1 = (Int16?)newValue ?? -1;
-            else if (name == LVar_vrSpeed)
-                vr = (Int16?)newValue ?? -1;
-System.Console.Error.WriteLine($"Updated LVar in TakeoffSpeeds: {name} = {newValue}; v1/vr now {v1}/{vr}");
-        }
-
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
-//System.Console.Error.WriteLine($"Takeoff: KIAS {data.kias}, V1/VR {localVarsListener.localVars.v1}/{localVarsListener.localVars.vr}");
             if (data.kias < 39)
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
             if (setAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive))
             {
-                lvarRequester.Request(simConnect, LVar_v1Speed, 0, -1.0);
-                lvarRequester.Request(simConnect, LVar_vrSpeed, 0, -1.0);
+                v1Speed.Request(simConnect);
+                vrSpeed.Request(simConnect);
             }
-            setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
-            setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
-            setAndCallIfRequired(v1, data.kias, "vee one", ref wasAboveV1);
-            setAndCallIfRequired(vr, data.kias, "rotate", ref wasAboveVR);
+            _ = setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
+            _ = setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
+            _ = setAndCallIfRequired((Int16?)v1Speed ?? 0, data.kias, "vee one", ref wasAboveV1);
+            _ = setAndCallIfRequired((Int16?)vrSpeed ?? 0, data.kias, "rotate", ref wasAboveVR);
         }
 
         private bool setAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
