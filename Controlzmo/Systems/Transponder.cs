@@ -71,74 +71,62 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TcasMode : ISettable<string?>, IOnSimConnection
+    public class TcasMode : LVar, IOnSimConnection, ISettable<string?>
     {
         private const string id = "tcasMode";
 
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly LVarRequester lvarRequester;
 
-        public TcasMode(IServiceProvider sp)
+        public TcasMode(IServiceProvider sp) : base(sp)
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            (lvarRequester = sp.GetRequiredService<LVarRequester>()).LVarUpdated += UpdateLVar;
         }
+
+        protected override string LVarName() => "A32NX_SWITCH_TCAS_Position";
+        protected override int Milliseconds() => 4000;
+        protected override double Default() => -1.0;
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => id;
 
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Position", 4000, -1.0);
-        }
-
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == "A32NX_SWITCH_TCAS_Position")
-                hub.Clients.All.SetFromSim(id, newValue);
-        }
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:A32NX_SWITCH_TCAS_Position)");
+            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
         }
     }
 
     [Component]
-    public class TcasTraffic : ISettable<string?>, IOnSimConnection
+    public class TcasTraffic : LVar, IOnSimConnection, ISettable<string?>
     {
         private const string id = "tcasTraffic";
 
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly LVarRequester lvarRequester;
 
-        public TcasTraffic(IServiceProvider sp)
+        public TcasTraffic(IServiceProvider sp) : base(sp)
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            (lvarRequester = sp.GetRequiredService<LVarRequester>()).LVarUpdated += UpdateLVar;
         }
+
+        protected override string LVarName() => "A32NX_SWITCH_TCAS_Traffic_Position";
+        protected override int Milliseconds() => 4000;
+        protected override double Default() => -1.0;
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => id;
 
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            lvarRequester.Request(simConnect, "A32NX_SWITCH_TCAS_Traffic_Position", 4000, -1.0);
-        }
-
-        private void UpdateLVar(string name, double? newValue)
-        {
-            if (name == "A32NX_SWITCH_TCAS_Traffic_Position")
-                hub.Clients.All.SetFromSim(id, newValue);
-        }
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:A32NX_SWITCH_TCAS_Traffic_Position)");
+            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
         }
     }
 }
