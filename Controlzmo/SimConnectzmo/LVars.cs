@@ -51,7 +51,6 @@ namespace Controlzmo.SimConnectzmo
         public double value;
     };
 
-    //TODO: don't refer to this except in this namespace...
     [Component]
     internal class LVarRequester : DataSender<LVarDataRequest>, IClientData
     {
