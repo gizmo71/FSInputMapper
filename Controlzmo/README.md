@@ -18,16 +18,9 @@ TODO
 TODO
 ----
 
-Would have to have a WASM module to send client events we could RX.
-* [simvars.md](https://github.com/flybywiresim/a32nx/blob/autopilot/docs/a320-simvars.md)
-* [a320-events.md](https://github.com/flybywiresim/a32nx/blob/autopilot/docs/a320-events.md)
-
 https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn.10)?redirectedfrom=MSDN#theinfix2postfixtool
 
 Other useful things?
-* `L:A32NX_AUTOPILOT_1_ACTIVE` (0/1) along with event `A32NX_FCU_AP_1/2_PUSH` (is it "H:"? doesn't seem to work in JetBridge)
-* `L:XMLVAR_COM1_Volume_VHF_C` (starts at 0 but suspect that it does now't and COM2 is actually 'owning' the in-game volume)
-* `L:XMLVAR_COM_Transmit_Channel` (1, 2 or 3)
 
 `A32NX_FWC_FLIGHT_PHASE` isn't 100% reliable; goes through 3 and 4 on the first run, but sometimes a second takeoff run goes straight from 2 to 8, especially if using FLEX.
 See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
