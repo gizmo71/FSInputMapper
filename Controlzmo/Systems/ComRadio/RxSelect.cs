@@ -21,14 +21,16 @@ namespace Controlzmo.Systems.ComRadio
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly Com2RxToggleEvent toggle;
 
         public Com2Rx(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            toggle = serviceProvider.GetRequiredService<Com2RxToggleEvent>();
         }
 
-        protected override string LVarName() => "XMLVAR_COM_1_VHF_C_Switch_Down";
+        protected override string LVarName() => "XMLVAR_COM_2_VHF_C_Switch_Down";
         protected override int Milliseconds() => 4000;
         protected override double Default() => -1.0;
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
@@ -39,7 +41,9 @@ namespace Controlzmo.Systems.ComRadio
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isReceiving)
         {
-            jetbridge.Execute(simConnect, $"{(isReceiving ? 1 : 0)} (>L:{LVarName()})");
+            var newSetting = isReceiving ? 1u : 0u;
+            jetbridge.Execute(simConnect, $"{newSetting} (>L:{LVarName()})");
+            simConnect.SendEvent(toggle, newSetting);
         }
     }
 }
