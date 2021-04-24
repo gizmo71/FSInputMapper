@@ -64,6 +64,8 @@ namespace Controlzmo.SimConnectzmo
 
         public void Request(ExtendedSimConnect simConnect, string name, int milliseconds, double value)
         {
+            if (milliseconds != 0 && milliseconds != 167 && milliseconds != 1000 && milliseconds != 4000)
+                throw new ArgumentException($"{milliseconds}ms not supported as checking interval");
             var data = new LVarDataRequest { name = name, milliseconds = milliseconds, value = value };
             simConnect.SendDataOnSimObject(data);
         }
