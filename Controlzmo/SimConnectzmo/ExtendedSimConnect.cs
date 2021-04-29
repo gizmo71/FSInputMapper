@@ -254,7 +254,7 @@ System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}:
                 .Single();
             if (group == null)
             {
-                group = (GROUP)SIMCONNECT_GROUP_PRIORITY_STANDARD;
+                group = (GROUP)SIMCONNECT_GROUP_PRIORITY_HIGHEST;
                 flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             }
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;

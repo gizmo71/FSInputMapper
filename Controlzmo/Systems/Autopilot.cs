@@ -66,10 +66,10 @@ namespace Controlzmo.Systems.Autopilot
 System.Console.Error.WriteLine($"AP On; AP1 {ap1Value} want? {ap1Active == 0.0}, AP2 {(double?)ap2Active} want? {ap2Active == 0.0}");
             if (ap1Value == 0.0)
                 simConnect.SendEvent(ap1Push);
-                //jetbridge.Execute(simConnect, "(>K:A32NX.FCU_AP_1_PUSH)");
+                //jetbridge.Execute(simConnect, $"(>K:{ap1Push.SimEvent()})");
             else if (ap2Active == 0.0)
                 simConnect.SendEvent(ap2Push);
-                //jetbridge.Execute(simConnect, "(>K:A32NX.FCU_AP_2_PUSH)");
+                //jetbridge.Execute(simConnect, $"(>K:{ap2Push.SimEvent()})");
             // For non-A32NX, resend normal event.
             simConnect.SendEvent(this);
         }
