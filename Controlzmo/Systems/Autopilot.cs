@@ -63,7 +63,6 @@ namespace Controlzmo.Systems.Autopilot
         public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             double? ap1Value = ap1Active;
-System.Console.Error.WriteLine($"AP On; AP1 {ap1Value} want? {ap1Active == 0.0}, AP2 {(double?)ap2Active} want? {ap2Active == 0.0}");
             if (ap1Value == 0.0)
                 simConnect.SendEvent(ap1Push);
             else if (ap2Active == 0.0)
