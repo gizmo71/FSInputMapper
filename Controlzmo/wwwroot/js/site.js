@@ -53,24 +53,30 @@ connection.on("Speak", function (text) {
 connection.start().then(function () {
     // Called when connection established - may want to disable things until this is received.
     connection.invoke("SendAll").catch(errorHandler);
-    $(".sendBoolean").on("change", function (event) {
+    $(".sendBoolean").on("change", function(event) {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
-    $(".sendText").on("change", function (event) {
+    function sendTextIfValid(event) {
         if (event.target.reportValidity()) {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         }
+    }
+    $(".sendText").on("change", function(event) {
+        sendTextIfValid(event);
         event.preventDefault();
     });
-    $(".sendButton").on("click", function (event) {
+    $(".clickText").on("click", function(event) {
+        var label = $("label[for='" + event.target.id + "']").text();
+        var newValue = window.prompt(label, event.target.value);
+        if (newValue) {
+            event.target.value = newValue;
+            sendTextIfValid(event);
+        }
+        event.preventDefault();
+    });
+    $(".sendButton").on("click", function(event) {
         connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         event.preventDefault();
     });
-    /*$("#frottle").on("keypress", function (event) {
-        if (event.which == 13) {
-            connection.invoke("SetFrottle", Number.parseInt(event.target.value)).catch(errorHandler);
-            event.preventDefault();
-        }
-    });*/
 }).catch(errorHandler);
