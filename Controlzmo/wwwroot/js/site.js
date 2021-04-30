@@ -57,13 +57,10 @@ connection.start().then(function () {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
-    function sendTextIfValid(event) {
+    $(".sendText").on("change", function(event) {
         if (event.target.reportValidity()) {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         }
-    }
-    $(".sendText").on("change", function(event) {
-        sendTextIfValid(event);
         event.preventDefault();
     });
     $(".clickText").on("click", function(event) {
@@ -71,7 +68,7 @@ connection.start().then(function () {
         var newValue = window.prompt(label, event.target.value);
         if (newValue) {
             event.target.value = newValue;
-            sendTextIfValid(event);
+            $(event.target).blur();
         }
         event.preventDefault();
     });
