@@ -9,7 +9,6 @@ using SimConnectzmo;
 
 //TODO: how do we get the "thrust set" call?
 //TODO: "positive climb" would also be a PM call in some SOPs - consider go around too
-//TODO: "ten thousand" call - in both directions
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
