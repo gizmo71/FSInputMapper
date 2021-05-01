@@ -8,7 +8,6 @@ var noSleep = new NoSleep();
 document.addEventListener('click', function enableNoSleep() {
     document.removeEventListener('click', enableNoSleep, false);
     noSleep.enable();
-    testTextToSpeech(); // Cannot speak without a gesture.
 }, false);
 
 class ComFrequency extends HTMLInputElement {
@@ -57,7 +56,7 @@ connection.start().then(function () {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
-    $(".sendText").on("change", function(event) {
+    $(".sendText, .clickText").on("change", function(event) {
         if (event.target.reportValidity()) {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         }
@@ -66,10 +65,11 @@ connection.start().then(function () {
     $(".clickText").on("click", function(event) {
         var label = $("label[for='" + event.target.id + "']").text();
         var newValue = window.prompt(label, event.target.value);
-        if (newValue) {
+        if (newValue && event.target.value != newValue) {
             event.target.value = newValue;
-            $(event.target).blur();
+            $(event.target).trigger('change');
         }
+        $(event.target).blur();
         event.preventDefault();
     });
     $(".sendButton").on("click", function(event) {
