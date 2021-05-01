@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
-//TODO: call "70 knots" during braking
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [Component]
@@ -46,6 +45,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
+        bool? wasBelow70 = null;
 
         public LandingListener(IServiceProvider serviceProvider)
         {
@@ -58,7 +58,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasDecel = null;
+            wasDecel = wasBelow70 = null;
             wasSpoilers = isOnGround ? false : null;
         }
 
@@ -80,6 +80,16 @@ namespace Controlzmo.Systems.PilotMonitoring
                     hubContext.Clients.All.Speak("Decell!");
                     wasDecel = true;
                 }
+            }
+
+            if (wasBelow70 == null && data.kias >= 70)
+            {
+                wasBelow70 = false;
+            }
+            else if (wasBelow70 == false && data.kias < 70)
+            {
+                hubContext.Clients.All.Speak("seventy knots");
+                wasBelow70 = true;
             }
 
             if (wasSpoilers == false)
