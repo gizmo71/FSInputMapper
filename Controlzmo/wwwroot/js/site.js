@@ -56,21 +56,13 @@ connection.start().then(function () {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
         event.preventDefault();
     });
-    $(".sendText, .clickText").on("change", function(event) {
+    $(".sendText").on("change", function(event) {
         if (event.target.reportValidity()) {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         }
         event.preventDefault();
-    });
-    $(".clickText").on("click", function(event) {
-        var label = $("label[for='" + event.target.id + "']").text();
-        var newValue = window.prompt(label, event.target.value);
-        if (newValue && event.target.value != newValue) {
-            event.target.value = newValue;
-            $(event.target).trigger('change');
-        }
         $(event.target).blur();
-        event.preventDefault();
+        window.scrollTo(0, 0);
     });
     $(".sendButton").on("click", function(event) {
         connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
