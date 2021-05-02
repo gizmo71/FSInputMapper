@@ -17,7 +17,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class TenThousand : DataListener<TenThousandData>
+    public class TenThousand : DataListener<TenThousandData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
@@ -27,6 +27,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, TenThousandData data)
         {
@@ -38,6 +40,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                     hubContext.Clients.All.Speak("ten thousand");
             }
             previous = data.feetIndicated;
+Console.WriteLine($"Now {previous} feet");
         }
     }
 }
