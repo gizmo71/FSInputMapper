@@ -68,18 +68,18 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (data.kias < 39)
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            if (setAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive))
+            if (SetAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive))
             {
                 v1Speed.Request(simConnect);
                 vrSpeed.Request(simConnect);
             }
-            _ = setAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
-            _ = setAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
-            _ = setAndCallIfRequired((Int16?)v1Speed ?? 0, data.kias, "vee one", ref wasAboveV1);
-            _ = setAndCallIfRequired((Int16?)vrSpeed ?? 0, data.kias, "rotate", ref wasAboveVR);
+            _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
+            _ = SetAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
+            _ = SetAndCallIfRequired((Int16?)v1Speed ?? 0, data.kias, "vee one", ref wasAboveV1);
+            _ = SetAndCallIfRequired((Int16?)vrSpeed ?? 0, data.kias, "rotate", ref wasAboveVR);
         }
 
-        private bool setAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
+        private bool SetAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
         {
             if (wasAbove == false && calledSpeed > 0 && actualSpeed >= calledSpeed)
             {
