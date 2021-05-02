@@ -40,7 +40,6 @@ namespace Controlzmo.Systems.PilotMonitoring
                     hubContext.Clients.All.Speak("ten thousand");
             }
             previous = data.feetIndicated;
-Console.WriteLine($"Now {previous} feet");
         }
     }
 }
