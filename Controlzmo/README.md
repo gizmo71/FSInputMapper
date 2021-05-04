@@ -5,11 +5,6 @@ Designed mostly to enhance interaction with the default A320neo in MSFS (aka FSF
 
 When running, it will attempt to attached SimConnect to MSFS every couple of seconds until it succeeds, and should cope gracefully if it exits.
 
-Radio
------
-
-TODO
-
 Lights
 ------
 
