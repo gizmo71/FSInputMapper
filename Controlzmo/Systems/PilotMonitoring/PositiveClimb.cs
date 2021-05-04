@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -37,7 +36,6 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ClimbRateData
     {
-        // Documentation says "feet per second" - will per minute work?
         [SimVar("VERTICAL SPEED", "Feet per minute", SIMCONNECT_DATATYPE.INT32, 100.0f)]
         public Int32 feetPerMinute;
     };
@@ -60,7 +58,6 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, ClimbRateData data)
         {
-Console.WriteLine($"FPM {data.feetPerMinute}");
             if (data.feetPerMinute > 500)
             {
                 hubContext.Clients.All.Speak("positive climb");
