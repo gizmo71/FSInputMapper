@@ -21,8 +21,8 @@ namespace Controlzmo.Systems.Transponder
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct TransponderCodeData
     {
-        [SimVar("TRANSPONDER CODE:1", "BCD16", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 bcd16;
+        [SimVar("TRANSPONDER CODE:1", "BCO16", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 binaryCodedOctal;
     };
 
     [Component]
@@ -39,8 +39,7 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, TransponderCodeData data)
         {
-
-            hub.Clients.All.SetFromSim(TransponderCode.id, $"{data.bcd16:X}");
+            hub.Clients.All.SetFromSim(TransponderCode.id, $"{data.binaryCodedOctal:X}");
         }
     }
 
