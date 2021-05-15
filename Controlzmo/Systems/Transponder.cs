@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, TransponderCodeData data)
         {
-            hub.Clients.All.SetFromSim(TransponderCode.id, $"{data.binaryCodedOctal:X}");
+            hub.Clients.All.SetFromSim(TransponderCode.id, $"{data.binaryCodedOctal:X4}");
         }
     }
 
