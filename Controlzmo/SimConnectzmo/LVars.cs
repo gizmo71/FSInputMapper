@@ -81,7 +81,7 @@ namespace Controlzmo.SimConnectzmo
         [ClientVar(0.5f)]
         [MarshalAs(UnmanagedType.I4)]
         public Int32 id;
-        [ClientVar(0.5f)]
+        [ClientVar(0.000001f)]
         [MarshalAs(UnmanagedType.R8)]
         public double value;
     };
