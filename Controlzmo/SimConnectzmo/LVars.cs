@@ -107,8 +107,7 @@ namespace Controlzmo.SimConnectzmo
         public override void Process(ExtendedSimConnect simConnect, LVarDataResponse data)
         {
             logging.LogInformation($"LVar {data.name} ({data.id}) = {data.value}");
-            if (requester.LVarUpdated != null)
-                requester.LVarUpdated(data.name, data.id == -1 ? null : data.value);
+            requester.LVarUpdated?.Invoke(data.name, data.id == -1 ? null : data.value);
         }
     }
 
