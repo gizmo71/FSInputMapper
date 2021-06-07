@@ -62,6 +62,7 @@ namespace Controlzmo.SimConnectzmo
 
         public string GetClientDataName() => ClientDataName;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
         public void Request(ExtendedSimConnect simConnect, string name, int milliseconds, double value)
         {
             if (milliseconds != 0 && milliseconds != 167 && milliseconds != 1000 && milliseconds != 4000)
