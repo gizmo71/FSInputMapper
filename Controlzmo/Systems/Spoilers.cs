@@ -132,13 +132,11 @@ namespace Controlzmo.Systems.Spoilers
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
             _logger.LogTrace($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {(double?)armed} active {(double?)active} handle {(double?)handle}");
-            if (isA32nxActiveOrArmed()) data.armed = 1;
+            if ((double?)armed == 1.0f || (double?)active == 1.0f) data.armed = 1;
             var a32nxHandle = (double?)handle;
             if (a32nxHandle is not null) data.position = (int)(100f * a32nxHandle);
             _logger.LogTrace($"... processed data pos {data.position} armed {data.armed}");
         }
-
-        private bool isA32nxActiveOrArmed() => (double?)armed == 1.0f || (double?)active == 1.0f;
 
         protected abstract void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data);
     }
