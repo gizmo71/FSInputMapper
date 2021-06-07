@@ -118,7 +118,7 @@ namespace Controlzmo.Systems.Spoilers
         private readonly A32nxSpoilersActive active;
         private readonly A32nxSpoilerHandle handle;
         protected readonly SetSpoilerHandleEvent setEvent;
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
 
         protected AbstractSpoilerDataListener(IServiceProvider sp)
         {
@@ -131,11 +131,13 @@ namespace Controlzmo.Systems.Spoilers
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
-            _logger.LogTrace($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {(double?)armed} active {(double?)active} handle {(double?)handle}");
+            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {(double?)armed} active {(double?)active} handle {(double?)handle}");
             if ((double?)armed == 1.0f || (double?)active == 1.0f) data.armed = 1;
             var a32nxHandle = (double?)handle;
             if (a32nxHandle is not null) data.position = (int)(100f * a32nxHandle);
-            _logger.LogTrace($"... processed data pos {data.position} armed {data.armed}");
+            _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}");
+
+            ProcessSpoilerDemand(simConnect, data);
         }
 
         protected abstract void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data);
@@ -158,7 +160,7 @@ namespace Controlzmo.Systems.Spoilers
             if (data.armed != 0)
             {
                 toSend = armOffEvent;
-                newPosition = 0;
+                //newPosition = 0;
             }
             else if (data.position < 100)
             {
@@ -166,15 +168,18 @@ namespace Controlzmo.Systems.Spoilers
             }
 
             if (toSend != null)
+            {
+                _logger.LogDebug($"Now send {toSend}");
                 simConnect.SendEvent(toSend);
+            }
 
             if (newPosition != null)
             {
                 uint eventData = (uint)newPosition * 164;
-                eventData = Math.Min(eventData, 16383);
+                eventData = Math.Min(eventData, 16384u);
+                _logger.LogDebug($"Now demand position {newPosition} or as U {eventData}");
                 simConnect.SendEvent(setEvent, eventData);
             }
-
         }
     }
 
@@ -193,12 +198,14 @@ namespace Controlzmo.Systems.Spoilers
             if (data.position > 0)
             {
                 int newPosition = Math.Max(data.position - 25, 0);
-                uint eventData = (uint)newPosition * 164;
-                eventData = Math.Min(eventData, 16383);
+                uint eventData = (uint)newPosition * 164u;
+                eventData = Math.Min(eventData, 16384u);
+                _logger.LogDebug($"Now demand position {newPosition} or as U {eventData}");
                 simConnect.SendEvent(setEvent, eventData);
             }
             else if (data.armed == 0)
             {
+                _logger.LogDebug($"Now send {armOnEvent}");
                 simConnect.SendEvent(armOnEvent);
             }
         }
