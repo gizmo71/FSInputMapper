@@ -61,13 +61,15 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly ThrustLever1N1 lever1;
         private readonly Commanded1N1 commanded1;
         private readonly ThrustLimit limit;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
         public ThrustListener(IServiceProvider serviceProvider)
         {
-            this.mode1 = serviceProvider.GetRequiredService<AutothrustMode1>();
-            this.lever1 = serviceProvider.GetRequiredService<ThrustLever1N1>();
-            this.commanded1 = serviceProvider.GetRequiredService<Commanded1N1>();
-            this.limit = serviceProvider.GetRequiredService<ThrustLimit>();
+            mode1 = serviceProvider.GetRequiredService<AutothrustMode1>();
+            lever1 = serviceProvider.GetRequiredService<ThrustLever1N1>();
+            commanded1 = serviceProvider.GetRequiredService<Commanded1N1>();
+            limit = serviceProvider.GetRequiredService<ThrustLimit>();
+            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
 
@@ -75,10 +77,12 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
+hubContext.Clients.All.Speak((isOnGround ? "" : "not ") + "on ground in Thrust Set listener");
         }
 
         public override void Process(ExtendedSimConnect simConnect, ThrustSetData data)
         {
+hubContext.Clients.All.Speak("Thrust Set listener got data");
             // Currently the thrust limits are hard coded in the mod to 81% for FLEX and 85% for TOGA.
             System.Console.Error.WriteLine($"Thrust {data.engine1N1}/{data.engine1N2} m1 {(double?)mode1} l1 {(double?)lever1} c1 {(double?)commanded1} lim {(double?)limit}");
         }
