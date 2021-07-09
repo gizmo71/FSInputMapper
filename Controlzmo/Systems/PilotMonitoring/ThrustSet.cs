@@ -12,9 +12,10 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ThrustSetData
     {
-        [SimVar("ENG N1 RPM:1", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        // N1 doesn't appear to work, need A32NX_ENGINE_N1 instead. :-(
+        [SimVar("GENERAL ENG THROTTLE LEVER POSITION:1", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
         public Int32 engine1N1;
-        [SimVar("ENG N1 RPM:2", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        [SimVar("GENERAL ENG THROTTLE LEVER POSITION:2", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
         public Int32 engine1N2;
     };
 
@@ -82,9 +83,13 @@ hubContext.Clients.All.Speak((isOnGround ? "" : "not ") + "on ground in Thrust S
 
         public override void Process(ExtendedSimConnect simConnect, ThrustSetData data)
         {
+            mode1.Request(simConnect);
+            lever1.Request(simConnect);
+            commanded1.Request(simConnect);
+            limit.Request(simConnect);
 hubContext.Clients.All.Speak("Thrust Set listener got data");
             // Currently the thrust limits are hard coded in the mod to 81% for FLEX and 85% for TOGA.
-            System.Console.Error.WriteLine($"Thrust {data.engine1N1}/{data.engine1N2} m1 {(double?)mode1} l1 {(double?)lever1} c1 {(double?)commanded1} lim {(double?)limit}");
+System.Console.Error.WriteLine($"Thrust {data.engine1N1}/{data.engine1N2} m1 {(double?)mode1} l1 {(double?)lever1} c1 {(double?)commanded1} lim {(double?)limit}");
         }
     }
 }
