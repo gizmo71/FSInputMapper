@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -7,9 +8,11 @@ using SimConnectzmo;
 
 namespace Controlzmo.SimConnectzmo
 {
-    public abstract class LVar
+    public abstract class LVar : INotifyPropertyChanged
     {
         private readonly LVarRequester requester;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual double? Value { get; set; }
 
@@ -32,8 +35,11 @@ namespace Controlzmo.SimConnectzmo
 
         private void Update(string name, double? newValue)
         {
-            if (name == LVarName())
+            if (name == LVarName() && Value != newValue)
+            {
                 Value = newValue;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+            }
         }
     }
 
