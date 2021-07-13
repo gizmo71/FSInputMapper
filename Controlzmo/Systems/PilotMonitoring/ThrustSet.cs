@@ -1,95 +1,112 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct ThrustSetData
+    public abstract class SwitchableLVar : LVar
     {
-        // N1 doesn't appear to work, need A32NX_ENGINE_N1 instead. :-(
-        [SimVar("GENERAL ENG THROTTLE LEVER POSITION:1", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
-        public Int32 engine1N1;
-        [SimVar("GENERAL ENG THROTTLE LEVER POSITION:2", "Number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
-        public Int32 engine1N2;
-    };
+        private int period = 4000;
+        public SwitchableLVar(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override int Milliseconds() => period;
 
-    [Component]
-    public class ThrustLimit : LVar
-    {
-        public ThrustLimit(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOTHRUST_THRUST_LIMIT";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
-    }
-
-    [Component]
-    public class Commanded1N1 : LVar
-    {
-        public Commanded1N1(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOTHRUST_N1_COMMANDED:1";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
+        public void Request(ExtendedSimConnect simConnect, int period)
+        {
+            this.period = period;
+            Request(simConnect);
+        }
     }
 
     [Component]
     public class ThrustLever1N1 : LVar
     {
         public ThrustLever1N1(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOTHRUST_TLA_N1:1";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
-    }
-
-    [Component] // 1 (TOGA) or 3 (FLEX)
-    public class AutothrustMode1 : LVar
-    {
-        public AutothrustMode1(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOTHRUST_MODE:1";
-        protected override int Milliseconds() => 1000;
+        protected override string LVarName() => "A32NX_AUTOTHRUST_TLA_N1:1"; // Or A32NX_AUTOTHRUST_N1_COMMANDED?
+        protected override int Milliseconds() => 0;
         protected override double Default() => -1.0;
     }
 
     [Component]
-    public class ThrustListener : DataListener<ThrustSetData>
+    public class Engine1N1 : SwitchableLVar
     {
-        private readonly AutothrustMode1 mode1;
-        private readonly ThrustLever1N1 lever1;
-        private readonly Commanded1N1 commanded1;
-        private readonly ThrustLimit limit;
+        private readonly ThrustLever1N1 thrustLever1N1;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly SimConnectHolder scHolder;
 
-        public ThrustListener(IServiceProvider serviceProvider)
+        public Engine1N1(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            mode1 = serviceProvider.GetRequiredService<AutothrustMode1>();
-            lever1 = serviceProvider.GetRequiredService<ThrustLever1N1>();
-            commanded1 = serviceProvider.GetRequiredService<Commanded1N1>();
-            limit = serviceProvider.GetRequiredService<ThrustLimit>();
+            thrustLever1N1 = serviceProvider.GetRequiredService<ThrustLever1N1>();
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
+        }
+
+        protected override string LVarName() => "A32NX_ENGINE_N1:1";
+        protected override double Default() => -1.0;
+
+        protected override double? Value
+        {
+            set
+            {
+                if (base.Value != value)
+                {
+                    base.Value = value;
+                    if (Milliseconds() != 0 && thrustLever1N1 > 60.0 && value >= thrustLever1N1 - 0.1)
+                    {
+                        hubContext.Clients.All.Speak($"thrust set");
+                        Request(scHolder.SimConnect!, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    [Component]
+    public class AutothrustMode : SwitchableLVar, IOnSimConnection
+    {
+        private const double TOGA = 1;
+        private const double FLEX = 3;
+
+        private readonly ThrustLever1N1 thrustLever1N1;
+        private readonly Engine1N1 engine1N1;
+        private readonly SimConnectHolder scHolder;
+
+        public AutothrustMode(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+            thrustLever1N1 = serviceProvider.GetRequiredService<ThrustLever1N1>();
+            engine1N1 = serviceProvider.GetRequiredService<Engine1N1>();
+            scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
+
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
 
+        protected override string LVarName() => "A32NX_AUTOTHRUST_MODE";
+        protected override double Default() => -1.0;
+
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
-            simConnect.RequestDataOnSimObject(this, period);
-hubContext.Clients.All.Speak((isOnGround ? "" : "not ") + "on ground in Thrust Set listener");
+            Request(simConnect, isOnGround ? 1000 : 0);
         }
 
-        public override void Process(ExtendedSimConnect simConnect, ThrustSetData data)
+        public void OnConnection(ExtendedSimConnect simConnect)
         {
-            mode1.Request(simConnect);
-            lever1.Request(simConnect);
-            commanded1.Request(simConnect);
-            limit.Request(simConnect);
-hubContext.Clients.All.Speak("Thrust Set listener got data");
-            // Currently the thrust limits are hard coded in the mod to 81% for FLEX and 85% for TOGA.
-System.Console.Error.WriteLine($"Thrust {data.engine1N1}/{data.engine1N2} m1 {(double?)mode1} l1 {(double?)lever1} c1 {(double?)commanded1} lim {(double?)limit}");
+            // Do nothing, but get me created. This does not seem right compared to other things.
+        }
+
+        protected override double? Value
+        {
+            set
+            {
+                if (base.Value != value)
+                {
+                    base.Value = value;
+                    var sc = scHolder.SimConnect!;
+                    thrustLever1N1.Request(sc);
+                    engine1N1.Request(sc, (value == TOGA || value == FLEX) ? 1000 : 0);
+                }
+            }
         }
     }
 }
