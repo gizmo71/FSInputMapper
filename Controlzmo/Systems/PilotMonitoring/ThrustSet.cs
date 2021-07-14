@@ -22,12 +22,24 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
     }
 
-    [Component]
-    public class ThrustLever1N1 : SwitchableLVar
+    public abstract class ThrustLeverN1 : LVar
     {
-        public ThrustLever1N1(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOTHRUST_TLA_N1:1"; // Or A32NX_AUTOTHRUST_N1_COMMANDED?
+        private readonly int engineNumber;
+
+        public ThrustLeverN1(IServiceProvider serviceProvider, int engineNumber) : base(serviceProvider)
+        {
+            this.engineNumber = engineNumber;
+        }
+
+        protected override string LVarName() => "A32NX_AUTOTHRUST_TLA_N1:" + engineNumber; // Or A32NX_AUTOTHRUST_N1_COMMANDED?
+        protected override int Milliseconds() => 0;
         protected override double Default() => -1.0;
+    }
+
+    [Component]
+    public class ThrustLever1N1 : ThrustLeverN1
+    {
+        public ThrustLever1N1(IServiceProvider serviceProvider) : base(serviceProvider, 1) { }
     }
 
     [Component]
@@ -66,6 +78,9 @@ namespace Controlzmo.Systems.PilotMonitoring
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             Request(simConnect, isOnGround ? 1000 : 0);
+            if (!isOnGround) {
+                engine1N1.Request(simConnect, 0);
+            }
         }
 
         public void OnConnection(ExtendedSimConnect simConnect)
@@ -95,6 +110,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
+System.Console.WriteLine($"isCalled? {isCalled} IsTOP? {IsTakeOffPower()} TL1N1 {(double?)thrustLever1N1} E1N1 {(double?)engine1N1}");
             if (IsTakeOffPower())
             {
                 if (!isCalled && thrustLever1N1 > 75.0 && engine1N1 >= thrustLever1N1 - 0.1)
