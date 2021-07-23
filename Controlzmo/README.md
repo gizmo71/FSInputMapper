@@ -10,6 +10,12 @@ Lights
 
 TODO
 
+PM Calls
+--------
+
+* `A32NX_AUTOTHRUST_MODE_MESSAGE` value `3` means "LVR CLB" - have PM annunciate?
+* `A32NX_BRAKES_HOT`
+
 TODO
 ----
 
@@ -21,8 +27,6 @@ Other useful things?
 See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
 
 Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INPUT CONTROL` in air.
-
-`A32NX_AUTOTHRUST_MODE_MESSAGE` value `3` means "LVR CLB" - have PM annunciate?
 
 APU:
 * States: `L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE`, `L:A32NX_OVHD_APU_START_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
