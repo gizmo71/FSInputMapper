@@ -22,6 +22,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
+//TODO: replace with A32NX_AUTOBRAKES_DECEL_LIGHT
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 0.25f)]
         public double accelerationZ;
         [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
