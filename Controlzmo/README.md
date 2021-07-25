@@ -13,7 +13,7 @@ TODO
 PM Calls
 --------
 
-* Can we get F/S speed calls during climb?
+* Can we get F/S speed calls during climb? A32NX_VSPEEDS_F/A32NX_VSPEEDS_S are listed as for "approach".
 
 TODO
 ----
