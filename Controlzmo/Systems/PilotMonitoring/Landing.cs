@@ -18,11 +18,20 @@ namespace Controlzmo.Systems.PilotMonitoring
         protected override double Default() => -1.0;
     }
 
+    [Component]
+    public class AutobrakeDecelLight : LVar, IOnSimConnection
+    {
+        public AutobrakeDecelLight(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_AUTOBRAKES_DECEL_LIGHT";
+        protected override int Milliseconds() => 1000;
+        protected override double Default() => -1.0;
+
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+    }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
-//TODO: replace with A32NX_AUTOBRAKES_DECEL_LIGHT
         [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 0.25f)]
         public double accelerationZ;
         [SimVar("SPOILERS LEFT POSITION", "Percent Over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
@@ -42,6 +51,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly AutobrakeSetting autobrakeSetting;
+        private readonly AutobrakeDecelLight autobrakeDecelLight;
 
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
@@ -53,6 +63,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
             autobrakeSetting = serviceProvider.GetRequiredService<AutobrakeSetting>();
+            autobrakeDecelLight = serviceProvider.GetRequiredService<AutobrakeDecelLight>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -72,10 +83,9 @@ namespace Controlzmo.Systems.PilotMonitoring
                 autobrakeSetting.Request(simConnect);
                 wasDecel = false;
             }
-            else if (wasDecel == false && autobrakeSetting > 0)
+            else if (wasDecel == false)
             {
-                var requiredDecel = autobrakeSetting * -2;
-                bool isDecel = requiredDecel != 0 && requiredDecel > data.accelerationZ;
+                bool isDecel = (autobrakeSetting == 0 || autobrakeDecelLight != 0) && data.accelerationZ <= -1.5;
                 if (isDecel)
                 {
                     hubContext.Clients.All.Speak("Decell!");
