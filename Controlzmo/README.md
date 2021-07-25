@@ -13,8 +13,7 @@ TODO
 PM Calls
 --------
 
-* `A32NX_AUTOTHRUST_MODE_MESSAGE` value `3` means "LVR CLB" - have PM annunciate?
-* `A32NX_BRAKES_HOT`
+* Can we get F/S speed calls during climb?
 
 TODO
 ----
