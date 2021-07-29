@@ -10,7 +10,7 @@ Lights
 
 We should now be able to set the retraction state of the landing lights, and also do both independently, thought we would need to monitor LVars.
 
-Before that, though, we should split the landing lights into two so that there's no problem with the getting confused if the user turns one on without the other.
+We could also split the landing lights into two, but it would be good to still be able to set them both at once easily - perhaps a "set for takeoff" button, including the nose light?
 
 PM Calls
 --------

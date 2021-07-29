@@ -23,15 +23,17 @@ namespace Controlzmo.Systems.Lights
     };
 
     [Component]
-    public class LandingLightListener : DataListener<LandingLightData>, IRequestDataOnOpen
+    public class LandingLightSystem : DataListener<LandingLightData>, IRequestDataOnOpen, ISettable<bool>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger _logging;
+        private readonly JetBridgeSender sender;
 
-        public LandingLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<LandingLightListener> _logging)
+        public LandingLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<LandingLightSystem> _logging, JetBridgeSender sender)
         {
             this.hub = hub;
             this._logging = _logging;
+            this.sender = sender;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
@@ -39,27 +41,25 @@ namespace Controlzmo.Systems.Lights
         public override void Process(ExtendedSimConnect simConnect, LandingLightData data)
         {
             _logging.LogDebug($"Landing light switch? L {data.landingSwitchLeft} R {data.landingSwitchRight} states L {data.landingStateLeft} R {data.landingStateRight}");
-            hub.Clients.All.SetFromSim("lightsLanding", data.landingSwitchLeft == 1 || data.landingSwitchRight == 1);
+            oldLeft = data.landingSwitchLeft == 1;
+            oldRight = data.landingSwitchRight == 1;
+            hub.Clients.All.SetFromSim(GetId(), oldLeft || oldRight);
         }
-    }
 
-    [Component]
-    public class LandingLightsSetter : ISettable<bool>
-    {
-        private readonly JetBridgeSender sender;
-
-        public LandingLightsSetter(JetBridgeSender sender)
-        {
-            this.sender = sender;
-        }
+        bool oldLeft;
+        bool oldRight;
 
         public string GetId() => "lightsLanding";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            var inv = value ? 0 : 1;
-            sender.Execute(simConnect, $"{inv} (>L:LANDING_2_Retracted,·Bool) {inv} (>L:LANDING_3_Retracted,·Bool)"
-                + " 2 (>K:LANDING_LIGHTS_TOGGLE) 3 (>K:LANDING_LIGHTS_TOGGLE)");
+            var retracted = value ? 0 : 1;
+            var code = $"{retracted} (>L:LANDING_2_Retracted,·Bool) {retracted} (>L:LANDING_3_Retracted,·Bool)";
+            if (oldLeft != value)
+                code += " 2 (>K:LANDING_LIGHTS_TOGGLE)";
+            if (oldRight != value)
+                code += " 3 (>K:LANDING_LIGHTS_TOGGLE)";
+            sender.Execute(simConnect, code);
         }
     }
 }
