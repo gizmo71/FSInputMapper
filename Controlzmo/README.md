@@ -8,7 +8,9 @@ When running, it will attempt to attached SimConnect to MSFS every couple of sec
 Lights
 ------
 
-TODO
+We should now be able to set the retraction state of the landing lights, and also do both independently, thought we would need to monitor LVars.
+
+Before that, though, we should split the landing lights into two so that there's no problem with the getting confused if the user turns one on without the other.
 
 PM Calls
 --------

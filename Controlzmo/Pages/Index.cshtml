@@ -16,10 +16,16 @@
     </tr>
     <tr>
         <td><input type="checkbox" id="lightsTaxiTurnoff" class="sendBoolean" /></td>
-        <th><label for="lightsTaxiTurnoff">Turnoff/Taxi</label></th>
+        <th><label for="lightsRunwayTurnoff">Runway Turnoff</label></th>
         <td colspan="2"><input type="checkbox" id="lightsLanding" class="sendBoolean" /></td>
         <th colspan="2" title="Ensure On or Retract (not Off) in game"><label for="lightsLanding">Landing</label></th>
-        <td><select id="lightsNose"><option disabled selected>INOP</option></select></td>
+        <td>
+            <select id="lightsNose" class="sendText">
+                <option value="2">T.O.</option>
+                <option value="1">Taxi</option>
+                <option value="0">Off</option>
+            </select>
+        </td>
         <th><label for="lightsNose">Nose</label></th>
     </tr>
     <tr>
