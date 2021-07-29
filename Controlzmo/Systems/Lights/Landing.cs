@@ -47,6 +47,8 @@ namespace Controlzmo.Systems.Lights
         }
     }
 
+//SU5 has hosed all this :-( see https://forums.flightsimulator.com/t/axis-and-ohs-help-and-questions/196415/1089
+
     [Component]
     public class SetLandingLightsEvent : IEvent
     {
@@ -54,20 +56,28 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
+    public class LandingLightsToggleEvent : IEvent
+    {
+        public string SimEvent() => "LANDING_LIGHTS_TOGGLE";
+    }
+
+    [Component]
     public class LandingLightsSetter : ISettable<bool>
     {
-        private readonly SetLandingLightsEvent setLandingLightsEvent;
+        private readonly LandingLightsToggleEvent toggleEvent;
+        private readonly SetLandingLightsEvent setEvent;
 
-        public LandingLightsSetter(SetLandingLightsEvent setLandingLightsEvent)
+        public LandingLightsSetter(LandingLightsToggleEvent toggleEvent, SetLandingLightsEvent setEvent)
         {
-            this.setLandingLightsEvent = setLandingLightsEvent;
+            this.toggleEvent = toggleEvent;
+            this.setEvent = setEvent;
         }
 
         public string GetId() => "lightsLanding";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            simConnect.SendEvent(setLandingLightsEvent, 1u /*SU5 bug*/- (value ? 1u : 0u));
+            simConnect.SendEvent(value ? setEvent : toggleEvent, value ? 3u : 3u);
         }
     }
 }
