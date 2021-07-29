@@ -67,7 +67,7 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            simConnect.SendEvent(setLandingLightsEvent, value ? 1u : 0u);
+            simConnect.SendEvent(setLandingLightsEvent, 1u /*SU5 bug*/- (value ? 1u : 0u));
         }
     }
 }
