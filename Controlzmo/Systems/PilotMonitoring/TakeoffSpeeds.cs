@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
-//TODO: how do we get the "thrust set" call?
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
