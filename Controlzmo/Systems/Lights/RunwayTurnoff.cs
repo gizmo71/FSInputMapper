@@ -22,15 +22,17 @@ namespace Controlzmo.Systems.Lights
     };
 
     [Component]
-    public class RunwayTurnoffLightListener : DataListener<RunwayTurnoffLightData>, IRequestDataOnOpen
+    public class RunwayTurnoffLightSystem : DataListener<RunwayTurnoffLightData>, IRequestDataOnOpen, ISettable<bool>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger _logging;
+        private readonly JetBridgeSender sender;
 
-        public RunwayTurnoffLightListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<RunwayTurnoffLightListener> _logging)
+        public RunwayTurnoffLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<RunwayTurnoffLightSystem> _logging, JetBridgeSender sender)
         {
             this.hub = hub;
             this._logging = _logging;
+            this.sender = sender;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
@@ -38,18 +40,7 @@ namespace Controlzmo.Systems.Lights
         public override void Process(ExtendedSimConnect simConnect, RunwayTurnoffLightData data)
         {
             _logging.LogDebug($"Runway turnoff light state L {data.leftState} R {data.rightState}, switch L {data.leftSwitch}, switch R {data.rightSwitch}");
-            hub.Clients.All.SetFromSim("lightsRunwayTurnoff", data.leftSwitch == 1 || data.rightSwitch == 1);
-        }
-    }
-
-    [Component]
-    public class TaxiTurnoffLightsSetter : ISettable<bool>
-    {
-        private readonly JetBridgeSender sender;
-
-        public TaxiTurnoffLightsSetter(JetBridgeSender sender)
-        {
-            this.sender = sender;
+            hub.Clients.All.SetFromSim(GetId(), data.leftSwitch == 1 || data.rightSwitch == 1);
         }
 
         public string GetId() => "lightsRunwayTurnoff";
