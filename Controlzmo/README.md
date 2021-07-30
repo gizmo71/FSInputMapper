@@ -12,6 +12,8 @@ We should now be able to set the retraction state of the landing lights, and als
 
 We could also split the landing lights into two, but it would be good to still be able to set them both at once easily - perhaps a "set for takeoff" button, including the nose light?
 
+Strobes might be settable in all positions using K:LIGHT_POTENTIOMETER_24_SET.
+
 PM Calls
 --------
 
