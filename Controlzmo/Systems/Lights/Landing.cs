@@ -11,7 +11,7 @@ namespace Controlzmo.Systems.Lights
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingLightData
     {
-        // No way to detect "Off" position between On and Retract.
+        // No way to detect "Off" position between On and Retract without L:LANDING_[23]_Retracted.
         [SimVar("LIGHT LANDING:2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int landingSwitchLeft;
         [SimVar("LIGHT LANDING:3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
