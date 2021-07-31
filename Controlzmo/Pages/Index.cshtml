@@ -5,7 +5,13 @@
 
 <table style="font-size: larger;">
     <tr>
-        <td><input type="checkbox" id="lightsStrobe" class="sendBoolean" disabled /></td>
+        <td>
+            <select id="lightsStrobe" class="sendText">
+                <option value="on">On</option>
+                <option value="auto" disabled>Auto</option>
+                <option value="off">Off</option>
+            </select>
+        </td>
         <th><label for="lightsStrobe">Strobes</label></th>
         <td><input type="checkbox" id="lightsBeacon" class="sendBoolean" /></td>
         <th><label for="lightsBeacon">Beacon</label></th>
