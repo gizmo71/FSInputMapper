@@ -14,7 +14,7 @@ using SimConnectzmo;
   Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
   If Alt Rptg is On, only 4 will set it to On.
   If Alt Rptg is Off, only 3 will set it to On.
-* alt mode (`I:XMLVAR_ALT_MODE_REQUESTED`, `I:XMLVAR_Auto`, 1 if Auto, 0 if On or Stby - can't set at all)
+* Alt Rptg L:A32NX_SWITCH_ATC_ALT - can be set to 0 off or 1 on.
 * Ident? (local event `A320_Neo_ATC_BTN_IDENT`?) */
 namespace Controlzmo.Systems.Transponder
 {
