@@ -24,7 +24,12 @@ namespace Controlzmo.Systems.Lights
         protected override int Milliseconds() => 1000;
         protected override double Default() => -1;
 
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect)
+        {
+            //TODO: remove this hack when we find a better way to trigger on connection.
+            Request(simConnect, 0);
+            Request(simConnect);
+        }
 
         protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), (base.Value = value) switch { 0 => "on", 2 => "off", 1 => "auto", _ => null }); }
 

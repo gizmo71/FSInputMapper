@@ -30,7 +30,13 @@ namespace Controlzmo.SimConnectzmo
 
         public void Request(ExtendedSimConnect simConnect)
         {
-            requester.Request(simConnect, LVarName(), Milliseconds(), Default());
+            //TODO: remove this method and force the other one?
+            Request(simConnect, Milliseconds());
+        }
+
+        public void Request(ExtendedSimConnect simConnect, int milliseconds)
+        {
+            requester.Request(simConnect, LVarName(), milliseconds, Default());
         }
 
         private void Update(string name, double? newValue)
