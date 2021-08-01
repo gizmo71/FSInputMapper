@@ -14,7 +14,7 @@ namespace Controlzmo.Systems.Lights
         [SimVar("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public int strobeSwitch; // 0 (off) or 1 (on or auto)
         [SimVar("LIGHT POTENTIOMETER:24", "percent", SIMCONNECT_DATATYPE.INT32, 0.1f)]
-        public int lPot24; // 0 (auto) or 100 (not auto)
+        public int lPot24; // 0 (auto on ground) or 100 (not auto or in air)
     };
 
     [Component]
@@ -49,11 +49,12 @@ namespace Controlzmo.Systems.Lights
         {
             if (value == "auto")
             {
+                //TODO: find the LVar and set it appropriately
                 hub.Clients.All.Speak("I think the Strobe auto position is Borked");
                 return;
             }
             var set = value != "off" ? 1 : 0;
-            sender.Execute(simConnect, $" {set} (>K:STROBES_SET)"); //TODO: something like 666 (>K:LIGHT_POTENTIOMETER_24_SET)
+            sender.Execute(simConnect, $" {set} (>K:STROBES_SET)");
         }
     }
 }
