@@ -26,12 +26,7 @@ namespace Controlzmo.Systems.Lights
 
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        protected override double? Value { set => ProcessValue(base.Value = value); }
-
-        private void ProcessValue(double? value)
-        {
-            hub.Clients.All.SetFromSim(GetId(), value switch { 0 => "on", 2 => "off", 1 => "auto", _ => null });
-        }
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), (base.Value = value) switch { 0 => "on", 2 => "off", 1 => "auto", _ => null }); }
 
         public string GetId() => "lightsStrobe";
 
