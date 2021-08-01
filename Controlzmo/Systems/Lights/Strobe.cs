@@ -24,7 +24,7 @@ namespace Controlzmo.Systems.Lights
         protected override int Milliseconds() => 1000;
         protected override double Default() => -1;
 
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect); //TODO: won't trigger update if SimConnect already connected when UI demands initial state
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         protected override double? Value { set => ProcessValue(base.Value = value); }
 

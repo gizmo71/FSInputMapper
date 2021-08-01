@@ -20,6 +20,9 @@ PM Calls
 TODO
 ----
 
+Calling OnConnection won't trigger an LVar update if SimConnect is already connected when UI demands initial state.
+This is similar to the problem with "normal" data requiring an off/on flip.
+
 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 * https://gamepad-tester.com/for-developers	
 
