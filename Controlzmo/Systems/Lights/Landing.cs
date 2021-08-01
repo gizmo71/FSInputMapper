@@ -8,10 +8,11 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
+    /*TODO: replace all this with something which listens for LVars LIGHTING_LANDING_[23];
+      Values 2 retracted, 1 off, 0 on */
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingLightData
     {
-        // No way to detect "Off" position between On and Retract without L:LANDING_[23]_Retracted.
         [SimVar("LIGHT LANDING:2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int landingSwitchLeft;
         [SimVar("LIGHT LANDING:3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
