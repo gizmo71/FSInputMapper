@@ -1,60 +1,45 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct StrobeLightStateData
-    {
-        [SimVar("LIGHT STROBE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
-        public int strobeSwitch; // 0 (off) or 1 (on or auto)
-        [SimVar("LIGHT POTENTIOMETER:24", "percent", SIMCONNECT_DATATYPE.INT32, 0.1f)]
-        public int lPot24; // 0 (auto on ground) or 100 (not auto or in air)
-    };
-
     [Component]
-    public class StrobeLightSystem : DataListener<StrobeLightStateData>, IRequestDataOnOpen, ISettable<string?>
+    public class StrobeLightSystem : LVar, IOnSimConnection, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly ILogger _logging;
         private readonly JetBridgeSender sender;
 
-        public StrobeLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<StrobeLightSystem> _logging, JetBridgeSender sender)
+        public StrobeLightSystem(IServiceProvider sp) : base(sp)
         {
-            this.hub = hub;
-            this._logging = _logging;
-            this.sender = sender;
+            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            sender = sp.GetRequiredService<JetBridgeSender>();
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+        protected override string LVarName() => "LIGHTING_STROBE_1";
+        protected override int Milliseconds() => 1000;
+        protected override double Default() => -1;
 
-        public override void Process(ExtendedSimConnect simConnect, StrobeLightStateData data)
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect); //TODO: won't trigger update if SimConnect already connected when UI demands initial state
+
+        protected override double? Value { set => ProcessValue(base.Value = value); }
+
+        private void ProcessValue(double? value)
         {
-            var switchOn = data.strobeSwitch == 1;
-            var inAuto = data.lPot24 == 0 && switchOn;
-            _logging.LogDebug($"Strobes on? {switchOn} auto? {inAuto} (from pot24 {data.lPot24} switch {data.strobeSwitch})");
-            hub.Clients.All.SetFromSim(GetId(), inAuto ? "auto" : (switchOn ? "on" : "off"));
-            if (inAuto)
-                hub.Clients.All.SetFromSim(GetId(), null);
+            hub.Clients.All.SetFromSim(GetId(), value switch { 0 => "on", 2 => "off", 1 => "auto", _ => null });
         }
 
         public string GetId() => "lightsStrobe";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            if (value == "auto")
-            {
-                //TODO: find the LVar and set it appropriately
-                hub.Clients.All.Speak("I think the Strobe auto position is Borked");
-                return;
-            }
-            var set = value != "off" ? 1 : 0;
-            sender.Execute(simConnect, $" {set} (>K:STROBES_SET)");
+            var auto = value == "auto" ? 1 : 0;
+            var set = value == "off" ? 0 : 1;
+            sender.Execute(simConnect, $"{auto} (>L:STROBE_1_Auto) {set} (>K:STROBES_SET)");
         }
     }
 }
