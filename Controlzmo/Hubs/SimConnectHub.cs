@@ -1,6 +1,4 @@
-﻿//#define FROTTLE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Linq;
@@ -24,33 +22,16 @@ namespace Controlzmo.Hubs
         private readonly SimConnectHolder holder;
         private readonly ILogger<ControlzmoHub> _logger;
         private readonly IDictionary<string, ISettable> settables;
-#if FROTTLE
-        private readonly IEvent frottle;
-#endif
 
         public ControlzmoHub(IServiceProvider serviceProvider)
         {
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             _logger = serviceProvider.GetRequiredService<ILogger<ControlzmoHub>>();
-#if FROTTLE
-            frottle = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle1SetEvent>();
-            _ = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle1SetEventNotification>();
-            _ = serviceProvider.GetRequiredService<Systems.ThrustLevers.Throttle2SetEventNotification>();
-#endif
 
             settables = serviceProvider
                 .GetServices<ISettable>()
                 .ToDictionary(settable => settable.GetId(), settable => settable);
         }
-
-#if FROTTLE
-        public async Task SetFrottle(uint value)
-        {
-            _logger.LogDebug($"Calling frottle with {value}");
-            holder.SimConnect?.SendEvent(frottle, value - 0x4000u);
-            await Task.CompletedTask;
-        }
-#endif
 
         public async Task SendAll()
         {
