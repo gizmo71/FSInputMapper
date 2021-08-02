@@ -10,15 +10,8 @@ namespace Controlzmo.Systems.PilotMonitoring
 {
     public abstract class SwitchableLVar : LVar
     {
-        private int period = 4000;
         public SwitchableLVar(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override int Milliseconds() => period;
-
-        public void Request(ExtendedSimConnect simConnect, int period)
-        {
-            this.period = period;
-            Request(simConnect);
-        }
+        protected override int Milliseconds() => 4000;
     }
 
     public abstract class ThrustLeverN1 : LVar
