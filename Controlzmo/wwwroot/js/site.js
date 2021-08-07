@@ -30,15 +30,20 @@ function errorHandler(err) {
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").build();
 
-connection.on("SetFromSim", function (name, value) {
-    var jqInput = $("#" + name);
-    if (value != null) {
-        if (jqInput.prop("type") == 'checkbox')
-            jqInput.prop('checked', value);
-        else
-            jqInput.prop('value', value);
+connection.on("SetFromSim", function (name, newValue) {
+    var jqInput = $("#" + name).add($('input[type="radio"][name="' + name + '"]'));
+    if (newValue != null) {
+        var type = jqInput.prop("type");
+        if (type == 'checkbox') {
+            jqInput.prop('checked', newValue);
+        } else if (type == 'radio') {
+            jqInput = jqInput.filter(function () { return this.value === newValue; });
+            jqInput.prop('checked', true);
+        } else {
+            jqInput.prop('value', newValue);
+        }
     }
-    jqInput.prop('disabled', value == null);
+    jqInput.prop('disabled', newValue == null);
 });
 
 function speak(text) {
@@ -56,6 +61,10 @@ connection.start().then(function () {
     connection.invoke("SendAll").catch(errorHandler);
     $(".sendBoolean").on("change", function(event) {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
+        event.preventDefault();
+    });
+    $(".sendRadio").on("change", function (event) {
+        connection.invoke("SetInSim", event.target.name, event.target.value).catch(errorHandler);
         event.preventDefault();
     });
     $(".sendText").on("change", function(event) {

@@ -5,14 +5,15 @@
 
 <table style="font-size: larger;">
     <tr>
+        <th>Strobes</th>
         <td>
-            <select id="lightsStrobe" class="sendText" disabled>
-                <option value="on">On</option>
-                <option value="auto" selected>Auto</option>
-                <option value="off">Off</option>
-            </select>
+            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeOn" value="on" />
+            <label for="lightsStrobeOn">On</label>
+            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeAuto" value="auto" />
+            <label for="lightsStrobeAuto">Auto</label>
+            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeOff" value="off" />
+            <label for="lightsStrobeOff">Off</label>
         </td>
-        <th><label for="lightsStrobe">Strobes</label></th>
         <td><input type="checkbox" id="lightsBeacon" class="sendBoolean" /></td>
         <th><label for="lightsBeacon">Beacon</label></th>
         <td><input type="checkbox" id="lightsWingIce" class="sendBoolean" /></td>
