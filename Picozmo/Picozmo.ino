@@ -1,5 +1,7 @@
 // https://www.arduino.cc/reference/en/
 
+//TODO: other things to experiment with https://emalliab.wordpress.com/2021/04/18/raspberry-pi-pico-arduino-core-and-timers/
+
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 const uint SWITCH1_PIN = D14;
 const uint SWITCH2_PIN = D15;
@@ -7,9 +9,11 @@ const uint SWITCH2_PIN = D15;
 volatile int s1, s2, pot, incoming;
 
 void setup() {
+  rp2040.idleOtherCore();
   pinMode(LED_PIN, OUTPUT);
   pinMode(SWITCH1_PIN, INPUT_PULLUP);
   pinMode(SWITCH2_PIN, INPUT_PULLUP);
+  rp2040.resumeOtherCore();
 }
 
 void loop() {
