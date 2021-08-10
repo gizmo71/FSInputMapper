@@ -24,16 +24,24 @@ namespace Controlzmo.Serial
             _serialPort.DtrEnable = true;
             _serialPort.ReadTimeout = 500;
             _serialPort.WriteTimeout = 500;
-            _serialPort.Open();
-            //TOOD: read thread... https://docs.microsoft.com/en-us/dotnet/api/system.io.ports.serialport?view=dotnet-plat-ext-5.0
             readThread = new Thread(Read);
             readThread.IsBackground = true;
             readThread.Start();
-            Console.Error.WriteLine("Started serial <><><><><>");
         }
 
         public void Read()
         {
+            //TODO: like SimConnect, we want to open when we can, sleep when we can't, and transition between both.
+            try
+            {
+                _serialPort.Open();
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Failed to open {_serialPort} with {e}");
+                return;
+            }
+
             byte[] writeData = { 0 };
             while (running)
             {
