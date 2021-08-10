@@ -59,7 +59,9 @@ namespace Controlzmo
                 endpoints.MapHub<ControlzmoHub>("/hub/connectzmo");
             });
 
-            app.ApplicationServices.GetRequiredService<Adapter>();
+            app.ApplicationServices.GetServices<CreateOnStartup>();
         }
     }
+
+    public interface CreateOnStartup { }
 }

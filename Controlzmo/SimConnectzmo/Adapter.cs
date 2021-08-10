@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace SimConnectzmo
 {
     [Component]
-    public class Adapter
+    public class Adapter : CreateOnStartup
     {
         private readonly ILogger<Adapter> _logger;
         private readonly SimConnectHolder holder;
