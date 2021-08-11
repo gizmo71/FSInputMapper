@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading;
-using System.Timers;
 using Controlzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,40 +9,22 @@ using Microsoft.Extensions.Logging;
 namespace SimConnectzmo
 {
     [Component]
-    public class Adapter : CreateOnStartup
+    public class Adapter : KeepAliveWorker, CreateOnStartup
     {
         private readonly ILogger<Adapter> _logger;
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
 
-        BackgroundWorker? bw;
-
-        public Adapter(IServiceProvider serviceProvider)
+        public Adapter(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             this._logger = serviceProvider.GetRequiredService<ILogger<Adapter>>();
             this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             this.serviceProvider = serviceProvider;
-
-            var timer = new System.Timers.Timer(5000);
-            timer.Elapsed += (object sender, ElapsedEventArgs args) => EnsureConnectionIfPossible();
-            timer.Start();
-        }
-
-        private void EnsureConnectionIfPossible()
-        {
-            if (bw == null)
-            {
-//_logger.LogDebug("Starting background worker");
-                bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
-                bw.DoWork += Donkey;
-                bw.RunWorkerAsync();
-            }
-//else _logger.LogDebug("Existing background worker");
         }
 
         private const uint WM_USER_SIMCONNECT = 0x0402;
 
-        private void Donkey(object? sender, DoWorkEventArgs args)
+        protected override void Donkey(object? sender, DoWorkEventArgs args)
         {
             try
             {
@@ -51,7 +32,7 @@ namespace SimConnectzmo
                 using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
                     .AssignIds(serviceProvider);
                 holder.SimConnect = esc;
-                while (!bw!.CancellationPending)
+                while (!IsCancellationPending())
                 {
                     if (MessageSignal.WaitOne(5_000))
                     {
@@ -65,7 +46,6 @@ namespace SimConnectzmo
             {
                 holder.SimConnect = null;
                 _logger.LogError(e, "Exception from SimConnect");
-                bw = null;
             }
         }
     }
