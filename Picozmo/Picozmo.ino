@@ -5,14 +5,15 @@
 // https://arduino-pico.readthedocs.io/en/latest/multicore.html
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint POT_PIN = A0;
 const uint SWITCH1_PIN = D14;
 const uint SWITCH2_PIN = D15;
 
 volatile int s1, s2, pot, incoming;
 
-#undef USE_INTERRUPTS
+#define USE_INTERRUPTS 0
 
-#ifdef USE_INTERRUPTS
+#if USE_INTERRUPTS
 void switch1() {
   s1 = digitalRead(SWITCH1_PIN) == LOW;
 }
@@ -23,20 +24,20 @@ void switch2() {
 #endif
 
 void setup() {
-  rp2040.idleOtherCore();
   pinMode(LED_PIN, OUTPUT);
   pinMode(SWITCH1_PIN, INPUT_PULLUP);
   pinMode(SWITCH2_PIN, INPUT_PULLUP);
-#ifdef USE_INTERRUPTS
+#if USE_INTERRUPTS
+  switch1();
   attachInterrupt(digitalPinToInterrupt(SWITCH1_PIN), switch1, CHANGE);
+  switch2();
   attachInterrupt(digitalPinToInterrupt(SWITCH2_PIN), switch2, CHANGE);
 #endif
-  rp2040.resumeOtherCore();
 }
 
 void loop() {
-  pot = analogRead(A0);
-#ifndef USE_INTERRUPTS
+  pot = analogRead(POT_PIN);
+#if !USE_INTERRUPTS
   s1 = digitalRead(SWITCH1_PIN) == LOW;
   s2 = digitalRead(SWITCH2_PIN) == LOW;
 #endif
@@ -48,6 +49,7 @@ void loop() {
 }
 
 void setup1() {
+  sleep_ms(1000);
   // https://www.arduino.cc/reference/en/language/functions/communication/serial/ifserial/
   Serial.begin(115200);
   Serial.println("setup");
@@ -57,10 +59,17 @@ void loop1() {
   sleep_ms(500);
   incoming = Serial.read();
   Serial.print(pot);
-  Serial.print("\t");
+  Serial.print(", ");
+  Serial.print(SWITCH1_PIN);
+  Serial.print("=");
   Serial.print(s1);
   Serial.print("/");
+  Serial.print(SWITCH2_PIN);
+  Serial.print("=");
   Serial.print(s2);
+#if USE_INTERRUPTS
+  Serial.print(" (I)");
+#endif
   Serial.print(" read ");
   Serial.println(incoming);
 }
