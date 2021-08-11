@@ -8,7 +8,7 @@ namespace Controlzmo
 {
     public abstract class KeepAliveWorker
     {
-        private readonly ILogger<KeepAliveWorker> _logger;
+        private readonly ILogger _logger;
 
         private BackgroundWorker? bw;
 
@@ -27,7 +27,7 @@ namespace Controlzmo
             {
 _logger.LogDebug("Starting background worker for " + GetType());
                 bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
-                bw.DoWork += Donkey;
+                bw.DoWork += DonkeyOuter;
                 bw.RunWorkerAsync();
             }
 else _logger.LogDebug("Existing background worker for " + GetType());
@@ -37,15 +37,24 @@ else _logger.LogDebug("Existing background worker for " + GetType());
         {
             try
             {
-                Donkey(sender, args);
+                OnStart(sender, args);
+                while (!IsCancellationPending())
+                    OnLoop(sender, args);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception running " + GetType());
             }
             finally
             {
+                OnStop(sender, args);
                 bw = null;
             }
         }
 
-        protected abstract void Donkey(object? sender, DoWorkEventArgs args);
+        protected abstract void OnStart(object? sender, DoWorkEventArgs args);
+        protected abstract void OnLoop(object? sender, DoWorkEventArgs args);
+        protected abstract void OnStop(object? sender, DoWorkEventArgs args);
 
         protected Boolean IsCancellationPending() => bw!.CancellationPending;
     }

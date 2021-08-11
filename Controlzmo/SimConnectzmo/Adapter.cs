@@ -11,9 +11,10 @@ namespace SimConnectzmo
     [Component]
     public class Adapter : KeepAliveWorker, CreateOnStartup
     {
-        private readonly ILogger<Adapter> _logger;
+        private readonly ILogger _logger;
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
+        private readonly AutoResetEvent MessageSignal = new AutoResetEvent(false);
 
         public Adapter(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -24,29 +25,26 @@ namespace SimConnectzmo
 
         private const uint WM_USER_SIMCONNECT = 0x0402;
 
-        protected override void Donkey(object? sender, DoWorkEventArgs args)
+        protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
-            try
+            holder.SimConnect = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
+                .AssignIds(serviceProvider);
+        }
+
+        protected override void OnLoop(object? sender, DoWorkEventArgs args)
+        {
+            if (MessageSignal!.WaitOne(5_000))
             {
-                AutoResetEvent MessageSignal = new AutoResetEvent(false);
-                using var esc = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
-                    .AssignIds(serviceProvider);
-                holder.SimConnect = esc;
-                while (!IsCancellationPending())
-                {
-                    if (MessageSignal.WaitOne(5_000))
-                    {
-                        esc.ReceiveMessage();
+                holder.SimConnect!.ReceiveMessage();
 //_logger.LogInformation("Got somet' from SimConnect");
-                    }
+            }
 //else _logger.LogDebug("Got nowt from SimConnect");
-                }
-            }
-            catch (Exception e)
-            {
-                holder.SimConnect = null;
-                _logger.LogError(e, "Exception from SimConnect");
-            }
+        }
+
+        protected override void OnStop(object? sender, DoWorkEventArgs args)
+        {
+            holder.SimConnect!.Dispose();
+            holder.SimConnect = null;
         }
     }
 }
