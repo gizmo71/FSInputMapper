@@ -11,9 +11,7 @@ const uint SWITCH2_PIN = D15;
 
 volatile int s1, s2, pot, incoming;
 
-#define USE_INTERRUPTS 0
-
-#if USE_INTERRUPTS
+//TODO: debounce!
 void switch1() {
   s1 = digitalRead(SWITCH1_PIN) == LOW;
 }
@@ -21,26 +19,19 @@ void switch1() {
 void switch2() {
   s2 = digitalRead(SWITCH2_PIN) == LOW;
 }
-#endif
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   pinMode(SWITCH1_PIN, INPUT_PULLUP);
   pinMode(SWITCH2_PIN, INPUT_PULLUP);
-#if USE_INTERRUPTS
   switch1();
   attachInterrupt(digitalPinToInterrupt(SWITCH1_PIN), switch1, CHANGE);
   switch2();
   attachInterrupt(digitalPinToInterrupt(SWITCH2_PIN), switch2, CHANGE);
-#endif
 }
 
 void loop() {
   pot = analogRead(POT_PIN);
-#if !USE_INTERRUPTS
-  s1 = digitalRead(SWITCH1_PIN) == LOW;
-  s2 = digitalRead(SWITCH2_PIN) == LOW;
-#endif
   if (incoming != -1) {
     digitalWrite(LED_PIN, (incoming & 1) ? HIGH : LOW);
     incoming = -1;
@@ -57,19 +48,13 @@ void setup1() {
 
 void loop1() {
   sleep_ms(500);
+
   incoming = Serial.read();
+
   Serial.print(pot);
   Serial.print(", ");
-  Serial.print(SWITCH1_PIN);
-  Serial.print("=");
   Serial.print(s1);
   Serial.print("/");
-  Serial.print(SWITCH2_PIN);
-  Serial.print("=");
   Serial.print(s2);
-#if USE_INTERRUPTS
-  Serial.print(" (I)");
-#endif
-  Serial.print(" read ");
-  Serial.println(incoming);
+  Serial.println();
 }
