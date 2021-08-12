@@ -47,8 +47,14 @@ else _logger.LogDebug("Existing background worker for " + GetType());
             }
             finally
             {
-                OnStop(sender, args);
-                bw = null;
+                try
+                {
+                    OnStop(sender, args);
+                }
+                finally
+                {
+                    bw = null;
+                }
             }
         }
 
