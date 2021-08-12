@@ -4,6 +4,8 @@ using System.IO.Ports;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimConnectzmo;
+using Controlzmo.Systems.Lights;
 
 namespace Controlzmo.Serial
 {
@@ -12,10 +14,14 @@ namespace Controlzmo.Serial
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
+        private readonly RunwayTurnoffLightSystem lights;
+        private readonly SimConnectHolder holder;
 
         public Serial(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _logger = serviceProvider.GetRequiredService<ILogger<Serial>>();
+            holder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            lights = serviceProvider.GetRequiredService<RunwayTurnoffLightSystem>();
 
             _serialPort = new SerialPort(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
             _serialPort.StopBits = StopBits.One;
@@ -45,6 +51,12 @@ namespace Controlzmo.Serial
                 var s1 = Int16.Parse(match.Groups[2].ToString());
                 var s2 = Int16.Parse(match.Groups[3].ToString());
                 Console.Error.WriteLine($"Pot is {pot}, switches are {s1}/{s2}");
+
+                ExtendedSimConnect? simConnect = holder.SimConnect;
+                if (simConnect != null)
+                {
+                    lights.SetInSim(simConnect!, s1 == 1);
+                }
             }
             catch (TimeoutException)
             {
