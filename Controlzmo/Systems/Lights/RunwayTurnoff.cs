@@ -28,6 +28,8 @@ namespace Controlzmo.Systems.Lights
         private readonly ILogger _logging;
         private readonly JetBridgeSender sender;
 
+        private bool? isOn;
+
         public RunwayTurnoffLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<RunwayTurnoffLightSystem> _logging, JetBridgeSender sender)
         {
             this.hub = hub;
@@ -40,14 +42,18 @@ namespace Controlzmo.Systems.Lights
         public override void Process(ExtendedSimConnect simConnect, RunwayTurnoffLightData data)
         {
             _logging.LogDebug($"Runway turnoff light state L {data.leftState} R {data.rightState}, switch L {data.leftSwitch}, switch R {data.rightSwitch}");
-            hub.Clients.All.SetFromSim(GetId(), data.leftSwitch == 1 || data.rightSwitch == 1);
+            isOn = data.leftSwitch == 1 || data.rightSwitch == 1;
+            hub.Clients.All.SetFromSim(GetId(), isOn);
         }
 
         public string GetId() => "lightsRunwayTurnoff";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            sender.Execute(simConnect, "2 (>K:TOGGLE_TAXI_LIGHTS) 3 (>K:TOGGLE_TAXI_LIGHTS)");
+            if (value != isOn) {
+                sender.Execute(simConnect, "2 (>K:TOGGLE_TAXI_LIGHTS) 3 (>K:TOGGLE_TAXI_LIGHTS)");
+                isOn = value;
+            }
         }
     }
 }
