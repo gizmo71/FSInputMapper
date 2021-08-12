@@ -11,15 +11,14 @@ const uint SWITCH2_PIN = D15;
 
 volatile int s1, s2, pot, incoming;
 
-#define USE_INTERRUPTS 0
+// Discussion: https://github.com/earlephilhower/arduino-pico/discussions/276
+#define USE_INTERRUPTS 1
 
 #if USE_INTERRUPTS
-void switch1() {
-  s1 = digitalRead(SWITCH1_PIN) == LOW;
-}
-
-void switch2() {
-  s2 = digitalRead(SWITCH2_PIN) == LOW;
+void switch1(uint gpio, uint32_t events) {
+  static int state = 0;
+  state = !state;
+  digitalWrite(LED_PIN, state ? HIGH : LOW);
 }
 #endif
 
@@ -28,10 +27,8 @@ void setup() {
   pinMode(SWITCH1_PIN, INPUT_PULLUP);
   pinMode(SWITCH2_PIN, INPUT_PULLUP);
 #if USE_INTERRUPTS
-  switch1();
-  attachInterrupt(digitalPinToInterrupt(SWITCH1_PIN), switch1, CHANGE);
-  switch2();
-  attachInterrupt(digitalPinToInterrupt(SWITCH2_PIN), switch2, CHANGE);
+  gpio_set_irq_enabled_with_callback(14, GPIO_IRQ_EDGE_RISE | GPIO_IRQ_EDGE_FALL, true, &switch1);
+  //gpio_set_irq_enabled_with_callback(15, CHANGE, true, switch1);
 #endif
 }
 
@@ -42,7 +39,7 @@ void loop() {
   s2 = digitalRead(SWITCH2_PIN) == LOW;
 #endif
   if (incoming != -1) {
-    digitalWrite(LED_PIN, (incoming & 1) ? HIGH : LOW);
+    //digitalWrite(LED_PIN, (incoming & 1) ? HIGH : LOW);
     incoming = -1;
   }
   sleep_ms(5);
