@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Ports;
+using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using Controlzmo.Hubs;
+using Controlzmo.Systems.Lights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
-using Controlzmo.Systems.Lights;
 
 namespace Controlzmo.Serial
 {
@@ -16,11 +20,16 @@ namespace Controlzmo.Serial
         private readonly SerialPort _serialPort;
         private readonly RunwayTurnoffLightSystem lights;
         private readonly SimConnectHolder holder;
+        private readonly IDictionary<string, ISettable> settables;
 
         public Serial(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _logger = serviceProvider.GetRequiredService<ILogger<Serial>>();
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            settables = serviceProvider
+                .GetServices<ISettable>()
+                .ToDictionary(settable => settable.GetId(), settable => settable);
+
             lights = serviceProvider.GetRequiredService<RunwayTurnoffLightSystem>();
 
             _serialPort = new SerialPort(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
@@ -33,10 +42,12 @@ namespace Controlzmo.Serial
 
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
+            if (holder.SimConnect == null)
+                throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached");
             _serialPort.Open();
         }
 
-        private readonly Regex rx = new Regex(@"^(\d+), ([01])/([01])$", RegexOptions.Compiled);
+        private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);
         private readonly byte[] writeData = { 0 };
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
@@ -47,16 +58,14 @@ namespace Controlzmo.Serial
                 var match = rx.Match(message);
                 if (!match.Success)
                     throw new Exception($"Didn't recognise '{message}'");
-                var pot = Int16.Parse(match.Groups[1].ToString());
-                var s1 = Int16.Parse(match.Groups[2].ToString());
-                var s2 = Int16.Parse(match.Groups[3].ToString());
-                Console.Error.WriteLine($"Pot is {pot}, switches are {s1}/{s2}");
+                var id = match.Groups[1].ToString();
+                var value = match.Groups[2].ToString();
+                Console.Error.WriteLine($"set {id} to {value}");
 
-                ExtendedSimConnect? simConnect = holder.SimConnect;
-                if (simConnect != null)
-                {
-                    lights.SetInSim(simConnect!, s1 == 1);
-                }
+                ISettable rawSettable = settables[id];
+                var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
+                _logger.LogDebug($"Setting {id} to {typedValue}");
+                rawSettable.SetInSim(holder.SimConnect!, typedValue);
             }
             catch (TimeoutException)
             {
