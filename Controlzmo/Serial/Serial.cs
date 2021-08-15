@@ -55,6 +55,7 @@ namespace Controlzmo.Serial
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
         {
+            ExtendedSimConnect simConnect = holder.SimConnect!;
             try
             {
                 string message = _serialPort.ReadLine().Trim();
@@ -68,7 +69,7 @@ namespace Controlzmo.Serial
                 ISettable rawSettable = settables[id];
                 var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
                 _logger.LogDebug($"Setting {id} to {typedValue}");
-                rawSettable.SetInSim(holder.SimConnect!, typedValue);
+                rawSettable.SetInSim(simConnect, typedValue);
             }
             catch (TimeoutException)
             {
