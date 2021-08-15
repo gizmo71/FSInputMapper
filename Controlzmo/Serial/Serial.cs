@@ -14,7 +14,7 @@ using SimConnectzmo;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class Serial : KeepAliveWorker, CreateOnStartup, IOnSimConnection
+    public class Serial : KeepAliveWorker, CreateOnStartup
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
@@ -36,16 +36,19 @@ namespace Controlzmo.Serial
             _serialPort.StopBits = StopBits.One;
             _serialPort.Handshake = Handshake.RequestToSend;
             _serialPort.DtrEnable = true;
-            _serialPort.ReadTimeout = 1000;
-            _serialPort.WriteTimeout = 1000;
+            _serialPort.ReadTimeout = 10000;
+            _serialPort.WriteTimeout = 10000;
         }
 
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
             if (holder.SimConnect == null)
                 throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached");
+
             _serialPort.Open();
-            OnConnection(holder.SimConnect!);
+
+            byte[] writeData = { 0 };
+            _serialPort.Write(writeData, 0, 1);
         }
 
         private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);
@@ -69,27 +72,13 @@ namespace Controlzmo.Serial
             }
             catch (TimeoutException)
             {
-                Console.Error.WriteLine("Nothing to read");
+                _logger.LogDebug("Nothing to read");
             }
         }
 
         protected override void OnStop(object? sender, DoWorkEventArgs args)
         {
             _serialPort.Close();
-        }
-
-        private readonly byte[] writeData = { 0 };
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            try
-            {
-                writeData[0] ^= 1;
-                _serialPort.Write(writeData, 0, 1);
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning("Failed to request initial data", e);
-            }
         }
     }
 }
