@@ -16,19 +16,30 @@ void serialEvent() {
     forceUpdate = true;
 }
 
-extern void loop1() {
+void sendContinuous() {
   bool sendNow = sendData;
   if (sendNow) {
     sendData = false;
-    //TODO: the buffer isn't infinitely large, so maybe control sending from Controlzmo.
-    // https://www.arduino.cc/reference/en/language/functions/communication/serial/flush/ appears to be blocking.
-    // https://www.arduino.cc/reference/en/language/functions/communication/serial/availableforwrite/
-    Serial.print("pot=");
-    Serial.println(pot);
 
-    Serial.print("lightsRunwayTurnoff=");
-    Serial.println(s1 == s2 ? "null" : s1 ? "true" : "false");
+    Serial.print("speedBrakeHandle=");
+    Serial.println(spoilerHandle);
+  }
+}
+
+void sendMomentary() {
+  if (apuMasterPressed) {
+    Serial.println("apuMasterPressed=true");
+    apuMasterPressed = false;
   }
 
+  if (apuStartPressed) {
+    Serial.println("apuStartPressed=true");
+    apuStartPressed = false;
+  }
+}
+
+extern void loop1() {
+  sendContinuous();
+  sendMomentary();
   sleep_ms(5);
 }

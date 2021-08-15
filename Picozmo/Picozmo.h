@@ -1,4 +1,4 @@
-extern volatile byte s1, s2;
-extern volatile short pot;
+extern volatile byte apuMasterPressed, apuStartPressed;
+extern volatile short spoilerHandle;
 extern volatile int incoming;
 extern volatile bool forceUpdate, sendData;

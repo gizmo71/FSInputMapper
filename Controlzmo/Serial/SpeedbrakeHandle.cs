@@ -7,20 +7,20 @@ using SimConnectzmo;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class Pot : ISettable<Int16?>
+    public class SpeedbrakeHandle : ISettable<Int16?>
     {
         private readonly ILogger _logger;
 
-        public Pot(IServiceProvider sp)
+        public SpeedbrakeHandle(IServiceProvider sp)
         {
-            _logger = sp.GetRequiredService<ILogger<Pot>>();
+            _logger = sp.GetRequiredService<ILogger<SpeedbrakeHandle>>();
         }
 
-        public string GetId() => "pot";
+        public string GetId() => "speedBrakeHandle";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16? value)
         {
-            _logger.LogTrace($"Imaginary 'pot' set to {value}");
+            _logger.LogTrace($"Imaginary 'speedBrakeHandle' set to {value}");
         }
     }
 }
