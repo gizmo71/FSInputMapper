@@ -24,7 +24,7 @@ namespace Controlzmo.Systems.Spoilers
     {
         private readonly MoreSpoilerToggleEvent trigger;
         private readonly MoreSpoiler listener;
-        private readonly ILogger<MoreSpoilerEventHandler> _logger;
+        private readonly ILogger _logger;
 
         public MoreSpoilerEventHandler(IServiceProvider sp)
         {
