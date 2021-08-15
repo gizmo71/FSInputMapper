@@ -14,7 +14,7 @@ using SimConnectzmo;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class Serial : KeepAliveWorker, CreateOnStartup
+    public class Serial : KeepAliveWorker, CreateOnStartup, IOnSimConnection
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
@@ -45,10 +45,10 @@ namespace Controlzmo.Serial
             if (holder.SimConnect == null)
                 throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached");
             _serialPort.Open();
+            OnConnection(holder.SimConnect!);
         }
 
         private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);
-        private readonly byte[] writeData = { 0 };
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
         {
@@ -70,14 +70,26 @@ namespace Controlzmo.Serial
             catch (TimeoutException)
             {
                 Console.Error.WriteLine("Nothing to read");
-                writeData[0] ^= 1;
-                _serialPort.Write(writeData, 0, 1);
             }
         }
 
         protected override void OnStop(object? sender, DoWorkEventArgs args)
         {
             _serialPort.Close();
+        }
+
+        private readonly byte[] writeData = { 0 };
+        public void OnConnection(ExtendedSimConnect simConnect)
+        {
+            try
+            {
+                writeData[0] ^= 1;
+                _serialPort.Write(writeData, 0, 1);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("Failed to request initial data", e);
+            }
         }
     }
 }
