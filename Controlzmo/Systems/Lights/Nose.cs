@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
@@ -50,7 +51,16 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            int newPosition = int.Parse(value!);
+            int newPosition;
+            if (value == "off")
+                newPosition = 0;
+            else if (value == "taxi")
+                newPosition = 1;
+            else if (value == "takeoff")
+                newPosition = 2;
+            else
+                throw new ArgumentException($"Unknown nose light value '{value}'");
+
             if (((newPosition ^ oldPosition) & 1) != 0)
                 sender.Execute(simConnect, "1 (>K:TOGGLE_TAXI_LIGHTS)");
             if (((newPosition ^ oldPosition) & 2) != 0)

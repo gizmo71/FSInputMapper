@@ -6,7 +6,6 @@
 <table style="font-size: larger;">
     <tr>
         <th>Strobes</th>
-<!-- TODO: consider https://css-tricks.com/simple-swipe-with-vanilla-javascript/ for powerup -->
         <td style="text-align: left; line-height: 1;">
             <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeOn" value="on" />
             <label for="lightsStrobeOn">On</label><br />
@@ -27,14 +26,16 @@
         <th><label for="lightsRunwayTurnoff">Runway Turnoff</label></th>
         <td colspan="2"><input type="checkbox" id="lightsLanding" class="sendBoolean" /></td>
         <th colspan="2" title="Ensure On or Retract (not Off) in game"><label for="lightsLanding">Landing</label></th>
-        <td>
-            <select id="lightsNose" class="sendText">
-                <option value="2">T.O.</option>
-                <option value="1">Taxi</option>
-                <option value="0">Off</option>
-            </select>
-        </td>
         <th><label for="lightsNose">Nose</label></th>
+        <td style="text-align: left; line-height: 1;">
+            <input type="radio" name="lightsNose" class="sendRadio" id="lightsStrobeTakeOff" value="takeoff" />
+            <label for="lightsStrobeOn">T.O.</label><br />
+            <input type="radio" name="lightsNose" class="sendRadio" id="lightsStrobeTaxi" value="taxi" />
+            <label for="lightsStrobeAuto">Taxi</label><br />
+            <input type="radio" name="lightsNose" class="sendRadio" id="lightsStrobeOff" value="off" />
+            <label for="lightsStrobeOff">Off</label>
+        </td>
+
     </tr>
     <tr>
         <td>
