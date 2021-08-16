@@ -42,7 +42,7 @@ namespace Controlzmo.Systems.Lights
         {
             _logging.LogDebug($"Nose light state taxi {data.noseTaxiState} TO {data.noseTakeOffState}, switch taxi {data.noseTaxiSwitch} TO {data.noseTakeOffSwitch}");
             oldPosition = (data.noseTaxiSwitch == 1 ? 1 : 0) + (data.noseTakeOffSwitch == 1 ? 2 : 0);
-            hub.Clients.All.SetFromSim(GetId(), oldPosition);
+            hub.Clients.All.SetFromSim(GetId(), oldPosition switch { 0 => "off", 1 => "taxi", 2 => "takeoff", _ => "unknown" });
         }
 
         private int oldPosition;
