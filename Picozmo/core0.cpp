@@ -19,14 +19,17 @@ void updateContinuousInputs() {
   bool assumeChanged = forceUpdate;
   if (assumeChanged) forceUpdate = false;
 
-  static short spoilerHandleRaw = -2000;
-  short spoilerHandleNew = analogRead(A0);
-  if (assumeChanged || abs(spoilerHandleRaw - spoilerHandleNew) > 40) {
-    spoilerHandleRaw = spoilerHandleNew;
+  static short spoilerHandleRawOld = -1000;
+  short spoilerHandleRaw = analogRead(A0);
+  if (abs(spoilerHandleRaw - spoilerHandleRawOld) > 40) {
     if (spoilerHandleRaw > 3800)
       spoilerHandle = -1;
     else
       spoilerHandle = min(max(3100 - spoilerHandleRaw, 0) / 30, 100);
+  }
+  static short spoilerHandleOld = -2;
+  if (assumeChanged || spoilerHandleOld != spoilerHandle) {
+    spoilerHandleOld = spoilerHandle;
     sendData = true;
   }
 }
