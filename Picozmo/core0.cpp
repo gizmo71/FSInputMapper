@@ -15,18 +15,25 @@ void setup() {
   apuMasterBounce.attach(D15, INPUT_PULLUP);
 }
 
+void updateSpoilerHandle() {
+  static short spoilerHandleRawOld = -1000;
+  short spoilerHandleRaw = analogRead(A0);
+  if (abs(spoilerHandleRaw - spoilerHandleRawOld) > 20) {
+    spoilerHandleRawOld = spoilerHandleRaw;
+    if (spoilerHandleRaw > 3800)
+      spoilerHandle = -1;
+    else if (spoilerHandleRaw > 2100)
+      spoilerHandle = min(max(3100 - spoilerHandleRaw, 0) / 20, 50);
+    else
+      spoilerHandle = min(max(1100 - spoilerHandleRaw, 0) / 20, 50) + 50;
+  }
+}
+
 void updateContinuousInputs() {
   bool assumeChanged = forceUpdate;
   if (assumeChanged) forceUpdate = false;
 
-  static short spoilerHandleRawOld = -1000;
-  short spoilerHandleRaw = analogRead(A0);
-  if (abs(spoilerHandleRaw - spoilerHandleRawOld) > 40) {
-    if (spoilerHandleRaw > 3800)
-      spoilerHandle = -1;
-    else
-      spoilerHandle = min(max(3100 - spoilerHandleRaw, 0) / 30, 100);
-  }
+  updateSpoilerHandle();
   static short spoilerHandleOld = -2;
   if (assumeChanged || spoilerHandleOld != spoilerHandle) {
     spoilerHandleOld = spoilerHandle;
