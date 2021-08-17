@@ -17,24 +17,64 @@ void serialEvent() {
 }
 
 void sendContinuous() {
-  bool sendNow = sendData;
-  if (sendNow) {
-    sendData = false;
-
+  if (spoilerHandle != -2) {
     Serial.print("speedBrakeHandle=");
     Serial.println(spoilerHandle);
+    spoilerHandle = -2;
+  }
+
+  if (strobeLight) {
+    Serial.print("lightsStrobe=");
+    Serial.println(strobeLight);
+    strobeLight = NULL;
+  }
+
+  if (beaconLight) {
+    Serial.print("beaconLight=");
+    Serial.println(beaconLight);
+    beaconLight = NULL;
+  }
+
+  if (wingIceLight) {
+    Serial.print("wingIceLight=");
+    Serial.println(wingIceLight);
+    wingIceLight = NULL;
+  }
+
+  if (navLight) {
+    Serial.print("lightsNavLogo=");
+    Serial.println(navLight);
+    navLight = NULL;
+  }
+
+  if (runwayTurnoffLight) {
+    Serial.print("lightsRunwayTurnoff=");
+    Serial.println(runwayTurnoffLight);
+    runwayTurnoffLight = NULL;
+  }
+
+  if (landingLight) {
+    Serial.print("lightsLanding=");
+    Serial.println(landingLight);
+    landingLight = NULL;
+  }
+
+  if (noseLight) {
+    Serial.print("lightsNose=");
+    Serial.println(noseLight);
+    noseLight = NULL;
   }
 }
 
 void sendMomentary() {
   if (apuMasterPressed) {
-    Serial.println("apuMasterPressed=true");
     apuMasterPressed = false;
+    Serial.println("apuMasterPressed=true");
   }
 
   if (apuStartPressed) {
-    Serial.println("apuStartPressed=true");
     apuStartPressed = false;
+    Serial.println("apuStartPressed=true");
   }
 }
 

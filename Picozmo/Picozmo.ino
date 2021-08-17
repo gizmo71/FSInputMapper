@@ -7,6 +7,8 @@
 // https://arduino-pico.readthedocs.io/en/latest/multicore.html
 
 volatile byte apuMasterPressed, apuStartPressed;
-volatile short spoilerHandle;
+volatile short spoilerHandle = -2;
+const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,
+  *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight;
 volatile int incoming;
-volatile bool forceUpdate = true, sendData = false;
+volatile bool forceUpdate = true;
