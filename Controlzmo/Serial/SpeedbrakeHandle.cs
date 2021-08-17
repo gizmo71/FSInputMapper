@@ -24,6 +24,8 @@ namespace Controlzmo.Serial
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16? value)
         {
+Console.Error.WriteLine("Speedbrake from Serial not currently honoured");
+return; //TODO: remove when "handle" is exposed again.
             simConnect.SendEvent(value >= 0 ? armOff : armOn);
             uint eventData = (uint)Math.Max((int)value!, 0) * 164;
             eventData = Math.Min(eventData, 16384u);
