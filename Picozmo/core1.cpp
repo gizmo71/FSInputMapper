@@ -24,8 +24,9 @@ void sendContinuous() {
   }
 
   if (strobeLight) {
-    Serial.print("lightsStrobe=");
-    Serial.println(strobeLight);
+    Serial.print("lightsStrobe=\"");
+    Serial.print(strobeLight);
+    Serial.println('"');
     strobeLight = NULL;
   }
 
@@ -60,8 +61,9 @@ void sendContinuous() {
   }
 
   if (noseLight) {
-    Serial.print("lightsNose=");
-    Serial.println(noseLight);
+    Serial.print("lightsNose=\"");
+    Serial.print(noseLight);
+    Serial.println('"');
     noseLight = NULL;
   }
 }
