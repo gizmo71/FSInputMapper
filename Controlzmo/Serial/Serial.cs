@@ -47,7 +47,7 @@ namespace Controlzmo.Serial
 
             _serialPort.Open();
 
-            byte[] writeData = { 0 };
+            byte[] writeData = { 1 };
             _serialPort.Write(writeData, 0, 1);
         }
 
