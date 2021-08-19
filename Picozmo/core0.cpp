@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Bounce2.h>
+#include <qdec.h>
 
 #include "Picozmo.h"
 
@@ -19,8 +20,7 @@ static Bounce wingIceLightBounce = Bounce();
 static Bounce navLightBounce = Bounce();
 
 static Bounce rotBut;
-static Bounce rotA;
-static Bounce rotB;
+::SimpleHacks::QDecoder qdec(D18, D19, true);
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
@@ -38,8 +38,7 @@ void setup() {
   navLightBounce.attach(D6, INPUT_PULLUP);
 
   rotBut.attach(D17, INPUT_PULLUP);
-  rotA.attach(D18, INPUT_PULLUP);
-  rotB.attach(D19, INPUT_PULLUP);
+  qdec.begin();
 }
 
 short calculateSpoilerHandle() {
@@ -89,13 +88,12 @@ void updateContinuousInputs() {
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
-  if (rotBut.update() || rotA.update() || rotB.update()) {
+  ::SimpleHacks::QDECODER_EVENT event = qdec.update();
+  if (rotBut.update() || event != ::SimpleHacks::QDECODER_EVENT_NONE) {
     Serial.print("# But ");
     Serial.print(rotBut.read());
     Serial.print("  A/B ");
-    Serial.print(rotA.read());
-    Serial.print('/');
-    Serial.println(rotB.read());
+    Serial.println(event);
   }
 }
 
@@ -122,5 +120,5 @@ void loop() {
   updateContinuousInputs();
   updateMomentaryInputs();
   updateOuputs();
-  sleep_ms(5); //TODO: do we really need this?
+  sleep_ms(1); //TODO: do we really need this?
 }
