@@ -20,7 +20,7 @@ namespace Controlzmo.Systems.Lights
             sender = sp.GetRequiredService<JetBridgeSender>();
         }
 
-        protected override string LVarName() => "LIGHTING_STROBE_1";
+        protected override string LVarName() => "LIGHTING_STROBE_0";
         protected override int Milliseconds() => 1000;
         protected override double Default() => -1;
 
@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.Lights
         {
             var auto = value == "auto" ? 1 : 0;
             var set = value == "off" ? 0 : 1;
-            sender.Execute(simConnect, $"{auto} (>L:STROBE_1_Auto) {set} (>K:STROBES_SET)");
+            sender.Execute(simConnect, $"{auto} (>L:STROBE_0_Auto) {set} (>K:STROBES_SET)");
         }
     }
 }
