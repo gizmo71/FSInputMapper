@@ -18,6 +18,10 @@ static Bounce beaconLightBounce = Bounce();
 static Bounce wingIceLightBounce = Bounce();
 static Bounce navLightBounce = Bounce();
 
+static Bounce rotBut;
+static Bounce rotA;
+static Bounce rotB;
+
 void setup() {
   pinMode(LED_PIN, OUTPUT);
 
@@ -32,6 +36,10 @@ void setup() {
   beaconLightBounce.attach(D8, INPUT_PULLUP);
   wingIceLightBounce.attach(D7, INPUT_PULLUP);
   navLightBounce.attach(D6, INPUT_PULLUP);
+
+  rotBut.attach(D17, INPUT_PULLUP);
+  rotA.attach(D18, INPUT_PULLUP);
+  rotB.attach(D19, INPUT_PULLUP);
 }
 
 short calculateSpoilerHandle() {
@@ -80,6 +88,15 @@ void updateContinuousInputs() {
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
+
+  if (rotBut.update() || rotA.update() || rotB.update()) {
+    Serial.print("# But ");
+    Serial.print(rotBut.read());
+    Serial.print("  A/B ");
+    Serial.print(rotA.read());
+    Serial.print('/');
+    Serial.println(rotB.read());
+  }
 }
 
 void updateMomentaryInputs() {
