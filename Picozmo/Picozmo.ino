@@ -5,6 +5,7 @@
 //TODO: other things to experiment with:
 // https://emalliab.wordpress.com/2021/04/18/raspberry-pi-pico-arduino-core-and-timers/
 // https://arduino-pico.readthedocs.io/en/latest/multicore.html
+// https://github.com/muwerk/muwerk and https://github.com/muwerk/ustd
 
 volatile byte apuMasterPressed, apuStartPressed, fcuAltPushed;
 volatile short spoilerHandle = -2, fcuAltDelta;

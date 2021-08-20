@@ -2,21 +2,21 @@
 
 #include "Picozmo.h"
 
-extern void setup1() {
+extern void setup1(void) {
   sleep_ms(1000);
   // https://www.arduino.cc/reference/en/language/functions/communication/serial/ifserial/
   Serial.begin(115200);
   Serial.println("setup");
 }
 
-void serialEvent() {
+void serialEvent(void) {
   while (Serial.available())
     // By default, blocks for up to 1s. https://www.arduino.cc/reference/en/language/functions/communication/serial/settimeout/
     incoming = Serial.read();
     forceUpdate = true;
 }
 
-void sendContinuous() {
+void sendContinuous(void) {
   if (spoilerHandle != -2) {
     Serial.print("speedBrakeHandle=");
     Serial.println(spoilerHandle);
@@ -71,11 +71,12 @@ void sendContinuous() {
   if (fcuAltDelta) {
     Serial.print("fcuAltDelta=");
     Serial.println(fcuAltDeltaToSend);
-    fcuAltDelta -= fcuAltDeltaToSend;
+    fcuAltDelta -= fcuAltDeltaToSend; //TODO: investigate thread safety
+    // https://raspberrypi.github.io/pico-sdk-doxygen/group__pico__sync.html - not portable
   }
 }
 
-void sendMomentary() {
+void sendMomentary(void) {
   if (apuMasterPressed) {
     apuMasterPressed = false;
     Serial.println("apuMasterPressed=true");
@@ -92,7 +93,7 @@ void sendMomentary() {
   }
 }
 
-extern void loop1() {
+extern void loop1(void) {
   sendContinuous();
   sendMomentary();
   sleep_ms(5);

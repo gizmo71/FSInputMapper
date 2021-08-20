@@ -22,9 +22,21 @@ static Bounce wingIceLightBounce;
 static Bounce navLightBounce;
 
 static Bounce fcuAltPushBounce;
-static QDecoder qdec(D18, D19, true);
+const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
+static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
 
-void setup() {
+void fcuAltRotated(void) {
+  switch (qdec.update()) {
+  case QDECODER_EVENT_CCW:
+    ++fcuAltDelta;
+    break;
+  case QDECODER_EVENT_CW:
+    --fcuAltDelta;
+    break;
+  }
+}
+
+void setup(void) {
   pinMode(LED_PIN, OUTPUT);
 
   apuStartBounce.attach(D14, INPUT_PULLUP);
@@ -41,6 +53,8 @@ void setup() {
 
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
   qdec.begin();
+  attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotated, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotated, CHANGE);
 }
 
 short calculateSpoilerHandle() {
@@ -51,6 +65,8 @@ short calculateSpoilerHandle() {
   else
     spoilerHandleRawOld = spoilerHandleRaw;
 
+//TODO: use constrain(x, min, max) instead of min+max... Beware macros!
+// https://www.arduino.cc/reference/en/language/functions/math/constrain/
   if (spoilerHandleRaw > 3800)
     return -1;
   else if (spoilerHandleRaw > 2100)
@@ -59,7 +75,7 @@ short calculateSpoilerHandle() {
     return min(max(1100 - spoilerHandleRaw, 0) / 20, 50) + 50;
 }
 
-void updateContinuousInputs() {
+void updateContinuousInputs(void) {
   bool assumeChanged = forceUpdate;
   if (assumeChanged) forceUpdate = false;
 
@@ -90,17 +106,11 @@ void updateContinuousInputs() {
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
-  switch (qdec.update()) {
-  case QDECODER_EVENT_CCW:
-    ++fcuAltDelta;
-    break;
-  case QDECODER_EVENT_CW:
-    --fcuAltDelta;
-    break;
-  }
+//TODO: monitor FCU into comm var? Do we still need to avoid non-atomic updates? Is there a better way?
+// Perhaps https://github.com/Locoduino/RingBuffer, but beware interrupts may not disable across cores...
 }
 
-void updateMomentaryInputs() {
+void updateMomentaryInputs(void) {
   apuMasterBounce.update();
   if (apuMasterPressed == false && apuMasterBounce.fell()) {
     apuMasterPressed = true;
@@ -117,16 +127,16 @@ void updateMomentaryInputs() {
   }
 }
 
-void updateOuputs() {
+void updateOuputs(void) {
   if (incoming != -1) {
     digitalWrite(LED_PIN, (incoming & 1) ? HIGH : LOW);
     incoming = -1;
   }
 }
 
-void loop() {
+void loop(void) {
   updateContinuousInputs();
   updateMomentaryInputs();
   updateOuputs();
-  sleep_ms(1); //TODO: do we really need this?
+  sleep_ms(5); //TODO: do we really need this?
 }
