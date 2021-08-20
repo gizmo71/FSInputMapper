@@ -66,10 +66,15 @@ namespace Controlzmo.Serial
                 var value = match.Groups[2].ToString();
                 Console.Error.WriteLine($"set {id} to {value}");
 
-                ISettable rawSettable = settables[id];
-                var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
-                _logger.LogDebug($"Setting {id} to {typedValue}");
-                rawSettable.SetInSim(simConnect, typedValue);
+                ISettable? rawSettable;
+                if (settables.TryGetValue(id, out rawSettable))
+                {
+                    var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
+                    _logger.LogDebug($"Setting {id} to {typedValue}");
+                    rawSettable.SetInSim(simConnect, typedValue);
+                }
+                else
+                    _logger.LogDebug($"Cannot find {id} to set it to {value}");
             }
             catch (TimeoutException)
             {
