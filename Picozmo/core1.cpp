@@ -66,6 +66,13 @@ void sendContinuous() {
     Serial.println('"');
     noseLight = NULL;
   }
+
+  short fcuAltDeltaToSend = fcuAltDelta;
+  if (fcuAltDelta) {
+    Serial.print("fcuAltDelta=");
+    Serial.println(fcuAltDeltaToSend);
+    fcuAltDelta -= fcuAltDeltaToSend;
+  }
 }
 
 void sendMomentary() {
@@ -77,6 +84,11 @@ void sendMomentary() {
   if (apuStartPressed) {
     apuStartPressed = false;
     Serial.println("apuStartPressed=true");
+  }
+
+  if (fcuAltPushed) {
+    fcuAltPushed = false;
+    Serial.println("fcuAltPushed=true");
   }
 }
 

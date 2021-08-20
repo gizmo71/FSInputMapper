@@ -9,17 +9,17 @@ const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 static Bounce apuMasterBounce = Bounce();
 static Bounce apuStartBounce = Bounce();
 
-static Bounce noseLightOffBounce = Bounce();
-static Bounce noseLightTakeoffBounce = Bounce();
-static Bounce runwayTurnoffLightBounce = Bounce();
-static Bounce landingLightBounce = Bounce();
-static Bounce strobeLightOffBounce = Bounce();
-static Bounce strobeLightOnBounce = Bounce();
-static Bounce beaconLightBounce = Bounce();
-static Bounce wingIceLightBounce = Bounce();
-static Bounce navLightBounce = Bounce();
+static Bounce noseLightOffBounce;
+static Bounce noseLightTakeoffBounce;
+static Bounce runwayTurnoffLightBounce;
+static Bounce landingLightBounce;
+static Bounce strobeLightOffBounce;
+static Bounce strobeLightOnBounce;
+static Bounce beaconLightBounce;
+static Bounce wingIceLightBounce;
+static Bounce navLightBounce;
 
-static Bounce rotBut;
+static Bounce fcuAltPushBounce;
 ::SimpleHacks::QDecoder qdec(D18, D19, true);
 
 void setup() {
@@ -37,7 +37,7 @@ void setup() {
   wingIceLightBounce.attach(D7, INPUT_PULLUP);
   navLightBounce.attach(D6, INPUT_PULLUP);
 
-  rotBut.attach(D17, INPUT_PULLUP);
+  fcuAltPushBounce.attach(D17, INPUT_PULLUP);
   qdec.begin();
 }
 
@@ -88,12 +88,13 @@ void updateContinuousInputs() {
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
-  ::SimpleHacks::QDECODER_EVENT event = qdec.update();
-  if (rotBut.update() || event != ::SimpleHacks::QDECODER_EVENT_NONE) {
-    Serial.print("# But ");
-    Serial.print(rotBut.read());
-    Serial.print("  A/B ");
-    Serial.println(event);
+  switch (qdec.update()) {
+  case ::SimpleHacks::QDECODER_EVENT_CCW:
+    ++fcuAltDelta;
+    break;
+  case ::SimpleHacks::QDECODER_EVENT_CW:
+    --fcuAltDelta;
+    break;
   }
 }
 
@@ -106,6 +107,11 @@ void updateMomentaryInputs() {
   apuStartBounce.update();
   if (apuStartPressed == false && apuStartBounce.fell()) {
     apuStartPressed = true;
+  }
+
+  fcuAltPushBounce.update();
+  if (fcuAltPushed == false && fcuAltPushBounce.fell()) {
+    fcuAltPushed = true;
   }
 }
 
