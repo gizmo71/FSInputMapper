@@ -4,10 +4,12 @@
 
 #include "Picozmo.h"
 
+using namespace ::SimpleHacks;
+
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
-static Bounce apuMasterBounce = Bounce();
-static Bounce apuStartBounce = Bounce();
+static Bounce apuMasterBounce;
+static Bounce apuStartBounce;
 
 static Bounce noseLightOffBounce;
 static Bounce noseLightTakeoffBounce;
@@ -20,7 +22,7 @@ static Bounce wingIceLightBounce;
 static Bounce navLightBounce;
 
 static Bounce fcuAltPushBounce;
-::SimpleHacks::QDecoder qdec(D18, D19, true);
+static QDecoder qdec(D18, D19, true);
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
@@ -89,10 +91,10 @@ void updateContinuousInputs() {
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
   switch (qdec.update()) {
-  case ::SimpleHacks::QDECODER_EVENT_CCW:
+  case QDECODER_EVENT_CCW:
     ++fcuAltDelta;
     break;
-  case ::SimpleHacks::QDECODER_EVENT_CW:
+  case QDECODER_EVENT_CW:
     --fcuAltDelta;
     break;
   }
