@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <qdec.h>
+#include <SparkFun_Qwiic_Button.h>
 
 #include "Picozmo.h"
 
@@ -24,6 +25,8 @@ static Bounce navLightBounce;
 static Bounce fcuAltPushBounce;
 const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
 static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
+
+static QwiicButton qwiicButton;
 
 void fcuAltRotated(void) {
   switch (qdec.update()) {
@@ -55,6 +58,11 @@ void setup(void) {
   qdec.begin();
   attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotated, CHANGE);
   attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotated, CHANGE);
+
+  Wire.setSDA(D0);
+  Wire.setSCL(D1);
+  Wire.begin();
+  qwiicButton.begin();
 }
 
 short calculateSpoilerHandle() {
@@ -134,7 +142,17 @@ void updateOuputs(void) {
   }
 }
 
+void b(void) {
+  if (qwiicButton.isPressed()) {
+      qwiicButton.LEDon(127);
+  } else {
+      qwiicButton.LEDoff();
+  }
+  Serial.println(qwiicButton.isConnected());
+}
+
 void loop(void) {
+  b();
   updateContinuousInputs();
   updateMomentaryInputs();
   updateOuputs();
