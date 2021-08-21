@@ -142,17 +142,19 @@ void updateOuputs(void) {
   }
 }
 
-void b(void) {
+void seviceQwiicButton(void) {
+  long start = millis();
   if (qwiicButton.isPressed()) {
-      qwiicButton.LEDon(127);
-  } else {
       qwiicButton.LEDoff();
+  } else {
+      qwiicButton.LEDconfig(255, 2500, 500, 1);
   }
-  Serial.println(qwiicButton.isConnected());
+  long end = millis();
+  Serial.println(end - start); // 2 or 3ms each poll! :-o
 }
 
 void loop(void) {
-  b();
+  seviceQwiicButton();
   updateContinuousInputs();
   updateMomentaryInputs();
   updateOuputs();
