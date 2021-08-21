@@ -143,14 +143,18 @@ void updateOuputs(void) {
 }
 
 void seviceQwiicButton(void) {
-  long start = millis();
-  if (qwiicButton.isPressed()) {
-      qwiicButton.LEDoff();
-  } else {
-      qwiicButton.LEDconfig(255, 2500, 500, 1);
-  }
-  long end = millis();
-  Serial.println(end - start); // 2 or 3ms each poll! :-o
+  unsigned long start = millis();
+  bool isPressed = qwiicButton.isPressed();
+  unsigned long end = millis();
+  unsigned long readTime = end - start;
+  int brightness = isPressed ? 255 : 0;
+  start = millis();
+  qwiicButton.LEDon(brightness);
+  end = millis();
+  long writeTime = end - start;
+  Serial.print(readTime); // ~1ms
+  Serial.print('\t');
+  Serial.println(writeTime); // ~2ms
 }
 
 void loop(void) {
