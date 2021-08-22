@@ -38,8 +38,12 @@ namespace Controlzmo.Serial
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            var eventCode = value switch { -1 => "A32NX.FCU_ALT_DEC", 1 => "A32NX.FCU_ALT_INC", _ => throw new Exception($"Cannot FCU alt change by {value}") };
-            sender.Execute(simConnect, $"0 (>K:{eventCode})");
+            var eventCode = value < 0 ? "A32NX.FCU_ALT_DEC" : "A32NX.FCU_ALT_INC";
+            while (value != 0)
+            {
+                sender.Execute(simConnect, $"0 (>K:{eventCode})");
+                value -= (short) Math.Sign(value);
+            }
         }
     }
 }
