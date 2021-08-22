@@ -55,33 +55,44 @@ namespace Controlzmo.Serial
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
         {
-            ExtendedSimConnect simConnect = holder.SimConnect!;
+            string message = ReadMessage();
+            if (message.StartsWith('#'))
+            {
+                _logger.LogTrace($"{message}");
+                return;
+            }
+
+            var match = rx.Match(message);
+            if (!match.Success)
+            {
+                _logger.LogWarning($"Didn't recognise '{message}'");
+                return;
+            }
+
+            var id = match.Groups[1].ToString();
+            var value = match.Groups[2].ToString();
+            Console.Error.WriteLine($"set {id} to {value}");
+
+            ISettable? rawSettable;
+            if (settables.TryGetValue(id, out rawSettable))
+            {
+                var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
+                _logger.LogDebug($"Setting {id} to {typedValue}");
+                rawSettable.SetInSim(holder.SimConnect!, typedValue);
+            }
+            else
+                _logger.LogDebug($"Cannot find {id} to set it to {value}");
+        }
+
+        private string ReadMessage()
+        {
             try
             {
-                string message = _serialPort.ReadLine().Trim();
-                var match = rx.Match(message);
-                if (!match.Success)
-                {
-                    _logger.LogTrace($"Didn't recognise '{message}'");
-                    return;
-                }
-                var id = match.Groups[1].ToString();
-                var value = match.Groups[2].ToString();
-                Console.Error.WriteLine($"set {id} to {value}");
-
-                ISettable? rawSettable;
-                if (settables.TryGetValue(id, out rawSettable))
-                {
-                    var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
-                    _logger.LogDebug($"Setting {id} to {typedValue}");
-                    rawSettable.SetInSim(simConnect, typedValue);
-                }
-                else
-                    _logger.LogDebug($"Cannot find {id} to set it to {value}");
+                return _serialPort.ReadLine().Trim();
             }
             catch (TimeoutException)
             {
-                _logger.LogDebug("Nothing to read");
+                return "# Nothing to read";
             }
         }
 
