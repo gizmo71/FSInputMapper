@@ -152,9 +152,12 @@ void seviceQwiicButton(void) {
   qwiicButton.LEDon(brightness);
   end = millis();
   long writeTime = end - start;
-  Serial.print(readTime); // ~1ms
-  Serial.print('\t');
-  Serial.println(writeTime); // ~2ms
+#ifdef DO_NOT_DO_IT
+Serial.print("#\t");
+Serial.print(readTime); // ~1ms
+Serial.print('\t');
+Serial.println(writeTime); // ~2ms
+#endif
 }
 
 void loop(void) {
