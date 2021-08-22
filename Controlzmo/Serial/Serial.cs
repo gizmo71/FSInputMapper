@@ -61,7 +61,10 @@ namespace Controlzmo.Serial
                 string message = _serialPort.ReadLine().Trim();
                 var match = rx.Match(message);
                 if (!match.Success)
-                    throw new Exception($"Didn't recognise '{message}'");
+                {
+                    _logger.LogTrace($"Didn't recognise '{message}'");
+                    return;
+                }
                 var id = match.Groups[1].ToString();
                 var value = match.Groups[2].ToString();
                 Console.Error.WriteLine($"set {id} to {value}");
