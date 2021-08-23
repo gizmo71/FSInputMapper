@@ -7,21 +7,29 @@ using SimConnectzmo;
 namespace Controlzmo.Serial
 {
     [Component]
+    public class fcuAltPulled : ISettable<bool>
+    {
+        private readonly JetBridgeSender sender;
+
+        public fcuAltPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+
+        public string GetId() => "fcuAltPulled";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+            => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PULL)");
+    }
+
+    [Component]
     public class fcuAltPushed : ISettable<bool>
     {
         private readonly JetBridgeSender sender;
 
-        public fcuAltPushed(IServiceProvider sp)
-        {
-            sender = sp.GetRequiredService<JetBridgeSender>();
-        }
+        public fcuAltPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuAltPushed";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
-        {
-            sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PUSH)");
-        }
+            => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PUSH)");
     }
 
     [Component]
@@ -29,10 +37,7 @@ namespace Controlzmo.Serial
     {
         private readonly JetBridgeSender sender;
 
-        public FcuAltDelta(IServiceProvider sp)
-        {
-            sender = sp.GetRequiredService<JetBridgeSender>();
-        }
+        public FcuAltDelta(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuAltDelta";
 
