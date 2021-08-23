@@ -76,6 +76,7 @@ void sendContinuous(void) {
   }
 }
 
+//TODO: consider FIFO from https://arduino-pico.readthedocs.io/en/latest/multicore.html
 void sendMomentary(void) {
   if (apuMasterPressed) {
     apuMasterPressed = false;
@@ -90,6 +91,11 @@ void sendMomentary(void) {
   if (fcuAltPushed) {
     fcuAltPushed = false;
     Serial.println("fcuAltPushed=true");
+  }
+
+  if (fcuAltPulled) {
+    fcuAltPulled = false;
+    Serial.println("fcuAltPulled=true");
   }
 }
 

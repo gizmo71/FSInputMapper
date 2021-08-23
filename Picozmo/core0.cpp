@@ -132,9 +132,6 @@ void updateContinuousInputs(void) {
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
-
-//TODO: monitor FCU into comm var? Do we still need to avoid non-atomic updates? Is there a better way?
-// Perhaps https://github.com/Locoduino/RingBuffer, but beware interrupts may not disable across cores...
 }
 
 void updateMomentaryInputs(void) {
@@ -162,21 +159,15 @@ void updateOuputs(void) {
 }
 
 void seviceQwiicButton(void) {
-  unsigned long start = millis();
+  static bool wasPressed = false;
   bool isPressed = qwiicButton.isPressed();
-  unsigned long end = millis();
-  unsigned long readTime = end - start;
+  if (!fcuAltPulled && isPressed && !wasPressed) {
+    fcuAltPulled = true;
+  }
+  wasPressed = isPressed;
+  //TODO: light it if in managed alt mode
   int brightness = isPressed ? 255 : 0;
-  start = millis();
   qwiicButton.LEDon(brightness);
-  end = millis();
-  long writeTime = end - start;
-#ifdef DO_NOT_DO_IT
-Serial.print("#\t");
-Serial.print(readTime); // ~1ms
-Serial.print('\t');
-Serial.println(writeTime); // ~2ms
-#endif
 }
 
 void loop(void) {
