@@ -9,10 +9,14 @@ extern void setup1(void) {
 }
 
 void serialEvent(void) {
-  while (Serial.available())
+  while (Serial.available()) {
     // By default, blocks for up to 1s. https://www.arduino.cc/reference/en/language/functions/communication/serial/settimeout/
-    incoming = Serial.read();
-    forceUpdate = true;
+    int c = Serial.read();
+    if (c == 'F')
+      forceUpdate = true;
+    else
+      incoming = c;
+  }
 }
 
 void sendContinuous(void) {

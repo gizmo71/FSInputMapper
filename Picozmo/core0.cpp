@@ -152,10 +152,17 @@ void updateMomentaryInputs(void) {
 }
 
 void updateOuputs(void) {
-  if (incoming != -1) {
-    digitalWrite(LED_PIN, (incoming & 1) ? HIGH : LOW);
-    incoming = -1;
-  }
+  if (incoming == 'L')
+    digitalWrite(LED_PIN, HIGH);
+  else if (incoming == 'l')
+    digitalWrite(LED_PIN, LOW);
+  else if (incoming == 'A')
+    qwiicButton.LEDon(255);
+  else if (incoming == 'a')
+    qwiicButton.LEDon(0);
+  else
+    return;
+  incoming = -1;
 }
 
 void seviceQwiicButton(void) {
@@ -165,9 +172,6 @@ void seviceQwiicButton(void) {
     fcuAltPulled = true;
   }
   wasPressed = isPressed;
-  //TODO: light it if in managed alt mode
-  int brightness = isPressed ? 255 : 0;
-  qwiicButton.LEDon(brightness);
 }
 
 void loop(void) {
