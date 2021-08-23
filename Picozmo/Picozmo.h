@@ -5,3 +5,5 @@ extern const char *volatile strobeLight, *volatile beaconLight, *volatile wingIc
 
 extern volatile int incoming;
 extern volatile bool forceUpdate;
+
+extern mutex_t mut0to1;

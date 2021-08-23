@@ -13,3 +13,5 @@ const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight,
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight;
 volatile int incoming;
 volatile bool forceUpdate = true;
+
+mutex_t mut0to1;

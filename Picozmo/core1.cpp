@@ -3,8 +3,7 @@
 #include "Picozmo.h"
 
 extern void setup1(void) {
-  sleep_ms(1000);
-  // https://www.arduino.cc/reference/en/language/functions/communication/serial/ifserial/
+  sleep_ms(1000); // Make sure Core 0 runs its setup first.
   Serial.begin(115200);
   Serial.println("setup");
 }
@@ -71,8 +70,9 @@ void sendContinuous(void) {
   if (fcuAltDelta) {
     Serial.print("fcuAltDelta=");
     Serial.println(fcuAltDeltaToSend);
-    fcuAltDelta -= fcuAltDeltaToSend; //TODO: investigate thread safety
-    // https://raspberrypi.github.io/pico-sdk-doxygen/group__pico__sync.html - not portable
+    mutex_enter_blocking(&mut0to1);
+    fcuAltDelta -= fcuAltDeltaToSend;
+    mutex_exit(&mut0to1);
   }
 }
 

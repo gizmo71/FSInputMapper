@@ -9,37 +9,43 @@ using namespace ::SimpleHacks;
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
-static Bounce apuMasterBounce;
-static Bounce apuStartBounce;
+Bounce apuMasterBounce;
+Bounce apuStartBounce;
 
-static Bounce noseLightOffBounce;
-static Bounce noseLightTakeoffBounce;
-static Bounce runwayTurnoffLightBounce;
-static Bounce landingLightBounce;
-static Bounce strobeLightOffBounce;
-static Bounce strobeLightOnBounce;
-static Bounce beaconLightBounce;
-static Bounce wingIceLightBounce;
-static Bounce navLightBounce;
+Bounce noseLightOffBounce;
+Bounce noseLightTakeoffBounce;
+Bounce runwayTurnoffLightBounce;
+Bounce landingLightBounce;
+Bounce strobeLightOffBounce;
+Bounce strobeLightOnBounce;
+Bounce beaconLightBounce;
+Bounce wingIceLightBounce;
+Bounce navLightBounce;
 
-static Bounce fcuAltPushBounce;
+Bounce fcuAltPushBounce;
 const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
-static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
+QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
 
-static QwiicButton qwiicButton;
+QwiicButton qwiicButton;
 
-void fcuAltRotated(void) {
+critical_section_t isrCritical;
+static short fcuAltDeltaIsr;
+
+void fcuAltRotatedIsr(void) {
   switch (qdec.update()) {
   case QDECODER_EVENT_CCW:
-    ++fcuAltDelta;
+    ++fcuAltDeltaIsr;
     break;
   case QDECODER_EVENT_CW:
-    --fcuAltDelta;
+    --fcuAltDeltaIsr;
     break;
   }
 }
 
 void setup(void) {
+  critical_section_init(&isrCritical);
+  mutex_init(&mut0to1);
+
   pinMode(LED_PIN, OUTPUT);
 
   apuStartBounce.attach(D14, INPUT_PULLUP);
@@ -56,8 +62,8 @@ void setup(void) {
 
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
   qdec.begin();
-  attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotated, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotated, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotatedIsr, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotatedIsr, CHANGE);
 
   Wire.setSDA(D0);
   Wire.setSCL(D1);
@@ -81,6 +87,19 @@ short calculateSpoilerHandle() {
     return min(max(3100 - spoilerHandleRaw, 0) / 20, 50);
   else
     return min(max(1100 - spoilerHandleRaw, 0) / 20, 50) + 50;
+}
+
+void updateFromInterrupts(void) {
+  {
+    critical_section_enter_blocking(&isrCritical);
+    short fcuAltDeltaTemp = fcuAltDeltaIsr;
+    fcuAltDeltaIsr = 0;
+    critical_section_exit(&isrCritical);
+
+    mutex_enter_blocking(&mut0to1);
+    fcuAltDelta += fcuAltDeltaTemp;
+    mutex_exit(&mut0to1);
+  }
 }
 
 void updateContinuousInputs(void) {
@@ -164,6 +183,6 @@ void loop(void) {
   seviceQwiicButton();
   updateContinuousInputs();
   updateMomentaryInputs();
+  updateFromInterrupts();
   updateOuputs();
-  sleep_ms(5); //TODO: do we really need this?
 }
