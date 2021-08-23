@@ -5,7 +5,6 @@
 extern void setup1(void) {
   sleep_ms(1000); // Make sure Core 0 runs its setup first.
   Serial.begin(115200);
-  Serial.println("setup");
 }
 
 void serialEvent(void) {

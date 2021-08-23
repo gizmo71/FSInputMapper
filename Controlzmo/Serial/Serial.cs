@@ -14,7 +14,7 @@ using SimConnectzmo;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class Serial : KeepAliveWorker, CreateOnStartup
+    public class SerialPico : KeepAliveWorker, CreateOnStartup
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
@@ -22,9 +22,9 @@ namespace Controlzmo.Serial
         private readonly SimConnectHolder holder;
         private readonly IDictionary<string, ISettable> settables;
 
-        public Serial(IServiceProvider serviceProvider) : base(serviceProvider)
+        public SerialPico(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _logger = serviceProvider.GetRequiredService<ILogger<Serial>>();
+            _logger = serviceProvider.GetRequiredService<ILogger<SerialPico>>();
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             settables = serviceProvider
                 .GetServices<ISettable>()
