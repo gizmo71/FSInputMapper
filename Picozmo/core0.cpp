@@ -1,3 +1,4 @@
+#include <IoAbstractionWire.h>
 #include <Arduino.h>
 #include <Bounce2.h>
 #include <qdec.h>
@@ -27,6 +28,8 @@ const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
 QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
 
 QwiicButton qwiicButton;
+
+IoAbstractionRef io23017;
 
 critical_section_t isrCritical;
 static short fcuAltDeltaIsr;
@@ -68,7 +71,13 @@ void setup(void) {
   Wire.setSDA(D0);
   Wire.setSCL(D1);
   Wire.begin();
+
   qwiicButton.begin();
+
+  io23017 = ioFrom23017(0x20);
+  for (int i = 0; i < 8; ++i)
+    io23017->pinDirection(i, INPUT_PULLUP);
+  ioDevicePinMode(io23017, 8, OUTPUT);
 }
 
 short calculateSpoilerHandle() {
@@ -160,7 +169,13 @@ void updateOuputs(void) {
     qwiicButton.LEDon(255);
   else if (incoming == 'a')
     qwiicButton.LEDon(0);
-  else
+  else if (incoming == 'X')
+    ioDeviceDigitalWrite(io23017, 8, HIGH);
+  else if (incoming == 'x')
+    ioDeviceDigitalWrite(io23017, 8, LOW);
+  else if (incoming == 's') {
+    scanI2C();
+  } else
     return;
   incoming = -1;
 }
@@ -175,9 +190,10 @@ void seviceQwiicButton(void) {
 }
 
 void loop(void) {
+  updateOuputs();
+  ioDeviceSync(io23017);
   seviceQwiicButton();
   updateContinuousInputs();
   updateMomentaryInputs();
   updateFromInterrupts();
-  updateOuputs();
 }

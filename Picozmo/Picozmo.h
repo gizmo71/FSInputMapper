@@ -7,3 +7,5 @@ extern volatile int incoming;
 extern volatile bool forceUpdate;
 
 extern mutex_t mut0to1;
+
+extern void scanI2C(void);
