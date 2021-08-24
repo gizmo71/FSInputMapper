@@ -45,6 +45,13 @@ void fcuAltRotatedIsr(void) {
   }
 }
 
+void onPressed(uint8_t pin, bool heldDown) {
+  Serial.print("# onPressed ");
+  Serial.print(pin);
+  Serial.print(" held? ");
+  Serial.println(heldDown);
+}
+
 void setup(void) {
   critical_section_init(&isrCritical);
   mutex_init(&mut0to1);
@@ -75,9 +82,14 @@ void setup(void) {
   qwiicButton.begin();
 
   io23017 = ioFrom23017(0x20);
-  for (int i = 0; i < 8; ++i)
+  switches.initialise(io23017, true);
+  ioDevicePinMode(io23017, 0, INPUT_PULLUP);
+  ioDevicePinMode(io23017, 7, INPUT_PULLUP);
+  for (int i = 0; i < 8; ++i) {
     io23017->pinDirection(i, INPUT_PULLUP);
-  ioDevicePinMode(io23017, 8, OUTPUT);
+    switches.addSwitch(i, onPressed);
+  }
+  io23017->pinDirection(8, OUTPUT);
 }
 
 short calculateSpoilerHandle() {
@@ -173,9 +185,9 @@ void updateOuputs(void) {
     ioDeviceDigitalWrite(io23017, 8, HIGH);
   else if (incoming == 'x')
     ioDeviceDigitalWrite(io23017, 8, LOW);
-  else if (incoming == 's') {
+  else if (incoming == 's')
     scanI2C();
-  } else
+  else
     return;
   incoming = -1;
 }
@@ -191,7 +203,12 @@ void seviceQwiicButton(void) {
 
 void loop(void) {
   updateOuputs();
+#if 0
+  taskManager.runLoop();
+#else
   ioDeviceSync(io23017);
+  switches.runLoop();
+#endif
   seviceQwiicButton();
   updateContinuousInputs();
   updateMomentaryInputs();
