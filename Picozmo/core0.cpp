@@ -46,9 +46,9 @@ void fcuAltRotatedIsr(void) {
 }
 
 void onPressed(uint8_t pin, bool heldDown) {
-  Serial.print("# onPressed ");
+  Serial.print("# ");
   Serial.print(pin);
-  Serial.print(" held? ");
+  Serial.print(" pressed or released; held? ");
   Serial.println(heldDown);
 }
 
@@ -88,6 +88,7 @@ void setup(void) {
   for (int i = 0; i < 8; ++i) {
     io23017->pinDirection(i, INPUT_PULLUP);
     switches.addSwitch(i, onPressed);
+    switches.onRelease(i, onPressed);
   }
   io23017->pinDirection(8, OUTPUT);
 }
@@ -203,13 +204,12 @@ void seviceQwiicButton(void) {
 
 void loop(void) {
   updateOuputs();
-#if 0
+
+  ioDeviceSync(io23017); // Why isn't this added to the task manager?
   taskManager.runLoop();
-#else
-  ioDeviceSync(io23017);
-  switches.runLoop();
-#endif
+
   seviceQwiicButton();
+
   updateContinuousInputs();
   updateMomentaryInputs();
   updateFromInterrupts();
