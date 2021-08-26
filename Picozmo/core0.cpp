@@ -8,30 +8,30 @@
 
 using namespace ::SimpleHacks;
 
-const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
-Bounce apuMasterBounce;
-Bounce apuStartBounce;
+static Bounce apuMasterBounce;
+static Bounce apuStartBounce;
 
-Bounce noseLightOffBounce;
-Bounce noseLightTakeoffBounce;
-Bounce runwayTurnoffLightBounce;
-Bounce landingLightBounce;
-Bounce strobeLightOffBounce;
-Bounce strobeLightOnBounce;
-Bounce beaconLightBounce;
-Bounce wingIceLightBounce;
-Bounce navLightBounce;
+static Bounce noseLightOffBounce;
+static Bounce noseLightTakeoffBounce;
+static Bounce runwayTurnoffLightBounce;
+static Bounce landingLightBounce;
+static Bounce strobeLightOffBounce;
+static Bounce strobeLightOnBounce;
+static Bounce beaconLightBounce;
+static Bounce navLightBounce;
 
-Bounce fcuAltPushBounce;
-const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
-QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
+static Bounce fcuAltPushBounce;
+static const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
+static const pinid_t externalLedFirstPin = 12, externalLedLastPin = 15;
+static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
 
-QwiicButton qwiicButton;
+static QwiicButton qwiicButton;
 
-IoAbstractionRef io23017;
+static IoAbstractionRef io23017;
 
-critical_section_t isrCritical;
+static critical_section_t isrCritical;
 static short fcuAltDeltaIsr;
 
 void fcuAltRotatedIsr(void) {
@@ -46,11 +46,24 @@ void fcuAltRotatedIsr(void) {
 }
 
 void onPressed(uint8_t pin, bool heldDown) {
-  Serial.print("# ");
-  Serial.print(pin);
-  Serial.print(" pressed or released; held? ");
-  Serial.println(heldDown);
+  if (!heldDown) {
+    Serial.print("# pressed ");
+    Serial.println(pin);
+  }
 }
+
+void onReleased(uint8_t pin, bool wasHeldPressedBeforeRelease) {
+  Serial.print("# released ");
+  Serial.println(pin);
+}
+
+static class : public SwitchListener {
+public:
+  const pinid_t pin = 0;
+  bool changed = false;
+  void onPressed(pinid_t pin, bool held) { if (!held) changed = true; }
+  void onReleased(pinid_t, bool) { changed = true; }
+} wingIceLightListener;
 
 void setup(void) {
   critical_section_init(&isrCritical);
@@ -60,15 +73,14 @@ void setup(void) {
 
   apuStartBounce.attach(D14, INPUT_PULLUP);
   apuMasterBounce.attach(D15, INPUT_PULLUP);
-  runwayTurnoffLightBounce.attach(D13, INPUT_PULLUP);
-  noseLightTakeoffBounce.attach(D11, INPUT_PULLUP);
-  noseLightOffBounce.attach(D10, INPUT_PULLUP);
-  landingLightBounce.attach(D12, INPUT_PULLUP);
-  strobeLightOffBounce.attach(D9, INPUT_PULLUP);
-  strobeLightOnBounce.attach(D5, INPUT_PULLUP);
-  beaconLightBounce.attach(D8, INPUT_PULLUP);
-  wingIceLightBounce.attach(D7, INPUT_PULLUP);
-  navLightBounce.attach(D6, INPUT_PULLUP);
+  runwayTurnoffLightBounce.attach(D13, INPUT_PULLUP); //TODO: MCP23017 pin 2
+  noseLightTakeoffBounce.attach(D11, INPUT_PULLUP); //TODO: MCP23017 pin 7
+  noseLightOffBounce.attach(D10, INPUT_PULLUP); //TODO: MCP23017 pin 5
+  landingLightBounce.attach(D12, INPUT_PULLUP); //TODO: MCP23017 pin 8
+  strobeLightOffBounce.attach(D9, INPUT_PULLUP); //TODO: MCP23017 pin 6
+  strobeLightOnBounce.attach(D5, INPUT_PULLUP); //TODO: MCP23017 pin 3
+  beaconLightBounce.attach(D8, INPUT_PULLUP); //TODO: MCP23017 pin 1
+  navLightBounce.attach(D6, INPUT_PULLUP); //TODO: MCP23017 pin 4
 
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
   qdec.begin();
@@ -83,14 +95,18 @@ void setup(void) {
 
   io23017 = ioFrom23017(0x20);
   switches.initialise(io23017, true);
-  ioDevicePinMode(io23017, 0, INPUT_PULLUP);
-  ioDevicePinMode(io23017, 7, INPUT_PULLUP);
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 1; i < 9; ++i) {
     io23017->pinDirection(i, INPUT_PULLUP);
     switches.addSwitch(i, onPressed);
-    switches.onRelease(i, onPressed);
+    switches.onRelease(i, onReleased);
   }
-  io23017->pinDirection(8, OUTPUT);
+
+  io23017->pinDirection(wingIceLightListener.pin, INPUT_PULLUP);
+  switches.addSwitchListener(wingIceLightListener.pin, &wingIceLightListener);
+
+  for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
+    io23017->pinDirection(i, OUTPUT);
+  }
 }
 
 short calculateSpoilerHandle() {
@@ -138,19 +154,21 @@ void updateContinuousInputs(void) {
     strobeLight = !strobeLightOffBounce.read() ? "off" : !strobeLightOnBounce.read() ? "on" : "auto";
 
   if (assumeChanged || beaconLightBounce.update())
-    beaconLight = beaconLightBounce.read() ? "true" : "false";
+    beaconLight = beaconLightBounce.read() ? "false" : "true";
 
-  if (assumeChanged || wingIceLightBounce.update())
-    wingIceLight = wingIceLightBounce.read() ? "false" : "true";
+  if (assumeChanged || wingIceLightListener.changed) {
+    wingIceLightListener.changed = false;
+    wingIceLight = switches.isSwitchPressed(wingIceLightListener.pin) ? "true" : "false";
+  }
 
   if (assumeChanged || navLightBounce.update())
-    navLight = navLightBounce.read() ? "true" : "false";
+    navLight = navLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || runwayTurnoffLightBounce.update())
     runwayTurnoffLight= runwayTurnoffLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || landingLightBounce.update())
-    landingLight = landingLightBounce.read() ? "true" : "false";
+    landingLight = landingLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
@@ -173,6 +191,12 @@ void updateMomentaryInputs(void) {
   }
 }
 
+void setExternalLeds(uint8_t value) {
+  for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
+    io23017->writeValue(i, value);
+  }
+}
+
 void updateOuputs(void) {
   if (incoming == 'L')
     digitalWrite(LED_PIN, HIGH);
@@ -183,9 +207,9 @@ void updateOuputs(void) {
   else if (incoming == 'a')
     qwiicButton.LEDon(0);
   else if (incoming == 'X')
-    ioDeviceDigitalWrite(io23017, 8, HIGH);
+    setExternalLeds(HIGH);
   else if (incoming == 'x')
-    ioDeviceDigitalWrite(io23017, 8, LOW);
+    setExternalLeds(LOW);
   else if (incoming == 's')
     scanI2C();
   else
