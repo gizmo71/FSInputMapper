@@ -16,14 +16,14 @@ static Bounce apuMasterBounce;
 static Bounce apuStartBounce;
 
 static IoBounce wingIceLightBounce(io23017);
-static Bounce noseLightOffBounce;
-static Bounce noseLightTakeoffBounce;
-static Bounce runwayTurnoffLightBounce;
-static Bounce landingLightBounce;
-static Bounce strobeLightOffBounce;
-static Bounce strobeLightOnBounce;
-static Bounce beaconLightBounce;
-static Bounce navLightBounce;
+static IoBounce noseLightOffBounce(io23017);
+static IoBounce noseLightTakeoffBounce(io23017);
+static IoBounce runwayTurnoffLightBounce(io23017);
+static IoBounce landingLightBounce(io23017);
+static IoBounce strobeLightOffBounce(io23017);
+static IoBounce strobeLightOnBounce(io23017);
+static IoBounce beaconLightBounce(io23017);
+static IoBounce navLightBounce(io23017);
 
 static Bounce fcuAltPushBounce;
 static const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
@@ -58,15 +58,15 @@ void setup(void) {
 
   apuStartBounce.attach(D14, INPUT_PULLUP);
   apuMasterBounce.attach(D15, INPUT_PULLUP);
-  runwayTurnoffLightBounce.attach(D13, INPUT_PULLUP); //TODO: MCP23017 pin 2
-  noseLightTakeoffBounce.attach(D11, INPUT_PULLUP); //TODO: MCP23017 pin 7
-  noseLightOffBounce.attach(D10, INPUT_PULLUP); //TODO: MCP23017 pin 5
-  landingLightBounce.attach(D12, INPUT_PULLUP); //TODO: MCP23017 pin 8
-  strobeLightOffBounce.attach(D9, INPUT_PULLUP); //TODO: MCP23017 pin 6
-  strobeLightOnBounce.attach(D5, INPUT_PULLUP); //TODO: MCP23017 pin 3
-  beaconLightBounce.attach(D8, INPUT_PULLUP); //TODO: MCP23017 pin 1
-  navLightBounce.attach(D6, INPUT_PULLUP); //TODO: MCP23017 pin 4
 
+  beaconLightBounce.attach(1, INPUT_PULLUP);
+  landingLightBounce.attach(8, INPUT_PULLUP);
+  navLightBounce.attach(4, INPUT_PULLUP);
+  noseLightTakeoffBounce.attach(7, INPUT_PULLUP);
+  noseLightOffBounce.attach(5, INPUT_PULLUP);
+  runwayTurnoffLightBounce.attach(2, INPUT_PULLUP);
+  strobeLightOffBounce.attach(6, INPUT_PULLUP);
+  strobeLightOnBounce.attach(3, INPUT_PULLUP);
   wingIceLightBounce.attach(0, INPUT_PULLUP);
 
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
@@ -126,19 +126,19 @@ void updateContinuousInputs(void) {
     strobeLight = !strobeLightOffBounce.read() ? "off" : !strobeLightOnBounce.read() ? "on" : "auto";
 
   if (assumeChanged || beaconLightBounce.update())
-    beaconLight = beaconLightBounce.read() ? "false" : "true";
+    beaconLight = beaconLightBounce.read() ? "true" : "false";
 
   if (assumeChanged || wingIceLightBounce.update())
     wingIceLight = wingIceLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || navLightBounce.update())
-    navLight = navLightBounce.read() ? "false" : "true";
+    navLight = navLightBounce.read() ? "true" : "false";
 
   if (assumeChanged || runwayTurnoffLightBounce.update())
     runwayTurnoffLight= runwayTurnoffLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || landingLightBounce.update())
-    landingLight = landingLightBounce.read() ? "false" : "true";
+    landingLight = landingLightBounce.read() ? "true" : "false";
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
