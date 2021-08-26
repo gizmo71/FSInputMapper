@@ -1,18 +1,21 @@
 #include <IoAbstractionWire.h>
 #include <Arduino.h>
-#include <Bounce2.h>
 #include <qdec.h>
 #include <SparkFun_Qwiic_Button.h>
 
+#include "IoBounce2.h"
 #include "Picozmo.h"
 
 using namespace ::SimpleHacks;
 
 static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
+static IoAbstractionRef io23017 = ioFrom23017(0x20);
+
 static Bounce apuMasterBounce;
 static Bounce apuStartBounce;
 
+static IoBounce wingIceLightBounce(io23017);
 static Bounce noseLightOffBounce;
 static Bounce noseLightTakeoffBounce;
 static Bounce runwayTurnoffLightBounce;
@@ -29,8 +32,6 @@ static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
 
 static QwiicButton qwiicButton;
 
-static IoAbstractionRef io23017;
-
 static critical_section_t isrCritical;
 static short fcuAltDeltaIsr;
 
@@ -45,29 +46,13 @@ void fcuAltRotatedIsr(void) {
   }
 }
 
-void onPressed(uint8_t pin, bool heldDown) {
-  if (!heldDown) {
-    Serial.print("# pressed ");
-    Serial.println(pin);
-  }
-}
-
-void onReleased(uint8_t pin, bool wasHeldPressedBeforeRelease) {
-  Serial.print("# released ");
-  Serial.println(pin);
-}
-
-static class : public SwitchListener {
-public:
-  const pinid_t pin = 0;
-  bool changed = false;
-  void onPressed(pinid_t pin, bool held) { if (!held) changed = true; }
-  void onReleased(pinid_t, bool) { changed = true; }
-} wingIceLightListener;
-
 void setup(void) {
   critical_section_init(&isrCritical);
   mutex_init(&mut0to1);
+
+  Wire.setSDA(D0);
+  Wire.setSCL(D1);
+  Wire.begin();
 
   pinMode(LED_PIN, OUTPUT);
 
@@ -82,27 +67,14 @@ void setup(void) {
   beaconLightBounce.attach(D8, INPUT_PULLUP); //TODO: MCP23017 pin 1
   navLightBounce.attach(D6, INPUT_PULLUP); //TODO: MCP23017 pin 4
 
+  wingIceLightBounce.attach(0, INPUT_PULLUP);
+
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
   qdec.begin();
   attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotatedIsr, CHANGE);
   attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotatedIsr, CHANGE);
 
-  Wire.setSDA(D0);
-  Wire.setSCL(D1);
-  Wire.begin();
-
   qwiicButton.begin();
-
-  io23017 = ioFrom23017(0x20);
-  switches.initialise(io23017, true);
-  for (int i = 1; i < 9; ++i) {
-    io23017->pinDirection(i, INPUT_PULLUP);
-    switches.addSwitch(i, onPressed);
-    switches.onRelease(i, onReleased);
-  }
-
-  io23017->pinDirection(wingIceLightListener.pin, INPUT_PULLUP);
-  switches.addSwitchListener(wingIceLightListener.pin, &wingIceLightListener);
 
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
     io23017->pinDirection(i, OUTPUT);
@@ -156,10 +128,8 @@ void updateContinuousInputs(void) {
   if (assumeChanged || beaconLightBounce.update())
     beaconLight = beaconLightBounce.read() ? "false" : "true";
 
-  if (assumeChanged || wingIceLightListener.changed) {
-    wingIceLightListener.changed = false;
-    wingIceLight = switches.isSwitchPressed(wingIceLightListener.pin) ? "true" : "false";
-  }
+  if (assumeChanged || wingIceLightBounce.update())
+    wingIceLight = wingIceLightBounce.read() ? "false" : "true";
 
   if (assumeChanged || navLightBounce.update())
     navLight = navLightBounce.read() ? "false" : "true";
