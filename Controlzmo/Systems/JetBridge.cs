@@ -57,7 +57,7 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
 
         public int Execute(ExtendedSimConnect simConnect, string code)
         {
-            var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"x{code}" };
+            var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
             simConnect.SendDataOnSimObject(data);
             return data.id;
         }
