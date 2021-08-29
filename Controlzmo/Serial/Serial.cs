@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO.Ports;
-using System.Linq;
-using System.Text.Json;
-using System.Text.RegularExpressions;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.Lights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Controlzmo.Serial
 {
@@ -47,15 +48,13 @@ namespace Controlzmo.Serial
 
             _serialPort.Open();
 
-            Send('F');
+            SendLine("SyncInputs");
         }
 
-        private byte[] writeData = { 0 };
-
-        public void Send(char value)
+        public void SendLine(string value)
         {
-            writeData[0] = (byte)value;
-            _serialPort.Write(writeData, 0, 1);
+            byte[] data = Encoding.ASCII.GetBytes(value + "\n");
+            _serialPort.Write(data, 0, data.Length);
         }
 
         private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);

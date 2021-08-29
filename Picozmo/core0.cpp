@@ -161,30 +161,15 @@ void updateMomentaryInputs(void) {
   }
 }
 
-void setExternalLeds(uint8_t value) {
-  for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
-    io23017->writeValue(i, value);
-  }
-}
-
 void updateOuputs(void) {
-  if (incoming == 'L')
-    digitalWrite(LED_PIN, HIGH);
-  else if (incoming == 'l')
-    digitalWrite(LED_PIN, LOW);
-  else if (incoming == 'A')
-    qwiicButton.LEDon(255);
-  else if (incoming == 'a')
-    qwiicButton.LEDon(0);
-  else if (incoming == 'X')
-    setExternalLeds(HIGH);
-  else if (incoming == 'x')
-    setExternalLeds(LOW);
-  else if (incoming == 's')
-    scanI2C();
-  else
-    return;
-  incoming = -1;
+  digitalWrite(LED_PIN, HIGH);
+  qwiicButton.LEDon(255);
+
+  int i = externalLedFirstPin;
+  io23017->writeValue(i++, apuFault ? HIGH : LOW);
+  io23017->writeValue(i++, apuMasterOn ? HIGH : LOW);
+  io23017->writeValue(i++, apuAvail ? HIGH : LOW);
+  io23017->writeValue(i, apuStartOn ? HIGH : LOW);
 }
 
 void seviceQwiicButton(void) {

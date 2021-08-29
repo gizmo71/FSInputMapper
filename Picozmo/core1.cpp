@@ -4,17 +4,42 @@
 
 extern void setup1(void) {
   sleep_ms(1000); // Make sure Core 0 runs its setup first.
+  Serial.setTimeout(100);
   Serial.begin(115200);
+}
+
+void process(String name, String value) {
+  if (name == "ApuFault")
+    apuFault = value == "true";
+  else if (name == "ApuMasterOn")
+    apuMasterOn = value == "true";
+  else if (name == "ApuAvail")
+    apuAvail = value == "true";
+  else if (name == "ApuStartOn")
+    apuStartOn = value == "true";
+  else {
+    Serial.print("# Don't know what ");
+    Serial.print(name);
+    Serial.print(" is to set it to ");
+    Serial.println(value);
+  }
 }
 
 void serialEvent(void) {
   while (Serial.available()) {
-    // By default, blocks for up to 1s. https://www.arduino.cc/reference/en/language/functions/communication/serial/settimeout/
-    int c = Serial.read();
-    if (c == 'F')
+    String s = Serial.readString();
+    s.trim();
+    int split = s.indexOf("=");
+    if (s == "SyncInputs")
       forceUpdate = true;
-    else
-      incoming = c;
+    else if (s == "Scan")
+      scanI2C();
+    else if (split > 0 && split < s.length() - 1)
+      process(s.substring(0, split), s.substring(split + 1));
+    else {
+      Serial.print("# unknown instruction ");
+      Serial.println(s);
+    }
   }
 }
 
