@@ -49,6 +49,7 @@ namespace Controlzmo.Serial
             _serialPort.Open();
 
             SendLine("SyncInputs");
+            //TODO: ensure that all lights are sent correctly, reading LVars if needed.
         }
 
         public void SendLine(string value)
