@@ -328,7 +328,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
         {
-            _logging!.LogError($"**--**--**\n\t\t\t\tReceived systemstate {(REQUEST)data.dwRequestID} with {data.szString}\n**--**--**");
+            _logging!.LogError($"Received system state {(REQUEST)data.dwRequestID} with {data.szString}");
         }
     }
 }
