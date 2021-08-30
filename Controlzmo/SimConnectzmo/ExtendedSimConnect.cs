@@ -10,10 +10,11 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace SimConnectzmo
 {
-    internal enum REQUEST { }
+    // Change ENUM_DYNAMIC_START if you need more internal values.
+    internal enum REQUEST { AircraftLoaded = 1 }
     internal enum STRUCT { }
-    internal enum EVENT { }
-    internal enum GROUP { JUST_MASKABLE = 666 }
+    internal enum EVENT { SimSystemState = 1 }
+    internal enum GROUP { JUST_MASKABLE = 1 }
 
     public interface IOnSimConnection
     {
@@ -67,13 +68,14 @@ namespace SimConnectzmo
 
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
         {
+            const int ENUM_DYNAMIC_START = 10; // Leave some space for explicit enum values.
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()
                 .Select(candidate => candidate.GetStructType())
                 .Distinct()
-                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + 1)))
+                .Select((structType, index) => new ValueTuple<Type, STRUCT>(structType, (STRUCT)(index + ENUM_DYNAMIC_START)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             typeToClientDataName = serviceProvider
@@ -84,12 +86,12 @@ namespace SimConnectzmo
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             typeToRequest = serviceProvider.GetServices<IDataListener>()
-                .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + 1)))
+                .Select((request, index) => new ValueTuple<IDataListener, REQUEST>(request, (REQUEST)(index + ENUM_DYNAMIC_START)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 //TODO: check that the struct is also registered
 
             eventToEnum = serviceProvider.GetServices<IEvent>()
-                .Select((e, index) => new ValueTuple<IEvent, EVENT>(e, (EVENT)(index + 1)))
+                .Select((e, index) => new ValueTuple<IEvent, EVENT>(e, (EVENT)(index + ENUM_DYNAMIC_START)))
                 .ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
@@ -100,18 +102,14 @@ namespace SimConnectzmo
             return this;
         }
 
-        internal enum SystemEvent
-        {
-            AircraftLoaded = 666, Sim
-        }
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
 
-SubscribeToSystemEvent(SystemEvent.Sim, "Sim");
-System.Console.Error.WriteLine($"Requested SimStart subscription {GetLastSentPacketID()}");
+            SubscribeToSystemEvent(EVENT.SimSystemState, "Sim");
+            _logging.LogInformation($"Requested SimStart subscription {GetLastSentPacketID()}");
 
             TriggerInitialRequests();
         }
@@ -307,17 +305,16 @@ System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSen
 
         private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
-if (data.uEventID >= 666)
-{ // This handler also gets system events!
-    _logging.LogError($"**--**--**\n\t\t\t\tIgnoring event {(SystemEvent)data.uEventID} with {(int)data.dwData}\n**--**--**");
-    if (data.dwData == 1)
-    {
-        RequestSystemState(SystemEvent.AircraftLoaded, "AircraftLoaded");
-        System.Console.Error.WriteLine($"Requested AircraftLoaded {GetLastSentPacketID()}");
-    }
-    return;
-}
             EVENT e = (EVENT)data.uEventID;
+            if (e == EVENT.SimSystemState)
+            { // This handler also gets system events!
+                if (data.dwData == 1)
+                {
+                    RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
+                    _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
+                }
+                return;
+            }
             IEnumerable<IEventNotification> notifications = notificationsToEvent!
                 .Where(candidate => e == candidate.Value)
                 .Select(candidate => candidate.Key);
@@ -331,7 +328,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
         {
-            _logging!.LogError($"**--**--**\n\t\t\t\tReceived systemstate {(SystemEvent)data.dwRequestID} with {data.szString}\n**--**--**");
+            _logging!.LogError($"**--**--**\n\t\t\t\tReceived systemstate {(REQUEST)data.dwRequestID} with {data.szString}\n**--**--**");
         }
     }
 }
