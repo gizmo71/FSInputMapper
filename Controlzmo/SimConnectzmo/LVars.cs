@@ -23,14 +23,14 @@ namespace Controlzmo.SimConnectzmo
         }
 
         protected abstract string LVarName();
-        protected abstract int Milliseconds();
-        protected abstract double Default();
+        protected virtual int Milliseconds() => 167;
+        protected virtual double Default() => -1;
 
         public static implicit operator double?(LVar lVar) => lVar.Value;
 
         public void Request(ExtendedSimConnect simConnect)
         {
-            //TODO: remove this method and force the other one?
+            //TODO: remove this method and force the other one, remiving Milliseconds()?
             Request(simConnect, Milliseconds());
         }
 
