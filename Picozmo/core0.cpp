@@ -163,7 +163,8 @@ void updateMomentaryInputs(void) {
 
 void updateOuputs(void) {
   digitalWrite(LED_PIN, HIGH);
-  qwiicButton.LEDon(255);
+
+  qwiicButton.LEDon(fcuAltManaged ? 63 : 0);
 
   int i = externalLedFirstPin;
   io23017->writeValue(i++, apuFault ? HIGH : LOW);

@@ -17,6 +17,8 @@ void process(String name, String value) {
     apuAvail = value == "true";
   else if (name == "ApuStartOn")
     apuStartOn = value == "true";
+  else if (name == "FcuAltManaged")
+    fcuAltManaged = value == "true";
   else {
     Serial.print("# Don't know what ");
     Serial.print(name);

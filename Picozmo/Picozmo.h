@@ -5,7 +5,7 @@ extern const char *volatile strobeLight, *volatile beaconLight, *volatile wingIc
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight;
 
 // These communicate from core1 to core0.
-extern volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail;
+extern volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged;
 
 extern mutex_t mut0to1, mut1to0;
 

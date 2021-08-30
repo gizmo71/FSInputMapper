@@ -8,7 +8,7 @@ using System;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    public class FcuAltMode : LVar, IOnSimConnection
+    public class FcuAltMode : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
 
@@ -18,11 +18,11 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
 
         protected override string LVarName() => "A32NX_FCU_ALT_MANAGED";
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine(Value switch { 0 => "A", 1 => "a", _ => $"=Unknown FCU alt {Value}" });
+        private void send() => serial.SendLine("FcuAltManaged=" + (Value == 1));
     }
 
     [Component]
