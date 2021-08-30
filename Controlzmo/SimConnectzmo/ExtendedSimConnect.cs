@@ -119,7 +119,7 @@ namespace SimConnectzmo
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
             {
-                // You'll get an exception from this when MSFS isn't fully started.
+                // You'll get an exception from this if we haven't previous request it at all.
                 RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
                 // The above is an attempt to get the below to work when a web client connects after SimConnect already running.
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
