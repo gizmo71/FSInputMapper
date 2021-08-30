@@ -15,11 +15,10 @@ using System.Text.RegularExpressions;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class SerialPico : KeepAliveWorker, CreateOnStartup
+    public class SerialPico : KeepAliveWorker, IOnSimStarted
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
-        private readonly RunwayTurnoffLightSystem lights;
         private readonly SimConnectHolder holder;
         private readonly IDictionary<string, ISettable> settables;
 
@@ -31,8 +30,6 @@ namespace Controlzmo.Serial
                 .GetServices<ISettable>()
                 .ToDictionary(settable => settable.GetId(), settable => settable);
 
-            lights = serviceProvider.GetRequiredService<RunwayTurnoffLightSystem>();
-
             _serialPort = new SerialPort(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
             _serialPort.StopBits = StopBits.One;
             _serialPort.Handshake = Handshake.RequestToSend;
@@ -41,15 +38,17 @@ namespace Controlzmo.Serial
             _serialPort.WriteTimeout = 10000;
         }
 
+        public void OnStarted(ExtendedSimConnect simConnect)
+        {
+            SendLine("SyncInputs");
+        }
+
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
             if (holder.SimConnect == null)
                 throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached");
 
             _serialPort.Open();
-
-            SendLine("SyncInputs");
-            //TODO: ensure that all lights are sent correctly, reading LVars if needed.
         }
 
         public void SendLine(string value)

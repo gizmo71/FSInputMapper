@@ -3,6 +3,16 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace SimConnectzmo
 {
+    public interface IOnSimConnection
+    {
+        public void OnConnection(ExtendedSimConnect simConnect);
+    }
+
+    public interface IOnSimStarted
+    {
+        public void OnStarted(ExtendedSimConnect simConnect);
+    }
+
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class EventAttribute : Attribute
     {

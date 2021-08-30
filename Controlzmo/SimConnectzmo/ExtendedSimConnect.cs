@@ -16,11 +16,6 @@ namespace SimConnectzmo
     internal enum EVENT { SimSystemState = 1 }
     internal enum GROUP { JUST_MASKABLE = 1 }
 
-    public interface IOnSimConnection
-    {
-        public void OnConnection(ExtendedSimConnect simConnect);
-    }
-
     public class ExtendedSimConnect : SimConnect
     {
         private static readonly IntPtr hWnd = IntPtr.Zero;
@@ -38,6 +33,8 @@ namespace SimConnectzmo
         [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
         private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
         private readonly IntPtr hSimConnect;
+
+        public bool IsConnected;
 
         public UInt32 GetLastSentPacketID()
         {
@@ -303,16 +300,12 @@ System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSen
             listener.Process(this, data.dwData[0]);
         }
 
-        private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
+        private void Handle_OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             EVENT e = (EVENT)data.uEventID;
             if (e == EVENT.SimSystemState)
-            { // This handler also gets system events!
-                if (data.dwData == 1)
-                {
-                    RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
-                    _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
-                }
+            {
+                HandleSimSystemStateEvent(simConnect, data);
                 return;
             }
             IEnumerable<IEventNotification> notifications = notificationsToEvent!
@@ -323,6 +316,15 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             foreach (IEventNotification notification in notifications)
             {
                 notification.OnRecieve(this, data);
+            }
+        }
+
+        private void HandleSimSystemStateEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
+        {
+            if (IsConnected = (data.dwData == 1))
+            {
+                RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
+                _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
             }
         }
 
