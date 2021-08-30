@@ -54,6 +54,7 @@ namespace SimConnectzmo
             OnRecvClientData += Handle_OnRecvSimobjectData;
             OnRecvEvent += Handle_OnRecvEvent;
             OnRecvException += Handle_Exception;
+            OnRecvSystemState += Handle_OnRecvSystemState;
 
             FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
             hSimConnect = (IntPtr)fiSimConnect!.GetValue(this)!;
@@ -99,11 +100,18 @@ namespace SimConnectzmo
             return this;
         }
 
+        internal enum SystemEvent
+        {
+            AircraftLoaded = 666, Sim
+        }
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
+
+SubscribeToSystemEvent(SystemEvent.Sim, "Sim");
+System.Console.Error.WriteLine($"Requested SimStart subscription {GetLastSentPacketID()}");
 
             TriggerInitialRequests();
         }
@@ -293,12 +301,22 @@ System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSen
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
                 .Single();
-            _logging!.LogDebug($"Received {request} for {listener}");
+            _logging!.LogDebug($"Received {request} for {listener} via OnRecvSimobjectData");
             listener.Process(this, data.dwData[0]);
         }
 
         private void Handle_OnRecvEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
+if (data.uEventID >= 666)
+{ // This handler also gets system events!
+    _logging.LogError($"**--**--**\n\t\t\t\tIgnoring event {(SystemEvent)data.uEventID} with {(int)data.dwData}\n**--**--**");
+    if (data.dwData == 1)
+    {
+        RequestSystemState(SystemEvent.AircraftLoaded, "AircraftLoaded");
+        System.Console.Error.WriteLine($"Requested AircraftLoaded {GetLastSentPacketID()}");
+    }
+    return;
+}
             EVENT e = (EVENT)data.uEventID;
             IEnumerable<IEventNotification> notifications = notificationsToEvent!
                 .Where(candidate => e == candidate.Value)
@@ -309,6 +327,11 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             {
                 notification.OnRecieve(this, data);
             }
+        }
+
+        private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
+        {
+            _logging!.LogError($"**--**--**\n\t\t\t\tReceived systemstate {(SystemEvent)data.dwRequestID} with {data.szString}\n**--**--**");
         }
     }
 }
