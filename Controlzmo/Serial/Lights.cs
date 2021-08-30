@@ -18,7 +18,7 @@ namespace Controlzmo.Serial
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
-            sender.Execute(simConnect, $"(A:LIGHT BEACON ON, Bool) {desiredValue} = if {{ 0 (>K:TOGGLE_BEACON_LIGHTS) }}");
+            sender.Execute(simConnect, $"(A:LIGHT BEACON, Bool) {desiredValue} = if {{ 0 (>K:TOGGLE_BEACON_LIGHTS) }}");
         }
     }
 
@@ -34,7 +34,7 @@ namespace Controlzmo.Serial
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
-            sender.Execute(simConnect, $"(A:LIGHT WING ON, Bool) {desiredValue} = if {{ 0 (>K:TOGGLE_WING_LIGHTS) }}");
+            sender.Execute(simConnect, $"(A:LIGHT WING, Bool) {desiredValue} = if {{ 0 (>K:TOGGLE_WING_LIGHTS) }}");
         }
     }
 }
