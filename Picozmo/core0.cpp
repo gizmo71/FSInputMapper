@@ -1,4 +1,4 @@
-#include <IoAbstractionWire.h>
+#include <IoAbstractionWire.h> // https://www.thecoderscorner.com/products/arduino-libraries/io-abstraction/ioabstraction-pins-io-expanders-shiftreg/
 #include <Arduino.h>
 #include <qdec.h>
 #include <SparkFun_Qwiic_Button.h>
