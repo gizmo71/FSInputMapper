@@ -28,7 +28,7 @@ static IoBounce navLightBounce(io23017);
 static Bounce fcuAltPushBounce;
 static const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
 static const pinid_t externalLedFirstPin = 12, externalLedLastPin = 15;
-static QDecoder qdec(fcuAltPinA, fcuAltPinB, true);
+static QDecoder qdec(fcuAltPinA, fcuAltPinB, false); // Use "true" for 24PPR, or "false" for 12PPR.
 
 static QwiicButton qwiicButton;
 
