@@ -35,11 +35,5 @@ See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
 
 Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INPUT CONTROL` in air.
 
-APU:
-* Master button states: `L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON`, `L:A32NX_OVHD_APU_MASTER_SW_PB_HAS_FAULT`
-* Start button states: `L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE`, `L:A32NX_OVHD_APU_START_PB_IS_ON`
-* Bleed button states: `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-* Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-
 Note that there's much better documentation on the RPN on the P3D site:
 http://www.prepar3d.com/SDKv3/LearningCenter/utilities/scripting/rpn_scripting.html
