@@ -1,17 +1,17 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.Systems.Lights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Controlzmo.Serial
 {
@@ -39,25 +39,39 @@ namespace Controlzmo.Serial
             _serialPort.WriteTimeout = 10000;
         }
 
-        public void OnStarted(ExtendedSimConnect simConnect)
+        public void OnStarted(ExtendedSimConnect? _)
         {
-            SendLine("SyncInputs");
+            //TODO: do syncs in both directions only when both SimConnect and the Serial port are running and the sim is started.
+            if (_serialPort.IsOpen)
+            {
+                var syncTimer = new System.Timers.Timer(5000);
+                syncTimer.AutoReset = false;
+                syncTimer.Elapsed += (object sender, ElapsedEventArgs args) => SendLine("SyncInputs");
+                syncTimer.Start();
+            }
         }
 
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
-            if (holder.SimConnect == null)
-                throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached");
+//TODO: remove this interdependency
+            if (!holder.SimConnect!.IsSimStared)
+                throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached with the sim running");
 
             _serialPort.Open();
+            OnStarted(holder.SimConnect);
         }
 
         public void SendLine(string value)
         {
+            if (!_serialPort.IsOpen)
+            {
+                _logger.LogWarning($"Cannot send '{value}' because serial port isn't open");
+                return;
+            }
 _logger.LogInformation($"Sending '{value}'");
             byte[] data = Encoding.ASCII.GetBytes(value + "\n");
             _serialPort.Write(data, 0, data.Length);
-            //TODO: fix Picozmo to cope with getting multiple lines in rapid succession, and then remove this sleep.
+//TODO: fix Picozmo to cope with getting multiple lines in rapid succession, and then remove this sleep.
 Thread.Sleep(100);
         }
 

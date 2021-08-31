@@ -35,7 +35,7 @@ namespace SimConnectzmo
         private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
         private readonly IntPtr hSimConnect;
 
-        public bool IsConnected;
+        public bool IsSimStared;
 
         public UInt32 GetLastSentPacketID()
         {
@@ -131,7 +131,7 @@ namespace SimConnectzmo
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            throw new NotImplementedException("Is it enough to tust through this? Is there anything else we should clean up?");
+            throw new NotImplementedException("Is it enough to trust through this? Is there anything else we should clean up?");
         }
 
         private void RegisterDataStructs()
@@ -323,7 +323,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void HandleSimSystemStateEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
-            if (IsConnected = (data.dwData == 1))
+            if (IsSimStared = (data.dwData == 1))
             {
                 RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
                 _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
