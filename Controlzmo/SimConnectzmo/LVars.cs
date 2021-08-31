@@ -28,9 +28,10 @@ namespace Controlzmo.SimConnectzmo
 
         public static implicit operator double?(LVar lVar) => lVar.Value;
 
+        //TODO: remove this method and force the other one, removing Milliseconds()?
         public void Request(ExtendedSimConnect simConnect)
         {
-            //TODO: remove this method and force the other one, remiving Milliseconds()?
+            Value = Default();
             Request(simConnect, Milliseconds());
         }
 
