@@ -71,8 +71,6 @@ namespace Controlzmo.Serial
 _logger.LogInformation($"Sending '{value}'");
             byte[] data = Encoding.ASCII.GetBytes(value + "\n");
             _serialPort.Write(data, 0, data.Length);
-//TODO: fix Picozmo to cope with getting multiple lines in rapid succession, and then remove this sleep.
-Thread.Sleep(100);
         }
 
         private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);

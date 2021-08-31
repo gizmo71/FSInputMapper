@@ -10,27 +10,29 @@ extern void setup1(void) {
 
 void process(String name, String value) {
   if (name == "ApuFault")
-    apuFault = value == "true";
+    apuFault = value == "True";
   else if (name == "ApuMasterOn")
-    apuMasterOn = value == "true";
+    apuMasterOn = value == "True";
   else if (name == "ApuAvail")
-    apuAvail = value == "true";
+    apuAvail = value == "True";
   else if (name == "ApuStartOn")
-    apuStartOn = value == "true";
+    apuStartOn = value == "True";
   else if (name == "FcuAltManaged")
-    fcuAltManaged = value == "true";
+    fcuAltManaged = value == "True";
   else {
-    Serial.print("# Don't know what ");
+    Serial.print("# Don't know what '");
     Serial.print(name);
-    Serial.print(" is to set it to ");
-    Serial.println(value);
+    Serial.print("' is to set it to '");
+    Serial.print(value);
+    Serial.println("'");
   }
 }
 
 void serialEvent(void) {
   while (Serial.available()) {
-    String s = Serial.readString();
+    String s = Serial.readStringUntil('\n');
     s.trim();
+//Serial.print("# Attempting '"); Serial.print(s); Serial.println("'");
     int split = s.indexOf("=");
     if (s == "SyncInputs")
       forceUpdate = true;
