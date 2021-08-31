@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO.Ports;
@@ -53,8 +54,11 @@ namespace Controlzmo.Serial
 
         public void SendLine(string value)
         {
+_logger.LogInformation($"Sending '{value}'");
             byte[] data = Encoding.ASCII.GetBytes(value + "\n");
             _serialPort.Write(data, 0, data.Length);
+            //TODO: fix Picozmo to cope with getting multiple lines in rapid succession, and then remove this sleep.
+Thread.Sleep(100);
         }
 
         private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);

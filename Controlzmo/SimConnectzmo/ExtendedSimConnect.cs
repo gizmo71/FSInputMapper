@@ -28,6 +28,7 @@ namespace SimConnectzmo
         private Dictionary<IEvent, EVENT>? eventToEnum;
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
         private IEnumerable<IOnSimConnection>? onConnectionHandlers;
+        private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
 
         // https://www.fsdeveloper.com/forum/threads/simconnect-getlastsentpacketid-for-managed-code.438397/
         [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
@@ -95,6 +96,7 @@ namespace SimConnectzmo
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
             onConnectionHandlers = serviceProvider.GetServices<IOnSimConnection>();
+            onSimStartedHandlers = serviceProvider.GetServices<IOnSimStarted>();
 
             return this;
         }
@@ -325,6 +327,13 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             {
                 RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
                 _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
+                foreach (var handler in onSimStartedHandlers!)
+                    handler.OnStarted(this);
+                TriggerInitialRequests();
+            }
+            else
+            {
+                //TODO: send NEVER requests
             }
         }
 

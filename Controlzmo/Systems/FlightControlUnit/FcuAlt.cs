@@ -8,6 +8,7 @@ using System;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
+    [Component]
     public class FcuAltMode : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
@@ -22,7 +23,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("FcuAltManaged=" + (Value == 1));
+        private void send() => serial.SendLine("FcuAltManaged=" + (Value == 1 ? "true" : "false"));
     }
 
     [Component]

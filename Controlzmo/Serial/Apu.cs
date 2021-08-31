@@ -9,6 +9,7 @@ using System;
 // Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
 namespace Controlzmo.Serial
 {
+    [Component]
     public class ApuFault : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
@@ -23,9 +24,10 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuFault=" + (Value == 1));
+        private void send() => serial.SendLine("ApuFault=" + (Value == 1 ? "true" : "false"));
     }
 
+    [Component]
     public class ApuMasterOn : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
@@ -40,7 +42,7 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuMasterOn=" + (Value == 1));
+        private void send() => serial.SendLine("ApuMasterOn=" + (Value == 1 ? "true" : "false"));
     }
 
     [Component]
@@ -76,9 +78,10 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuAvail=" + (Value == 1));
+        private void send() => serial.SendLine("ApuAvail=" + (Value == 1 ? "true" : "false"));
     }
 
+    [Component]
     public class ApuStartOn : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
@@ -93,9 +96,10 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuStartOn=" + (Value == 1));
+        private void send() => serial.SendLine("ApuStartOn=" + (Value == 1 ? "true" : "false"));
     }
 
+    [Component]
     public class ApuStartButton : ISettable<bool?>
     {
         private readonly JetBridgeSender sender;
