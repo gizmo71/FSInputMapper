@@ -117,12 +117,8 @@ namespace SimConnectzmo
         {
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
-            {
-                // You'll get an exception from this if we haven't previous requested it at all.
-                RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
-                // The above is an attempt to get the below to work when a web client connects after SimConnect already running.
+                // Note that on SimStop we issue NEVERs to ensure that we start getting stuff again on SimStart.
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
-            }
 
             //TODO: can/should we convert the above into the below?
             foreach (var handler in onConnectionHandlers!)
@@ -332,9 +328,8 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
                 TriggerInitialRequests();
             }
             else
-            {
-                //TODO: send NEVER requests
-            }
+                foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
+                    RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
         }
 
         private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
