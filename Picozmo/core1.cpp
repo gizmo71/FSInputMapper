@@ -112,22 +112,22 @@ void sendContinuous(void) {
 void sendMomentary(void) {
   if (apuMasterPressed) {
     apuMasterPressed = false;
-    Serial.println("apuMasterPressed=true");
+    Serial.println("apuMasterPressed=True");
   }
 
   if (apuStartPressed) {
     apuStartPressed = false;
-    Serial.println("apuStartPressed=true");
+    Serial.println("apuStartPressed=True");
   }
 
   if (fcuAltPushed) {
     fcuAltPushed = false;
-    Serial.println("fcuAltPushed=true");
+    Serial.println("fcuAltPushed=True");
   }
 
   if (fcuAltPulled) {
     fcuAltPulled = false;
-    Serial.println("fcuAltPulled=true");
+    Serial.println("fcuAltPulled=True");
   }
 }
 

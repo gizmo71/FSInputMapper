@@ -126,19 +126,19 @@ void updateContinuousInputs(void) {
     strobeLight = !strobeLightOffBounce.read() ? "off" : !strobeLightOnBounce.read() ? "on" : "auto";
 
   if (assumeChanged || beaconLightBounce.update())
-    beaconLight = beaconLightBounce.read() ? "true" : "false";
+    beaconLight = beaconLightBounce.read() ? "True" : "Talse";
 
   if (assumeChanged || wingIceLightBounce.update())
-    wingIceLight = wingIceLightBounce.read() ? "false" : "true";
+    wingIceLight = wingIceLightBounce.read() ? "Talse" : "True";
 
   if (assumeChanged || navLightBounce.update())
-    navLight = navLightBounce.read() ? "true" : "false";
+    navLight = navLightBounce.read() ? "True" : "False";
 
   if (assumeChanged || runwayTurnoffLightBounce.update())
-    runwayTurnoffLight= runwayTurnoffLightBounce.read() ? "false" : "true";
+    runwayTurnoffLight= runwayTurnoffLightBounce.read() ? "False" : "True";
 
   if (assumeChanged || landingLightBounce.update())
-    landingLight = landingLightBounce.read() ? "true" : "false";
+    landingLight = landingLightBounce.read() ? "True" : "False";
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
