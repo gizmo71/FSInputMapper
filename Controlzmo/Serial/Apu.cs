@@ -24,7 +24,7 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuFault=" + (Value == 1 ? "true" : "false"));
+        private void send() => serial.SendLine("ApuFault=" + (Value == 1));
     }
 
     [Component]
@@ -42,7 +42,7 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuMasterOn=" + (Value == 1 ? "true" : "false"));
+        private void send() => serial.SendLine("ApuMasterOn=" + (Value == 1));
     }
 
     [Component]
@@ -78,7 +78,7 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuAvail=" + (Value == 1 ? "true" : "false"));
+        private void send() => serial.SendLine("ApuAvail=" + (Value == 1));
     }
 
     [Component]
@@ -96,7 +96,7 @@ namespace Controlzmo.Serial
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("ApuStartOn=" + (Value == 1 ? "true" : "false"));
+        private void send() => serial.SendLine("ApuStartOn=" + (Value == 1));
     }
 
     [Component]
