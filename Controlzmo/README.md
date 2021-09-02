@@ -46,7 +46,5 @@ Light panel
 FCU
 ---
 
-`[[100or1000]] (>K:A32NX.FCU_ALT_INCREMENT_SET)`
-
 Baro: `(>K:KOHLSMAN_INC/DEC)` works on inHg but in hPa needs multiple pushes.
 It seems that one cannot manually set 1014!

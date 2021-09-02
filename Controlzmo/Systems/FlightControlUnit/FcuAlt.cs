@@ -71,4 +71,19 @@ namespace Controlzmo.Systems.FlightControlUnit
             }
         }
     }
+
+    [Component]
+    public class FcuAltIncrement : ISettable<Int16>
+    {
+        private readonly JetBridgeSender sender;
+
+        public FcuAltIncrement(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+
+        public string GetId() => "fcuAltIncrement";
+
+        public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
+        {
+            sender.Execute(simConnect, $"{value} (>K:A32NX.FCU_ALT_INCREMENT_SET)");
+        }
+    }
 }
