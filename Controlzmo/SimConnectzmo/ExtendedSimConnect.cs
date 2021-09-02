@@ -127,7 +127,7 @@ namespace SimConnectzmo
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
         {
-            throw new NotImplementedException("Is it enough to trust through this? Is there anything else we should clean up?");
+            throw new NotImplementedException("Is it enough to trust this? Is there anything else we should clean up?");
         }
 
         private void RegisterDataStructs()
