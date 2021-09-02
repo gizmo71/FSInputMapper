@@ -37,9 +37,3 @@ Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INP
 
 Note that there's much better documentation on the RPN on the P3D site:
 http://www.prepar3d.com/SDKv3/LearningCenter/utilities/scripting/rpn_scripting.html
-
-FCU
----
-
-Baro: `(>K:KOHLSMAN_INC/DEC)` works on inHg but in hPa needs multiple pushes.
-It seems that one cannot manually set 1014!
