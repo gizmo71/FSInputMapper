@@ -105,7 +105,7 @@ namespace Controlzmo.SimConnectzmo
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)] // Why is this needed and how is it used?
         private const string ClientDataName = "Controlzmo.LVarResponse";
 
-        private readonly ILogger<LVarListener> logging;
+        private readonly ILogger logging;
         private readonly LVarRequester requester;
 
         public LVarListener(ILogger<LVarListener> logging, LVarRequester requester)
