@@ -202,7 +202,6 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
                     clientTypeOrSize, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
 System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {GetLastSentPacketID()}");
             }
-
         }
 
         private void MapClientEvents()
