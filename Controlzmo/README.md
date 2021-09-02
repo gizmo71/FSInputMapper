@@ -37,3 +37,16 @@ Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INP
 
 Note that there's much better documentation on the RPN on the P3D site:
 http://www.prepar3d.com/SDKv3/LearningCenter/utilities/scripting/rpn_scripting.html
+
+Light panel
+-----------
+
+`(A:CABIN SEATBELTS ALERT SWITCH,Bool) [[0or1]] == if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }`
+
+FCU
+---
+
+`[[100or1000]] (>K:A32NX.FCU_ALT_INCREMENT_SET)`
+
+Baro: `(>K:KOHLSMAN_INC/DEC)` works on inHg but in hPa needs multiple pushes.
+It seems that one cannot manually set 1014!
