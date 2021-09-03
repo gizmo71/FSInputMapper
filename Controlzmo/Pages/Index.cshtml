@@ -74,7 +74,7 @@
     <input id="com1active" readonly size="7" />
     <input type="button" id="com1swap" value="↔" class="sendButton" />
     <input id="com1standby" is="com-frequency" class="sendText" />
-<br/>
+    <br />
     <input type="checkbox" id="com2rx" class="sendBoolean" />
     <label>COM2</label>
     <input id="com2active" readonly size="7" />
@@ -93,8 +93,12 @@
     <label for="xpndrCode">Transponder Code</label>
     <input id="xpndrCode" size="4" maxlength="4" class="sendText" />
 </div>
+<div style="float: right">
+    <b><label for="serialInbound">Serial Inbound</label></b>
+    <br /><input id="serialInbound" maxlength="30" class="sendText" size="20" />
+</div>
 
 <div style="clear: both">
     <b><label for="jetbridge">JetBridge</label></b>
-    <br/><input id="jetbridge" maxlength="128" class="sendText" style="width: 100%" />
+    <br /><input id="jetbridge" maxlength="128" class="sendText" style="width: 100%" />
 </div>

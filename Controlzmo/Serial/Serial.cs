@@ -16,20 +16,76 @@ using System.Threading;
 namespace Controlzmo.Serial
 {
     [Component]
+    public class SerialInboundSettable : ISettable<string?>
+    {
+        private readonly IServiceProvider serviceProvider;
+
+        public SerialInboundSettable(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        public string GetId() => "serialInbound";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? codeToExecute)
+        {
+            serviceProvider.GetRequiredService<SerialInbound>().ProcessCommand(simConnect, codeToExecute!);
+        }
+    }
+
+    [Component]
+    public class SerialInbound
+    {
+        private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);
+        private readonly ILogger _logger;
+        private readonly IDictionary<string, ISettable> settables;
+
+        public SerialInbound(IServiceProvider serviceProvider)
+        {
+            _logger = serviceProvider.GetRequiredService<ILogger<SerialInbound>>();
+            settables = serviceProvider
+                .GetServices<ISettable>()
+                .ToDictionary(settable => settable.GetId(), settable => settable);
+        }
+
+        internal void ProcessCommand(ExtendedSimConnect? simConnect, string message)
+        {
+            var match = rx.Match(message);
+            if (!match.Success)
+            {
+                _logger.LogWarning($"Didn't recognise '{message}'");
+                return;
+            }
+
+            var id = match.Groups[1].ToString();
+            var value = match.Groups[2].ToString();
+Console.Error.WriteLine($"set {id} to {value}");
+
+            ISettable? rawSettable;
+            if (settables.TryGetValue(id, out rawSettable))
+            {
+                var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
+                _logger.LogDebug($"Setting {id} to {typedValue}");
+                rawSettable.SetInSim(simConnect!, typedValue);
+            }
+            else
+                _logger.LogDebug($"Cannot find {id} to set it to {value}");
+        }
+    }
+
+    [Component]
     public class SerialPico : KeepAliveWorker, IOnSimStarted
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;
+        private readonly SerialInbound inbound;
         private readonly SimConnectHolder holder;
-        private readonly IDictionary<string, ISettable> settables;
 
         public SerialPico(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             _logger = serviceProvider.GetRequiredService<ILogger<SerialPico>>();
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
-            settables = serviceProvider
-                .GetServices<ISettable>()
-                .ToDictionary(settable => settable.GetId(), settable => settable);
+            inbound = serviceProvider.GetRequiredService<SerialInbound>();
 
             _serialPort = new SerialPort(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
             _serialPort.StopBits = StopBits.One;
@@ -73,8 +129,6 @@ _logger.LogInformation($"Sending '{value}'");
             _serialPort.Write(data, 0, data.Length);
         }
 
-        private readonly Regex rx = new Regex(@"^([^=]+)=(.+)$", RegexOptions.Compiled);
-
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
         {
             string message = ReadMessage();
@@ -83,27 +137,7 @@ _logger.LogInformation($"Sending '{value}'");
                 _logger.LogTrace($"{message}");
                 return;
             }
-
-            var match = rx.Match(message);
-            if (!match.Success)
-            {
-                _logger.LogWarning($"Didn't recognise '{message}'");
-                return;
-            }
-
-            var id = match.Groups[1].ToString();
-            var value = match.Groups[2].ToString();
-            Console.Error.WriteLine($"set {id} to {value}");
-
-            ISettable? rawSettable;
-            if (settables.TryGetValue(id, out rawSettable))
-            {
-                var typedValue = JsonSerializer.Deserialize(value, rawSettable.GetValueType());
-                _logger.LogDebug($"Setting {id} to {typedValue}");
-                rawSettable.SetInSim(holder.SimConnect!, typedValue);
-            }
-            else
-                _logger.LogDebug($"Cannot find {id} to set it to {value}");
+            inbound.ProcessCommand(holder.SimConnect!, message);
         }
 
         private string ReadMessage()
