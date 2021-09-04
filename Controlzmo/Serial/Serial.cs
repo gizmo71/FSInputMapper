@@ -60,9 +60,6 @@ namespace Controlzmo.Serial
             var id = match.Groups[1].ToString();
             var value = match.Groups[2].ToString();
 Console.Error.WriteLine($"set {id} to {value}");
-//TODO: Gah! They need to be javascript, not C# style.
-if (value == "False") value = "false";
-else if (value == "True") value = "true";
 
             ISettable? rawSettable;
             if (settables.TryGetValue(id, out rawSettable))
