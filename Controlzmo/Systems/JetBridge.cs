@@ -62,6 +62,8 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         public int Execute(ExtendedSimConnect simConnect, string code)
         {
             var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
+            if (data.data.Length > 127)
+                throw new ArgumentOutOfRangeException($"'{code}' is {data.data.Length - 127} too long");
             logger.LogDebug($"Sending {code}");
             simConnect.SendDataOnSimObject(data);
             return data.id;
