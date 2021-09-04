@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.JetBridge
@@ -52,12 +53,16 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         private const string DownlinkClientDataName = "theomessin.jetbridge.uplink";
 
         private readonly Random random = new();
+        private readonly ILogger<JetBridgeSender> logger;
+
+        public JetBridgeSender(ILogger<JetBridgeSender> logger) => this.logger = logger;
 
         public string GetClientDataName() => DownlinkClientDataName;
 
         public int Execute(ExtendedSimConnect simConnect, string code)
         {
             var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
+            logger.LogDebug($"Sending {code}");
             simConnect.SendDataOnSimObject(data);
             return data.id;
         }
