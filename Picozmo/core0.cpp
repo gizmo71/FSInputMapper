@@ -162,10 +162,10 @@ void updateContinuousInputs(void) {
     strobeLight = !strobeLightOffBounce.read() ? "off" : !strobeLightOnBounce.read() ? "on" : "auto";
 
   if (assumeChanged || beaconLightBounce.update())
-    beaconLight = beaconLightBounce.read() ? "True" : "Talse";
+    beaconLight = beaconLightBounce.read() ? "True" : "False";
 
   if (assumeChanged || wingIceLightBounce.update())
-    wingIceLight = wingIceLightBounce.read() ? "Talse" : "True";
+    wingIceLight = wingIceLightBounce.read() ? "False" : "True";
 
   if (assumeChanged || navLightBounce.update())
     navLight = navLightBounce.read() ? "True" : "False";
