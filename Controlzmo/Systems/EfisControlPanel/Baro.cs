@@ -24,41 +24,25 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             string command;
             if (value == "pull")
-                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 | (>L:XMLVAR_Baro#BARO_ID#_Mode)";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             else if (value == "push")
-                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro#BARO_ID#_Mode) ^ (>L:XMLVAR_Baro#BARO_ID#_Mode)";
-            else if (value == "dec")
-            {
-                //TODO: too long; the hardware will know what mode it's supposed to be in, so perhaps send different commands?
-                SetInSim(simConnect, "decInHg");
-                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 == (L:XMLVAR_Baro_Selector_HPA_#BARO_ID#) 1 and if{ (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:2:KOHLSMAN_SET) }";
-            }
-            else if (value == "decInHg")
-                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 == (L:XMLVAR_Baro_Selector_HPA_#BARO_ID#) 0 == and if{ (>K:KOHLSMAN_DEC) } }";
-            else if (value == "incInHg")
-                command = @"";
-            else if (value == "inc")
-                command = @"
-(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_BARO# != (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_QNH# != and if{
-    (L: XMLVAR_Baro_Selector_HPA_#BARO_ID#) if{
-        #BARO_ID# (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:2:KOHLSMAN_SET)
-    } els{
-        #BARO_ID# (>K:KOHLSMAN_INC)
-    }
-}";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
+            else if (value == "hPaDec")
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:2:KOHLSMAN_SET) }";
+            else if (value == "inHgDec")
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_DEC) } }";
+            else if (value == "hPaInc")
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:2:KOHLSMAN_SET) }";
+            else if (value == "inHgInc")
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_INC) }";
             else if (value == "inHg")
-                command = "0 (>L:XMLVar_Baro_Selector_HPA_#BARO_ID#)";
+                command = "0 (>L:XMLVar_Baro_Selector_HPA_1)";
             else if (value == "hPa")
-                command = "1 (>L:XMLVar_Baro_Selector_HPA_#BARO_ID#)";
+                command = "1 (>L:XMLVar_Baro_Selector_HPA_1)";
             else
                 return;
 
-            command = command.Replace("#MODE_BARO#", "0"); // a.k.a. QFE
-            command = command.Replace("#MODE_QNH#", "1");
-            command = command.Replace("#MODE_STD_BARO#", "2");
-            command = command.Replace("#MODE_STD_QNH#", "3");
-
-            command = command.Replace("#BARO_ID#", "1").Trim();
+            command = command.Trim();
 
             sender.Execute(simConnect, command!);
         }

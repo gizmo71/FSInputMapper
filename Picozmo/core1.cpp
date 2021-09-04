@@ -2,6 +2,8 @@
 
 #include "Picozmo.h"
 
+static const char *currentBaroUnits = "";
+
 extern void setup1(void) {
   sleep_ms(1000); // Make sure Core 0 runs its setup first.
   Serial.setTimeout(100);
@@ -120,8 +122,9 @@ void sendContinuous(void) {
       short single = baroDeltaToSend < 0 ? -1 : 1;
       while (baroDeltaToSend) {
         Serial.print("baroKnob=\"");
-        Serial.print(single < 0 ? "dec" : "inc");
-        Serial.println("\"");
+        Serial.print(currentBaroUnits);
+        Serial.print(single < 0 ? "Dec" : "Inc");
+        Serial.println('"');
         baroDeltaToSend -= single;
       }
     }
@@ -161,10 +164,10 @@ void sendMomentary(void) {
   }
 
   if (baroUnits) {
-    const char *newMode = baroUnits;
+    currentBaroUnits = baroUnits;
     baroUnits = NULL;
     Serial.print("baroKnob=\"");
-    Serial.print(newMode);
+    Serial.print(currentBaroUnits);
     Serial.println("\"");
   }
 }
