@@ -148,6 +148,10 @@ void updateFromInterrupts(void) {
   mutex_exit(&mut0to1);
 }
 
+const char *booleanAsJson(bool b) {
+  return b ? "true" : "false";
+}
+
 void updateContinuousInputs(void) {
   bool assumeChanged = forceUpdate;
   if (assumeChanged) forceUpdate = false;
@@ -162,19 +166,19 @@ void updateContinuousInputs(void) {
     strobeLight = !strobeLightOffBounce.read() ? "off" : !strobeLightOnBounce.read() ? "on" : "auto";
 
   if (assumeChanged || beaconLightBounce.update())
-    beaconLight = beaconLightBounce.read() ? "True" : "False";
+    beaconLight = booleanAsJson(beaconLightBounce.read());
 
   if (assumeChanged || wingIceLightBounce.update())
-    wingIceLight = wingIceLightBounce.read() ? "False" : "True";
+    wingIceLight = booleanAsJson(wingIceLightBounce.read());
 
   if (assumeChanged || navLightBounce.update())
-    navLight = navLightBounce.read() ? "True" : "False";
+    navLight = booleanAsJson(navLightBounce.read());
 
   if (assumeChanged || runwayTurnoffLightBounce.update())
-    runwayTurnoffLight= runwayTurnoffLightBounce.read() ? "False" : "True";
+    runwayTurnoffLight = booleanAsJson(!runwayTurnoffLightBounce.read());
 
   if (assumeChanged || landingLightBounce.update())
-    landingLight = landingLightBounce.read() ? "True" : "False";
+    landingLight = booleanAsJson(landingLightBounce.read());
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
