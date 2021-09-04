@@ -24,37 +24,22 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             string command;
             if (value == "pull")
-                command = @"
-(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_BARO# == if{
-    #MODE_STD_BARO# (>L:XMLVAR_Baro#BARO_ID#_Mode)
-} els{
-    (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_QNH# == if{
-        #MODE_STD_QNH# (>L:XMLVAR_Baro#BARO_ID#_Mode)
-    }
-}";
+                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 | (>L:XMLVAR_Baro#BARO_ID#_Mode)";
             else if (value == "push")
-                command = @"
-(L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_BARO# == if{
-    #MODE_BARO# (>L:XMLVAR_Baro#BARO_ID#_Mode)
-} els{
-    (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_QNH# == if{
-        #MODE_QNH# (>L:XMLVAR_Baro#BARO_ID#_Mode)
-    } els{
-        (L:XMLVAR_Baro#BARO_ID#_Mode) ! (>L:XMLVAR_Baro#BARO_ID#_Mode)
-    }
-}";
+                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro#BARO_ID#_Mode) ^ (>L:XMLVAR_Baro#BARO_ID#_Mode)";
+            else if (value == "dec")
+            {
+                //TODO: too long; the hardware will know what mode it's supposed to be in, so perhaps send different commands?
+                SetInSim(simConnect, "decInHg");
+                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 == (L:XMLVAR_Baro_Selector_HPA_#BARO_ID#) 1 and if{ (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:2:KOHLSMAN_SET) }";
+            }
+            else if (value == "decInHg")
+                command = @"(L:XMLVAR_Baro#BARO_ID#_Mode) 2 & 0 == (L:XMLVAR_Baro_Selector_HPA_#BARO_ID#) 0 == and if{ (>K:KOHLSMAN_DEC) } }";
+            else if (value == "incInHg")
+                command = @"";
             else if (value == "inc")
                 command = @"
 (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_BARO# != (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_QNH# != and if{
-    (L:XMLVAR_Baro_Selector_HPA_#BARO_ID#) if{
-        #BARO_ID# (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:2:KOHLSMAN_SET)
-    } els{
-        #BARO_ID# (>K:KOHLSMAN_DEC)
-    }
-}";
-            else if (value == "dec")
-                command = @"
-(L: XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_BARO# != (L:XMLVAR_Baro#BARO_ID#_Mode) #MODE_STD_QNH# != and if{
     (L: XMLVAR_Baro_Selector_HPA_#BARO_ID#) if{
         #BARO_ID# (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:2:KOHLSMAN_SET)
     } els{
