@@ -19,6 +19,8 @@ void process(String name, String value) {
     apuStartOn = value == "True";
   else if (name == "FcuAltManaged")
     fcuAltManaged = value == "True";
+  else if (name == "Kohlsman")
+    ; //TODO: whatever
   else {
     Serial.print("# Don't know what '");
     Serial.print(name);
@@ -98,13 +100,31 @@ void sendContinuous(void) {
     noseLight = NULL;
   }
 
-  short fcuAltDeltaToSend = fcuAltDelta;
-  if (fcuAltDelta) {
-    Serial.print("fcuAltDelta=");
-    Serial.println(fcuAltDeltaToSend);
-    mutex_enter_blocking(&mut0to1);
-    fcuAltDelta -= fcuAltDeltaToSend;
-    mutex_exit(&mut0to1);
+  {
+    short fcuAltDeltaToSend = fcuAltDelta;
+    if (fcuAltDelta) {
+      Serial.print("fcuAltDelta=");
+      Serial.println(fcuAltDeltaToSend);
+      mutex_enter_blocking(&mut0to1);
+      fcuAltDelta -= fcuAltDeltaToSend;
+      mutex_exit(&mut0to1);
+    }
+  }
+
+  {
+    short baroDeltaToSend = baroDelta;
+    if (baroDeltaToSend) {
+      mutex_enter_blocking(&mut0to1);
+      baroDelta -= baroDeltaToSend;
+      mutex_exit(&mut0to1);
+      short single = baroDeltaToSend < 0 ? -1 : 1;
+      while (baroDeltaToSend) {
+        Serial.print("baroKnob=\"");
+        Serial.print(single < 0 ? "dec" : "inc");
+        Serial.println("\"");
+        baroDeltaToSend -= single;
+      }
+    }
   }
 }
 
@@ -128,6 +148,24 @@ void sendMomentary(void) {
   if (fcuAltPulled) {
     fcuAltPulled = false;
     Serial.println("fcuAltPulled=True");
+  }
+
+  if (baroPulled) {
+    baroPulled = false;
+    Serial.println("baroKnob=\"pull\"");
+  }
+
+  if (baroPushed) {
+    baroPushed = false;
+    Serial.println("baroKnob=\"push\"");
+  }
+
+  if (baroUnits) {
+    const char *newMode = baroUnits;
+    baroUnits = NULL;
+    Serial.print("baroKnob=\"");
+    Serial.print(newMode);
+    Serial.println("\"");
   }
 }
 

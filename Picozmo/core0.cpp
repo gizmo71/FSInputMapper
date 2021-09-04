@@ -36,7 +36,7 @@ static QDecoder alpsQdec(alpsPinA, alpsPinB, false);
 static Bounce alpsPushBounce;
 static Bounce softSwitchBounce;
 static Bounce smallToggleABounce;
-static Bounce smallTogglebBounce;
+static Bounce smallToggleBBounce;
 
 static QwiicButton qwiicButton;
 
@@ -97,7 +97,7 @@ void setup(void) {
 
   softSwitchBounce.attach(D2, INPUT_PULLUP);
   smallToggleABounce.attach(D3, INPUT_PULLUP);
-  smallTogglebBounce.attach(D4, INPUT_PULLUP);
+  smallToggleBBounce.attach(D4, INPUT_PULLUP);
   alpsPushBounce.attach(D5, INPUT_PULLUP);
   alpsQdec.begin();
   attachInterrupt(digitalPinToInterrupt(alpsPinA), alpsRotatedIsr, CHANGE);
@@ -137,6 +137,15 @@ void updateFromInterrupts(void) {
   mutex_enter_blocking(&mut0to1);
   fcuAltDelta += fcuAltDeltaTemp;
   mutex_exit(&mut0to1);
+
+  critical_section_enter_blocking(&isrCritical);
+  short alpsDeltaTemp = alpsDeltaIsr;
+  alpsDeltaIsr = 0;
+  critical_section_exit(&isrCritical);
+
+  mutex_enter_blocking(&mut0to1);
+  baroDelta += alpsDeltaTemp;
+  mutex_exit(&mut0to1);
 }
 
 void updateContinuousInputs(void) {
@@ -170,32 +179,34 @@ void updateContinuousInputs(void) {
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
-  if (softSwitchBounce.update()) { Serial.print("softSwitch "); Serial.println(softSwitchBounce.read()); }
-  if (smallToggleABounce.update()) { Serial.print("smallToggleA "); Serial.println(smallToggleABounce.read()); }
-  if (smallTogglebBounce.update()) { Serial.print("smallTogglebB "); Serial.println(smallTogglebBounce.read()); }
-  if (alpsPushBounce.update()) { Serial.print("alpsPush "); Serial.println(alpsPushBounce.read()); }
-  critical_section_enter_blocking(&isrCritical);
-  short alpsDeltaTemp = alpsDeltaIsr;
-  alpsDeltaIsr = 0;
-  critical_section_exit(&isrCritical);
-  if (alpsDeltaTemp != 0) { Serial.print("alpsDelta "); Serial.println(alpsDeltaTemp); }
+  if (assumeChanged || smallToggleABounce.update() || smallToggleBBounce.update()) {
+    if (!smallToggleABounce.read())
+      baroUnits = "hPa";
+    else if (!smallToggleBBounce.read())
+      baroUnits = "inHg";
+  }
 }
 
 void updateMomentaryInputs(void) {
+  softSwitchBounce.update();
+  if (!baroPulled && softSwitchBounce.fell())
+    baroPulled = true;
+
+  alpsPushBounce.update();
+  if (!baroPushed && alpsPushBounce.fell())
+    baroPushed = true;
+
   apuMasterBounce.update();
-  if (apuMasterPressed == false && apuMasterBounce.fell()) {
+  if (!apuMasterPressed && apuMasterBounce.fell())
     apuMasterPressed = true;
-  }
 
   apuStartBounce.update();
-  if (apuStartPressed == false && apuStartBounce.fell()) {
+  if (!apuStartPressed && apuStartBounce.fell())
     apuStartPressed = true;
-  }
 
   fcuAltPushBounce.update();
-  if (fcuAltPushed == false && fcuAltPushBounce.fell()) {
+  if (!fcuAltPushed && fcuAltPushBounce.fell())
     fcuAltPushed = true;
-  }
 }
 
 void updateOuputs(void) {
