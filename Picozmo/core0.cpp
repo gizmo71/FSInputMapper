@@ -38,6 +38,11 @@ static Bounce softSwitchBounce;
 static Bounce smallToggleABounce;
 static Bounce smallToggleBBounce;
 
+static const uint16_t miniBoardPinA = D11, miniBoardPinB = D10;
+static QDecoder miniBoardQdec(miniBoardPinA, miniBoardPinB, true);
+static Bounce miniBoardPushBounce;
+static Bounce miniBoardPullBounce;
+
 static QwiicButton qwiicButton;
 
 static critical_section_t isrCritical;
@@ -63,6 +68,19 @@ void alpsRotatedIsr(void) { //TODO: merge with FCU Alt one.
     break;
   case QDECODER_EVENT_CW:
     --alpsDeltaIsr;
+    break;
+  }
+}
+
+static short miniBoardDeltaIsr;
+
+void miniBoardRotatedIsr(void) { //TODO: merge with FCU Alt one.
+  switch (miniBoardQdec.update()) {
+  case QDECODER_EVENT_CCW:
+    ++miniBoardDeltaIsr;
+    break;
+  case QDECODER_EVENT_CW:
+    --miniBoardDeltaIsr;
     break;
   }
 }
@@ -103,6 +121,12 @@ void setup(void) {
   attachInterrupt(digitalPinToInterrupt(alpsPinA), alpsRotatedIsr, CHANGE);
   attachInterrupt(digitalPinToInterrupt(alpsPinB), alpsRotatedIsr, CHANGE);
 
+  miniBoardPushBounce.attach(D12, INPUT_PULLUP);
+  miniBoardPullBounce.attach(D13, INPUT_PULLUP);
+  miniBoardQdec.begin();
+  attachInterrupt(digitalPinToInterrupt(miniBoardPinA), miniBoardRotatedIsr, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(miniBoardPinB), miniBoardRotatedIsr, CHANGE);
+
   qwiicButton.begin();
 
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
@@ -142,6 +166,15 @@ void updateFromInterrupts(void) {
   short alpsDeltaTemp = alpsDeltaIsr;
   alpsDeltaIsr = 0;
   critical_section_exit(&isrCritical);
+
+  critical_section_enter_blocking(&isrCritical);
+  short miniBoardDeltaTemp = miniBoardDeltaIsr;
+  miniBoardDeltaIsr = 0;
+  critical_section_exit(&isrCritical);
+  if (miniBoardDeltaTemp) {
+    Serial.print("# mini board turned ");
+    Serial.println(miniBoardDeltaTemp);
+  }
 
   mutex_enter_blocking(&mut0to1);
   baroDelta += alpsDeltaTemp;
@@ -211,6 +244,14 @@ void updateMomentaryInputs(void) {
   fcuAltPushBounce.update();
   if (!fcuAltPushed && fcuAltPushBounce.fell())
     fcuAltPushed = true;
+
+  miniBoardPushBounce.update();
+  if (miniBoardPushBounce.fell())
+    Serial.println("# mini board pushed");
+
+  miniBoardPullBounce.update();
+  if (miniBoardPullBounce.fell())
+    Serial.println("# mini board pulled");
 }
 
 void updateOuputs(void) {
