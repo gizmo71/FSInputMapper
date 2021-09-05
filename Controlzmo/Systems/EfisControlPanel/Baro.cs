@@ -28,11 +28,11 @@ namespace Controlzmo.Systems.EfisControlPanel
             else if (value == "push")
                 command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
             else if (value == "hPaDec")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:2:KOHLSMAN_SET) }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:KOHLSMAN_SET) }";
             else if (value == "inHgDec")
                 command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_DEC) } }";
             else if (value == "hPaInc")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:2:KOHLSMAN_SET) }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:KOHLSMAN_SET) }";
             else if (value == "inHgInc")
                 command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_INC) }";
             else if (value == "inHg")
