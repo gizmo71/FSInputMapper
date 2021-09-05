@@ -28,13 +28,13 @@ namespace Controlzmo.Systems.EfisControlPanel
             else if (value == "push")
                 command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
             else if (value == "hPaDec")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) -- 16 * (>K:KOHLSMAN_SET) }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) near -- 16 * (>K:2:KOHLSMAN_SET) }";
             else if (value == "inHgDec")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_DEC) } }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) 0.3386389 / near -- 5.4182224 * (>K:2:KOHLSMAN_SET) } }";
             else if (value == "hPaInc")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (A:KOHLSMAN SETTING MB:1, mbars) ++ 16 * (>K:KOHLSMAN_SET) }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) near ++ 16 * (>K:2:KOHLSMAN_SET) }";
             else if (value == "inHgInc")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ (>K:KOHLSMAN_INC) }";
+                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) 0.3386389 / near ++ 5.4182224 * (>K:2:KOHLSMAN_SET) } }";
             else if (value == "inHg")
                 command = "0 (>L:XMLVar_Baro_Selector_HPA_1)";
             else if (value == "hPa")
