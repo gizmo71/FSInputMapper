@@ -202,7 +202,7 @@ void updateContinuousInputs(void) {
     beaconLight = booleanAsJson(beaconLightBounce.read());
 
   if (assumeChanged || wingIceLightBounce.update())
-    wingIceLight = booleanAsJson(wingIceLightBounce.read());
+    wingIceLight = booleanAsJson(!wingIceLightBounce.read());
 
   if (assumeChanged || navLightBounce.update())
     navLight = booleanAsJson(navLightBounce.read());
