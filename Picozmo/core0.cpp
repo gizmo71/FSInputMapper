@@ -12,8 +12,8 @@ static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
 static IoAbstractionRef io23017 = ioFrom23017(0x20);
 
-static Bounce apuMasterBounce;
-static Bounce apuStartBounce;
+static IoBounce apuMasterBounce(io23017);
+static IoBounce apuStartBounce(io23017);
 
 static IoBounce wingIceLightBounce(io23017);
 static IoBounce noseLightOffBounce(io23017);
@@ -95,8 +95,8 @@ void setup(void) {
 
   pinMode(LED_PIN, OUTPUT);
 
-  apuStartBounce.attach(D14, INPUT_PULLUP);
-  apuMasterBounce.attach(D15, INPUT_PULLUP);
+  apuStartBounce.attach(11, INPUT_PULLUP);
+  apuMasterBounce.attach(10, INPUT_PULLUP);
 
   beaconLightBounce.attach(1, INPUT_PULLUP);
   landingLightBounce.attach(8, INPUT_PULLUP);
