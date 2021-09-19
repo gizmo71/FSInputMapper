@@ -259,11 +259,13 @@ void updateOuputs(void) {
 
   qwiicButton.LEDon(fcuAltManaged ? 63 : 0);
 
+  static int cycle = 0;
   int i = externalLedFirstPin;
-  io23017->writeValue(i++, apuMasterOn ? LOW : HIGH);
-  io23017->writeValue(i++, apuAvail ? LOW : HIGH);
-  io23017->writeValue(i++, apuStartOn ? LOW : HIGH);
-  io23017->writeValue(i, apuFault ? LOW : HIGH);
+  io23017->writeValue(i++, cycle == 0 && apuMasterOn ? LOW : HIGH);
+  io23017->writeValue(i++, cycle == 1 && apuAvail ? LOW : HIGH);
+  io23017->writeValue(i++, cycle == 2 && apuStartOn ? LOW : HIGH);
+  io23017->writeValue(i, cycle == 3 && apuFault ? LOW : HIGH);
+  cycle = (cycle + 1) & 3;
 }
 
 void seviceQwiicButton(void) {
