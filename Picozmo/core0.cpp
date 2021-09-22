@@ -38,6 +38,7 @@ static Bounce softSwitchBounce;
 static Bounce smallToggleABounce;
 static Bounce smallToggleBBounce;
 
+// Actually the prototype 3D printed push-pull
 static const uint16_t miniBoardPinA = D11, miniBoardPinB = D10;
 static QDecoder miniBoardQdec(miniBoardPinA, miniBoardPinB, true);
 static Bounce miniBoardPushBounce;
@@ -121,8 +122,8 @@ void setup(void) {
   attachInterrupt(digitalPinToInterrupt(alpsPinA), alpsRotatedIsr, CHANGE);
   attachInterrupt(digitalPinToInterrupt(alpsPinB), alpsRotatedIsr, CHANGE);
 
-  miniBoardPushBounce.attach(D12, INPUT_PULLUP);
-  miniBoardPullBounce.attach(D13, INPUT_PULLUP);
+  miniBoardPushBounce.attach(D13, INPUT_PULLUP);
+  miniBoardPullBounce.attach(D12, INPUT_PULLUP);
   miniBoardQdec.begin();
   attachInterrupt(digitalPinToInterrupt(miniBoardPinA), miniBoardRotatedIsr, CHANGE);
   attachInterrupt(digitalPinToInterrupt(miniBoardPinB), miniBoardRotatedIsr, CHANGE);
