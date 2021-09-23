@@ -114,6 +114,17 @@ void sendContinuous(void) {
   }
 
   {
+    short fcuVsDeltaToSend = fcuVsDelta;
+    if (fcuVsDelta) {
+      Serial.print("fcuVsDelta=");
+      Serial.println(fcuVsDeltaToSend);
+      mutex_enter_blocking(&mut0to1);
+      fcuVsDelta -= fcuVsDeltaToSend;
+      mutex_exit(&mut0to1);
+    }
+  }
+
+  {
     short baroDeltaToSend = baroDelta;
     if (baroDeltaToSend) {
       mutex_enter_blocking(&mut0to1);
@@ -151,6 +162,16 @@ void sendMomentary(void) {
   if (fcuAltPulled) {
     fcuAltPulled = false;
     Serial.println("fcuAltPulled=true");
+  }
+
+  if (fcuVsPushed) {
+    fcuVsPushed = false;
+    Serial.println("fcuVsPushed=true");
+  }
+
+  if (fcuVsPulled) {
+    fcuVsPulled = false;
+    Serial.println("fcuVsPulled=true");
   }
 
   if (baroPulled) {

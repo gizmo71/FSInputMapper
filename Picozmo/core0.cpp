@@ -39,10 +39,10 @@ static Bounce smallToggleABounce;
 static Bounce smallToggleBBounce;
 
 // Actually the prototype 3D printed push-pull
-static const uint16_t miniBoardPinA = D11, miniBoardPinB = D10;
-static QDecoder miniBoardQdec(miniBoardPinA, miniBoardPinB, true);
-static Bounce miniBoardPushBounce;
-static Bounce miniBoardPullBounce;
+static const uint16_t fcuVsPinA = D11, fcuVsPinB = D10;
+static QDecoder fcuVsQdec(fcuVsPinA, fcuVsPinB, true);
+static Bounce fcuVsPushBounce;
+static Bounce fcuVsPullBounce;
 
 static QwiicButton qwiicButton;
 
@@ -73,15 +73,15 @@ void alpsRotatedIsr(void) { //TODO: merge with FCU Alt one.
   }
 }
 
-static short miniBoardDeltaIsr;
+static short fcuVsDeltaIsr;
 
-void miniBoardRotatedIsr(void) { //TODO: merge with FCU Alt one.
-  switch (miniBoardQdec.update()) {
+void fcuVsRotatedIsr(void) { //TODO: merge with FCU Alt one.
+  switch (fcuVsQdec.update()) {
   case QDECODER_EVENT_CCW:
-    ++miniBoardDeltaIsr;
+    ++fcuVsDeltaIsr;
     break;
   case QDECODER_EVENT_CW:
-    --miniBoardDeltaIsr;
+    --fcuVsDeltaIsr;
     break;
   }
 }
@@ -122,11 +122,11 @@ void setup(void) {
   attachInterrupt(digitalPinToInterrupt(alpsPinA), alpsRotatedIsr, CHANGE);
   attachInterrupt(digitalPinToInterrupt(alpsPinB), alpsRotatedIsr, CHANGE);
 
-  miniBoardPushBounce.attach(D13, INPUT_PULLUP);
-  miniBoardPullBounce.attach(D12, INPUT_PULLUP);
-  miniBoardQdec.begin();
-  attachInterrupt(digitalPinToInterrupt(miniBoardPinA), miniBoardRotatedIsr, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(miniBoardPinB), miniBoardRotatedIsr, CHANGE);
+  fcuVsPushBounce.attach(D13, INPUT_PULLUP);
+  fcuVsPullBounce.attach(D12, INPUT_PULLUP);
+  fcuVsQdec.begin();
+  attachInterrupt(digitalPinToInterrupt(fcuVsPinA), fcuVsRotatedIsr, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(fcuVsPinB), fcuVsRotatedIsr, CHANGE);
 
   qwiicButton.begin();
 
@@ -169,13 +169,13 @@ void updateFromInterrupts(void) {
   critical_section_exit(&isrCritical);
 
   critical_section_enter_blocking(&isrCritical);
-  short miniBoardDeltaTemp = miniBoardDeltaIsr;
-  miniBoardDeltaIsr = 0;
+  short fcuVsDeltaTemp = fcuVsDeltaIsr;
+  fcuVsDeltaIsr = 0;
   critical_section_exit(&isrCritical);
-  if (miniBoardDeltaTemp) {
-    Serial.print("# mini board turned ");
-    Serial.println(miniBoardDeltaTemp);
-  }
+
+  mutex_enter_blocking(&mut0to1);
+  fcuVsDelta += fcuVsDeltaTemp;
+  mutex_exit(&mut0to1);
 
   mutex_enter_blocking(&mut0to1);
   baroDelta += alpsDeltaTemp;
@@ -246,13 +246,13 @@ void updateMomentaryInputs(void) {
   if (!fcuAltPushed && fcuAltPushBounce.fell())
     fcuAltPushed = true;
 
-  miniBoardPushBounce.update();
-  if (miniBoardPushBounce.fell())
-    Serial.println("# mini board pushed");
+  fcuVsPushBounce.update();
+  if (!fcuVsPushed && fcuVsPushBounce.fell())
+    fcuVsPushed = true;
 
-  miniBoardPullBounce.update();
-  if (miniBoardPullBounce.fell())
-    Serial.println("# mini board pulled");
+  fcuVsPullBounce.update();
+  if (!fcuVsPulled && fcuVsPullBounce.fell())
+    fcuVsPulled = true;
 }
 
 void updateOuputs(void) {
