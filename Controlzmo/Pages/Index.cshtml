@@ -37,34 +37,38 @@
         </td>
 
     </tr>
-    <tr>
-        <td>
-            <select id="radarSys" class="sendText">
-                <option value="0">1</option>
-                <option value="1">Off</option>
-                <option value="2">2</option>
-            </select>
-        </td>
+    <tr style="font-size: smaller;">
         <th><label for="radarSys">Radar</label></th>
+        <td style="text-align: left; line-height: 1;">
+            <input type="radio" name="radarSys" class="sendRadio" id="radarSys1" value="0" />
+            <label for="radarSys1">1</label><br />
+            <input type="radio" name="radarSys" class="sendRadio" id="radarSysOff" value="1" />
+            <label for="radarSysOff">Off</label><br />
+            <input type="radio" name="radarSys" class="sendRadio" id="radarSys2" value="2" />
+            <label for="radarSys2">2</label>
+        </td>
         <td><input type="checkbox" id="predictiveWindshear" class="sendBoolean" /></td>
         <th><label for="predictiveWindshear">Predictive Windshear</label></th>
-        <td>
-            <select id="tcasTraffic" class="sendText">
-                <option value="0">Thrt</option>
-                <option value="1">All</option>
-                <option value="2">Abv</option>
-                <option value="2">Blw</option>
-            </select>
-        </td>
         <th><label for="tcasTraffic">Traffic</label></th>
-        <td>
-            <select id="tcasMode" class="sendText">
-                <option value="0">Stby</option>
-                <option value="1">TA</option>
-                <option value="2">TA/RA</option>
-            </select>
+        <td style="text-align: left; line-height: 1;">
+            <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficThreat" value="0" />
+            <label for="tcasTrafficThreat">Thrt</label><br />
+            <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficAll" value="1" />
+            <label for="tcasTrafficAll">All</label><br />
+            <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficAbove" value="2" />
+            <label for="tcasTrafficAbove">Abv</label><br />
+            <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficBelow" value="3" />
+            <label for="tcasTrafficBelow">Blw</label>
         </td>
         <th><label for="tcasMode">TCAS</label></th>
+        <td style="text-align: left; line-height: 1;">
+            <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeStandby" value="0" />
+            <label for="tcasModeStandby">Stby</label><br />
+            <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeTA" value="1" />
+            <label for="tcasModeTA">TA</label><br />
+            <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeRA" value="2" />
+            <label for="tcasModeRA">TA/RA</label>
+        </td>
     </tr>
 </table>
 
