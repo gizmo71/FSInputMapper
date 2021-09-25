@@ -5,37 +5,50 @@
 
 <table style="font-size: larger;">
     <tr style="font-size: smaller;">
-        <th>Strobes</th>
-        <td style="text-align: left; line-height: 1;">
-            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeOn" value="on" />
-            <label for="lightsStrobeOn">On</label><br />
-            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeAuto" value="auto" />
-            <label for="lightsStrobeAuto">Auto</label><br />
-            <input type="radio" name="lightsStrobe" class="sendRadio" id="lightsStrobeOff" value="off" />
-            <label for="lightsStrobeOff">Off</label>
+        <th>Mode</th>
+        <td>
+            <select id="leftEfisNdMode" class="sendText">
+                <option value="0">Rose ILS</option>
+                <option value="1">Rose VOR</option>
+                <option value="2">Rose Nav</option>
+                <option value="3" selected>Arc</option>
+                <option value="4">Plan</option>
+            </select>
         </td>
-        <td><input type="checkbox" id="lightsBeacon" class="sendBoolean" /></td>
-        <th><label for="lightsBeacon">Beacon</label></th>
-        <td><input type="checkbox" id="lightsWingIce" class="sendBoolean" /></td>
-        <th><label for="lightsWingIce">Wing Ice</label></th>
-        <td><input type="checkbox" id="lightsNavLogo" class="sendBoolean" /></td>
-        <th><label for="lightsNavLogo">Nav/Logo</label></th>
+        <th>Range</th>
+        <td>
+            <select id="leftEfisNdRange" class="sendText">
+                <option value="0">10</option>
+                <option value="1">20</option>
+                <option value="2">40</option>
+                <option value="3">80</option>
+                <option value="4">160</option>
+                <option value="5">320</option>
+            </select>
+        </td>
+        <th>Mode</th>
+        <td>
+            <select id="rightEfisNdMode" class="sendText">
+                <option value="0">Rose ILS</option>
+                <option value="1">Rose VOR</option>
+                <option value="2">Rose Nav</option>
+                <option value="3" selected>Arc</option>
+                <option value="4">Plan</option>
+            </select>
+        </td>
+        <th>Range</th>
+        <td>
+            <select id="rightEfisNdRange" class="sendText">
+                <option value="0">10</option>
+                <option value="1">20</option>
+                <option value="2">40</option>
+                <option value="3">80</option>
+                <option value="4">160</option>
+                <option value="5">320</option>
+            </select>
+        </td>
     </tr>
     <tr style="font-size: smaller;">
-        <td><input type="checkbox" id="lightsRunwayTurnoff" class="sendBoolean" /></td>
-        <th><label for="lightsRunwayTurnoff">Runway Turnoff</label></th>
-        <td colspan="2"><input type="checkbox" id="lightsLanding" class="sendBoolean" /></td>
-        <th colspan="2" title="Ensure On or Retract (not Off) in game"><label for="lightsLanding">Landing</label></th>
-        <th><label for="lightsNose">Nose</label></th>
-        <td style="text-align: left; line-height: 1;">
-            <input type="radio" name="lightsNose" class="sendRadio" id="lightsNoseTakeOff" value="takeoff" />
-            <label for="lightsNoseTakeOff">T.O.</label><br />
-            <input type="radio" name="lightsNose" class="sendRadio" id="lightsNoseTaxi" value="taxi" />
-            <label for="lightsNoseTaxi">Taxi</label><br />
-            <input type="radio" name="lightsNose" class="sendRadio" id="lightsNoseOff" value="off" />
-            <label for="lightsNoseOff">Off</label>
-        </td>
-
     </tr>
     <tr style="font-size: smaller;">
         <th><label for="radarSys">Radar</label></th>
