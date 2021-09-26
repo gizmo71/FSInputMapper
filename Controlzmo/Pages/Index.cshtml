@@ -5,53 +5,53 @@
 
 <table style="font-size: larger;">
     <tr style="font-size: smaller;">
-        <th>Mode</th>
+        <th><label for="leftEfisNdMode">Mode</label></th>
         <td>
             <select id="leftEfisNdMode" class="sendText">
-                <option value="0">Rose ILS</option>
-                <option value="1">Rose VOR</option>
-                <option value="2">Rose Nav</option>
-                <option value="3" selected>Arc</option>
-                <option value="4">Plan</option>
+                <option>Rose ILS</option>
+                <option>Rose VOR</option>
+                <option>Rose Nav</option>
+                <option selected>Arc</option>
+                <option>Plan</option>
             </select>
         </td>
-        <th>Range</th>
+        <th><label for="leftEfisNdRange">Range</label></th>
         <td>
             <select id="leftEfisNdRange" class="sendText">
-                <option value="0">10</option>
-                <option value="1">20</option>
-                <option value="2">40</option>
-                <option value="3">80</option>
-                <option value="4">160</option>
-                <option value="5">320</option>
+                <option>10</option>
+                <option>20</option>
+                <option>40</option>
+                <option>80</option>
+                <option>160</option>
+                <option>320</option>
             </select>
         </td>
-        <th>Mode</th>
-        <td>
-            <select id="rightEfisNdMode" class="sendText">
-                <option value="0">Rose ILS</option>
-                <option value="1">Rose VOR</option>
-                <option value="2">Rose Nav</option>
-                <option value="3" selected>Arc</option>
-                <option value="4">Plan</option>
-            </select>
-        </td>
-        <th>Range</th>
+        <th><label for="rightEfisNdRange">Range</label></th>
         <td>
             <select id="rightEfisNdRange" class="sendText">
-                <option value="0">10</option>
-                <option value="1">20</option>
-                <option value="2">40</option>
-                <option value="3">80</option>
-                <option value="4">160</option>
-                <option value="5">320</option>
+                <option>10</option>
+                <option>20</option>
+                <option>40</option>
+                <option>80</option>
+                <option>160</option>
+                <option>320</option>
+            </select>
+        </td>
+        <th><label for="rightEfisNdMode">Mode</label></th>
+        <td>
+            <select id="rightEfisNdMode" class="sendText">
+                <option>Rose ILS</option>
+                <option>Rose VOR</option>
+                <option>Rose Nav</option>
+                <option selected>Arc</option>
+                <option>Plan</option>
             </select>
         </td>
     </tr>
     <tr style="font-size: smaller;">
     </tr>
     <tr style="font-size: smaller;">
-        <th><label for="radarSys">Radar</label></th>
+        <th>Radar</th>
         <td style="text-align: left; line-height: 1;">
             <input type="radio" name="radarSys" class="sendRadio" id="radarSys1" value="0" />
             <label for="radarSys1">1</label><br />
@@ -61,8 +61,8 @@
             <label for="radarSys2">2</label>
         </td>
         <td><input type="checkbox" id="predictiveWindshear" class="sendBoolean" /></td>
-        <th><label for="predictiveWindshear">Predictive Windshear</label></th>
-        <th><label for="tcasTraffic">Traffic</label></th>
+        <th><label for="predictiveWindshear">Predictive<br/>Windshear</label></th>
+        <th>Traffic</th>
         <td style="text-align: left; line-height: 1;">
             <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficThreat" value="0" />
             <label for="tcasTrafficThreat">Thrt</label><br />
@@ -73,7 +73,7 @@
             <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficBelow" value="3" />
             <label for="tcasTrafficBelow">Blw</label>
         </td>
-        <th><label for="tcasMode">TCAS</label></th>
+        <th>TCAS</th>
         <td style="text-align: left; line-height: 1;">
             <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeStandby" value="0" />
             <label for="tcasModeStandby">Stby</label><br />
