@@ -1,7 +1,6 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Serial;
 using Controlzmo.Systems.JetBridge;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
