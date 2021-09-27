@@ -2,7 +2,6 @@ using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using SimConnectzmo;
 using System;
-using System.Numerics;
 
 namespace Controlzmo.Systems.EfisControlPanel
 {
