@@ -31,13 +31,12 @@ https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn
 EFIS
 ----
 
-The five option buttons can be read/set with L:A32NX_EFIS_L/R_OPTION (0 none, 1 CSTR, 3 WPT, 2 VORD, 4 NDB, 5 ARPT).
-
 The LS pushbuttons under Baro are BTN_LS_1/2_FILTER_ACTIVE (read/write).
 
 Where are the FD buttons?
 
 Other useful things?
+--------------------
 
 `A32NX_FWC_FLIGHT_PHASE` isn't 100% reliable; goes through 3 and 4 on the first run, but sometimes a second takeoff run goes straight from 2 to 8, especially if using FLEX.
 See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
