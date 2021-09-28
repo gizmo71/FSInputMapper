@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
+/* Display stuff.
+A32NX_FCU_ALT_MANAGED */
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]

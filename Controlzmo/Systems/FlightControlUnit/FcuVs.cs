@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
+/*TODO: Display stuff.
+A32NX_AUTOPILOT_FPA_SELECTED or A32NX_AUTOPILOT_VS_SELECTED
+A32NX_FCU_VS_MANAGED */
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
