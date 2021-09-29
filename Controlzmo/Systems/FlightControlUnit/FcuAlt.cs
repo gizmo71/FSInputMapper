@@ -6,16 +6,17 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
-/* Display stuff.
-A32NX_FCU_ALT_MANAGED */
+/*
+How do we know what number to show?
+*/
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
-    public class FcuAltMode : LVar, IOnSimStarted
+    public class FcuAltManaged : LVar, IOnSimStarted
     {
         private readonly SerialPico serial;
 
-        public FcuAltMode(IServiceProvider serviceProvider) : base(serviceProvider)
+        public FcuAltManaged(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             serial = serviceProvider.GetRequiredService<SerialPico>();
         }

@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
-/*TODO: Display data is a bit complex.
-We have LVars A32NX_FCU_HDG_MANAGED_DASHES/A32NX_FCU_HDG_MANAGED_DOT, which are 0/1 booleans,
+/*We have LVars A32NX_FCU_HDG_MANAGED_DOT, which are 0/1 booleans,
 and A32NX_AUTOPILOT_HEADING_SELECTED (in Degrees), instantly updated; -1 if managed heading mode.
+    The -1 should match L:A32NX_FCU_HDG_MANAGED_DASHES, but _SELECTED gets confused when flipping between TRK and HDG.
 But remember that a value may be shown before switch from managed to selected. */
 namespace Controlzmo.Systems.FlightControlUnit
 {

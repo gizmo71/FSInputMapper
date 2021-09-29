@@ -4,10 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
-/*TODO: Display data is a bit complex.
-We have LVars A32NX_FCU_SPD_MANAGED_DASHES/A32NX_FCU_SPD_MANAGED_DOT, which are 0/1 booleans, and
-A32NX_AUTOPILOT_SPEED_SELECTED, instantly updated: 100 to 399 (knots), 0.10 to 0.99 (M), or -1 for managed.
-But remember that a value may be shown before switch from managed to selected. */
+/*L:A32NX_FCU_SPD_MANAGED_DOT, a 0/1 booleans.
+L:A32NX_AUTOPILOT_SPEED_SELECTED, instantly updated: 100 to 399 (knots), 0.10 to 0.99 (M), or -1 for managed (should match A32NX_FCU_SPD_MANAGED_DASHES).
+    This is the value actually shown on the FCU, even if it's a temporary selection. */
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
