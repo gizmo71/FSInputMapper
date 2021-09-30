@@ -136,6 +136,7 @@ void setup(void) {
 }
 
 short calculateSpoilerHandle() {
+#if 0
   static short spoilerHandleRawOld = -1000;
   short spoilerHandleRaw = analogRead(A0);
   if (abs(spoilerHandleRaw - spoilerHandleRawOld) <= 20)
@@ -151,6 +152,9 @@ short calculateSpoilerHandle() {
     return min(max(3100 - spoilerHandleRaw, 0) / 20, 50);
   else
     return min(max(1100 - spoilerHandleRaw, 0) / 20, 50) + 50;
+#else
+  return 0;
+#endif
 }
 
 void updateFromInterrupts(void) {
