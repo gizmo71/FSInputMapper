@@ -11,7 +11,6 @@ using System.Text;
 using System.Timers;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading;
 
 namespace Controlzmo.Serial
 {
