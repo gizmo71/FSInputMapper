@@ -6,9 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
-/*
-How do we know what number to show?
-*/
+//TODO: How do we know what number to show? Is it AP_ALT_VAR_SET_ENGLISH?
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
