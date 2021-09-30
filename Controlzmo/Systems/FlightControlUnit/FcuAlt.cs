@@ -3,12 +3,39 @@ using Controlzmo.Serial;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Runtime.InteropServices;
 
-//TODO: How do we know what number to show? Is it AP_ALT_VAR_SET_ENGLISH?
 namespace Controlzmo.Systems.FlightControlUnit
 {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct FcuAltData
+    {
+        [SimVar("AUTOPILOT ALTITUDE LOCK VAR:3", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int fcuAlt;
+    };
+
+    [Component]
+    public class FcuAltListener : DataListener<FcuAltData>, IRequestDataOnOpen
+    {
+        private readonly ILogger logging;
+        private readonly SerialPico serial;
+
+        public FcuAltListener(IServiceProvider sp)
+        {
+            logging = sp.GetRequiredService<ILogger<FcuAltListener>>();
+            serial = sp.GetRequiredService<SerialPico>();
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
+
+        public override void Process(ExtendedSimConnect simConnect, FcuAltData data)
+            => logging.LogError($"FcuAlt={data.fcuAlt}");
+    }
+
     [Component]
     public class FcuAltManaged : LVar, IOnSimStarted
     {
