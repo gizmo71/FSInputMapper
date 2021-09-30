@@ -33,8 +33,6 @@ EFIS
 
 The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
 
-Where are the FD buttons? Probably `A:AUTOPILOT FLIGHT DIRECTOR ACTIVE:1/2`. Pushing it results in `1/2 (>K:TOGGLE_FLIGHT_DIRECTOR)` (it's actually conditional, but probably not worth worrying about).
-
 Other useful things?
 --------------------
 
