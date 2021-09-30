@@ -31,9 +31,9 @@ https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn
 EFIS
 ----
 
-The LS pushbuttons under Baro are BTN_LS_1/2_FILTER_ACTIVE (read/write).
+The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
 
-Where are the FD buttons?
+Where are the FD buttons? Probably `A:AUTOPILOT FLIGHT DIRECTOR ACTIVE:1/2`.
 
 Other useful things?
 --------------------
