@@ -15,6 +15,8 @@ static IoAbstractionRef io23017 = ioFrom23017(0x20);
 static IoBounce apuMasterBounce(io23017);
 static IoBounce apuStartBounce(io23017);
 
+static IoBounce noSmokingSignBounce(io23017);
+
 static IoBounce wingIceLightBounce(io23017);
 static IoBounce noseLightOffBounce(io23017);
 static IoBounce noseLightTakeoffBounce(io23017);
@@ -29,7 +31,7 @@ static Bounce fcuAltPushBounce;
 static const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
 static QDecoder qdec(fcuAltPinA, fcuAltPinB, false); // Use "true" for 24PPR, or "false" for 12PPR.
 
-static const pinid_t externalLedFirstPin = 12, externalLedLastPin = 15;
+static const pinid_t externalLedFirstPin = 4, externalLedLastPin = 7;
 
 static const uint16_t alpsPinA = D6, alpsPinB = D7;
 static QDecoder alpsQdec(alpsPinA, alpsPinB, false);
@@ -96,17 +98,19 @@ void setup(void) {
 
   pinMode(LED_PIN, OUTPUT);
 
-  apuStartBounce.attach(11, INPUT_PULLUP);
-  apuMasterBounce.attach(10, INPUT_PULLUP);
+  noSmokingSignBounce.attach(1, INPUT_PULLUP);
 
-  beaconLightBounce.attach(1, INPUT_PULLUP);
-  landingLightBounce.attach(8, INPUT_PULLUP);
-  navLightBounce.attach(4, INPUT_PULLUP);
-  noseLightTakeoffBounce.attach(7, INPUT_PULLUP);
-  noseLightOffBounce.attach(5, INPUT_PULLUP);
-  runwayTurnoffLightBounce.attach(2, INPUT_PULLUP);
-  strobeLightOffBounce.attach(6, INPUT_PULLUP);
-  strobeLightOnBounce.attach(3, INPUT_PULLUP);
+  apuStartBounce.attach(2, INPUT_PULLUP);
+  apuMasterBounce.attach(3, INPUT_PULLUP);
+
+  beaconLightBounce.attach(13, INPUT_PULLUP);
+  landingLightBounce.attach(9, INPUT_PULLUP);
+  navLightBounce.attach(8, INPUT_PULLUP);
+  noseLightTakeoffBounce.attach(10, INPUT_PULLUP);
+  noseLightOffBounce.attach(11, INPUT_PULLUP);
+  runwayTurnoffLightBounce.attach(12, INPUT_PULLUP);
+  strobeLightOffBounce.attach(15, INPUT_PULLUP);
+  strobeLightOnBounce.attach(14, INPUT_PULLUP);
   wingIceLightBounce.attach(0, INPUT_PULLUP);
 
   fcuAltPushBounce.attach(D17, INPUT_PULLUP);
@@ -216,7 +220,10 @@ void updateContinuousInputs(void) {
     runwayTurnoffLight = booleanAsJson(!runwayTurnoffLightBounce.read());
 
   if (assumeChanged || landingLightBounce.update())
-    landingLight = booleanAsJson(landingLightBounce.read());
+    landingLight = booleanAsJson(!landingLightBounce.read());
+
+  if (assumeChanged || noSmokingSignBounce.update())
+    noSmokingSign = booleanAsJson(noSmokingSignBounce.read());
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
@@ -265,10 +272,10 @@ void updateOuputs(void) {
   qwiicButton.LEDon(fcuAltManaged ? 63 : 0);
 
   int i = externalLedFirstPin;
-  io23017->writeValue(i++, !apuMasterOn ? LOW : HIGH);
-  io23017->writeValue(i++, !apuAvail ? LOW : HIGH);
-  io23017->writeValue(i++, !apuStartOn ? LOW : HIGH);
-  io23017->writeValue(i, !apuFault ? LOW : HIGH);
+  io23017->writeValue(i++, apuStartOn ? HIGH : LOW);
+  io23017->writeValue(i++, apuAvail ? HIGH : LOW);
+  io23017->writeValue(i++, apuMasterOn ? HIGH : LOW);
+  io23017->writeValue(i, apuFault ? HIGH : LOW);
 }
 
 void seviceQwiicButton(void) {

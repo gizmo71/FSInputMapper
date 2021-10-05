@@ -102,6 +102,12 @@ void sendContinuous(void) {
     noseLight = NULL;
   }
 
+  if (noSmokingSign) {
+    Serial.print("noSmokingSign=");
+    Serial.println(noSmokingSign);
+    noSmokingSign = NULL;
+  }
+
   {
     short fcuAltDeltaToSend = fcuAltDelta;
     if (fcuAltDelta) {
