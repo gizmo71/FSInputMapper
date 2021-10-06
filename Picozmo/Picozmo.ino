@@ -11,7 +11,7 @@ volatile byte apuMasterPressed, apuStartPressed, baroPushed, baroPulled,
 volatile short spoilerHandle = -2, fcuAltDelta, fcuVsDelta, baroDelta;
 const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile baroUnits,
-  *volatile noSmokingSign;
+  *volatile seatBeltSign;
 
 volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged = true;
 

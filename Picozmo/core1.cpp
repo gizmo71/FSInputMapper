@@ -102,10 +102,10 @@ void sendContinuous(void) {
     noseLight = NULL;
   }
 
-  if (noSmokingSign) {
-    Serial.print("noSmokingSign=");
-    Serial.println(noSmokingSign);
-    noSmokingSign = NULL;
+  if (seatBeltSign) {
+    Serial.print("seatBeltSign=");
+    Serial.println(seatBeltSign);
+    seatBeltSign = NULL;
   }
 
   {

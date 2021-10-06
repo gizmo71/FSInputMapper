@@ -4,7 +4,7 @@ extern volatile byte apuMasterPressed, apuStartPressed, baroPushed, baroPulled,
 extern volatile short spoilerHandle, fcuAltDelta, fcuVsDelta, baroDelta;
 extern const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile baroUnits,
-  *volatile noSmokingSign;
+  *volatile seatBeltSign;
 
 // These communicate from core1 to core0.
 extern volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged;

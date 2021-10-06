@@ -15,7 +15,7 @@ static IoAbstractionRef io23017 = ioFrom23017(0x20);
 static IoBounce apuMasterBounce(io23017);
 static IoBounce apuStartBounce(io23017);
 
-static IoBounce noSmokingSignBounce(io23017);
+static IoBounce seatBeltSignBounce(io23017);
 
 static IoBounce wingIceLightBounce(io23017);
 static IoBounce noseLightOffBounce(io23017);
@@ -98,7 +98,7 @@ void setup(void) {
 
   pinMode(LED_PIN, OUTPUT);
 
-  noSmokingSignBounce.attach(1, INPUT_PULLUP);
+  seatBeltSignBounce.attach(1, INPUT_PULLUP);
 
   apuStartBounce.attach(2, INPUT_PULLUP);
   apuMasterBounce.attach(3, INPUT_PULLUP);
@@ -222,8 +222,8 @@ void updateContinuousInputs(void) {
   if (assumeChanged || landingLightBounce.update())
     landingLight = booleanAsJson(!landingLightBounce.read());
 
-  if (assumeChanged || noSmokingSignBounce.update())
-    noSmokingSign = booleanAsJson(noSmokingSignBounce.read());
+  if (assumeChanged || seatBeltSignBounce.update())
+    seatBeltSign = booleanAsJson(seatBeltSignBounce.read());
 
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
