@@ -1,8 +1,8 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Serial;
 using Controlzmo.Systems.JetBridge;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -59,18 +59,21 @@ namespace Controlzmo.Systems.EfisControlPanel
     [Component]
     public class BaroListener : DataListener<BaroData>, IRequestDataOnOpen
     {
-        private readonly ILogger logging;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly SerialPico serial;
 
         public BaroListener(IServiceProvider sp)
         {
-            logging = sp.GetRequiredService<ILogger<BaroListener>>();
+            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serial = sp.GetRequiredService<SerialPico>();
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
-            => serial.SendLine($"Kohlsman={data.kohlsmanMB:0000} {data.kohlsmanHg:00.00}");
+        {
+            serial.SendLine($"Kohlsman={data.kohlsmanMB:0000} {data.kohlsmanHg:00.00}");
+            hub.Clients.All.SetFromSim("baroDisplay", "QFENH\n{data.kohlsmanHg:00.00}");
+        }
     }
 }
