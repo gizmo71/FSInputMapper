@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Controlzmo;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.ComponentModel;
 using System.Threading;
-using Controlzmo;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 // Based on http://www.prepar3d.com/forum/viewtopic.php?p=44893&sid=3b0bd3aae23dc7b9cb0de012bab9daec#p44893
 namespace SimConnectzmo
@@ -11,14 +10,12 @@ namespace SimConnectzmo
     [Component]
     public class Adapter : KeepAliveWorker, CreateOnStartup
     {
-        private readonly ILogger _logger;
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
         private readonly AutoResetEvent MessageSignal = new AutoResetEvent(false);
 
         public Adapter(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            this._logger = serviceProvider.GetRequiredService<ILogger<Adapter>>();
             this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             this.serviceProvider = serviceProvider;
         }
