@@ -73,7 +73,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
             serial.SendLine($"Kohlsman={data.kohlsmanMB:0000} {data.kohlsmanHg:00.00}");
-            hub.Clients.All.SetFromSim("baroDisplay", "QFENH\n{data.kohlsmanHg:00.00}");
+            hub.Clients.All.SetFromSim("baroDisplay", $"QFENH\n{data.kohlsmanHg:00.00}");
         }
     }
 }
