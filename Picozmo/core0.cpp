@@ -27,66 +27,42 @@ static IoBounce strobeLightOnBounce(io23017);
 static IoBounce beaconLightBounce(io23017);
 static IoBounce navLightBounce(io23017);
 
-static Bounce fcuAltPushBounce;
-static const uint16_t fcuAltPinA = D18, fcuAltPinB = D19;
-static QDecoder qdec(fcuAltPinA, fcuAltPinB, false); // Use "true" for 24PPR, or "false" for 12PPR.
+#define PPR12 false
+#define PPR24 true
 
 static const pinid_t externalLedFirstPin = 4, externalLedLastPin = 7;
 
-static const uint16_t alpsPinA = D6, alpsPinB = D7;
-static QDecoder alpsQdec(alpsPinA, alpsPinB, false);
-static Bounce alpsPushBounce;
-static Bounce softSwitchBounce;
+#define NOT_IMPLEMENTED 666
+
 static Bounce smallToggleABounce;
 static Bounce smallToggleBBounce;
-
-// Actually the prototype 3D printed push-pull
-static const uint16_t fcuVsPinA = D11, fcuVsPinB = D10;
-static QDecoder fcuVsQdec(fcuVsPinA, fcuVsPinB, true);
-static Bounce fcuVsPushBounce;
-static Bounce fcuVsPullBounce;
 
 static QwiicButton qwiicButton;
 
 static critical_section_t isrCritical;
-static short fcuAltDeltaIsr;
 
-void fcuAltRotatedIsr(void) {
-  switch (qdec.update()) {
-  case QDECODER_EVENT_CCW:
-    ++fcuAltDeltaIsr;
-    break;
-  case QDECODER_EVENT_CW:
-    --fcuAltDeltaIsr;
-    break;
+#define PUSH_PULL_ISR(control, pinA, pinB, is24ppr) \
+  static const uint16_t control##PinA = pinA, control##PinB = pinB; \
+  static QDecoder control##Qdec(control##PinA, control##PinB, is24ppr); \
+  static Bounce control##PushBounce; \
+  static Bounce control##PullBounce; \
+  static short control##DeltaIsr; \
+  void control##RotatedIsr(void) { \
+    switch (control##Qdec.update()) { \
+    case QDECODER_EVENT_CCW: \
+      ++control##DeltaIsr; \
+      break; \
+    case QDECODER_EVENT_CW: \
+      --control##DeltaIsr; \
+      break; \
+    } \
   }
-}
 
-static short alpsDeltaIsr;
-
-void alpsRotatedIsr(void) { //TODO: merge with FCU Alt one.
-  switch (alpsQdec.update()) {
-  case QDECODER_EVENT_CCW:
-    ++alpsDeltaIsr;
-    break;
-  case QDECODER_EVENT_CW:
-    --alpsDeltaIsr;
-    break;
-  }
-}
-
-static short fcuVsDeltaIsr;
-
-void fcuVsRotatedIsr(void) { //TODO: merge with FCU Alt one.
-  switch (fcuVsQdec.update()) {
-  case QDECODER_EVENT_CCW:
-    ++fcuVsDeltaIsr;
-    break;
-  case QDECODER_EVENT_CW:
-    --fcuVsDeltaIsr;
-    break;
-  }
-}
+PUSH_PULL_ISR(fcuSpeed, D11, D10, true)
+PUSH_PULL_ISR(fcuHeading, D19, D18, true)
+PUSH_PULL_ISR(fcuAlt, D20, D21, true)
+PUSH_PULL_ISR(fcuVs, D8, D9, true)
+PUSH_PULL_ISR(baro, D6, D7, false)
 
 void setup(void) {
   critical_section_init(&isrCritical);
@@ -113,24 +89,23 @@ void setup(void) {
   strobeLightOnBounce.attach(14, INPUT_PULLUP);
   wingIceLightBounce.attach(0, INPUT_PULLUP);
 
-  fcuAltPushBounce.attach(D17, INPUT_PULLUP);
-  qdec.begin();
-  attachInterrupt(digitalPinToInterrupt(fcuAltPinA), fcuAltRotatedIsr, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(fcuAltPinB), fcuAltRotatedIsr, CHANGE);
+#define PUSH_PULL_INIT(control, pushPin, pullPin) \
+  if (pushPin != NOT_IMPLEMENTED) control##PushBounce.attach(pushPin, INPUT_PULLUP); \
+  if (pullPin != NOT_IMPLEMENTED) control##PullBounce.attach(pullPin, INPUT_PULLUP); \
+  control##Qdec.begin(); \
+  if (control##PinA != NOT_IMPLEMENTED && control##PinA != NOT_IMPLEMENTED) { \
+    attachInterrupt(digitalPinToInterrupt(control##PinA), control##RotatedIsr, CHANGE); \
+    attachInterrupt(digitalPinToInterrupt(control##PinB), control##RotatedIsr, CHANGE); \
+  }
 
-  softSwitchBounce.attach(D2, INPUT_PULLUP);
+  PUSH_PULL_INIT(fcuSpeed, D13, D12)
+  PUSH_PULL_INIT(fcuHeading, D16, D17)
+  PUSH_PULL_INIT(fcuAlt, D28, D15)
+  PUSH_PULL_INIT(fcuVs, D14, D22)
+  PUSH_PULL_INIT(baro, D5, D2)
+
   smallToggleABounce.attach(D3, INPUT_PULLUP);
   smallToggleBBounce.attach(D4, INPUT_PULLUP);
-  alpsPushBounce.attach(D5, INPUT_PULLUP);
-  alpsQdec.begin();
-  attachInterrupt(digitalPinToInterrupt(alpsPinA), alpsRotatedIsr, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(alpsPinB), alpsRotatedIsr, CHANGE);
-
-  fcuVsPushBounce.attach(D13, INPUT_PULLUP);
-  fcuVsPullBounce.attach(D12, INPUT_PULLUP);
-  fcuVsQdec.begin();
-  attachInterrupt(digitalPinToInterrupt(fcuVsPinA), fcuVsRotatedIsr, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(fcuVsPinB), fcuVsRotatedIsr, CHANGE);
 
   qwiicButton.begin();
 
@@ -162,32 +137,23 @@ short calculateSpoilerHandle() {
 }
 
 void updateFromInterrupts(void) {
-  critical_section_enter_blocking(&isrCritical);
-  short fcuAltDeltaTemp = fcuAltDeltaIsr;
-  fcuAltDeltaIsr = 0;
-  critical_section_exit(&isrCritical);
+#define PUSH_PULL_UPDATE_FROM_ISR(control) { \
+  critical_section_enter_blocking(&isrCritical); \
+  short control##DeltaTemp = control##DeltaIsr; \
+  control##DeltaIsr = 0; \
+  critical_section_exit(&isrCritical); \
+  if (control##DeltaTemp) {\
+    mutex_enter_blocking(&mut0to1); \
+    control##Delta += control##DeltaTemp; \
+    mutex_exit(&mut0to1); \
+  } \
+}
 
-  mutex_enter_blocking(&mut0to1);
-  fcuAltDelta += fcuAltDeltaTemp;
-  mutex_exit(&mut0to1);
-
-  critical_section_enter_blocking(&isrCritical);
-  short alpsDeltaTemp = alpsDeltaIsr;
-  alpsDeltaIsr = 0;
-  critical_section_exit(&isrCritical);
-
-  critical_section_enter_blocking(&isrCritical);
-  short fcuVsDeltaTemp = fcuVsDeltaIsr;
-  fcuVsDeltaIsr = 0;
-  critical_section_exit(&isrCritical);
-
-  mutex_enter_blocking(&mut0to1);
-  fcuVsDelta += fcuVsDeltaTemp;
-  mutex_exit(&mut0to1);
-
-  mutex_enter_blocking(&mut0to1);
-  baroDelta += alpsDeltaTemp;
-  mutex_exit(&mut0to1);
+  PUSH_PULL_UPDATE_FROM_ISR(fcuSpeed)
+  PUSH_PULL_UPDATE_FROM_ISR(fcuHeading)
+  PUSH_PULL_UPDATE_FROM_ISR(fcuAlt)
+  PUSH_PULL_UPDATE_FROM_ISR(fcuVs)
+  PUSH_PULL_UPDATE_FROM_ISR(baro)
 }
 
 const char *booleanAsJson(bool b) {
@@ -230,20 +196,26 @@ void updateContinuousInputs(void) {
 
   if (assumeChanged || smallToggleABounce.update() || smallToggleBBounce.update()) {
     if (!smallToggleABounce.read())
-      baroUnits = "hPa";
+      newBaroUnits = currentBaroUnits = baroUnitHPa;
     else if (!smallToggleBBounce.read())
-      baroUnits = "inHg";
+      newBaroUnits = currentBaroUnits = baroUnitInHg;
   }
 }
 
 void updateMomentaryInputs(void) {
-  softSwitchBounce.update();
-  if (!baroPulled && softSwitchBounce.fell())
-    baroPulled = true;
+#define UPDATE_PUSH_PULL(control) \
+  control##PullBounce.update(); \
+  if (!control##Pulled && control##PullBounce.fell()) \
+    control##Pulled = true; \
+  control##PushBounce.update(); \
+  if (!control##Pushed && control##PushBounce.fell()) \
+    control##Pushed = true;
 
-  alpsPushBounce.update();
-  if (!baroPushed && alpsPushBounce.fell())
-    baroPushed = true;
+  UPDATE_PUSH_PULL(baro)
+  UPDATE_PUSH_PULL(fcuSpeed)
+  UPDATE_PUSH_PULL(fcuHeading)
+  UPDATE_PUSH_PULL(fcuAlt)
+  UPDATE_PUSH_PULL(fcuVs)
 
   apuMasterBounce.update();
   if (!apuMasterPressed && apuMasterBounce.fell())
@@ -252,18 +224,6 @@ void updateMomentaryInputs(void) {
   apuStartBounce.update();
   if (!apuStartPressed && apuStartBounce.fell())
     apuStartPressed = true;
-
-  fcuAltPushBounce.update();
-  if (!fcuAltPushed && fcuAltPushBounce.fell())
-    fcuAltPushed = true;
-
-  fcuVsPushBounce.update();
-  if (!fcuVsPushed && fcuVsPushBounce.fell())
-    fcuVsPushed = true;
-
-  fcuVsPullBounce.update();
-  if (!fcuVsPulled && fcuVsPullBounce.fell())
-    fcuVsPulled = true;
 }
 
 void updateOuputs(void) {

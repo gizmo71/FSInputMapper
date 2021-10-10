@@ -2,15 +2,17 @@
 
 #include "Picozmo.h"
 
-static const char *currentBaroUnits = "";
-
 extern void setup1(void) {
   sleep_ms(1000); // Make sure Core 0 runs its setup first.
   Serial.setTimeout(100);
   Serial.begin(115200);
 }
 
+char baroMode = 0; // Q'F'E, Q'N'H, 'S'td
+const char baroValue[6] = "99.99";
+
 void process(String name, String value) {
+  bool baroChange = false;
   if (name == "ApuFault")
     apuFault = value == "True";
   else if (name == "ApuMasterOn")
@@ -21,14 +23,31 @@ void process(String name, String value) {
     apuStartOn = value == "True";
   else if (name == "FcuAltManaged")
     fcuAltManaged = value == "True";
-  else if (name == "Kohlsman")
-    ; //TODO: whatever
-  else {
+  else if (name == "baroMode" && value.length() == 1) {
+    baroMode = value.charAt(1);
+    baroChange = true;
+  } else if (name == "Kohlsman" && value.length() == 10 && currentBaroUnits) {
+    baroChange = true;
+  } else if (name == "fcuL") {
+    Serial.print("fcuDisplayLeft=\"");
+    Serial.println('"');
+  } else if (name == "fcuR") {
+    Serial.print("fcuDisplayRight=\"");
+    Serial.println('"');
+  } else {
     Serial.print("# Don't know what '");
     Serial.print(name);
     Serial.print("' is to set it to '");
     Serial.print(value);
     Serial.println("'");
+  }
+
+  if (baroChange && currentBaroUnits && baroMode) {
+    Serial.print("baroDisplay=\""); //TODO: whatever
+    Serial.print(baroMode == 'S' ? "     " : (baroMode == 'F' ? "QFE  " : "  QNH"));
+    Serial.print("\\n");
+    Serial.print(random(0x10000, 0xfffff), HEX);
+    Serial.println('"');
   }
 }
 
@@ -109,6 +128,28 @@ void sendContinuous(void) {
   }
 
   {
+    short fcuSpeedDeltaToSend = fcuSpeedDelta;
+    if (fcuSpeedDelta) {
+      Serial.print("fcuSpeedDelta=");
+      Serial.println(fcuSpeedDeltaToSend);
+      mutex_enter_blocking(&mut0to1);
+      fcuSpeedDelta -= fcuSpeedDeltaToSend;
+      mutex_exit(&mut0to1);
+    }
+  }
+
+  {
+    short fcuHeadingDeltaToSend = fcuHeadingDelta;
+    if (fcuHeadingDelta) {
+      Serial.print("fcuHeadingDelta=");
+      Serial.println(fcuHeadingDeltaToSend);
+      mutex_enter_blocking(&mut0to1);
+      fcuHeadingDelta -= fcuHeadingDeltaToSend;
+      mutex_exit(&mut0to1);
+    }
+  }
+
+  {
     short fcuAltDeltaToSend = fcuAltDelta;
     if (fcuAltDelta) {
       Serial.print("fcuAltDelta=");
@@ -160,6 +201,26 @@ void sendMomentary(void) {
     Serial.println("apuStartPressed=true");
   }
 
+  if (fcuSpeedPushed) {
+    fcuSpeedPushed = false;
+    Serial.println("fcuSpeedPushed=true");
+  }
+
+  if (fcuSpeedPulled) {
+    fcuSpeedPulled = false;
+    Serial.println("fcuSpeedPulled=true");
+  }
+
+  if (fcuHeadingPushed) {
+    fcuHeadingPushed = false;
+    Serial.println("fcuHeadingPushed=true");
+  }
+
+  if (fcuHeadingPulled) {
+    fcuHeadingPulled = false;
+    Serial.println("fcuHeadingPulled=true");
+  }
+
   if (fcuAltPushed) {
     fcuAltPushed = false;
     Serial.println("fcuAltPushed=true");
@@ -190,9 +251,8 @@ void sendMomentary(void) {
     Serial.println("baroKnob=\"push\"");
   }
 
-  if (baroUnits) {
-    currentBaroUnits = baroUnits;
-    baroUnits = NULL;
+  if (newBaroUnits) {
+    newBaroUnits = NULL;
     Serial.print("baroKnob=\"");
     Serial.print(currentBaroUnits);
     Serial.println("\"");

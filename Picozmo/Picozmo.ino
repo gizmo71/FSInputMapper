@@ -7,11 +7,12 @@
 // https://github.com/muwerk/muwerk and https://github.com/muwerk/ustd
 
 volatile byte apuMasterPressed, apuStartPressed, baroPushed, baroPulled,
-  fcuAltPushed, fcuAltPulled, fcuVsPushed, fcuVsPulled;
-volatile short spoilerHandle = -2, fcuAltDelta, fcuVsDelta, baroDelta;
+  fcuAltPushed, fcuAltPulled, fcuVsPushed, fcuVsPulled, fcuSpeedPushed, fcuSpeedPulled, fcuHeadingPushed, fcuHeadingPulled;
+volatile short spoilerHandle = -2, fcuAltDelta, fcuVsDelta, fcuHeadingDelta, fcuSpeedDelta, baroDelta;
 const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,
-  *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile baroUnits,
-  *volatile seatBeltSign;
+  *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile seatBeltSign;
+
+const char *baroUnitInHg = "inHg", *baroUnitHPa = "hPa", *volatile newBaroUnits, *volatile currentBaroUnits;
 
 volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged = true;
 
