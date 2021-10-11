@@ -34,8 +34,8 @@ static const pinid_t externalLedFirstPin = 4, externalLedLastPin = 7;
 
 #define NOT_IMPLEMENTED 666
 
-static Bounce smallToggleABounce;
-static Bounce smallToggleBBounce;
+static Bounce baroModeBounce;
+static Bounce fcuAltModeBounce;
 
 static QwiicButton qwiicButton;
 
@@ -104,8 +104,8 @@ void setup(void) {
   PUSH_PULL_INIT(fcuVs, D14, D22)
   PUSH_PULL_INIT(baro, D5, D2)
 
-  smallToggleABounce.attach(D3, INPUT_PULLUP);
-  smallToggleBBounce.attach(D4, INPUT_PULLUP);
+  fcuAltModeBounce.attach(D4, INPUT_PULLUP);
+  baroModeBounce.attach(D3, INPUT_PULLUP);
 
   qwiicButton.begin();
 
@@ -194,12 +194,11 @@ void updateContinuousInputs(void) {
   if (assumeChanged || noseLightTakeoffBounce.update() || noseLightOffBounce.update())
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
-  if (assumeChanged || smallToggleABounce.update() || smallToggleBBounce.update()) {
-    if (!smallToggleABounce.read())
-      newBaroUnits = currentBaroUnits = baroUnitHPa;
-    else if (!smallToggleBBounce.read())
-      newBaroUnits = currentBaroUnits = baroUnitInHg;
-  }
+  if (assumeChanged || baroModeBounce.update())
+    newBaroUnits = currentBaroUnits = baroModeBounce.read() ? baroUnitHPa : baroUnitInHg;
+
+  if (assumeChanged || fcuAltModeBounce.update())
+    fcuAltMode = fcuAltModeBounce.read() ? 1000 : 100;
 }
 
 void updateMomentaryInputs(void) {

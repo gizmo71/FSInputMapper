@@ -2,7 +2,7 @@
 extern volatile byte apuMasterPressed, apuStartPressed, baroPushed, baroPulled,
   fcuSpeedPushed, fcuSpeedPulled, fcuHeadingPushed, fcuHeadingPulled,
   fcuAltPushed, fcuAltPulled, fcuVsPushed, fcuVsPulled;
-extern volatile short spoilerHandle, fcuAltDelta, fcuVsDelta, fcuHeadingDelta, fcuSpeedDelta, baroDelta;
+extern volatile short spoilerHandle, fcuAltMode, fcuAltDelta, fcuVsDelta, fcuHeadingDelta, fcuSpeedDelta, baroDelta;
 extern const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile seatBeltSign;
 

@@ -127,6 +127,12 @@ void sendContinuous(void) {
     seatBeltSign = NULL;
   }
 
+  if (fcuAltMode) {
+    Serial.print("fcuAltIncrement=");
+    Serial.println(fcuAltMode);
+    fcuAltMode = 0;
+  }
+
   {
     short fcuSpeedDeltaToSend = fcuSpeedDelta;
     if (fcuSpeedDelta) {
