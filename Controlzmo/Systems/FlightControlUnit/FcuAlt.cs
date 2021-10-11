@@ -9,6 +9,7 @@ using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
+//TODO: add support for A32NX.FCU_ALT_INCREMENT_SET
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
