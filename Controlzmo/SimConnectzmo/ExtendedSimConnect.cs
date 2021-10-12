@@ -11,7 +11,7 @@ using Microsoft.FlightSimulator.SimConnect;
 namespace SimConnectzmo
 {
     // Change ENUM_DYNAMIC_START if you need more internal values.
-    internal enum REQUEST { AircraftLoaded = 1 }
+    internal enum REQUEST { AircraftLoaded = 1, SimSystemState }
     internal enum STRUCT { }
     internal enum EVENT { SimSystemState = 1 }
     internal enum GROUP { JUST_MASKABLE = 1 }
@@ -35,7 +35,7 @@ namespace SimConnectzmo
         private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
         private readonly IntPtr hSimConnect;
 
-        public bool IsSimStared;
+        public bool? IsSimStarted;
 
         public UInt32 GetLastSentPacketID()
         {
@@ -115,6 +115,9 @@ namespace SimConnectzmo
 
         public void TriggerInitialRequests()
         {
+            if (IsSimStarted == null)
+                RequestSystemState(REQUEST.SimSystemState, "Sim");
+
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 // Note that on SimStop we issue NEVERs to ensure that we start getting stuff again on SimStart.
@@ -318,13 +321,11 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void HandleSimSystemStateEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
-            if (IsSimStared = (data.dwData == 1))
+            if ((IsSimStarted = (data.dwData == 1)) == true)
             {
                 RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
                 _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
-                foreach (var handler in onSimStartedHandlers!)
-                    handler.OnStarted(this);
-                TriggerInitialRequests();
+                OnSimIsRunning();
             }
             else
                 foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
@@ -334,6 +335,18 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
         {
             _logging!.LogError($"Received system state {(REQUEST)data.dwRequestID} with {data.szString}");
+
+            if (data.dwRequestID == (uint)REQUEST.SimSystemState && IsSimStarted == null) {
+                if ((IsSimStarted = (data.dwInteger == 1)) == true)
+                    OnSimIsRunning();
+            }
+        }
+
+        private void OnSimIsRunning()
+        {
+            foreach (var handler in onSimStartedHandlers!)
+                handler.OnStarted(this);
+            TriggerInitialRequests();
         }
     }
 }

@@ -99,17 +99,23 @@ Console.Error.WriteLine($"set {id} to {value}");
             //TODO: do syncs in both directions only when both SimConnect and the Serial port are running and the sim is started.
             if (_serialPort.IsOpen)
             {
-                var syncTimer = new System.Timers.Timer(5000);
+                var syncTimer = new Timer(5000);
                 syncTimer.AutoReset = false;
-                syncTimer.Elapsed += (object sender, ElapsedEventArgs args) => SendLine("SyncInputs");
+                syncTimer.Elapsed += FullSync;
                 syncTimer.Start();
             }
+        }
+
+        private void FullSync(object sender, ElapsedEventArgs args)
+        {
+            SendLine("SyncInputs");
+            holder.SimConnect?.TriggerInitialRequests();
         }
 
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
 //TODO: remove this interdependency
-            if (!holder.SimConnect!.IsSimStared)
+            if (holder.SimConnect!.IsSimStarted == false)
                 throw new NullReferenceException("Aborting serial connection because SimConnect isn't attached with the sim running");
 
             _serialPort.Open();
