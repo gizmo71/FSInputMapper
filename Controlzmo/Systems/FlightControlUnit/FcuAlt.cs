@@ -63,7 +63,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public string GetId() => "fcuAltPulled";
 
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        public void SetInSim(ExtendedSimConnect simConnect, bool _ )
             => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PULL)");
     }
 
@@ -76,7 +76,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public string GetId() => "fcuAltPushed";
 
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        public void SetInSim(ExtendedSimConnect simConnect, bool _)
             => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PUSH)");
     }
 
