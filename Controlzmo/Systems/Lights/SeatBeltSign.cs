@@ -19,7 +19,7 @@ namespace Controlzmo.Systems.Lights
         {
             var desiredValue = value == true ? 1 : 0;
             sender.Execute(simConnect, $"(A:CABIN SEATBELTS ALERT SWITCH,Bool) {desiredValue} !="
-                + " if{{ (> K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }}");
+                + " if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }");
         }
     }
 }
