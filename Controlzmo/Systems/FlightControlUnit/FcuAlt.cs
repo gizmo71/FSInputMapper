@@ -9,7 +9,6 @@ using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
-//TODO: add support for A32NX.FCU_ALT_INCREMENT_SET
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -98,6 +97,21 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, $"0 (>K:{eventCode})");
                 value -= (short)Math.Sign(value);
             }
+        }
+    }
+
+    [Component]
+    public class FcuAltIncrement : ISettable<Int16>
+    {
+        private readonly JetBridgeSender sender;
+
+        public FcuAltIncrement(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+
+        public string GetId() => "fcuAltIncrement";
+
+        public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
+        {
+            sender.Execute(simConnect, $"{value} (>K:A32NX.FCU_ALT_INCREMENT_SET)");
         }
     }
 }
