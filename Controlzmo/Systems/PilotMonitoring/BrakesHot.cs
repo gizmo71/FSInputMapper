@@ -19,7 +19,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         protected override string LVarName() => "A32NX_BRAKES_HOT";
         protected override int Milliseconds() => 4000;
-        protected override double Default() => 1.0;
+        protected override double Default() => -1.0;
 
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
