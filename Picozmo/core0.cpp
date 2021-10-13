@@ -32,8 +32,6 @@ static IoBounce navLightBounce(io23017);
 
 static const pinid_t externalLedFirstPin = 4, externalLedLastPin = 7;
 
-#define NOT_IMPLEMENTED 666
-
 static Bounce baroModeBounce;
 static Bounce fcuAltModeBounce;
 
@@ -90,13 +88,11 @@ void setup(void) {
   wingIceLightBounce.attach(0, INPUT_PULLUP);
 
 #define PUSH_PULL_INIT(control, pushPin, pullPin) \
-  if (pushPin != NOT_IMPLEMENTED) control##PushBounce.attach(pushPin, INPUT_PULLUP); \
-  if (pullPin != NOT_IMPLEMENTED) control##PullBounce.attach(pullPin, INPUT_PULLUP); \
+  control##PushBounce.attach(pushPin, INPUT_PULLUP); \
+  control##PullBounce.attach(pullPin, INPUT_PULLUP); \
   control##Qdec.begin(); \
-  if (control##PinA != NOT_IMPLEMENTED && control##PinA != NOT_IMPLEMENTED) { \
-    attachInterrupt(digitalPinToInterrupt(control##PinA), control##RotatedIsr, CHANGE); \
-    attachInterrupt(digitalPinToInterrupt(control##PinB), control##RotatedIsr, CHANGE); \
-  }
+  attachInterrupt(digitalPinToInterrupt(control##PinA), control##RotatedIsr, CHANGE); \
+  attachInterrupt(digitalPinToInterrupt(control##PinB), control##RotatedIsr, CHANGE);
 
   PUSH_PULL_INIT(fcuSpeed, D13, D12)
   PUSH_PULL_INIT(fcuHeading, D16, D17)
