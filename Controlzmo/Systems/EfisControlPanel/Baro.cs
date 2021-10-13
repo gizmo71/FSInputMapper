@@ -50,18 +50,20 @@ namespace Controlzmo.Systems.EfisControlPanel
     }
 
     [Component]
-    public class Baro1Mode : LVar
+    public class Baro1Mode : LVar, IOnSimStarted
     {
         public Baro1Mode(IServiceProvider serviceProvider) : base(serviceProvider) { }
         protected override string LVarName() => "XMLVAR_Baro1_Mode";
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
         public bool isQnh { get => ((int?)Value & 1) == 1; } // Otherwise QFE
         public bool isStd { get => ((int?)Value & 2) == 2; } // Otherwise QFE or QNH
     }
 
     [Component]
-    public class Baro1Units : LVar
+    public class Baro1Units : LVar, IOnSimStarted
     {
         public Baro1Units(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
         protected override string LVarName() => "XMLVar_Baro_Selector_HPA_1";
         public bool isInHg { get => Value == 0; } // Otherwise hPa
     }
@@ -92,13 +94,15 @@ namespace Controlzmo.Systems.EfisControlPanel
             baro1Units = sp.GetRequiredService<Baro1Units>();
 
             baro1Mode.PropertyChanged += Regenerate;
+            baro1Units.PropertyChanged += Regenerate;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
-            currentSetting = data;
+            if (!baro1Mode.isStd || currentSetting.kohlsmanMB == 0)
+                currentSetting = data;
             Regenerate(this, null);
         }
 
