@@ -1,11 +1,13 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Serial;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -47,6 +49,23 @@ namespace Controlzmo.Systems.EfisControlPanel
         }
     }
 
+    [Component]
+    public class Baro1Mode : LVar
+    {
+        public Baro1Mode(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "XMLVAR_Baro1_Mode";
+        public bool isQnh { get => ((int?)Value & 1) == 1; } // Otherwise QFE
+        public bool isStd { get => ((int?)Value & 2) == 2; } // Otherwise QFE or QNH
+    }
+
+    [Component]
+    public class Baro1Units : LVar
+    {
+        public Baro1Units(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "XMLVar_Baro_Selector_HPA_1";
+        public bool isInHg { get => Value == 0; } // Otherwise hPa
+    }
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct BaroData
     {
@@ -54,25 +73,51 @@ namespace Controlzmo.Systems.EfisControlPanel
         public float kohlsmanMB;
         [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanHg;
-    };
+    }
 
     [Component]
-    public class BaroListener : DataListener<BaroData>, IRequestDataOnOpen
+    public class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly SerialPico serial;
+        private readonly Baro1Mode baro1Mode;
+        private readonly Baro1Units baro1Units;
+        private BaroData currentSetting = new BaroData { kohlsmanHg = 0, kohlsmanMB = 0 };
 
-        public BaroListener(IServiceProvider sp)
+        public BaroDisplay(IServiceProvider sp)
         {
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serial = sp.GetRequiredService<SerialPico>();
+            baro1Mode = sp.GetRequiredService<Baro1Mode>();
+            baro1Units = sp.GetRequiredService<Baro1Units>();
+
+            baro1Mode.PropertyChanged += Regenerate;
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
-            serial.SendLine($"Kohlsman={data.kohlsmanMB:0000} {data.kohlsmanHg:00.00}");
+            currentSetting = data;
+            Regenerate(this, null);
+        }
+
+        private void Regenerate(object? _, PropertyChangedEventArgs? args)
+        {
+            string line1, line2;
+            if (baro1Mode.isStd)
+            {
+                line1 = "     ";
+                line2 = " Std ";
+            }
+            else
+            {
+                line1 = baro1Mode.isQnh ? "  QNH" : "QFE  ";
+                line2 = baro1Units.isInHg ? $"{currentSetting.kohlsmanHg:00.00}" : $" {currentSetting.kohlsmanMB:0000}";
+            }
+            //serial.SendLine($"baroDisplay1={line1}");
+            //serial.SendLine($"baroDisplay2={line2}");
+            hub.Clients.All.SetFromSim("baroDisplay", $"{line1}\n{line2}");
         }
     }
 }

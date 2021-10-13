@@ -7,24 +7,6 @@ using System;
 namespace Controlzmo.Serial
 {
     [Component]
-    public class BaroDisplay : ISettable<string>
-    {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-
-        public BaroDisplay(IServiceProvider sp)
-        {
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
-
-        public string GetId() => "baroDisplay";
-
-        public void SetInSim(ExtendedSimConnect simConnect, string? value)
-        {
-            hub.Clients.All.SetFromSim(GetId(), value);
-        }
-    }
-
-    [Component]
     public class FcuDisplayLeft : ISettable<string>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
