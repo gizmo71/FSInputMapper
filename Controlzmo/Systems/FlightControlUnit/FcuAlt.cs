@@ -51,7 +51,9 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         protected override double? Value { set { base.Value = value; send(); } }
 
-        private void send() => serial.SendLine("FcuAltManaged=" + (Value == 1));
+        private void send() => serial.SendLine("FcuAltManaged=" + IsManaged);
+
+        public bool IsManaged { get => Value == 1; }
     }
 
     [Component]

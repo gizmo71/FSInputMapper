@@ -45,6 +45,7 @@ namespace Controlzmo.SimConnectzmo
             if (name == LVarName() && Value != newValue)
             {
                 Value = newValue;
+Console.Error.WriteLine($"Invoking property change listeners for {LVarName()} of {PropertyChanged}");
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
         }
