@@ -124,6 +124,4 @@ namespace Controlzmo.SimConnectzmo
             requester.LVarUpdated?.Invoke(data.name, data.id == -1 ? null : data.value);
         }
     }
-
-    //TODO: new classes for listening for specific LVars, plugged in to request and deal with responses.
 }
