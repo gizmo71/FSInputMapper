@@ -3,7 +3,6 @@ using Controlzmo.Serial;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -24,13 +23,6 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         public FcuAltData Current { get; private set; } = new FcuAltData { fcuAlt = 0 };
         public event PropertyChangedEventHandler? PropertyChanged;
-
-        private readonly ILogger logging;
-
-        public FcuAltListener(IServiceProvider sp)
-        {
-            logging = sp.GetRequiredService<ILogger<FcuAltListener>>();
-        }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
