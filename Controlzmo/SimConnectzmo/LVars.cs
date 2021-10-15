@@ -45,7 +45,6 @@ namespace Controlzmo.SimConnectzmo
             if (name == LVarName() && Value != newValue)
             {
                 Value = newValue;
-Console.Error.WriteLine($"Invoking property change listeners for {LVarName()} of {PropertyChanged}");
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
             }
         }
@@ -76,7 +75,7 @@ Console.Error.WriteLine($"Invoking property change listeners for {LVarName()} of
 
         public string GetClientDataName() => ClientDataName;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Would make future refactoring harder")]
         public void Request(ExtendedSimConnect simConnect, string name, int milliseconds, double value)
         {
             if (milliseconds != 0 && milliseconds != 167 && milliseconds != 1000 && milliseconds != 4000)
