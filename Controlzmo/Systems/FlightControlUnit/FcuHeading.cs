@@ -1,15 +1,40 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
+using System.ComponentModel;
 
-/*We have LVars A32NX_FCU_HDG_MANAGED_DOT, which are 0/1 booleans,
-and A32NX_AUTOPILOT_HEADING_SELECTED (in Degrees), instantly updated; -1 if managed heading mode.
-    The -1 should match L:A32NX_FCU_HDG_MANAGED_DASHES, but _SELECTED gets confused when flipping between TRK and HDG.
-But remember that a value may be shown before switch from managed to selected. */
 namespace Controlzmo.Systems.FlightControlUnit
 {
+    [Component]
+    public class FcuHeadingManaged : LVar, IOnSimStarted
+    {
+        public FcuHeadingManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_FCU_HDG_MANAGED_DOT";
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public bool IsManaged { get => Value == 1; }
+    }
+
+    [Component] // Gets confused when flipping between TRK and HDG...
+    public class FcuHeadingSelected : LVar, IOnSimStarted
+    {
+        public FcuHeadingSelected(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_AUTOPILOT_HEADING_SELECTED";
+        protected override double Default() => 999;
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+    }
+
+    [Component] // ... so we need this to definitively decide.
+    public class FcuHeadingDashes : LVar, IOnSimStarted
+    {
+        public FcuHeadingDashes(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_FCU_HDG_MANAGED_DASHES";
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public bool IsDashes { get => Value == 1; }
+    }
+
     [Component]
     public class fcuHeadingPulled : ISettable<bool>
     {

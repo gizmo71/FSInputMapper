@@ -14,6 +14,9 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuSpeedManaged fcuSpeedManaged;
         private readonly FcuSpeedSelection fcuSpeedSelection;
         private readonly FcuTrackFpa fcuTrackFpa;
+        private readonly FcuHeadingManaged fcuHeadingManaged;
+        private readonly FcuHeadingSelected fcuHeadingSelected;
+        private readonly FcuHeadingDashes fcuHeadingDashes;
 
         public FcuDisplayLeft(IServiceProvider sp)
         {
@@ -22,6 +25,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             (fcuSpeedManaged = sp.GetRequiredService<FcuSpeedManaged>()).PropertyChanged += Regenerate;
             (fcuSpeedSelection = sp.GetRequiredService<FcuSpeedSelection>()).PropertyChanged += Regenerate;
             (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
+            (fcuHeadingManaged = sp.GetRequiredService<FcuHeadingManaged>()).PropertyChanged += Regenerate;
+            (fcuHeadingSelected = sp.GetRequiredService<FcuHeadingSelected>()).PropertyChanged += Regenerate;
+            (fcuHeadingDashes = sp.GetRequiredService<FcuHeadingDashes>()).PropertyChanged += Regenerate;
         }
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
@@ -31,9 +37,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT ";
 
             var speedDot = fcuSpeedManaged.IsManaged ? '*' : ' ';
-            var heading = 666;
-            var headingDot = '?';
-            var line2 = $"{Speed} {speedDot}   {heading}  {headingDot}  ";
+            var heading = fcuHeadingDashes.IsDashes ? "---" : $"{(double)fcuHeadingSelected!:000}";
+            var headingDot = fcuHeadingManaged.IsManaged ? '*' : ' ';
+            var line2 = $"{Speed} {speedDot}   {heading}   {headingDot} ";
 
             hub.Clients.All.SetFromSim("fcuDisplayLeft", $"{line1}\n{line2}");
         }
