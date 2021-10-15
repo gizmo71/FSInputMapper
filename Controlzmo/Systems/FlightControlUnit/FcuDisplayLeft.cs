@@ -26,13 +26,14 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
-            var line1 = (fcuSpeedMachListener.IsMach ? "  MACH" : "SPD   ")
-                + (fcuTrackFpa.IsHdgVS ? " HDG " : "  TRK")
-                + " LAT ";
+            var speedMachLabel = fcuSpeedMachListener.IsMach ? " MACH" : "SPD  ";
+            var hdgTrkLabel = fcuTrackFpa.IsHdgVS ? " HDG  " : "   TRK";
+            var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT ";
+
             var speedDot = fcuSpeedManaged.IsManaged ? '*' : ' ';
             var heading = 666;
             var headingDot = '?';
-            var line2 = $" {Speed} {speedDot}  {heading}  {headingDot}  ";
+            var line2 = $"{Speed} {speedDot}   {heading}  {headingDot}  ";
 
             hub.Clients.All.SetFromSim("fcuDisplayLeft", $"{line1}\n{line2}");
         }
@@ -42,12 +43,13 @@ namespace Controlzmo.Systems.FlightControlUnit
             get
             {
                 string speed;
-                if (fcuSpeedSelection.IsDashes)
-                    speed = "--- ";
-                else if (fcuSpeedMachListener.IsMach)
-                    speed = $"{(double)fcuSpeedSelection!:0.00}";
+                var selection = (double)fcuSpeedSelection!;
+                if (selection >= 0.10 && selection < 1.0)
+                    speed = $"{selection:0.00}";
+                else if (selection >= 100 && selection < 1000)
+                    speed = $" {selection:000}";
                 else
-                    speed = $"{(double)fcuSpeedSelection!:000} ";
+                    speed = " ---";
                 return speed;
             }
         }
