@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
 
-namespace Controlzmo.Serial
+namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
     public class FcuDisplayRight : CreateOnStartup
