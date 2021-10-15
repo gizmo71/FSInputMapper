@@ -36,11 +36,11 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class fcuHeadingPulled : ISettable<bool>
+    public class FcuHeadingPulled : ISettable<bool>
     {
         private readonly JetBridgeSender sender;
 
-        public fcuHeadingPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuHeadingPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuHeadingPulled";
 
@@ -49,11 +49,11 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class fcuHeadingPushed : ISettable<bool>
+    public class FcuHeadingPushed : ISettable<bool>
     {
         private readonly JetBridgeSender sender;
 
-        public fcuHeadingPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuHeadingPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuHeadingPushed";
 
