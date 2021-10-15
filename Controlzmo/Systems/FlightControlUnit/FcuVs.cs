@@ -1,36 +1,40 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.Serial;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 
-/*TODO: Display stuff.
-A32NX_AUTOPILOT_FPA_SELECTED or A32NX_AUTOPILOT_VS_SELECTED - this is the number shown.
-    How do we know when to show dashes?
-    A320_NE0_FCU_STATE (seems to be 0 when in ALT, 1 when pushed to level, 2 for selecting V/S, and 3 after pulling)
-    https://github.com/flybywiresim/a32nx/blob/42e4134f9235ff0a1842edc10aad7c56a52b7989/flybywire-aircraft-a320-neo/html_ui/Pages/VCockpit/Instruments/Airliners/FlyByWire_A320_Neo/FCU/A320_Neo_FCU.js
-Choice based on A32NX_TRK_FPA_MODE_ACTIVE: 0 for HDG+V/S, 1 for TRK+FPA.
-A32NX_FCU_VS_MANAGED is just the dot under Level Change.*/
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
-    public class FcuVsMode : LVar, IOnSimStarted
+    public class FcuVsState : LVar, IOnSimStarted
     {
-        private readonly SerialPico serial;
-
-        public FcuVsMode(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            serial = serviceProvider.GetRequiredService<SerialPico>();
-        }
-
-        protected override string LVarName() => "A32NX_FCU_VS_MANAGED";
+        public FcuVsState(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A320_NE0_FCU_STATE";
         public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+/* Seems to be (based on https://github.com/flybywiresim/a32nx/blob/42e4134f9235ff0a1842edc10aad7c56a52b7989/flybywire-aircraft-a320-neo/html_ui/Pages/VCockpit/Instruments/Airliners/FlyByWire_A320_Neo/FCU/A320_Neo_FCU.js):
+ * 0 'idle' when in ALT (-----), which also triggers "managed" to be set; then for VS:
+ * 1 when pushed to level ( 00oo);
+ * 2 for selecting V/S and 3 after pulling (both +/-00oo).
+ * In FPA, the number is always shown except for condition 0. */
+        public bool IsIdle { get => Value == 0; }
+    }
 
-        protected override double? Value { set { base.Value = value; send(); } }
+    [Component]
+    public class FcuVsSelected : LVar, IOnSimStarted
+    {
+        public FcuVsSelected(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_AUTOPILOT_VS_SELECTED";
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+    }
 
-        private void send() => serial.SendLine("FcuVsManaged=" + (Value == 1));
+    [Component]
+    public class FcuFpaSelected : LVar, IOnSimStarted
+    {
+        public FcuFpaSelected(IServiceProvider serviceProvider) : base(serviceProvider) { }
+        protected override string LVarName() => "A32NX_AUTOPILOT_FPA_SELECTED";
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
     }
 
     [Component]

@@ -8,6 +8,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
+using System.ComponentModel;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -19,49 +20,59 @@ namespace Controlzmo.Systems.FlightControlUnit
     };
 
     [Component]
-    public class FcuAltListener : DataListener<FcuAltData>, IRequestDataOnOpen
+    public class FcuAltListener : DataListener<FcuAltData>, IRequestDataOnOpen, INotifyPropertyChanged
     {
+        public FcuAltData Current { get; private set; } = new FcuAltData { fcuAlt = 0 };
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         private readonly ILogger logging;
-        private readonly SerialPico serial;
 
         public FcuAltListener(IServiceProvider sp)
         {
             logging = sp.GetRequiredService<ILogger<FcuAltListener>>();
-            serial = sp.GetRequiredService<SerialPico>();
         }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, FcuAltData data)
-            => logging.LogError($"FcuAlt={data.fcuAlt}");
+        {
+            Current = data;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FcuAltData"));
+        }
     }
 
+    // The dot under Level Change
     [Component]
     public class FcuAltManaged : LVar, IOnSimStarted
     {
-        private readonly SerialPico serial;
-
-        public FcuAltManaged(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            serial = serviceProvider.GetRequiredService<SerialPico>();
-        }
-
+        public FcuAltManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
         protected override string LVarName() => "A32NX_FCU_ALT_MANAGED";
         public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-
-        protected override double? Value { set { base.Value = value; send(); } }
-
-        private void send() => serial.SendLine("FcuAltManaged=" + IsManaged);
-
         public bool IsManaged { get => Value == 1; }
     }
 
     [Component]
-    public class fcuAltPulled : ISettable<bool>
+    public class FcuAltManagedSender : CreateOnStartup
+    {
+        private readonly SerialPico serial;
+        private readonly FcuAltManaged fcuAltManaged;
+
+        public FcuAltManagedSender(IServiceProvider serviceProvider)
+        {
+            serial = serviceProvider.GetRequiredService<SerialPico>();
+            (fcuAltManaged = serviceProvider.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
+        }
+
+        private void Regenerate(object? _, PropertyChangedEventArgs? args) =>
+            serial.SendLine("FcuAltManaged=" + fcuAltManaged.IsManaged);
+    }
+
+    [Component]
+    public class FcuAltPulled : ISettable<bool>
     {
         private readonly JetBridgeSender sender;
 
-        public fcuAltPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuAltPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuAltPulled";
 
@@ -70,11 +81,11 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class fcuAltPushed : ISettable<bool>
+    public class FcuAltPushed : ISettable<bool>
     {
         private readonly JetBridgeSender sender;
 
-        public fcuAltPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuAltPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
 
         public string GetId() => "fcuAltPushed";
 

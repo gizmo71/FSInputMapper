@@ -1,0 +1,53 @@
+﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.FlightControlUnit;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.ComponentModel;
+
+namespace Controlzmo.Serial
+{
+    [Component]
+    public class FcuDisplayRight : CreateOnStartup
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly FcuAltManaged fcuAltManaged;
+        private readonly FcuAltListener fcuAltListener;
+        private readonly FcuTrackFpa fcuTrackFpa;
+        private readonly FcuVsState fcuVsState;
+
+        public FcuDisplayRight(IServiceProvider sp)
+        {
+            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            (fcuAltManaged = sp.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
+            (fcuAltListener = sp.GetRequiredService<FcuAltListener>()).PropertyChanged += Regenerate;
+            (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
+            (fcuVsState = sp.GetRequiredService<FcuVsState>()).PropertyChanged += Regenerate;
+        }
+
+        private void Regenerate(object? _, PropertyChangedEventArgs? args)
+        {
+            var managed = fcuAltManaged.IsManaged ? "*" : " ";
+            var line1 = "ALT ┌LVL/CH┐ " + (fcuTrackFpa.IsHdgVS ? "V/S" : "FPA");
+            var line2 = $"{fcuAltListener.Current.fcuAlt:00000}   {managed}  {VS}";
+            //serial.SendLine($"fcuDisplayRight1={line1}");
+            //serial.SendLine($"fcuDisplayRight2={line2}");
+            hub.Clients.All.SetFromSim("fcuDisplayRight", $"{line1}\n{line2}");
+        }
+
+        private string VS
+        {
+            get
+            {
+                string vs;
+                if (fcuVsState.IsIdle)
+                    vs = "-----";
+                else if (fcuTrackFpa.IsTrkFpa)
+                    vs = $"{3:+#0.0;-#0.0} ";
+                else
+                    vs = $"{666 / 100:+00;-00}oo";
+                return vs;
+            }
+        }
+    }
+}
