@@ -15,6 +15,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuAltListener fcuAltListener;
         private readonly FcuTrackFpa fcuTrackFpa;
         private readonly FcuVsState fcuVsState;
+        private readonly FcuVsSelected fcuVsSelected;
+        private readonly FcuFpaSelected fcuFpaSelected;
 
         public FcuDisplayRight(IServiceProvider sp)
         {
@@ -23,6 +25,8 @@ namespace Controlzmo.Systems.FlightControlUnit
             (fcuAltListener = sp.GetRequiredService<FcuAltListener>()).PropertyChanged += Regenerate;
             (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
             (fcuVsState = sp.GetRequiredService<FcuVsState>()).PropertyChanged += Regenerate;
+            (fcuVsSelected = sp.GetRequiredService<FcuVsSelected>()).PropertyChanged += Regenerate;
+            (fcuFpaSelected = sp.GetRequiredService<FcuFpaSelected>()).PropertyChanged += Regenerate;
         }
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
@@ -43,9 +47,9 @@ namespace Controlzmo.Systems.FlightControlUnit
                 if (fcuVsState.IsIdle)
                     vs = "-----";
                 else if (fcuTrackFpa.IsTrkFpa)
-                    vs = $"{3:+#0.0;-#0.0} ";
+                    vs = $"{(double)fcuFpaSelected!:+#0.0;-#0.0} ";
                 else
-                    vs = $"{666 / 100:+00;-00}oo";
+                    vs = $"{fcuVsSelected / 100:+00;-00}oo";
                 return vs;
             }
         }

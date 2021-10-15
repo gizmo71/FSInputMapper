@@ -4,6 +4,7 @@ using System;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
+    [Component]
     public class FcuTrackFpa : LVar, IOnSimStarted
     {
         public FcuTrackFpa(IServiceProvider serviceProvider) : base(serviceProvider) { }
