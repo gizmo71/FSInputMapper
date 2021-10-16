@@ -344,8 +344,11 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void OnSimIsRunning()
         {
-            foreach (var handler in onSimStartedHandlers!)
+            foreach (var handler in onSimStartedHandlers!) 
+            {
                 handler.OnStarted(this);
+                Thread.Sleep(50); // If we ask for everything at once we'll miss some.
+            }
             TriggerInitialRequests();
         }
     }
