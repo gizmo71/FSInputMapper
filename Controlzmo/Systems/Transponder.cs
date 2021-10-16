@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
@@ -70,10 +71,8 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TcasMode : LVar, IOnSimConnection, ISettable<string?>
+    public class TcasMode : LVar, IOnSimStarted, ISettable<string?>
     {
-        private const string id = "tcasMode";
-
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -81,16 +80,14 @@ namespace Controlzmo.Systems.Transponder
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
         }
 
         protected override string LVarName() => "A32NX_SWITCH_TCAS_Position";
         protected override int Milliseconds() => 4000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        public string GetId() => id;
-
-        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
+        public string GetId() => "tcasMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
@@ -100,10 +97,8 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TcasTraffic : LVar, IOnSimConnection, ISettable<string?>
+    public class TcasTraffic : LVar, IOnSimStarted, ISettable<string?>
     {
-        private const string id = "tcasTraffic";
-
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -111,16 +106,14 @@ namespace Controlzmo.Systems.Transponder
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
         }
 
         protected override string LVarName() => "A32NX_SWITCH_TCAS_Traffic_Position";
         protected override int Milliseconds() => 4000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        public string GetId() => id;
-
-        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
+        public string GetId() => "tcasTraffic";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {

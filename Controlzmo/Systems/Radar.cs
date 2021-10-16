@@ -9,7 +9,7 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.Radar
 {
     [Component]
-    public class RadarSys : LVar, IOnSimConnection, ISettable<string?>
+    public class RadarSys : LVar, IOnSimStarted, ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -22,12 +22,11 @@ namespace Controlzmo.Systems.Radar
 
         protected override string LVarName() => "XMLVAR_A320_WeatherRadar_Sys";
         protected override int Milliseconds() => 4000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "radarSys";
 
-        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
+        protected override double? Value { set { hub.Clients.All.SetFromSim(GetId(), base.Value = value); Console.Error.WriteLine($"------------->>>>>>>>>> setting radar to {Value}"); } }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
@@ -37,7 +36,7 @@ namespace Controlzmo.Systems.Radar
     }
 
     [Component]
-    public class PredictiveWindshearSys : LVar, ISettable<bool?>, IOnSimConnection
+    public class PredictiveWindshearSys : LVar, ISettable<bool?>, IOnSimStarted
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -50,8 +49,7 @@ namespace Controlzmo.Systems.Radar
 
         protected override string LVarName() => "A32NX_SWITCH_RADAR_PWS_Position";
         protected override int Milliseconds() => 4000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "predictiveWindshear";
 
