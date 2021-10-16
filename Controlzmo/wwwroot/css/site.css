@@ -78,3 +78,8 @@ th {
     text-align: left;
     padding-right: 2em;
 }
+
+.lcdDisplay {
+    border-style: groove;
+    font-family: monospace;
+}

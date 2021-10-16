@@ -37,7 +37,7 @@ connection.on("SetFromSim", function (name, newValue) {
         if (type == 'checkbox') {
             jqInput.prop('checked', newValue);
         } else if (type == 'radio') {
-            jqInput = jqInput.filter(function () { return this.value === newValue; });
+            jqInput = jqInput.filter(function () { return this.value == newValue; });
             jqInput.prop('checked', true);
         } else {
             jqInput.prop('value', newValue);
