@@ -24,7 +24,12 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, string? position)
         {
-            var value = position switch { "off" => 2, "on" => 0, "auto" => 1, _ => throw new ArgumentException($"Unknown strobe position ${position}") };
+            // This controls the actual behaviour, but can't put the switch to "on".
+            var auto = position == "auto" ? 1 : 0;
+            var set = position != "off" ? 1 : 0;
+            sender.Execute(simConnect, $"{auto} (>L:STROBE_0_Auto) {set} 0 r (>K:2:STROBES_SET)");
+            // This can't control the actual beviour.
+            var value = position switch { "on" => 0, "auto" => 1, "off" => 2, _ => throw new ArgumentException($"Unknown strobe position {position}") };
             sender.Execute(simConnect, $"{value} (>L:LIGHTING_STROBE_0)");
         }
     }
