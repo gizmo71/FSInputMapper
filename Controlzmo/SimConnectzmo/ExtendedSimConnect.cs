@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
+using Controlzmo;
 
 namespace SimConnectzmo
 {
@@ -21,6 +22,7 @@ namespace SimConnectzmo
         private static readonly IntPtr hWnd = IntPtr.Zero;
 
         private ILogger<ExtendedSimConnect>? _logging;
+        private SerializedExecutor serializedExecutor;
 
         private Dictionary<Type, STRUCT>? typeToStruct;
         private Dictionary<Type, string>? typeToClientDataName;
@@ -68,6 +70,7 @@ namespace SimConnectzmo
         {
             const int ENUM_DYNAMIC_START = 10; // Leave some space for explicit enum values.
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
+            serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()
@@ -346,8 +349,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         {
             foreach (var handler in onSimStartedHandlers!) 
             {
-                handler.OnStarted(this);
-                Thread.Sleep(50); // If we ask for everything at once we'll miss some.
+                serializedExecutor.Enqueue(delegate() { handler.OnStarted(this); });
             }
             TriggerInitialRequests();
         }
