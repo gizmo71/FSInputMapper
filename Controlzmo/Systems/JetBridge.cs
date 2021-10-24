@@ -54,19 +54,25 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
 
         private readonly Random random = new();
         private readonly ILogger<JetBridgeSender> logger;
+        private readonly SerializedExecutor serializedExecutor;
 
-        public JetBridgeSender(ILogger<JetBridgeSender> logger) => this.logger = logger;
+        public JetBridgeSender(ILogger<JetBridgeSender> logger, SerializedExecutor serializedExecutor)
+        {
+            this.logger = logger;
+            this.serializedExecutor = serializedExecutor;
+        }
 
         public string GetClientDataName() => DownlinkClientDataName;
 
-        public int Execute(ExtendedSimConnect simConnect, string code)
+        public void Execute(ExtendedSimConnect simConnect, string code)
         {
             var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
             if (data.data.Length > 127)
                 throw new ArgumentOutOfRangeException($"'{code}' is {data.data.Length - 127} too long");
-            logger.LogDebug($"Sending {code}");
-            simConnect.SendDataOnSimObject(data);
-            return data.id;
+            serializedExecutor.Enqueue(delegate () {
+                simConnect.SendDataOnSimObject(data);
+                logger.LogDebug($"Sent {code} with id {data.id}");
+            });
         }
     }
 
