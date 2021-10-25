@@ -64,12 +64,12 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
 
         public string GetClientDataName() => DownlinkClientDataName;
 
-        public void Execute(ExtendedSimConnect simConnect, string code)
+        public void Execute(ExtendedSimConnect _, string code)
         {
             var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
             if (data.data.Length > 127)
                 throw new ArgumentOutOfRangeException($"'{code}' is {data.data.Length - 127} too long");
-            serializedExecutor.Enqueue(delegate () {
+            serializedExecutor.Enqueue(delegate (ExtendedSimConnect simConnect) {
                 simConnect.SendDataOnSimObject(data);
                 logger.LogDebug($"Sent {code} with id {data.id}");
             });

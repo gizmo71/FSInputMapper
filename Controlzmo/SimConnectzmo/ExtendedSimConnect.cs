@@ -349,7 +349,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         {
             foreach (var handler in onSimStartedHandlers!) 
             {
-                serializedExecutor.Enqueue(delegate() { handler.OnStarted(this); });
+                serializedExecutor.Enqueue(delegate(ExtendedSimConnect simConnect) { handler.OnStarted(simConnect); });
             }
             TriggerInitialRequests();
         }

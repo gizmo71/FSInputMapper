@@ -1,34 +1,30 @@
-﻿using System;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
+using SimConnectzmo;
 
 namespace Controlzmo
 {
     [Component]
     public class SerializedExecutor : CreateOnStartup
     {
-        private readonly BlockingCollection<Action> _jobs = new BlockingCollection<Action>();
+        private readonly BlockingCollection<Action<ExtendedSimConnect>> _jobs = new BlockingCollection<Action<ExtendedSimConnect>> ();
         private readonly ILogger _logging;
+        private readonly SimConnectHolder holder;
 
         public SerializedExecutor(IServiceProvider sp)
         {
             _logging = sp.GetRequiredService<ILogger<SerializedExecutor>>();
+            holder = sp.GetRequiredService<SimConnectHolder>();
 
             var thread = new Thread(new ThreadStart(OnStart));
             thread.IsBackground = true;
             thread.Start();
         }
 
-        public void Enqueue(Action job)
+        public void Enqueue(Action<ExtendedSimConnect> job)
         {
             _jobs.TryAdd(job);
         }
@@ -36,13 +32,20 @@ namespace Controlzmo
         private static readonly TimeSpan dequeueTimeout = TimeSpan.FromSeconds(10);
         private void OnStart()
         {
-            Action? job;
+            Action<ExtendedSimConnect>? job;
             for (;;)
             {
                 if (_jobs.TryTake(out job, dequeueTimeout))
                 {
                     _logging.LogInformation($"Serializing action {job}");
-                    job.Invoke();
+                    try
+                    {
+                        job.Invoke(holder.SimConnect!);
+                    }
+                    catch (Exception e)
+                    {
+                        _logging.LogError("Invocation failed: {0}", e);
+                    }
                     Thread.Sleep(50);
                 }
                 else
