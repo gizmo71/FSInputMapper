@@ -296,7 +296,7 @@ void seviceQwiicButton(void) {
   static bool wasPressed = false;
   bool isPressed = qwiicButton.isPressed();
   if (!fcuAltPulled && isPressed && !wasPressed) {
-    fcuAltPulled = true;
+//    fcuAltPulled = true;
   }
   wasPressed = isPressed;
 }
