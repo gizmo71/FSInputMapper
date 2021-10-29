@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Serial;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -10,6 +11,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuDisplayLeft : CreateOnStartup
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly SerialPico serial;
         private readonly FcuSpeedMachListener fcuSpeedMachListener;
         private readonly FcuSpeedManaged fcuSpeedManaged;
         private readonly FcuSpeedSelection fcuSpeedSelection;
@@ -21,6 +23,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public FcuDisplayLeft(IServiceProvider sp)
         {
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            serial = sp.GetRequiredService<SerialPico>();
             (fcuSpeedMachListener = sp.GetRequiredService<FcuSpeedMachListener>()).PropertyChanged += Regenerate;
             (fcuSpeedManaged = sp.GetRequiredService<FcuSpeedManaged>()).PropertyChanged += Regenerate;
             (fcuSpeedSelection = sp.GetRequiredService<FcuSpeedSelection>()).PropertyChanged += Regenerate;
@@ -33,14 +36,16 @@ namespace Controlzmo.Systems.FlightControlUnit
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
             var speedMachLabel = fcuSpeedMachListener.IsMach ? " MACH" : "SPD  ";
-            var hdgTrkLabel = fcuTrackFpa.IsHdgVS ? " HDG  " : "   TRK";
-            var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT ";
+            var hdgTrkLabel = fcuTrackFpa.IsHdgVS ? "HDG  " : "  TRK";
+            var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
 
             var speedDot = fcuSpeedManaged.IsManaged ? '*' : ' ';
-            var heading = fcuHeadingDashes.IsDashes ? "---" : $"{(double)fcuHeadingSelected!:000}";
+            var heading = fcuHeadingDashes.IsDashes || fcuHeadingSelected == -1 ? "---" : $"{(double)fcuHeadingSelected!:000}";
             var headingDot = fcuHeadingManaged.IsManaged ? '*' : ' ';
-            var line2 = $"{Speed} {speedDot}   {heading}   {headingDot} ";
+            var line2 = $"{Speed} {speedDot}  {heading}   {headingDot}."; //TODO: something is trimming any final whitespace
 
+            serial.SendLine($"fcuTL={line1}");
+            serial.SendLine($"fcuBL={line2}");
             hub.Clients.All.SetFromSim("fcuDisplayLeft", $"{line1}\n{line2}");
         }
 
