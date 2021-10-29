@@ -10,6 +10,7 @@ extern const char *baroUnitInHg, *baroUnitHPa, *volatile newBaroUnits, *volatile
 
 // These communicate from core1 to core0.
 extern volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged;
+extern volatile char fcuLcdText[4][17];
 
 extern mutex_t mut0to1, mut1to0;
 

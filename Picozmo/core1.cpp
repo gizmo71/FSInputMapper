@@ -28,12 +28,22 @@ void process(String name, String value) {
     baroChange = true;
   } else if (name == "Kohlsman" && value.length() == 10 && currentBaroUnits) {
     baroChange = true;
-  } else if (name == "fcuL") {
-    Serial.print("fcuDisplayLeft=\"");
-    Serial.println('"');
-  } else if (name == "fcuR") {
-    Serial.print("fcuDisplayRight=\"");
-    Serial.println('"');
+  } else if (name == "fcuTL" && value.length() <= 16) {
+    mutex_enter_blocking(&mut1to0);
+    value.toCharArray((char *) fcuLcdText[0], 17);
+    mutex_exit(&mut1to0);
+  } else if (name == "fcuBL" && value.length() <= 16) {
+    mutex_enter_blocking(&mut1to0);
+    value.toCharArray((char *) fcuLcdText[1], 17);
+    mutex_exit(&mut1to0);
+  } else if (name == "fcuTR" && value.length() <= 16) {
+    mutex_enter_blocking(&mut1to0);
+    value.toCharArray((char *) fcuLcdText[2], 17);
+    mutex_exit(&mut1to0);
+  } else if (name == "fcuBR" && value.length() <= 16) {
+    mutex_enter_blocking(&mut1to0);
+    value.toCharArray((char *) fcuLcdText[3], 17);
+    mutex_exit(&mut1to0);
   } else {
     Serial.print("# Don't know what '");
     Serial.print(name);
