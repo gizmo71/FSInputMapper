@@ -2,11 +2,15 @@
 #include <Arduino.h>
 #include <qdec.h>
 #include <SparkFun_Qwiic_Button.h>
+#include <LiquidCrystal_I2C.h>
 
 #include "IoBounce2.h"
 #include "Picozmo.h"
 
 using namespace ::SimpleHacks;
+
+static LiquidCrystal_I2C lcdRight(0x27, 16, 2);
+static LiquidCrystal_I2C lcdLeft(0x26, 16, 2);
 
 static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
@@ -65,9 +69,11 @@ PUSH_PULL_ISR(baro, D6, D7, false)
 void setup(void) {
   critical_section_init(&isrCritical);
   mutex_init(&mut0to1);
+  mutex_init(&mut1to0);
 
   Wire.setSDA(D0);
   Wire.setSCL(D1);
+  //Wire.setClock(10000); // Standard: 100000, fast: 400000, slow: 10000
   Wire.begin();
 
   pinMode(LED_PIN, OUTPUT);
@@ -108,6 +114,59 @@ void setup(void) {
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
     io23017->pinDirection(i, OUTPUT);
   }
+
+  lcdRight.init();
+  lcdRight.noBacklight();
+  lcdRight.setCursor(0, 0);
+  lcdRight.print("ALT -LVL/CH- V/S");
+  lcdRight.setCursor(0, 1);
+  lcdRight.print("1234567890ABCDEF");
+
+  lcdLeft.init();
+  lcdLeft.noBacklight();
+  lcdLeft.setCursor(0, 0);
+  lcdLeft.print("SPD    HDG   LAT");
+  lcdLeft.setCursor(0, 1);
+  lcdLeft.print("1234567890abcdef");
+}
+
+void updateLcds() {
+  static int lr = 0;
+  lr = (lr + 1) & 3;
+  lcdRight.setBacklight(lr == 0);
+  lcdLeft.setBacklight(lr == 2);
+
+  mutex_enter_blocking(&mut1to0);
+  if (fcuLcdText[0][0]) {
+    lcdLeft.setCursor(0, 0);
+    lcdLeft.printstr((const char *) fcuLcdText[0]);
+    fcuLcdText[0][0] = '\0';
+  }
+  mutex_exit(&mut1to0);
+
+  mutex_enter_blocking(&mut1to0);
+  if (fcuLcdText[1][0]) {
+    lcdLeft.setCursor(0, 1);
+    lcdLeft.printstr((const char *) fcuLcdText[1]);
+    fcuLcdText[1][0] = '\0';
+  }
+  mutex_exit(&mut1to0);
+
+  mutex_enter_blocking(&mut1to0);
+  if (fcuLcdText[2][0]) {
+    lcdRight.setCursor(0, 0);
+    lcdRight.printstr((const char *) fcuLcdText[2]);
+    fcuLcdText[2][0] = '\0';
+  }
+  mutex_exit(&mut1to0);
+
+  mutex_enter_blocking(&mut1to0);
+  if (fcuLcdText[3][0]) {
+    lcdRight.setCursor(0, 1);
+    lcdRight.printstr((const char *) fcuLcdText[3]);
+    fcuLcdText[3][0] = '\0';
+  }
+  mutex_exit(&mut1to0);
 }
 
 short calculateSpoilerHandle() {
@@ -249,6 +308,7 @@ void loop(void) {
   taskManager.runLoop();
 
   seviceQwiicButton();
+  updateLcds();
 
   updateContinuousInputs();
   updateMomentaryInputs();
