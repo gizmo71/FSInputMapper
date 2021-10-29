@@ -76,6 +76,12 @@ void setup(void) {
   //Wire.setClock(10000); // Standard: 100000, fast: 400000, slow: 10000
   Wire.begin();
 
+  lcdRight.init();
+  lcdRight.noBacklight();
+
+  lcdLeft.init();
+  lcdLeft.noBacklight();
+
   pinMode(LED_PIN, OUTPUT);
 
   seatBeltSignBounce.attach(1, INPUT_PULLUP);
@@ -114,59 +120,31 @@ void setup(void) {
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
     io23017->pinDirection(i, OUTPUT);
   }
-
-  lcdRight.init();
-  lcdRight.noBacklight();
-  lcdRight.setCursor(0, 0);
-  lcdRight.print("ALT -LVL/CH- V/S");
-  lcdRight.setCursor(0, 1);
-  lcdRight.print("1234567890ABCDEF");
-
-  lcdLeft.init();
-  lcdLeft.noBacklight();
-  lcdLeft.setCursor(0, 0);
-  lcdLeft.print("SPD    HDG   LAT");
-  lcdLeft.setCursor(0, 1);
-  lcdLeft.print("1234567890abcdef");
 }
 
-void updateLcds() {
+static void updateLcd(LiquidCrystal_I2C &lcdI2C, int row, volatile char *newText) {
+  char tempText[17] = "";
+  mutex_enter_blocking(&mut1to0);
+  strcpy(tempText, (const char *) newText);
+  newText[0] = '\0';
+  mutex_exit(&mut1to0);
+
+  if (*tempText) {
+    lcdI2C.setCursor(0, row);
+    lcdI2C.printstr(tempText);
+  }
+}
+
+static void updateLcds() {
   static int lr = 0;
   lr = (lr + 1) & 3;
   lcdRight.setBacklight(lr == 0);
   lcdLeft.setBacklight(lr == 2);
 
-  mutex_enter_blocking(&mut1to0);
-  if (fcuLcdText[0][0]) {
-    lcdLeft.setCursor(0, 0);
-    lcdLeft.printstr((const char *) fcuLcdText[0]);
-    fcuLcdText[0][0] = '\0';
-  }
-  mutex_exit(&mut1to0);
-
-  mutex_enter_blocking(&mut1to0);
-  if (fcuLcdText[1][0]) {
-    lcdLeft.setCursor(0, 1);
-    lcdLeft.printstr((const char *) fcuLcdText[1]);
-    fcuLcdText[1][0] = '\0';
-  }
-  mutex_exit(&mut1to0);
-
-  mutex_enter_blocking(&mut1to0);
-  if (fcuLcdText[2][0]) {
-    lcdRight.setCursor(0, 0);
-    lcdRight.printstr((const char *) fcuLcdText[2]);
-    fcuLcdText[2][0] = '\0';
-  }
-  mutex_exit(&mut1to0);
-
-  mutex_enter_blocking(&mut1to0);
-  if (fcuLcdText[3][0]) {
-    lcdRight.setCursor(0, 1);
-    lcdRight.printstr((const char *) fcuLcdText[3]);
-    fcuLcdText[3][0] = '\0';
-  }
-  mutex_exit(&mut1to0);
+  updateLcd(lcdLeft, 0, fcuLcdText[0]);
+  updateLcd(lcdLeft, 1, fcuLcdText[1]);
+  updateLcd(lcdRight, 0, fcuLcdText[2]);
+  updateLcd(lcdRight, 1, fcuLcdText[3]);
 }
 
 short calculateSpoilerHandle() {

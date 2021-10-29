@@ -64,8 +64,6 @@ void process(String name, String value) {
 void serialEvent(void) {
   while (Serial.available()) {
     String s = Serial.readStringUntil('\n');
-    s.trim();
-//Serial.print("# Attempting '"); Serial.print(s); Serial.println("'");
     int split = s.indexOf("=");
     if (s == "SyncInputs")
       forceUpdate = true;
