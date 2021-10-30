@@ -42,7 +42,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var speedDot = fcuSpeedManaged.IsManaged ? '*' : ' ';
             var heading = fcuHeadingDashes.IsDashes || fcuHeadingSelected == -1 ? "---" : $"{(double)fcuHeadingSelected!:000}";
             var headingDot = fcuHeadingManaged.IsManaged ? '*' : ' ';
-            var line2 = $"{Speed} {speedDot}  {heading}   {headingDot}."; //TODO: something is trimming any final whitespace
+            var line2 = $"{Speed} {speedDot}  {heading}   {headingDot} ";
 
             serial.SendLine($"fcuTL={line1}");
             serial.SendLine($"fcuBL={line2}");
