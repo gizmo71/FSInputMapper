@@ -15,6 +15,6 @@ const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight,
 const char *baroUnitInHg = "inHg", *baroUnitHPa = "hPa", *volatile newBaroUnits, *volatile currentBaroUnits;
 
 volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged = true;
-volatile char fcuLcdText[4][17] = { { 0 }, { 0 }, { 0 }, { 0 } };
+volatile char fcuLcdText[4][16];
 
 mutex_t mut0to1, mut1to0;

@@ -122,29 +122,19 @@ void setup(void) {
   }
 }
 
-static void updateLcd(LiquidCrystal_I2C &lcdI2C, int row, volatile char *newText) {
-  char tempText[17] = "";
-  mutex_enter_blocking(&mut1to0);
-  strcpy(tempText, (const char *) newText);
-  newText[0] = '\0';
-  mutex_exit(&mut1to0);
-
-  if (*tempText) {
-    lcdI2C.setCursor(0, row);
-    lcdI2C.printstr(tempText);
-  }
-}
-
 static void updateLcds() {
   static int lr = 0;
-  lr = (lr + 1) & 3;
-  lcdRight.setBacklight(lr == 0);
-  lcdLeft.setBacklight(lr == 2);
+  lr = (lr + 1) & 63;
+  if (1) {
+    lcdRight.setBacklight((lr & 1));
+    lcdLeft.setBacklight((lr & 1) == 0);
+  }
 
-  updateLcd(lcdLeft, 0, fcuLcdText[0]);
-  updateLcd(lcdLeft, 1, fcuLcdText[1]);
-  updateLcd(lcdRight, 0, fcuLcdText[2]);
-  updateLcd(lcdRight, 1, fcuLcdText[3]);
+  LiquidCrystal_I2C &lcdI2C = (lr & 32) == 0 ? lcdLeft : lcdRight;
+  char c = ((const char *) fcuLcdText)[lr];
+  if ((lr & 15) == 0)
+    lcdI2C.setCursor(0, lr & 16 ? 1 : 0);
+  lcdI2C.print(c);
 }
 
 short calculateSpoilerHandle() {
