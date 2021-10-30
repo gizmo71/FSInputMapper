@@ -125,10 +125,10 @@ void setup(void) {
 static void updateLcds() {
   static int lr = 0;
   lr = (lr + 1) & 63;
-  if (1) {
-    lcdRight.setBacklight((lr & 1));
-    lcdLeft.setBacklight((lr & 1) == 0);
-  }
+
+  //TODO: get rid of this once we can power the backlight independently.
+  lcdRight.setBacklight((lr & 1));
+  lcdLeft.setBacklight((lr & 1) == 0);
 
   LiquidCrystal_I2C &lcdI2C = (lr & 32) == 0 ? lcdLeft : lcdRight;
   char c = ((const char *) fcuLcdText)[lr];
