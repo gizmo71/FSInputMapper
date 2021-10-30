@@ -33,8 +33,8 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
-            var managed = fcuAltManaged.IsManaged ? "*" : " ";
-            var line1 = "ALT -LVL/CH- " + (fcuTrackFpa.IsHdgVS ? "V/S" : "FPA");
+            var managed = fcuAltManaged.IsManaged ? '\x1' : ' ';
+            var line1 = "ALT \x4LVL/CH\x5 " + (fcuTrackFpa.IsHdgVS ? "V/S" : "FPA");
             var line2 = $"{fcuAltListener.Current.fcuAlt:00000}   {managed}  {VS}";
             serial.SendLine($"fcuTR={line1}");
             serial.SendLine($"fcuBR={line2}");

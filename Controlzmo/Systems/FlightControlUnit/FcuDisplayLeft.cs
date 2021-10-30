@@ -39,9 +39,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             var hdgTrkLabel = fcuTrackFpa.IsHdgVS ? "HDG  " : "  TRK";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
 
-            var speedDot = fcuSpeedManaged.IsManaged ? '*' : ' ';
+            var speedDot = fcuSpeedManaged.IsManaged ? '\x1' : ' ';
             var heading = fcuHeadingDashes.IsDashes || fcuHeadingSelected == -1 ? "---" : $"{(double)fcuHeadingSelected!:000}";
-            var headingDot = fcuHeadingManaged.IsManaged ? '*' : ' ';
+            var headingDot = fcuHeadingManaged.IsManaged ? '\x1' : ' ';
             var line2 = $"{Speed} {speedDot}  {heading}   {headingDot} ";
 
             serial.SendLine($"fcuTL={line1}");
