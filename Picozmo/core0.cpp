@@ -68,18 +68,16 @@ PUSH_PULL_ISR(baro, D6, D7, false)
 
 static void initLcd(LiquidCrystal_I2C &lcd) {
   lcd.init();
-  //lcd.noBacklight();
   // The charset of ours is table 4 from https://www.sparkfun.com/datasheets/LCD/HD44780.pdf#page=17
   lcd.createChar(0, (unsigned char *) "\x1F\x00\x1F\x00\x1F\x00\x1F\x00");
   lcd.createChar(1, (unsigned char *) "\x00\x04\x0E\x1F\x1F\x0E\x04\x00"); // Dot
   lcd.createChar(2, (unsigned char *) "\x00\x1f\x00\x1f\x00\x00\x00\x00");
   lcd.createChar(3, (unsigned char *) "\x00\x00\x1f\x00\x1f\x00\x00\x00");
-  lcd.createChar(4, (unsigned char *) "\x00\x00\x00\x1f\x10\x10\x10\x00"); // left level change
-  lcd.createChar(5, (unsigned char *) "\x00\x00\x00\x1f\x01\x01\x01\x00"); // right level change
-#if 0 // Attempts to set the last two screw up the first one - reordering them just changes what's screwed up. :-/
+  lcd.createChar(4, (unsigned char *) "\x00\x00\x00\x0f\x08\x08\x08\x00"); // left level change
+  lcd.createChar(5, (unsigned char *) "\x00\x00\x00\x1e\x02\x02\x02\x00"); // right level change
   lcd.createChar(6, (unsigned char *) "\x00\x1f\x00\x00\x1f\x00\x00\x00");
   lcd.createChar(7, (unsigned char *) "\x00\x00\x1f\x00\x00\x00\x1f\x00");
-#endif
+  lcd.home(); // Otherwise the CGRAM might be corrupted by other writes intended for DDRAM.
 }
 
 void setup(void) {
