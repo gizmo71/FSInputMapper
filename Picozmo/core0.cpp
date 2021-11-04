@@ -15,6 +15,7 @@ static LiquidCrystal_I2C lcdLeft(0x26, 16, 2);
 static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
 static IoAbstractionRef io23017 = ioFrom23017(0x20);
+static IoAbstractionRef io23017board = ioFrom23017(0x21);
 
 static IoBounce apuMasterBounce(io23017);
 static IoBounce apuStartBounce(io23017);
@@ -233,6 +234,14 @@ void updateContinuousInputs(void) {
 
   if (assumeChanged || fcuAltModeBounce.update())
     fcuAltMode = fcuAltModeBounce.read() ? 1000 : 100;
+
+  static uint32_t floop = 0;
+  uint32_t newFloop = 1 << 16 | io23017board->readPort(8) << 8 | io23017board->readPort(0);
+  if (newFloop != floop) {
+    floop = newFloop;
+    Serial.print("floop! ");
+    Serial.println(floop, BIN);
+  }
 }
 
 void updateMomentaryInputs(void) {
@@ -283,7 +292,9 @@ void seviceQwiicButton(void) {
 void loop(void) {
   updateOuputs();
 
-  ioDeviceSync(io23017); // Why isn't this added to the task manager?
+  // Why aren't these added to the task manager?
+  ioDeviceSync(io23017);
+  ioDeviceSync(io23017board);
   taskManager.runLoop();
 
   seviceQwiicButton();
