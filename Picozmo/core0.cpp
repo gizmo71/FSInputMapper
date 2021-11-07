@@ -118,7 +118,7 @@ void setup(void) {
 
   baroModeBounce.attach(0, INPUT_PULLUP);
   PUSH_PULL_INIT(baro, 1, 2)
-  PUSH_PULL_INIT(fcuSpeed, 3, 4)
+  PUSH_PULL_INIT(fcuSpeed, 4, 3)
   PUSH_PULL_INIT(fcuHeading, 6, 5)
   PUSH_PULL_INIT(fcuAlt, 8, 7)
   PUSH_PULL_INIT(fcuVs, 9, 10)
