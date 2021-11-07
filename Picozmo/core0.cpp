@@ -43,8 +43,6 @@ static IoBounce fcuAltModeBounce(io23017board);
 static IoBounce trkFpaBounce(io23017board);
 static IoBounce speedMachBounce(io23017board);
 
-static QwiicButton qwiicButton;
-
 static critical_section_t isrCritical;
 
 #define PUSH_PULL_ISR(control, pinA, pinB, is24ppr) \
@@ -127,8 +125,6 @@ void setup(void) {
   fcuAltModeBounce.attach(11, INPUT_PULLUP);
   trkFpaBounce.attach(12, INPUT_PULLUP);
   speedMachBounce.attach(13, INPUT_PULLUP);
-
-  qwiicButton.begin();
 
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
     io23017lights->pinDirection(i, OUTPUT);
@@ -275,22 +271,11 @@ void updateMomentaryInputs(void) {
 void updateOuputs(void) {
   digitalWrite(LED_PIN, HIGH);
 
-  qwiicButton.LEDon(fcuAltManaged ? 63 : 0);
-
   int i = externalLedFirstPin;
   io23017lights->writeValue(i++, apuStartOn ? HIGH : LOW);
   io23017lights->writeValue(i++, apuAvail ? HIGH : LOW);
   io23017lights->writeValue(i++, apuMasterOn ? HIGH : LOW);
   io23017lights->writeValue(i, apuFault ? HIGH : LOW);
-}
-
-void seviceQwiicButton(void) {
-  static bool wasPressed = false;
-  bool isPressed = qwiicButton.isPressed();
-  if (!fcuAltPulled && isPressed && !wasPressed) {
-//    fcuAltPulled = true;
-  }
-  wasPressed = isPressed;
 }
 
 void loop(void) {
@@ -301,7 +286,6 @@ void loop(void) {
   ioDeviceSync(io23017board);
   taskManager.runLoop();
 
-  seviceQwiicButton();
   updateLcds();
 
   updateContinuousInputs();
