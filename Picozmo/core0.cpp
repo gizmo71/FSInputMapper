@@ -14,31 +14,34 @@ static LiquidCrystal_I2C lcdLeft(0x26, 16, 2);
 
 static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
-static IoAbstractionRef io23017 = ioFrom23017(0x20);
+static IoAbstractionRef io23017lights = ioFrom23017(0x20);
 static IoAbstractionRef io23017board = ioFrom23017(0x21);
+//static IoAbstractionRef ioPico = ioUsingArduino();
 
-static IoBounce apuMasterBounce(io23017);
-static IoBounce apuStartBounce(io23017);
+static IoBounce apuMasterBounce(io23017lights);
+static IoBounce apuStartBounce(io23017lights);
 
-static IoBounce seatBeltSignBounce(io23017);
+static IoBounce seatBeltSignBounce(io23017lights);
 
-static IoBounce wingIceLightBounce(io23017);
-static IoBounce noseLightOffBounce(io23017);
-static IoBounce noseLightTakeoffBounce(io23017);
-static IoBounce runwayTurnoffLightBounce(io23017);
-static IoBounce landingLightBounce(io23017);
-static IoBounce strobeLightOffBounce(io23017);
-static IoBounce strobeLightOnBounce(io23017);
-static IoBounce beaconLightBounce(io23017);
-static IoBounce navLightBounce(io23017);
+static IoBounce wingIceLightBounce(io23017lights);
+static IoBounce noseLightOffBounce(io23017lights);
+static IoBounce noseLightTakeoffBounce(io23017lights);
+static IoBounce runwayTurnoffLightBounce(io23017lights);
+static IoBounce landingLightBounce(io23017lights);
+static IoBounce strobeLightOffBounce(io23017lights);
+static IoBounce strobeLightOnBounce(io23017lights);
+static IoBounce beaconLightBounce(io23017lights);
+static IoBounce navLightBounce(io23017lights);
 
 #define PPR12 false
 #define PPR24 true
 
 static const pinid_t externalLedFirstPin = 4, externalLedLastPin = 7;
 
-static Bounce baroModeBounce;
-static Bounce fcuAltModeBounce;
+static IoBounce baroModeBounce(io23017board);
+static IoBounce fcuAltModeBounce(io23017board);
+static IoBounce trkFpaBounce(io23017board);
+static IoBounce speedMachBounce(io23017board);
 
 static QwiicButton qwiicButton;
 
@@ -47,8 +50,8 @@ static critical_section_t isrCritical;
 #define PUSH_PULL_ISR(control, pinA, pinB, is24ppr) \
   static const uint16_t control##PinA = pinA, control##PinB = pinB; \
   static QDecoder control##Qdec(control##PinA, control##PinB, is24ppr); \
-  static Bounce control##PushBounce; \
-  static Bounce control##PullBounce; \
+  static IoBounce control##PushBounce(io23017board); \
+  static IoBounce control##PullBounce(io23017board); \
   static short control##DeltaIsr; \
   void control##RotatedIsr(void) { \
     switch (control##Qdec.update()) { \
@@ -61,11 +64,11 @@ static critical_section_t isrCritical;
     } \
   }
 
-PUSH_PULL_ISR(fcuSpeed, D11, D10, true)
-PUSH_PULL_ISR(fcuHeading, D19, D18, true)
-PUSH_PULL_ISR(fcuAlt, D20, D21, true)
-PUSH_PULL_ISR(fcuVs, D8, D9, true)
-PUSH_PULL_ISR(baro, D6, D7, false)
+PUSH_PULL_ISR(baro, D2, D3, true)
+PUSH_PULL_ISR(fcuSpeed, D5, D4, true)
+PUSH_PULL_ISR(fcuHeading, D7, D6, true)
+PUSH_PULL_ISR(fcuAlt, D9, D8, true)
+PUSH_PULL_ISR(fcuVs, D10, D11, true)
 
 static void initLcd(LiquidCrystal_I2C &lcd) {
   lcd.init();
@@ -115,19 +118,20 @@ void setup(void) {
   attachInterrupt(digitalPinToInterrupt(control##PinA), control##RotatedIsr, CHANGE); \
   attachInterrupt(digitalPinToInterrupt(control##PinB), control##RotatedIsr, CHANGE);
 
-  PUSH_PULL_INIT(fcuSpeed, D13, D12)
-  PUSH_PULL_INIT(fcuHeading, D16, D17)
-  PUSH_PULL_INIT(fcuAlt, D28, D15)
-  PUSH_PULL_INIT(fcuVs, D14, D22)
-  PUSH_PULL_INIT(baro, D5, D2)
-
-  fcuAltModeBounce.attach(D4, INPUT_PULLUP);
-  baroModeBounce.attach(D3, INPUT_PULLUP);
+  baroModeBounce.attach(0, INPUT_PULLUP);
+  PUSH_PULL_INIT(baro, 1, 2)
+  PUSH_PULL_INIT(fcuSpeed, 3, 4)
+  PUSH_PULL_INIT(fcuHeading, 6, 5)
+  PUSH_PULL_INIT(fcuAlt, 8, 7)
+  PUSH_PULL_INIT(fcuVs, 9, 10)
+  fcuAltModeBounce.attach(11, INPUT_PULLUP);
+  trkFpaBounce.attach(12, INPUT_PULLUP);
+  speedMachBounce.attach(13, INPUT_PULLUP);
 
   qwiicButton.begin();
 
   for (int i = externalLedFirstPin; i <= externalLedLastPin; ++i) {
-    io23017->pinDirection(i, OUTPUT);
+    io23017lights->pinDirection(i, OUTPUT);
   }
 
   initLcd(lcdRight);
@@ -230,18 +234,10 @@ void updateContinuousInputs(void) {
     noseLight = !noseLightTakeoffBounce.read() ? "takeoff" : !noseLightOffBounce.read() ? "off" : "taxi";
 
   if (assumeChanged || baroModeBounce.update())
-    newBaroUnits = currentBaroUnits = baroModeBounce.read() ? baroUnitHPa : baroUnitInHg;
+    newBaroUnits = currentBaroUnits = baroModeBounce.read() ? baroUnitInHg : baroUnitHPa;
 
   if (assumeChanged || fcuAltModeBounce.update())
     fcuAltMode = fcuAltModeBounce.read() ? 1000 : 100;
-
-  static uint32_t floop = 0;
-  uint32_t newFloop = 1 << 16 | io23017board->readPort(8) << 8 | io23017board->readPort(0);
-  if (newFloop != floop) {
-    floop = newFloop;
-    Serial.print("floop! ");
-    Serial.println(floop, BIN);
-  }
 }
 
 void updateMomentaryInputs(void) {
@@ -266,6 +262,14 @@ void updateMomentaryInputs(void) {
   apuStartBounce.update();
   if (!apuStartPressed && apuStartBounce.fell())
     apuStartPressed = true;
+
+  trkFpaBounce.update();
+  if (!trkFpaToggled && trkFpaBounce.fell())
+    trkFpaToggled = true;
+
+  speedMachBounce.update();
+  if (!speedMachToggled && speedMachBounce.fell())
+    speedMachToggled = true;
 }
 
 void updateOuputs(void) {
@@ -274,10 +278,10 @@ void updateOuputs(void) {
   qwiicButton.LEDon(fcuAltManaged ? 63 : 0);
 
   int i = externalLedFirstPin;
-  io23017->writeValue(i++, apuStartOn ? HIGH : LOW);
-  io23017->writeValue(i++, apuAvail ? HIGH : LOW);
-  io23017->writeValue(i++, apuMasterOn ? HIGH : LOW);
-  io23017->writeValue(i, apuFault ? HIGH : LOW);
+  io23017lights->writeValue(i++, apuStartOn ? HIGH : LOW);
+  io23017lights->writeValue(i++, apuAvail ? HIGH : LOW);
+  io23017lights->writeValue(i++, apuMasterOn ? HIGH : LOW);
+  io23017lights->writeValue(i, apuFault ? HIGH : LOW);
 }
 
 void seviceQwiicButton(void) {
@@ -293,7 +297,7 @@ void loop(void) {
   updateOuputs();
 
   // Why aren't these added to the task manager?
-  ioDeviceSync(io23017);
+  ioDeviceSync(io23017lights);
   ioDeviceSync(io23017board);
   taskManager.runLoop();
 

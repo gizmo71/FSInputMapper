@@ -6,7 +6,7 @@
 // https://emalliab.wordpress.com/2021/04/18/raspberry-pi-pico-arduino-core-and-timers/
 // https://github.com/muwerk/muwerk and https://github.com/muwerk/ustd
 
-volatile byte apuMasterPressed, apuStartPressed, baroPushed, baroPulled,
+volatile bool apuMasterPressed, apuStartPressed, baroPushed, baroPulled, trkFpaToggled, speedMachToggled,
   fcuAltPushed, fcuAltPulled, fcuVsPushed, fcuVsPulled, fcuSpeedPushed, fcuSpeedPulled, fcuHeadingPushed, fcuHeadingPulled;
 volatile short spoilerHandle = -2, fcuAltMode, fcuAltDelta, fcuVsDelta, fcuHeadingDelta, fcuSpeedDelta, baroDelta;
 const char *volatile strobeLight, *volatile beaconLight, *volatile wingIceLight, *volatile navLight,

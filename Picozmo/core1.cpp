@@ -263,6 +263,16 @@ void sendMomentary(void) {
     Serial.print(currentBaroUnits);
     Serial.println("\"");
   }
+
+  if (trkFpaToggled) {
+    Serial.println("trkFpaToggled=True");
+    trkFpaToggled = false;
+  }
+
+  if (speedMachToggled) {
+    Serial.println("speedMachToggled=True");
+    speedMachToggled = false;
+  }
 }
 
 extern void loop1(void) {
