@@ -265,12 +265,12 @@ void sendMomentary(void) {
   }
 
   if (trkFpaToggled) {
-    Serial.println("trkFpaToggled=True");
+    Serial.println("trkFpaToggled=true");
     trkFpaToggled = false;
   }
 
   if (speedMachToggled) {
-    Serial.println("speedMachToggled=True");
+    Serial.println("speedMachToggled=true");
     speedMachToggled = false;
   }
 }
