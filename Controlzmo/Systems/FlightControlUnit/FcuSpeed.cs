@@ -35,6 +35,19 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
+    public class FcuSpeedMachToggled : ISettable<bool>
+    {
+        private readonly JetBridgeSender sender;
+
+        public FcuSpeedMachToggled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+
+        public string GetId() => "speedMachToggled";
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+            => sender.Execute(simConnect, $"(>K:A32NX.FCU_SPD_MACH_TOGGLE_PUSH)");
+    }
+
+    [Component]
     public class FcuSpeedManaged : LVar, IOnSimStarted
     {
         public FcuSpeedManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
