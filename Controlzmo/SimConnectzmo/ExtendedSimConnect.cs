@@ -22,7 +22,7 @@ namespace SimConnectzmo
         private static readonly IntPtr hWnd = IntPtr.Zero;
 
         private ILogger<ExtendedSimConnect>? _logging;
-        private SerializedExecutor serializedExecutor;
+        private SerializedExecutor? serializedExecutor;
 
         private Dictionary<Type, STRUCT>? typeToStruct;
         private Dictionary<Type, string>? typeToClientDataName;
@@ -348,7 +348,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         private void OnSimIsRunning()
         {
             foreach (var handler in onSimStartedHandlers!) 
-                serializedExecutor.Enqueue(handler.OnStarted);
+                serializedExecutor!.Enqueue(handler.OnStarted);
             TriggerInitialRequests();
         }
     }
