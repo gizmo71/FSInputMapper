@@ -1,6 +1,4 @@
-﻿using Controlzmo.Hubs;
-using Controlzmo.Serial;
-using Microsoft.AspNetCore.SignalR;
+﻿using Controlzmo.Serial;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.ComponentModel;
@@ -8,37 +6,51 @@ using System.ComponentModel;
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
-    public class FcuDisplayRight : CreateOnStartup
+    public class FcuDisplayTopRight : CreateOnStartup
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly SerialPico serial;
-        private readonly FcuAltManaged fcuAltManaged;
-        private readonly FcuAltListener fcuAltListener;
         private readonly FcuTrackFpa fcuTrackFpa;
+
+        public FcuDisplayTopRight(IServiceProvider sp)
+        {
+            serial = sp.GetRequiredService<SerialPico>();
+            (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
+        }
+
+        private void Regenerate(object? _, PropertyChangedEventArgs? args)
+        {
+            var line1 = "ALT \x4LVL/CH\x5 " + (fcuTrackFpa.IsHdgVS ? "V/S" : "FPA");
+            serial.SendLine($"fcuTR={line1}");
+        }
+    }
+
+    [Component]
+    public class FcuDisplayBottomRight : CreateOnStartup
+    {
+        private readonly SerialPico serial;
+        private readonly FcuAltListener fcuAltListener;
         private readonly FcuVsState fcuVsState;
         private readonly FcuVsSelected fcuVsSelected;
         private readonly FcuFpaSelected fcuFpaSelected;
+        private readonly FcuTrackFpa fcuTrackFpa;
+        private readonly FcuAltManaged fcuAltManaged;
 
-        public FcuDisplayRight(IServiceProvider sp)
+        public FcuDisplayBottomRight(IServiceProvider sp)
         {
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serial = sp.GetRequiredService<SerialPico>();
-            (fcuAltManaged = sp.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
             (fcuAltListener = sp.GetRequiredService<FcuAltListener>()).PropertyChanged += Regenerate;
-            (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
             (fcuVsState = sp.GetRequiredService<FcuVsState>()).PropertyChanged += Regenerate;
             (fcuVsSelected = sp.GetRequiredService<FcuVsSelected>()).PropertyChanged += Regenerate;
             (fcuFpaSelected = sp.GetRequiredService<FcuFpaSelected>()).PropertyChanged += Regenerate;
+            (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
+            (fcuAltManaged = sp.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
         }
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
             var managed = fcuAltManaged.IsManaged ? '\x1' : ' ';
-            var line1 = "ALT \x4LVL/CH\x5 " + (fcuTrackFpa.IsHdgVS ? "V/S" : "FPA");
             var line2 = $"{fcuAltListener.Current.fcuAlt:00000}   {managed}  {VS}";
-            serial.SendLine($"fcuTR={line1}");
             serial.SendLine($"fcuBR={line2}");
-            hub.Clients.All.SetFromSim("fcuDisplayRight", $"{line1}\n{line2}");
         }
 
         private string VS
