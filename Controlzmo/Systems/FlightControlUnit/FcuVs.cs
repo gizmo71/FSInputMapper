@@ -67,8 +67,13 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuVsDelta : ISettable<Int16>
     {
         private readonly JetBridgeSender sender;
+        private readonly FcuVsSelected fcuVsSelected;
 
-        public FcuVsDelta(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuVsDelta(IServiceProvider sp)
+        {
+            sender = sp.GetRequiredService<JetBridgeSender>();
+            fcuVsSelected = sp.GetRequiredService<FcuVsSelected>();
+        }
 
         public string GetId() => "fcuVsDelta";
 
@@ -80,6 +85,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, $"0 (>K:{eventCode})");
                 value -= (short)Math.Sign(value);
             }
+            fcuVsSelected.Request(simConnect);
         }
     }
 }
