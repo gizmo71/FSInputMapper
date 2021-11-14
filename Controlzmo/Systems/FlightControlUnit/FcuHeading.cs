@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -65,12 +66,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuHeadingDelta : ISettable<Int16>
     {
         private readonly JetBridgeSender sender;
-        private readonly FcuHeadingSelected fcuHeadingSelected;
 
         public FcuHeadingDelta(IServiceProvider sp)
         {
             sender = sp.GetRequiredService<JetBridgeSender>();
-            fcuHeadingSelected = sp.GetRequiredService<FcuHeadingSelected>();
         }
 
         public string GetId() => "fcuHeadingDelta";
@@ -80,9 +79,12 @@ namespace Controlzmo.Systems.FlightControlUnit
             var eventCode = value < 0 ? "A32NX.FCU_HDG_DEC" : "A32NX.FCU_HDG_INC";
             while (value != 0)
             {
-                sender.Execute(simConnect, $"0 (>K:{eventCode})");
-                value -= (short)Math.Sign(value);
+                var repeat = Math.Min(Math.Abs(value), (Int16)5);
+                sender.Execute(simConnect, Enumerable.Repeat($"0 (>K:{eventCode})", repeat).Aggregate((l, r) => l + " " + r));
+                value -= (Int16)(Math.Sign(value) * repeat);
             }
+            //TODO: use A32NX.FCU_HDG_SET, 0 to 359
+            //TODO: can we use :4 g4 type constructs in RPN to form loops and avoid multiple sends here?
         }
     }
 }

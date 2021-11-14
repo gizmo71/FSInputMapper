@@ -102,6 +102,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, $"0 (>K:{eventCode})");
                 value -= (short)Math.Sign(value);
             }
+            //TODO: use A32NX.FCU_ALT_SET, range 100 to 49000
         }
     }
 

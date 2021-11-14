@@ -98,12 +98,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuSpeedDelta : ISettable<Int16>
     {
         private readonly JetBridgeSender sender;
-        private readonly FcuSpeedSelection fcuSpeedSelection;
 
         public FcuSpeedDelta(IServiceProvider sp)
         {
             sender = sp.GetRequiredService<JetBridgeSender>();
-            fcuSpeedSelection = sp.GetRequiredService<FcuSpeedSelection>();
         }
 
         public string GetId() => "fcuSpeedDelta";
@@ -116,6 +114,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, $"0 (>K:{eventCode})");
                 value -= (short)Math.Sign(value);
             }
+            //TODO: use A32NX.FCU_SPD_SET (100 to 399 knots; 10 to 99 Mach*10)
         }
     }
 }
