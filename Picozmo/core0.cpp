@@ -2,15 +2,16 @@
 #include <Arduino.h>
 #include <qdec.h>
 #include <SparkFun_Qwiic_Button.h>
-#include <LiquidCrystal_I2C.h>
+#include <hd44780.h>
+#include "hd44780ioClass/hd44780_I2Cexp.h"
 
 #include "IoBounce2.h"
 #include "Picozmo.h"
 
 using namespace ::SimpleHacks;
 
-static LiquidCrystal_I2C lcdRight(0x27, 16, 2);
-static LiquidCrystal_I2C lcdLeft(0x26, 16, 2);
+static hd44780_I2Cexp lcdRight(0x27);
+static hd44780_I2Cexp lcdLeft(0x26);
 
 static const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 
@@ -68,7 +69,7 @@ PUSH_PULL_ISR(fcuHeading, D7, D6, true)
 PUSH_PULL_ISR(fcuAlt, D9, D8, true)
 PUSH_PULL_ISR(fcuVs, D10, D11, true)
 
-static void initLcd(LiquidCrystal_I2C &lcd) {
+static void initLcd(hd44780_I2Cexp &lcd) {
   lcd.init();
   // The charset of ours is table 4 from https://www.sparkfun.com/datasheets/LCD/HD44780.pdf#page=17
   lcd.createChar(0, (unsigned char *) "\x1F\x00\x1F\x00\x1F\x00\x1F\x00");
@@ -142,7 +143,7 @@ static void updateLcds() {
   lcdRight.setBacklight((lr & 1));
   lcdLeft.setBacklight((lr & 1) == 0);
 
-  LiquidCrystal_I2C &lcdI2C = (lr & 32) == 0 ? lcdLeft : lcdRight;
+  hd44780_I2Cexp &lcdI2C = (lr & 32) == 0 ? lcdLeft : lcdRight;
   char c = ((const char *) fcuLcdText)[lr];
   if ((lr & 15) == 0)
     lcdI2C.setCursor(0, lr & 16 ? 1 : 0);
