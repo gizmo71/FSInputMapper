@@ -63,28 +63,38 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
+    public class FcuHeadingInc : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_HDG_INC";
+    }
+
+    [Component]
+    public class FcuHeadingDec : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_HDG_DEC";
+    }
+
+    [Component]
     public class FcuHeadingDelta : ISettable<Int16>
     {
-        private readonly JetBridgeSender sender;
+        private readonly FcuHeadingInc inc;
+        private readonly FcuHeadingDec dec;
 
         public FcuHeadingDelta(IServiceProvider sp)
         {
-            sender = sp.GetRequiredService<JetBridgeSender>();
+            inc = sp.GetRequiredService<FcuHeadingInc>();
+            dec = sp.GetRequiredService<FcuHeadingDec>();
         }
 
         public string GetId() => "fcuHeadingDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            var eventCode = value < 0 ? "A32NX.FCU_HDG_DEC" : "A32NX.FCU_HDG_INC";
             while (value != 0)
             {
-                var repeat = Math.Min(Math.Abs(value), (Int16)5);
-                sender.Execute(simConnect, Enumerable.Repeat($"0 (>K:{eventCode})", repeat).Aggregate((l, r) => l + " " + r));
-                value -= (Int16)(Math.Sign(value) * repeat);
+                simConnect.SendEvent(value < 0 ? dec : inc);
+                value -= (short)Math.Sign(value);
             }
-            //TODO: use A32NX.FCU_HDG_SET, 0 to 359
-            //TODO: can we use :4 g4 type constructs in RPN to form loops and avoid multiple sends here?
         }
     }
 }

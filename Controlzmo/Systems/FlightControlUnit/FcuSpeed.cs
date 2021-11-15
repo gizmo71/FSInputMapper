@@ -95,26 +95,38 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
+    public class FcuSpeedInc : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_SPD_INC";
+    }
+
+    [Component]
+    public class FcuSpeedDec : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_SPD_DEC";
+    }
+
+    [Component]
     public class FcuSpeedDelta : ISettable<Int16>
     {
-        private readonly JetBridgeSender sender;
+        private readonly FcuSpeedInc inc;
+        private readonly FcuSpeedDec dec;
 
         public FcuSpeedDelta(IServiceProvider sp)
         {
-            sender = sp.GetRequiredService<JetBridgeSender>();
+            inc = sp.GetRequiredService<FcuSpeedInc>();
+            dec = sp.GetRequiredService<FcuSpeedDec>();
         }
 
         public string GetId() => "fcuSpeedDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            var eventCode = value < 0 ? "A32NX.FCU_SPD_DEC" : "A32NX.FCU_SPD_INC";
             while (value != 0)
             {
-                sender.Execute(simConnect, $"0 (>K:{eventCode})");
+                simConnect.SendEvent(value < 0 ? dec : inc);
                 value -= (short)Math.Sign(value);
             }
-            //TODO: use A32NX.FCU_SPD_SET (100 to 399 knots; 10 to 99 Mach*10)
         }
     }
 }
