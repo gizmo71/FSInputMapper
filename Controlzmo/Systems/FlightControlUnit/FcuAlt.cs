@@ -86,23 +86,38 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
+    public class FcuAltInc : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_ALT_INC";
+    }
+
+    [Component]
+    public class FcultDec : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_ALT_DEC";
+    }
+
+    [Component]
     public class FcuAltDelta : ISettable<Int16>
     {
-        private readonly JetBridgeSender sender;
+        private readonly FcuAltInc inc;
+        private readonly FcultDec dec;
 
-        public FcuAltDelta(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        public FcuAltDelta(IServiceProvider sp)
+        {
+            inc = sp.GetRequiredService<FcuAltInc>();
+            dec = sp.GetRequiredService<FcultDec>();
+        }
 
         public string GetId() => "fcuAltDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            var eventCode = value < 0 ? "A32NX.FCU_ALT_DEC" : "A32NX.FCU_ALT_INC";
             while (value != 0)
             {
-                sender.Execute(simConnect, $"0 (>K:{eventCode})");
+                simConnect.SendEvent(value < 0 ? dec : inc);
                 value -= (short)Math.Sign(value);
             }
-            //TODO: use A32NX.FCU_ALT_SET, range 100 to 49000
         }
     }
 

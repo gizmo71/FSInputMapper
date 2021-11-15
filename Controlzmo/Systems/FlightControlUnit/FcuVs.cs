@@ -64,26 +64,38 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
+    public class FcuVsInc : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_VS_INC";
+    }
+
+    [Component]
+    public class FcuVsDec : IEvent
+    {
+        public string SimEvent() => "A32NX.FCU_VS_DEC";
+    }
+
+    [Component]
     public class FcuVsDelta : ISettable<Int16>
     {
-        private readonly JetBridgeSender sender;
+        private readonly FcuVsInc inc;
+        private readonly FcuVsDec dec;
 
         public FcuVsDelta(IServiceProvider sp)
         {
-            sender = sp.GetRequiredService<JetBridgeSender>();
+            inc = sp.GetRequiredService<FcuVsInc>();
+            dec = sp.GetRequiredService<FcuVsDec>();
         }
 
         public string GetId() => "fcuVsDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            var eventCode = value < 0 ? "A32NX.FCU_VS_DEC" : "A32NX.FCU_VS_INC";
             while (value != 0)
             {
-                sender.Execute(simConnect, $"0 (>K:{eventCode})");
+                simConnect.SendEvent(value < 0 ? dec : inc);
                 value -= (short)Math.Sign(value);
             }
-            //TODO: use A32NX.FCU_VS_SET where possible; range -6000 to 6000 (V/S) or -99 to 99 (FPA)
 //TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
         }
     }
