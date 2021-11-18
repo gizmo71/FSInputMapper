@@ -15,6 +15,24 @@ using System.Text.RegularExpressions;
 namespace Controlzmo.Serial
 {
     [Component]
+    public class SerialOutboundSettable : ISettable<string?>
+    {
+        private readonly IServiceProvider serviceProvider;
+
+        public SerialOutboundSettable(IServiceProvider serviceProvider)
+        {
+            this.serviceProvider = serviceProvider;
+        }
+
+        public string GetId() => "serialOutbound";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? lineToSend)
+        {
+            serviceProvider.GetRequiredService<SerialPico>().SendLine(lineToSend!);
+        }
+    }
+
+    [Component]
     public class SerialInboundSettable : ISettable<string?>
     {
         private readonly IServiceProvider serviceProvider;
