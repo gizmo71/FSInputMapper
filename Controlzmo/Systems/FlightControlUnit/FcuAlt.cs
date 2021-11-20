@@ -60,29 +60,25 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuAltPulled : ISettable<bool>
+    public class FcuAltPulled : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
 
         public FcuAltPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_ALT_PULL";
         public string GetId() => "fcuAltPulled";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool _ )
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PULL)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
-    public class FcuAltPushed : ISettable<bool>
+    public class FcuAltPushed : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
 
         public FcuAltPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_ALT_PUSH";
         public string GetId() => "fcuAltPushed";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool _)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_ALT_PUSH)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
