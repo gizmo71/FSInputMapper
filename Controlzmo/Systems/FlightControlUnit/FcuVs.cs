@@ -1,6 +1,5 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
@@ -38,29 +37,19 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuVsPulled : ISettable<bool>
+    public class FcuVsPulled : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuVsPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_VS_PULL";
         public string GetId() => "fcuVsPulled";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_VS_PULL)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
-    public class FcuVsPushed : ISettable<bool>
+    public class FcuVsPushed : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuVsPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_VS_PUSH";
         public string GetId() => "fcuVsPushed";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_VS_PUSH)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
