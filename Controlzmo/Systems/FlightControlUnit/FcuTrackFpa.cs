@@ -1,7 +1,5 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
-using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -19,15 +17,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuTrackFpaToggled : ISettable<bool>
+    public class FcuTrackFpaToggled : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuTrackFpaToggled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_TRK_FPA_TOGGLE_PUSH";
         public string GetId() => "trkFpaToggled";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_TRK_FPA_TOGGLE_PUSH)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 }
