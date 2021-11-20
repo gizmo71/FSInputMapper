@@ -1,6 +1,5 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -35,16 +34,11 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuSpeedMachToggled : ISettable<bool>
+    public class FcuSpeedMachToggled : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuSpeedMachToggled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_SPD_MACH_TOGGLE_PUSH";
         public string GetId() => "speedMachToggled";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_SPD_MACH_TOGGLE_PUSH)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
@@ -69,29 +63,19 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuSpeedPulled : ISettable<bool>
+    public class FcuSpeedPulled : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuSpeedPulled(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_SPD_PULL";
         public string GetId() => "fcuSpeedPulled";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_SPD_PULL)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
-    public class FcuSpeedPushed : ISettable<bool>
+    public class FcuSpeedPushed : ISettable<bool>, IEvent
     {
-        private readonly JetBridgeSender sender;
-
-        public FcuSpeedPushed(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
-
+        public string SimEvent() => "A32NX.FCU_SPD_PUSH";
         public string GetId() => "fcuSpeedPushed";
-
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
-            => sender.Execute(simConnect, $"(>K:A32NX.FCU_SPD_PUSH)");
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
     }
 
     [Component]
