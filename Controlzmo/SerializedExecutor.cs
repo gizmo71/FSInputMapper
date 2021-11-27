@@ -46,7 +46,7 @@ namespace Controlzmo
                     {
                         _logging.LogError("Invocation failed: {0}", e);
                     }
-                    Thread.Sleep(50);
+                    Thread.Sleep(100);
                 }
                 else
                     _logging.LogInformation("No serialized actions to perform");
