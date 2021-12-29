@@ -83,3 +83,7 @@ th {
     border-style: groove;
     font-family: monospace;
 }
+
+ul.tab-menu li {
+    display: inline;
+}
