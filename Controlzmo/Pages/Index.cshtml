@@ -141,9 +141,18 @@
                 </td>
                 <th>TCAS</th>
             </tr>
-            <tr style="font-size: smaller;">
+            <tr style="font-size: smaller; line-height: 1;">
                 <th><label for="xpndrCode">Transponder Code</label></th>
                 <td><input id="xpndrCode" size="4" maxlength="4" class="sendText" /></td>
+                <td>
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOff" value="off" />
+                    <label for="altRptgOff">Off</label><br />
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgAuto" value="auto" />
+                    <label for="altRptgAuto">Auto</label><br />
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOn" value="on" />
+                    <label for="altRptgOn">On</label>
+                </td>
+                <th>Alt<br />Rptg</th>
             </tr>
         </table>
     </div>

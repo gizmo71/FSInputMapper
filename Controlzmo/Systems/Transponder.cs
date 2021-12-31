@@ -15,7 +15,6 @@ using SimConnectzmo;
   Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
   If Alt Rptg is On, only 4 will set it to On.
   If Alt Rptg is Off, only 3 will set it to On.
-* Alt Rptg L:A32NX_SWITCH_ATC_ALT - can be set to 0 off, 1 auto, or 2 on.
 * Ident? (local event `A320_Neo_ATC_BTN_IDENT`?) */
 namespace Controlzmo.Systems.Transponder
 {
@@ -67,6 +66,25 @@ namespace Controlzmo.Systems.Transponder
         public void SetInSim(ExtendedSimConnect simConnect, string? code)
         {
             simConnect.SendEvent(setEvent, Convert.ToUInt32(code, 16));
+        }
+    }
+
+    [Component]
+    public class AltRptg : ISettable<string?>
+    {
+        private readonly JetBridgeSender jetbridge;
+
+        public AltRptg(IServiceProvider sp)
+        {
+            jetbridge = sp.GetRequiredService<JetBridgeSender>();
+        }
+
+        public string GetId() => "altRptg";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? posString)
+        {
+            var pos = posString switch { "on" => 2, "auto" => 1, _ => 0 };
+            jetbridge.Execute(simConnect, $"{pos} (>L:A32NX_SWITCH_ATC_ALT)");
         }
     }
 
