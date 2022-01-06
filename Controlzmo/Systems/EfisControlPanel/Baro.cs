@@ -108,7 +108,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
-            string composite = "S    ";
+            string composite = "SStd ";
             if (!baro1Mode.isStd)
             {
                 var value = baro1Units.isInHg ? currentSetting.kohlsmanHg * 100 : currentSetting.kohlsmanMB;
