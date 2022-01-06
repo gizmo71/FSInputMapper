@@ -15,6 +15,7 @@ using SimConnectzmo;
   Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
   If Alt Rptg is On, only 4 will set it to On.
   If Alt Rptg is Off, only 3 will set it to On.
+// 0 = Off, 1 = Standby, 2 = Test, 3 = On, 4 = Alt, 5 = Ground (https://forum.simflight.com/topic/90446-transponder-offsbyonalttst/)
 * Ident? (local event `A320_Neo_ATC_BTN_IDENT`?) */
 namespace Controlzmo.Systems.Transponder
 {
