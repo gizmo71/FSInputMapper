@@ -4,6 +4,7 @@
 #include <SparkFun_Qwiic_Button.h>
 #include <hd44780.h>
 #include "hd44780ioClass/hd44780_I2Cexp.h"
+#include "SSD1306AsciiWire.h"
 
 #include "IoBounce2.h"
 #include "Picozmo.h"
@@ -69,6 +70,8 @@ PUSH_PULL_ISR(fcuHeading, D7, D6, true)
 PUSH_PULL_ISR(fcuAlt, D9, D8, true)
 PUSH_PULL_ISR(fcuVs, D10, D11, true)
 
+SSD1306AsciiWire oled;
+
 static void initLcd(hd44780_I2Cexp &lcd) {
   lcd.init();
   // The charset of ours is table 4 from https://www.sparkfun.com/datasheets/LCD/HD44780.pdf#page=17
@@ -133,6 +136,19 @@ void setup(void) {
 
   initLcd(lcdRight);
   initLcd(lcdLeft);
+
+  oled.begin(&Adafruit128x64, 0x3C);
+  oled.clear();
+  // 12c by 4r
+  oled.setFont(Callibri15);
+  oled.setCursor(30, 2);
+  oled.print("QFE");
+  oled.setCursor(74, 2);
+  oled.print("QNH");
+  oled.setFont(fixed_bold10x15);
+  oled.setCursor(10, 4);
+  oled.set2X();
+  oled.println("29.92");
 }
 
 static void updateLcds() {
