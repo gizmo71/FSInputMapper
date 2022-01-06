@@ -7,6 +7,7 @@ extern const char *volatile strobeLight, *volatile beaconLight, *volatile wingIc
   *volatile runwayTurnoffLight, *volatile landingLight, *volatile noseLight, *volatile seatBeltSign;
 
 extern const char *baroUnitInHg, *baroUnitHPa, *volatile newBaroUnits, *volatile currentBaroUnits;
+extern volatile char desiredBaro[6];
 
 // These communicate from core1 to core0.
 extern volatile bool forceUpdate, apuMasterOn, apuFault, apuStartOn, apuAvail, fcuAltManaged;

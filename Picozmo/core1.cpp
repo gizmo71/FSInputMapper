@@ -8,11 +8,10 @@ extern void setup1(void) {
   Serial.begin(115200);
 }
 
-char baroMode = 0; // Q'F'E, Q'N'H, 'S'td
-const char baroValue[6] = "99.99";
+// First character is 'S'tandard, Q'N'H or Q'F'E.
+volatile char desiredBaro[6] = "N2992";
 
 void process(String name, String value) {
-  bool baroChange = false;
   if (name == "ApuFault")
     apuFault = value == "True";
   else if (name == "ApuMasterOn")
@@ -23,11 +22,8 @@ void process(String name, String value) {
     apuStartOn = value == "True";
   else if (name == "FcuAltManaged")
     fcuAltManaged = value == "True";
-  else if (name == "baroMode" && value.length() == 1) {
-    baroMode = value.charAt(1);
-    baroChange = true;
-  } else if (name == "Kohlsman" && value.length() == 10 && currentBaroUnits) {
-    baroChange = true;
+  else if (name == "baro" && value.length() == 5) {
+    strcpy((char *) desiredBaro, value.c_str());
   } else if (name == "fcuTL" && value.length() == 16) {
     memcpy((void *) fcuLcdText[0], value.c_str(), 16);
   } else if (name == "fcuBL" && value.length() == 16) {
@@ -42,14 +38,6 @@ void process(String name, String value) {
     Serial.print("' is to set it to '");
     Serial.print(value);
     Serial.println("'");
-  }
-
-  if (baroChange && currentBaroUnits && baroMode) {
-    Serial.print("baroDisplay=\""); //TODO: whatever
-    Serial.print(baroMode == 'S' ? "     " : (baroMode == 'F' ? "QFE  " : "  QNH"));
-    Serial.print("\\n");
-    Serial.print(random(0x10000, 0xfffff), HEX);
-    Serial.println('"');
   }
 }
 

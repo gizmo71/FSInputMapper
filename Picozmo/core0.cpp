@@ -139,16 +139,24 @@ void setup(void) {
 
   oled.begin(&Adafruit128x64, 0x3C);
   oled.clear();
-  // 12c by 4r
-  oled.setFont(Callibri15);
-  oled.setCursor(30, 2);
-  oled.print("QFE");
-  oled.setCursor(74, 2);
-  oled.print("QNH");
   oled.setFont(fixed_bold10x15);
-  oled.setCursor(10, 4);
-  oled.set2X();
-  oled.println("29.92");
+}
+
+static void updateOled() {
+  //TODO: be smarter!
+  static char current[] = "     ";
+  if (strcmp(current, (const char *) desiredBaro)) {
+    oled.set1X();
+    oled.setCursor(24, 2);
+    oled.print(desiredBaro[0] == 'F' ? "QFE" : "   ");
+    oled.setCursor(64, 2);
+    oled.print(desiredBaro[0] == 'N' ? "QNH" : "   ");
+
+    oled.set2X();
+    oled.setCursor(20, 4);
+    oled.print((const char *) desiredBaro + 1);
+    strcpy(current, (const char *) desiredBaro);
+  }
 }
 
 static void updateLcds() {
@@ -304,6 +312,7 @@ void loop(void) {
   taskManager.runLoop();
 
   updateLcds();
+  updateOled();
 
   updateContinuousInputs();
   updateMomentaryInputs();
