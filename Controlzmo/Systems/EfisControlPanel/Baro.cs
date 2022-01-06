@@ -108,20 +108,13 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
-            string line1, line2;
-            if (baro1Mode.isStd)
+            string composite = "S";
+            if (!baro1Mode.isStd)
             {
-                line1 = "     ";
-                line2 = " Std ";
+                var value = baro1Units.isInHg ? currentSetting.kohlsmanHg * 100 : currentSetting.kohlsmanMB;
+                composite = (baro1Mode.isQnh ? "N" : "F") + $"{value,4:0}";
             }
-            else
-            {
-                line1 = baro1Mode.isQnh ? "  QNH" : "QFE  ";
-                line2 = baro1Units.isInHg ? $"{currentSetting.kohlsmanHg:00.00}" : $" {currentSetting.kohlsmanMB:0000}";
-            }
-            //serial.SendLine($"baroDisplay1={line1}");
-            //serial.SendLine($"baroDisplay2={line2}");
-            hub.Clients.All.SetFromSim("baroDisplay", $"{line1}\n{line2}");
+            serial.SendLine($"baro={composite}");
         }
     }
 }
