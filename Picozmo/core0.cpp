@@ -143,19 +143,25 @@ void setup(void) {
 }
 
 static void updateOled() {
-  //TODO: be smarter!
   static char current[] = "     ";
-  if (strcmp(current, (const char *) desiredBaro)) {
+
+  if (*current != *desiredBaro) {
     oled.set1X();
     oled.setCursor(24, 2);
     oled.print(desiredBaro[0] == 'F' ? "QFE" : "   ");
     oled.setCursor(64, 2);
     oled.print(desiredBaro[0] == 'N' ? "QNH" : "   ");
+    *current = *desiredBaro;
+    return;
+  }
 
-    oled.set2X();
-    oled.setCursor(20, 4);
-    oled.print((const char *) desiredBaro + 1);
-    strcpy(current, (const char *) desiredBaro);
+  for (int i = 1; i <= 4; ++i) {
+    if (current[i] != desiredBaro[i]) {
+      oled.set2X();
+      oled.setCursor(20 + 22 * (i - 1), 4);
+      oled.print(current[i] = desiredBaro[i]);
+      break;
+    }
   }
 }
 
