@@ -9,16 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
-/* xpndr mode (settable `TRANSPONDER STATE:1` 1 Stby or Auto, 3 on without Alt Rptg, 4 on with Alt Rptg)
-  1 is standby or auto, 3/4 appear to be "On" in sim with alt rptg in off/on respectively, but if one, doesn't report the other when alt rptg is switched :-(
-  In auto, is unsettable. It's likely that the value changes once airbourne if in standby.
-  Setting to 1 from On always turns it to Standby, regardless of Alt Rptg.
-  If Alt Rptg is On, only 4 will set it to On.
-  If Alt Rptg is Off, only 3 will set it to On.
-// 0 = Off, 1 = Standby, 2 = Test, 3 = On, 4 = Alt, 5 = Ground (https://forum.simflight.com/topic/90446-transponder-offsbyonalttst/)
-  Looks like it now has L:A32NX_TRANSPONDER_MODE (0 STBY, 1 AUTO, 2 ON)
-  Also L:A32NX_TRANSPONDER_SYSTEM 0=XPNDR1, 1=XPNDR2
-* Ident? (local event `A320_Neo_ATC_BTN_IDENT`?) */
+// Ident? (local event `A320_Neo_ATC_BTN_IDENT`?)
+// L:A32NX_TRANSPONDER_SYSTEM 0=XPNDR1, 1=XPNDR2
 namespace Controlzmo.Systems.Transponder
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -135,6 +127,32 @@ namespace Controlzmo.Systems.Transponder
         public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "tcasTraffic";
+
+        public void SetInSim(ExtendedSimConnect simConnect, string? posString)
+        {
+            var pos = Int16.Parse(posString!);
+            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
+        }
+    }
+
+    [Component]
+    public class TransponderMode : LVar, IOnSimStarted, ISettable<string?>
+    {
+        private readonly JetBridgeSender jetbridge;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+
+        public TransponderMode(IServiceProvider sp) : base(sp)
+        {
+            jetbridge = sp.GetRequiredService<JetBridgeSender>();
+            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
+        }
+
+        protected override string LVarName() => "A32NX_TRANSPONDER_MODE";
+        protected override int Milliseconds() => 4000;
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+
+        public string GetId() => "transponderMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {

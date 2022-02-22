@@ -5,7 +5,8 @@
 
 <div id="tabs">
     <ul class="tab-menu">
-        <li><a href="#tabs-efis">EFIS/Radar/ATC</a></li>
+        <li><a href="#tabs-efis">EFIS</a></li>
+        <li><a href="#tabs-radar-atc">Radar/ATC</a></li>
         <li><a href="#tabs-radio">Radio</a></li>
         <li><a href="#tabs-mcdu">MCDU</a></li>
         <li><a href="#tabs-debug">Debug</a></li>
@@ -101,7 +102,9 @@
                 <th><label for="rightEfisNavAid2">2</label></th>
             </tr>
         </table>
-        <table style="font-size: larger;">
+    </div>
+    <div id="tabs-radar-atc">
+        <table style="font-size: larger; border: 1px solid;">
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
                     <input type="radio" name="radarSys" class="sendRadio" id="radarSys1" value="0" />
@@ -116,6 +119,33 @@
                     <input type="checkbox" id="predictiveWindshear" class="sendBoolean" />
                     <label for="predictiveWindshear">Predictive<br />Windshear</label>
                 </th>
+            </tr>
+        </table>
+        <table style="font-size: larger; border: 1px solid;">
+            <tr style="font-size: smaller; line-height: 1;">
+                <td style="line-height: 1;">
+                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeStandby" value="0" />
+                    <label for="transponderModeStandby">Stby</label><br />
+                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeAuto" value="1" />
+                    <label for="transponderModeAuto">Auto</label><br />
+                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeOn" value="2" />
+                    <label for="transponderModeOn">On</label>
+                </td>
+                <th>ATC</th>
+                <td>
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOff" value="off" />
+                    <label for="altRptgOff">Off</label><br />
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgAuto" value="auto" />
+                    <label for="altRptgAuto">Auto</label><br />
+                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOn" value="on" />
+                    <label for="altRptgOn">On</label>
+                </td>
+                <th>Alt<br />Rptg</th>
+            </tr>
+            <tr style="font-size: smaller; line-height: 1;">
+                <th colspan="2"><label for="xpndrCode">Transponder Code</label></th>
+                <td><input id="xpndrCode" size="4" maxlength="4" class="sendText" /></td>
+                <td>IDENT</td>
             </tr>
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
@@ -138,19 +168,6 @@
                     <label for="tcasModeRA">TA/RA</label>
                 </td>
                 <th>TCAS</th>
-            </tr>
-            <tr style="font-size: smaller; line-height: 1;">
-                <th><label for="xpndrCode">Transponder Code</label></th>
-                <td><input id="xpndrCode" size="4" maxlength="4" class="sendText" /></td>
-                <td>
-                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOff" value="off" />
-                    <label for="altRptgOff">Off</label><br />
-                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgAuto" value="auto" />
-                    <label for="altRptgAuto">Auto</label><br />
-                    <input type="radio" name="altRptg" class="sendRadio" id="altRptgOn" value="on" />
-                    <label for="altRptgOn">On</label>
-                </td>
-                <th>Alt<br />Rptg</th>
             </tr>
         </table>
     </div>
