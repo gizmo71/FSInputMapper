@@ -87,7 +87,6 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public BaroDisplay(IServiceProvider sp)
         {
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serial = sp.GetRequiredService<SerialPico>();
             baro1Mode = sp.GetRequiredService<Baro1Mode>();
             baro1Units = sp.GetRequiredService<Baro1Units>();
