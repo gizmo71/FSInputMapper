@@ -80,7 +80,6 @@ namespace Controlzmo.Systems.EfisControlPanel
     [Component]
     public class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly SerialPico serial;
         private readonly Baro1Mode baro1Mode;
         private readonly Baro1Units baro1Units;
