@@ -73,7 +73,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         [SimVar("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanMB;
-        [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
+        [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
         public float kohlsmanHg;
     }
 
