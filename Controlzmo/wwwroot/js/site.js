@@ -28,7 +28,8 @@ function errorHandler(err) {
     return console.error(err.toString());
 }
 
-var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").build();
+//TODO: https://www.jerriepelser.com/blog/automatic-reconnects-signalr/ - keep retrying, or perhaps have a button
+var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").withAutomaticReconnect().build();
 
 connection.on("SetFromSim", function (name, newValue) {
     var jqInput = $("#" + name).add($('input[type="radio"][name="' + name + '"]'));
@@ -56,27 +57,31 @@ function speak(text) {
 
 connection.on("Speak", speak);
 
-connection.start().then(function () {
-    // Called when connection established - may want to disable things until this is received.
-    connection.invoke("SendAll").catch(errorHandler);
-    $(".sendBoolean").on("change", function(event) {
-        connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
-        event.preventDefault();
-    });
-    $(".sendRadio").on("change", function (event) {
-        connection.invoke("SetInSim", event.target.name, event.target.value).catch(errorHandler);
-        event.preventDefault();
-    });
-    $(".sendText").on("change", function(event) {
-        if (event.target.reportValidity()) {
+function startSignalR() {
+    connection.start().then(function () {
+        // Called when connection established - may want to disable things until this is received.
+        connection.invoke("SendAll").catch(errorHandler);
+        $(".sendBoolean").on("change", function (event) {
+            connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
+            event.preventDefault();
+        });
+        $(".sendRadio").on("change", function (event) {
+            connection.invoke("SetInSim", event.target.name, event.target.value).catch(errorHandler);
+            event.preventDefault();
+        });
+        $(".sendText").on("change", function (event) {
+            if (event.target.reportValidity()) {
+                connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
+            }
+            event.preventDefault();
+            $(event.target).blur();
+            window.scrollTo(0, 0);
+        });
+        $(".sendButton").on("click", function (event) {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
-        }
-        event.preventDefault();
-        $(event.target).blur();
-        window.scrollTo(0, 0);
-    });
-    $(".sendButton").on("click", function(event) {
-        connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
-        event.preventDefault();
-    });
-}).catch(errorHandler);
+            event.preventDefault();
+        });
+    }).catch(errorHandler);
+}
+
+startSignalR();
