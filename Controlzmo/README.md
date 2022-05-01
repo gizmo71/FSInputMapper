@@ -16,6 +16,8 @@ PM Calls
 --------
 
 * Can we get F/S speed calls during climb? A32NX_VSPEEDS_F/A32NX_VSPEEDS_S are listed as for "approach".
+* Or perhaps warnings when we're about to exceed flap speeds during acceleration.
+* Would it be possible to use speech recognition to ask for flap positions and have PM do the speed check first?
 
 TODO
 ----
@@ -31,7 +33,8 @@ https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn
 EFIS
 ----
 
-The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
+* The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
+* Could really use a chrono button too (event A32NX.EFIS_L_CHRONO_PUSHED).
 
 Other useful things?
 --------------------
