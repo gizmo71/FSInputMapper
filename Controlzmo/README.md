@@ -35,6 +35,7 @@ EFIS
 
 * The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
 * Could really use a chrono button too (event A32NX.EFIS_L_CHRONO_PUSHED).
+* Perhaps even automatically start the timer after second engine start or shutdown (and call 3 minutes), and after setting 50% thrust on takeoff.
 
 Other useful things?
 --------------------
