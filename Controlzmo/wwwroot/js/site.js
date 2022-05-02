@@ -28,7 +28,6 @@ function errorHandler(err) {
     return console.error(err.toString());
 }
 
-//TODO: https://www.jerriepelser.com/blog/automatic-reconnects-signalr/ - keep retrying, or perhaps have a button
 var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").withAutomaticReconnect().build();
 
 connection.on("SetFromSim", function (name, newValue) {
