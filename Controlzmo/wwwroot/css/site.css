@@ -87,3 +87,7 @@ th {
 ul.tab-menu li {
     display: inline;
 }
+
+.tableCaption {
+    writing-mode: vertical-lr;
+}
