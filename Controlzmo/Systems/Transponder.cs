@@ -65,21 +65,28 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class AltRptg : ISettable<string?>
+    public class AltRptg : LVar, ISettable<bool?>, IOnSimStarted
     {
         private readonly JetBridgeSender jetbridge;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public AltRptg(IServiceProvider sp)
+        public AltRptg(IServiceProvider sp) : base(sp)
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
+            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
+        protected override string LVarName() => "A32NX_SWITCH_ATC_ALT";
+        protected override int Milliseconds() => 4000;
+        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
         public string GetId() => "altRptg";
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? posString)
+        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
         {
-            var pos = posString switch { "on" => 2, "auto" => 1, _ => 0 };
-            jetbridge.Execute(simConnect, $"{pos} (>L:A32NX_SWITCH_ATC_ALT)");
+            var value = isOn == true ? 1 : 0;
+            jetbridge.Execute(simConnect, $"{value} (>L:{LVarName()})");
         }
     }
 
