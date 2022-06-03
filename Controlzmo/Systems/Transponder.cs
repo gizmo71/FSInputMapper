@@ -65,6 +65,19 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
+    public class SquawkIdentEvent : IEvent
+    {
+        public string SimEvent() => "XPNDR_IDENT_ON";
+    }
+
+    [Component]
+    public class SquawkIdent1Swap : AbstractButton
+    {
+        public SquawkIdent1Swap(SquawkIdentEvent squawkIdentEvent) : base(squawkIdentEvent) { }
+        public override string GetId() => "squawkIdent";
+    }
+
+    [Component]
     public class AltRptg : LVar, ISettable<bool?>, IOnSimStarted
     {
         private readonly JetBridgeSender jetbridge;
@@ -74,14 +87,13 @@ namespace Controlzmo.Systems.Transponder
         {
             jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value == 1);
         }
 
         protected override string LVarName() => "A32NX_SWITCH_ATC_ALT";
         protected override int Milliseconds() => 4000;
         public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
         public string GetId() => "altRptg";
-
-        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), base.Value = value); }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
         {
