@@ -34,14 +34,18 @@
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.113" />
-    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
-    <PackageReference Include="System.Text.Json" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>$(MSFS_SDK)\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="WASimCommander.WASimClient">
+      <HintPath>..\..\WASimCommander\src\build\WASimClient_CLI\Release-x64\WASimCommander.WASimClient.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 
