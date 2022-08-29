@@ -56,22 +56,4 @@ namespace SimConnectzmo
             _logger.LogError($"{src} Log: {lr}", "@@");  // LogRecord has a convenience ToString() override
         }
     }
-
-    [Component]
-    public class ToConfigTest : ISettable<string?>
-    {
-        private readonly JetBridgeSender jetbridge;
-
-        public ToConfigTest(IServiceProvider serviceProvider)
-        {
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
-        }
-
-        public string GetId() => "toConfig";
-
-        public void SetInSim(ExtendedSimConnect simConnect, string? value)
-        {
-            jetbridge.Execute(simConnect, "1 (>L:A32NX_BTN_TOCONFIG)");
-        }
-    }
 }
