@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.Radar
 
         public string GetId() => "radarSys";
 
-        protected override double? Value { set { hub.Clients.All.SetFromSim(GetId(), base.Value = value); Console.Error.WriteLine($"------------->>>>>>>>>> setting radar to {Value}"); } }
+        protected override double? Value { set { hub.Clients.All.SetFromSim(GetId(), base.Value = value); } }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
