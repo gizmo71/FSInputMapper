@@ -28,17 +28,10 @@ This is similar to the problem with "normal" data requiring an off/on flip.
 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 * https://gamepad-tester.com/for-developers	
 
-* Would be nice to be able to trigger the cabin ready in T.O. ECAM memo three minutes after the second "AVAIL" message,
-but the logic for the message is buried in N1.tsx. We *may* be able to recreate it:
-```rust
-    const [N1Percent] = useSimVar(`L:A32NX_ENGINE_N1:${engine}`, 'percent', 60);
-    const [N1Idle] = useSimVar('L:A32NX_ENGINE_IDLE_N1', 'percent', 1000);
-    const [engineState] = useSimVar(`L:A32NX_ENGINE_STATE:${engine}`, 'bool', 500);
-    const availVisible = !!(N1Percent > Math.floor(N1Idle) && engineState === 2); // N1Percent sometimes does not reach N1Idle by .005 or so
-```
-* What could we trigger the opposite off, i.e. after landing, what do we measure to start the timer so that we can see when the engines are cooled down?
+* How could we trigger timer so that we can see when the engines are cooled down?
 I suspect it actually starts measuring when the "Landed" message is logged, perhaps based on (ground?) speed rather than anything to do with the engines.
 We may have to do a flight onto a long runway and observe when the message is logged.
+Would it actually detect max reverse being used to a standstill?
 
 * https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn.10)?redirectedfrom=MSDN#theinfix2postfixtool
 
