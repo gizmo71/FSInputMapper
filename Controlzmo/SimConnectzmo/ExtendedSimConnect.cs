@@ -347,7 +347,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private void OnSimIsRunning()
         {
-            foreach (var handler in onSimStartedHandlers!) 
+            foreach (var handler in onSimStartedHandlers!)
                 serializedExecutor!.Enqueue(handler.OnStarted);
             TriggerInitialRequests();
         }
