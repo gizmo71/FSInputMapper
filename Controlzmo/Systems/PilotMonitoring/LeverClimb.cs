@@ -4,6 +4,9 @@ using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
+using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -18,14 +21,28 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
 
         protected override string LVarName() => "A32NX_AUTOTHRUST_MODE_MESSAGE";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => 1.0;
 
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        protected override double? Value
+        protected override double? Value { set => MessageShown((base.Value = value) == 3.0); }
+
+        private CancellationTokenSource? cancellationTokenSource;
+
+        private void MessageShown(bool isLeverClimbDisplayed)
         {
-            set { if ((base.Value = value) == 3.0) hubContext.Clients.All.Speak("lever climb"); }
+            if (isLeverClimbDisplayed)
+                if (cancellationTokenSource == null) {
+                    cancellationTokenSource = new CancellationTokenSource();
+                    Task.Delay(4_000, cancellationTokenSource.Token).ContinueWith(_ => {
+                        if (!cancellationTokenSource.Token.IsCancellationRequested)
+                            hubContext.Clients.All.Speak("Lever climb?");
+                    });
+                }
+            else if (cancellationTokenSource != null)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource = null;
+            }
         }
     }
 }
