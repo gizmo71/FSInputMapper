@@ -1,9 +1,9 @@
-﻿using System;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;

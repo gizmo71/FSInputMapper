@@ -1,12 +1,12 @@
-﻿using System;
-using System.ComponentModel;
-using System.Threading.Tasks;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.ComponentModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 /* The logic for the AVAIL message is buried in N1.tsx:
     const [N1Percent] = useSimVar(`L:A32NX_ENGINE_N1:${engine}`, 'percent', 60);
@@ -46,20 +46,25 @@ namespace Controlzmo.Systems.PilotMonitoring
             engine2State.Request(simConnect);
         }
 
-        private Task? dingCabin;
+        private CancellationTokenSource? cancellationTokenSource;
 
         private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
         {
             bool areBothRunning = engine1State == 1.0 && engine2State == 1.0;
-            if (dingCabin == null && areBothRunning)
-            {
-                dingCabin = Task.Delay(180_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_CABIN_READY)"));
-            }
-            else if (dingCabin != null && !areBothRunning)
-            {
-                //TODO: cancel it too? https://learn.microsoft.com/en-us/dotnet/api/system.threading.cancellationtokensource.cancel?view=net-7.0
-                dingCabin = null;
-            }
+            if (areBothRunning)
+                if (cancellationTokenSource == null)
+                {
+                    cancellationTokenSource = new CancellationTokenSource();
+                    Task.Delay(180_000, cancellationTokenSource.Token).ContinueWith(_ => {
+                        if (!cancellationTokenSource.Token.IsCancellationRequested)
+                            jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_CABIN_READY)");
+                    });
+                }
+                else if (cancellationTokenSource != null)
+                {
+                    cancellationTokenSource.Cancel();
+                    cancellationTokenSource = null;
+                }
         }
     }
 }
