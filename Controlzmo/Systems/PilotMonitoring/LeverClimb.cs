@@ -33,8 +33,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isLeverClimbDisplayed)
                 if (cancellationTokenSource == null) {
                     cancellationTokenSource = new CancellationTokenSource();
-                    Task.Delay(5_000, cancellationTokenSource.Token).ContinueWith(_ => {
-                        if (!cancellationTokenSource.Token.IsCancellationRequested)
+                    CancellationToken cancellationToken = cancellationTokenSource.Token;
+                    Task.Delay(5_000, cancellationToken).ContinueWith(_ => {
+                        if (!cancellationToken.IsCancellationRequested)
                             hubContext.Clients.All.Speak("Lever climb?");
                         cancellationTokenSource = null;
                     });
