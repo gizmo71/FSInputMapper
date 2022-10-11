@@ -58,6 +58,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                     Task.Delay(180_000, cancellationTokenSource.Token).ContinueWith(_ => {
                         if (!cancellationTokenSource.Token.IsCancellationRequested)
                             jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_CABIN_READY)");
+                        cancellationTokenSource = null;
                     });
                 }
                 else if (cancellationTokenSource != null)
