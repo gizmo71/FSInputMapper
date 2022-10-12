@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +68,69 @@ namespace Controlzmo.Systems.PilotMonitoring
                     cancellationTokenSource.Cancel();
                     cancellationTokenSource = null;
                 }
+        }
+    }
+
+    [Component]
+    public class FmgcPhase : LVar, IOnSimConnection
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+
+        public FmgcPhase(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+        }
+
+        protected override string LVarName() => "A32NX_FMGC_FLIGHT_PHASE";
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
+
+
+        private void WhatIsIt(int? value)
+        {
+            hubContext.Clients.All.Speak($"Guidance {value}");
+        }
+    }
+
+    [Component]
+    public class FwcPhase : LVar, IOnSimConnection
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+
+        public FwcPhase(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+        }
+
+        protected override string LVarName() => "A32NX_FWC_FLIGHT_PHASE";
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
+
+
+        private void WhatIsIt(int? value)
+        {
+            hubContext.Clients.All.Speak($"Warning {value}");
+        }
+    }
+
+    [Component]
+    public class LateralMode : LVar, IOnSimConnection
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+
+        public LateralMode(IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+        }
+
+        protected override string LVarName() => "A32NX_FMA_LATERAL_MODE";
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
+
+
+        private void WhatIsIt(int? value)
+        {
+            hubContext.Clients.All.Speak($"Lateral {value}");
         }
     }
 }

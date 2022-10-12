@@ -37,14 +37,18 @@ namespace Controlzmo.Systems.PilotMonitoring
                     Task.Delay(5_000, cancellationToken).ContinueWith(_ => {
                         if (!cancellationToken.IsCancellationRequested)
                             hubContext.Clients.All.Speak("Lever climb?");
+//else hubContext.Clients.All.Speak("never mind");
                         cancellationTokenSource = null;
                     });
+//hubContext.Clients.All.Speak("er...");
                 }
+//else hubContext.Clients.All.Speak("disp already timing");
             else if (cancellationTokenSource != null)
             {
                 cancellationTokenSource.Cancel();
                 cancellationTokenSource = null;
             }
+//else hubContext.Clients.All.Speak("not disp no source");
         }
     }
 }
