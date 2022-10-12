@@ -42,14 +42,14 @@ else hubContext.Clients.All.Speak("never mind");
                     });
 hubContext.Clients.All.Speak("er...");
                 }
-else hubContext.Clients.All.Speak("disp already timing");
+else hubContext.Clients.All.Speak("ditto");
             else if (cancellationTokenSource != null)
             {
 hubContext.Clients.All.Speak("oh");
                 cancellationTokenSource.Cancel();
                 cancellationTokenSource = null;
             }
-else if (value != -1.0) hubContext.Clients.All.Speak("not disp no source");
+else if (value > 0.0) hubContext.Clients.All.Speak("whatevs");
         }
     }
 }
