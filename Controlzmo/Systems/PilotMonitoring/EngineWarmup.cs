@@ -116,8 +116,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             //TODO: after going to 9, we probably want to press the clear button twice after a moment until they fix the bug
             hubContext.Clients.All.Speak($"Warning {value}");
             if (value == 9)
-                Task.Delay(5_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"))
-;    }
+                Task.Delay(5_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"));
+        }
+    }
 
     [Component]
     public class LateralMode : LVar, IOnSimConnection
