@@ -88,7 +88,8 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private void WhatIsIt(int? value)
         {
-            hubContext.Clients.All.Speak($"Guidance {value}");
+            if (value != -1)
+                hubContext.Clients.All.Speak($"Guidance {value}");
         }
     }
 
@@ -113,14 +114,14 @@ namespace Controlzmo.Systems.PilotMonitoring
         // TouchDown is 8, AtOrBelowEightyKnots 9, engines off 10 (src/systems/systems/src/shared/mod.rs).
         private void WhatIsIt(int? value)
         {
-            //TODO: after going to 9, we probably want to press the clear button twice after a moment until they fix the bug
-            hubContext.Clients.All.Speak($"Warning {value}");
+            if (value != -1)
+                hubContext.Clients.All.Speak($"Warning {value}");
             if (value == 9)
                 Task.Delay(5_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"));
         }
     }
 
-    [Component]
+  //[Component]
     public class LateralMode : LVar, IOnSimConnection
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
@@ -137,7 +138,8 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private void WhatIsIt(int? value)
         {
-            hubContext.Clients.All.Speak($"Lateral {value}");
+            if (value != -1)
+                hubContext.Clients.All.Speak($"Lateral {value}");
         }
     }
 }

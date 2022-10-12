@@ -24,13 +24,13 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
-        protected override double? Value { set => MessageShown((base.Value = value) == 3.0); }
+        protected override double? Value { set => MessageShown(base.Value = value); }
 
         private CancellationTokenSource? cancellationTokenSource;
 
-        private void MessageShown(bool isLeverClimbDisplayed)
+        private void MessageShown(double? value)
         {
-            if (isLeverClimbDisplayed)
+            if (value == 3.0)
                 if (cancellationTokenSource == null) {
                     cancellationTokenSource = new CancellationTokenSource();
                     CancellationToken cancellationToken = cancellationTokenSource.Token;
@@ -49,7 +49,7 @@ hubContext.Clients.All.Speak("oh");
                 cancellationTokenSource.Cancel();
                 cancellationTokenSource = null;
             }
-else hubContext.Clients.All.Speak("not disp no source");
+else if (value != -1.0) hubContext.Clients.All.Speak("not disp no source");
         }
     }
 }
