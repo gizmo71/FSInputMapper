@@ -71,7 +71,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
     }
 
-    [Component]
+  //[Component]
     public class FmgcPhase : LVar, IOnSimConnection
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
@@ -96,22 +96,28 @@ namespace Controlzmo.Systems.PilotMonitoring
     public class FwcPhase : LVar, IOnSimConnection
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly SimConnectHolder scHolder;
+        private readonly JetBridgeSender jetbridge;
 
         public FwcPhase(IServiceProvider serviceProvider) : base(serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
+            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
         }
 
-        protected override string LVarName() => "A32NX_FWC_FLIGHT_PHASE";
+        protected override string LVarName() => "A32NX_FWS_FWC_1_FLIGHT_PHASE";
         public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
         protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
 
-
+        // TouchDown is 8, AtOrBelowEightyKnots 9, engines off 10 (src/systems/systems/src/shared/mod.rs).
         private void WhatIsIt(int? value)
         {
+            //TODO: after going to 9, we probably want to press the clear button twice after a moment until they fix the bug
             hubContext.Clients.All.Speak($"Warning {value}");
-        }
-    }
+            if (value == 9)
+                Task.Delay(5_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"))
+;    }
 
     [Component]
     public class LateralMode : LVar, IOnSimConnection
