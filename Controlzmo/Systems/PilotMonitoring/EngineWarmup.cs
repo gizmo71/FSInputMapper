@@ -112,6 +112,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
 
         // TouchDown is 8, AtOrBelowEightyKnots 9, engines off 10 (src/systems/systems/src/shared/mod.rs).
+        // Goes to 2 after 8 which is probably wrong, should go to 9, Shirely?
         private void WhatIsIt(int? value)
         {
             if (value != -1)
