@@ -30,7 +30,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         private void MessageShown(double? value)
         {
-            if (value == 3.0)
+            if (value == 3.0) {
                 if (cancellationTokenSource == null) {
                     cancellationTokenSource = new CancellationTokenSource();
                     CancellationToken cancellationToken = cancellationTokenSource.Token;
@@ -43,11 +43,11 @@ namespace Controlzmo.Systems.PilotMonitoring
 //hubContext.Clients.All.Speak("er...");
                 }
 //else hubContext.Clients.All.Speak("ditto");
-            else if (cancellationTokenSource != null)
+            }
+            else
             {
 //hubContext.Clients.All.Speak("oh");
-                cancellationTokenSource.Cancel();
-                cancellationTokenSource = null;
+                cancellationTokenSource?.Cancel();
             }
 //else if (value > 0.0) hubContext.Clients.All.Speak("whatevs");
         }
