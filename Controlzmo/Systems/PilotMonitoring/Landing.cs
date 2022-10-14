@@ -1,11 +1,12 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
+using Controlzmo.Systems.EfisControlPanel;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -40,6 +41,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public float spoilersRight;
         [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 kias;
+        [SimVar("GPS GROUND SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
+        public Int32 groundSpeed;
         [SimVar("TURB ENG REVERSE NOZZLE PERCENT:1", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 rev1;
         [SimVar("TURB ENG REVERSE NOZZLE PERCENT:2", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
@@ -52,11 +55,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly AutobrakeSetting autobrakeSetting;
         private readonly AutobrakeDecelLight autobrakeDecelLight;
+        private readonly Chrono1Event chronoEvent;
 
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
         bool? wasBelow70 = null;
+        bool? wasBelow30 = null;
 
         public LandingListener(IServiceProvider serviceProvider)
         {
@@ -64,13 +69,14 @@ namespace Controlzmo.Systems.PilotMonitoring
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
             autobrakeSetting = serviceProvider.GetRequiredService<AutobrakeSetting>();
             autobrakeDecelLight = serviceProvider.GetRequiredService<AutobrakeDecelLight>();
+            chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasDecel = wasBelow70 = null;
+            wasDecel = wasBelow70 = wasBelow30 = null;
             wasSpoilers = isOnGround ? false : null;
         }
 
@@ -101,6 +107,16 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 hubContext.Clients.All.Speak("seventy knots");
                 wasBelow70 = true;
+            }
+
+            if (wasBelow30 == null && data.kias >= 30)
+            {
+                wasBelow30 = false;
+            }
+            else if (wasBelow30 == false && data.kias < 30)
+            {
+                simConnect.SendEvent(chronoEvent);
+                wasBelow30 = true;
             }
 
             if (wasSpoilers == false)
