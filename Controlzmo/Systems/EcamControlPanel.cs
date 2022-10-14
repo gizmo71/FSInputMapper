@@ -22,6 +22,7 @@ namespace Controlzmo.Systems
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
             jetbridge.Execute(simConnect, "1 (>L:A32NX_BTN_TOCONFIG)");
+            jetbridge.Execute(simConnect, "0 (>L:A32NX_BTN_TOCONFIG)");
         }
     }
 }

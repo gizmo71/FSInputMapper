@@ -112,19 +112,10 @@ namespace Controlzmo.Systems.PilotMonitoring
         protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
 
         // TouchDown is 8, AtOrBelowEightyKnots 9, engines off 10 (src/systems/systems/src/shared/mod.rs).
-        private int? was = null;
         private void WhatIsIt(int? value)
         {
             if (value != -1)
                 hubContext.Clients.All.Speak($"Warning {value}");
-            // Goes to 2 (first engine started) after 8 which is probably wrong, should go to 9, Shirely?
-            if (value == 2 && was == 8)
-            {
-                hubContext.Clients.All.Speak("Will silence spurious warnings");
-                Task.Delay(2_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"));
-                Task.Delay(4_000).ContinueWith(_ => jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_BTN_CLR)"));
-            }
-            was = value;
         }
     }
 
