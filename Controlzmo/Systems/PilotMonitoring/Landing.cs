@@ -109,11 +109,11 @@ namespace Controlzmo.Systems.PilotMonitoring
                 wasBelow70 = true;
             }
 
-            if (wasBelow30 == null && data.kias >= 30)
+            if (wasBelow30 == null && data.groundSpeed >= 70)
             {
                 wasBelow30 = false;
             }
-            else if (wasBelow30 == false && data.kias < 30)
+            else if (wasBelow30 == false && data.groundSpeed < 30)
             {
                 simConnect.SendEvent(chronoEvent);
                 wasBelow30 = true;
