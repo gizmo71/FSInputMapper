@@ -9,7 +9,7 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.Radar
 {
     [Component]
-    public class RadarSys : LVar, IOnSimStarted, ISettable<string?>
+    public class RadarSys : LVar, IOnSimConnection, ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -22,7 +22,7 @@ namespace Controlzmo.Systems.Radar
 
         protected override string LVarName() => "XMLVAR_A320_WeatherRadar_Sys";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "radarSys";
 
@@ -36,7 +36,7 @@ namespace Controlzmo.Systems.Radar
     }
 
     [Component]
-    public class PredictiveWindshearSys : LVar, ISettable<bool?>, IOnSimStarted
+    public class PredictiveWindshearSys : LVar, ISettable<bool?>, IOnSimConnection
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -49,7 +49,7 @@ namespace Controlzmo.Systems.Radar
 
         protected override string LVarName() => "A32NX_SWITCH_RADAR_PWS_Position";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "predictiveWindshear";
 
