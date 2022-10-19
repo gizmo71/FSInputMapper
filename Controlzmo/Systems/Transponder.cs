@@ -78,7 +78,7 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class AltRptg : LVar, ISettable<bool?>, IOnSimStarted
+    public class AltRptg : LVar, ISettable<bool?>, IOnSimConnection
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -92,7 +92,7 @@ namespace Controlzmo.Systems.Transponder
 
         protected override string LVarName() => "A32NX_SWITCH_ATC_ALT";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
         public string GetId() => "altRptg";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
@@ -103,7 +103,7 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TcasMode : LVar, IOnSimStarted, ISettable<string?>
+    public class TcasMode : LVar, IOnSimConnection, ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -117,7 +117,7 @@ namespace Controlzmo.Systems.Transponder
 
         protected override string LVarName() => "A32NX_SWITCH_TCAS_Position";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "tcasMode";
 
@@ -129,7 +129,7 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TcasTraffic : LVar, IOnSimStarted, ISettable<string?>
+    public class TcasTraffic : LVar, IOnSimConnection, ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -143,7 +143,7 @@ namespace Controlzmo.Systems.Transponder
 
         protected override string LVarName() => "A32NX_SWITCH_TCAS_Traffic_Position";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "tcasTraffic";
 
@@ -155,7 +155,7 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class TransponderMode : LVar, IOnSimStarted, ISettable<string?>
+    public class TransponderMode : LVar, IOnSimConnection, ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
@@ -169,7 +169,7 @@ namespace Controlzmo.Systems.Transponder
 
         protected override string LVarName() => "A32NX_TRANSPONDER_MODE";
         protected override int Milliseconds() => 4000;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
 
         public string GetId() => "transponderMode";
 
