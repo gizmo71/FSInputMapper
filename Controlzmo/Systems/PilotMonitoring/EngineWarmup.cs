@@ -93,7 +93,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
     }
 
-    [Component]
+    //[Component]
     public class FwcPhase : LVar, IOnSimConnection
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
