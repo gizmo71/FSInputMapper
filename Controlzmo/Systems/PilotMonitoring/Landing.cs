@@ -61,7 +61,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
         bool? wasBelow70 = null;
-        bool? wasBelow30 = null;
+        bool? wasBelowTaxi = null;
 
         public LandingListener(IServiceProvider serviceProvider)
         {
@@ -76,7 +76,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasDecel = wasBelow70 = wasBelow30 = null;
+            wasDecel = wasBelow70 = wasBelowTaxi = null;
             wasSpoilers = isOnGround ? false : null;
         }
 
@@ -109,14 +109,14 @@ namespace Controlzmo.Systems.PilotMonitoring
                 wasBelow70 = true;
             }
 
-            if (wasBelow30 == null && data.groundSpeed >= 70)
+            if (wasBelowTaxi == null && data.groundSpeed >= 70)
             {
-                wasBelow30 = false;
+                wasBelowTaxi = false;
             }
-            else if (wasBelow30 == false && data.groundSpeed < 30)
+            else if (wasBelowTaxi == false && data.groundSpeed < 40)
             {
                 simConnect.SendEvent(chronoEvent);
-                wasBelow30 = true;
+                wasBelowTaxi = true;
             }
 
             if (wasSpoilers == false)
