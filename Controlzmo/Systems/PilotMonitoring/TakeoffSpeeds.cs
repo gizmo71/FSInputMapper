@@ -66,20 +66,20 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (data.kias < 39)
                 wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            if (SetAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive))
+            if (SetAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive, 0))
             {
                 v1Speed.Request(simConnect);
                 vrSpeed.Request(simConnect);
             }
-            _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80);
-            _ = SetAndCallIfRequired(100, data.kias, "one hundred knots", ref wasAbove100);
-            _ = SetAndCallIfRequired((Int16?)v1Speed ?? 0, data.kias, "vee one", ref wasAboveV1);
-            _ = SetAndCallIfRequired((Int16?)vrSpeed ?? 0, data.kias, "rotate", ref wasAboveVR);
+            _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80, 0);
+            _ = SetAndCallIfRequired(100, data.kias, "one hundred", ref wasAbove100, 0);
+            _ = SetAndCallIfRequired((Int16?)v1Speed ?? 0, data.kias, "vee one", ref wasAboveV1, 3);
+            _ = SetAndCallIfRequired((Int16?)vrSpeed ?? 0, data.kias, "rotate", ref wasAboveVR, 3);
         }
 
-        private bool SetAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove)
+        private bool SetAndCallIfRequired(Int16 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove, int offset)
         {
-            if (wasAbove == false && calledSpeed > 0 && actualSpeed >= calledSpeed)
+            if (wasAbove == false && calledSpeed > 0 && actualSpeed >= (calledSpeed - offset))
             {
                 hubContext.Clients.All.Speak(call);
                 wasAbove = true;
