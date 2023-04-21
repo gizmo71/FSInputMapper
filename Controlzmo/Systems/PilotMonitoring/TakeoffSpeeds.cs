@@ -65,7 +65,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
             if (data.kias < 39)
-                wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
+                wasAirspeedAlive = wasAbove80 = wasAbove100 = wasAboveV1 = wasAboveVR = false;
             if (SetAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive, 0))
             {
                 v1Speed.Request(simConnect);
