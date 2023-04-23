@@ -62,7 +62,6 @@ namespace Controlzmo.Systems.PilotMonitoring
                 _ = SetAndCallIfRequired(data.v1, data.kias, "vee one", ref wasAboveV1, 3);
                 _ = SetAndCallIfRequired(data.vr, data.kias, "rotate", ref wasAboveVR, 3);
             }
-            //TODO: if wasAboveVR set, stop listening. How does a baulked landing work?
         }
 
         private bool SetAndCallIfRequired(Int32 calledSpeed, Int32 actualSpeed, string call, ref bool? wasAbove, int offset)
