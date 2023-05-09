@@ -2,7 +2,6 @@
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System.Runtime.InteropServices;
-using System;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Controlzmo.Systems.PilotMonitoring
