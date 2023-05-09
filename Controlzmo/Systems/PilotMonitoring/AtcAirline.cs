@@ -3,6 +3,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.SignalR;
+using System.Text.RegularExpressions;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -32,9 +33,17 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
         }
 
+        private readonly Regex vbaw = new Regex(@"^(speedbird|shuttle)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public override void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            hub.Clients.All.SetFromSim("atcAirline", $"Callsign {data.name}, type {data.model}");
+            var sops = $"No SOPs available for {data.model} with callsign {data.name}";
+            if (vbaw.IsMatch(data.name))
+            {
+                if (data.model == "A20N")
+                    sops = "Start #2 first; warm up, cool down\nFlight time must be within 20%/20 minutes of scheduled";
+            }
+            hub.Clients.All.SetFromSim("atcAirline", sops);
         }
     }
 }
