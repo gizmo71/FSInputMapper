@@ -10,12 +10,16 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AtcAirlineData
     {
-        [SimVar("ATC AIRLINE", "String", SIMCONNECT_DATATYPE.STRINGV, 1.0f)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
+        [SimVar("ATC AIRLINE", null, SIMCONNECT_DATATYPE.STRING64, 0.0f)]
         public string name;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        [SimVar("ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
+        public string model;
     };
 
     [Component]
-    public class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
+    public class AtcAirlineListener : DataListener<AtcAirlineData>, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -24,24 +28,14 @@ namespace Controlzmo.Systems.PilotMonitoring
             this.hub = hub;
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public void OnStarted(ExtendedSimConnect simConnect)
+        {
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        }
 
         public override void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            hub.Clients.All.SetFromSim(AtcAirline.id, data.name);
-        }
-    }
-
-    [Component]
-    public class AtcAirline : ISettable<string>
-    {
-        internal const string id = "atcAirline";
-
-        public string GetId() => id;
-
-        public void SetInSim(ExtendedSimConnect simConnect, string? value)
-        {
-            //TODO: could we want to set this? Would it work?
+            hub.Clients.All.SetFromSim("atcAirline", $"Callsign {data.name}, type {data.model}");
         }
     }
 }
