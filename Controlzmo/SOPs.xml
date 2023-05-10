@@ -1,16 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
-    <Airline>
-        <Callsign of="speedbird" />
-        <Callsign of="shuttle" />
-        <Type icao="A339">
-            <Text>This is a dummy</Text>
-        </Type>
-        <Type icao="A20N">
-            <Text>Start #2 first; warm up, cool down
+	<Airline>
+		<Callsign of="speedbird" />
+		<Callsign of="shuttle" />
+		<Type icao="A20N">
+			<Text>Start #2 first; warm up, cool down
 Preparation: 20-40 minutes
-Flight time above 20%/20 minutes of scheduled requires review
-I am the walrus</Text>
-        </Type>
-    </Airline>
+Flight time above 20%/20 minutes of scheduled requires review</Text>
+		</Type>
+	</Airline>
+	<Airline>
+		<Callsign of="alpine" />
+		<Callsign of="easy" />
+		<Callsign of="top-swiss" />
+		<Callsign of="top swiss" />
+		<Callsign of="topswiss" />
+		<Type icao="A20N">
+			<Text>Start #1 first; OETD, warm up, OETA, cool down
+Preparation: 20-50 minutes
+Flight time above 30%/45 minutes of scheduled requires review
+Must have at least 1000kg fuel on landing</Text>
+		</Type>
+	</Airline>
 </SOPs>
