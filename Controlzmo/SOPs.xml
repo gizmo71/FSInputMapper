@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
     <Callsign match="speedbird|shuttle">
-        <Text>Start #2 first; warm up, cool down
+        <Type icao="A20N">
+            <Text>Start #2 first; warm up, cool down
 Preparation: 20-40 minutes
 Flight time above 20%/20 minutes of scheduled requires review
 I am the walrus</Text>
+        </Type>
     </Callsign>
 </SOPs>
