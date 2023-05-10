@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
-    <Callsign match="speedbird|shuttle">
+    <Airline>
+        <Callsign>speedbird</Callsign>
+        <Callsign>shuttle</Callsign>
         <Type icao="A339">
             <Text>This is a dummy</Text>
         </Type>
@@ -10,5 +12,5 @@ Preparation: 20-40 minutes
 Flight time above 20%/20 minutes of scheduled requires review
 I am the walrus</Text>
         </Type>
-    </Callsign>
+    </Airline>
 </SOPs>
