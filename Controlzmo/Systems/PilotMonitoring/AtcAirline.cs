@@ -4,7 +4,6 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Xml;
 using System.Xml.XPath;
@@ -38,8 +37,6 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
         }
 
-        private readonly HttpClient client = new HttpClient();
-
         public override void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
             var icaoCode = data.model.ToUpper();
@@ -48,6 +45,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             try
             {
                 var doc = new XmlDocument();
+//TODO: load async?
                 doc.Load("https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
                 var context = new VariableContext { { "callsign", callsign }, { "icaoType", icaoCode } };
                 var node = doc.DocumentElement?.SelectSingleNode($"//Airline[./Callsign/@of = $callsign]/Type[@icao=$icaoType]/Text", context);
