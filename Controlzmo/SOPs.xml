@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
     <Airline>
-        <Callsign>speedbird</Callsign>
-        <Callsign>shuttle</Callsign>
+        <Callsign of="speedbird" />
+        <Callsign of="shuttle" />
         <Type icao="A339">
             <Text>This is a dummy</Text>
         </Type>
