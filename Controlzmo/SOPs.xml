@@ -4,8 +4,8 @@
 		<Callsign of="speedbird" />
 		<Callsign of="shuttle" />
 		<Type icao="A20N">
-			<Text>Start #2 first; warm up, cool down
-Preparation: 20-40 minutes
+			<Text>Preparation: 20-40 minutes
+Start #2 first; warm up, cool down
 Flight time above 20%/20 minutes of scheduled requires review</Text>
 		</Type>
 	</Airline>
@@ -16,10 +16,19 @@ Flight time above 20%/20 minutes of scheduled requires review</Text>
 		<Callsign of="top swiss" />
 		<Callsign of="topswiss" />
 		<Type icao="A20N">
-			<Text>Start #1 first; OETD, warm up, OETA, cool down
-Preparation: 20-50 minutes
+			<Text>Preparation: 20-50 minutes
+Start #1 first; OETD, warm up, OETA, cool down
 Flight time above 30%/45 minutes of scheduled requires review
 Must have at least 1000kg fuel on landing</Text>
+		</Type>
+	</Airline>
+	<Airline>
+		<Callsign of="scandinavian" />
+		<Type icao="A20N">
+			<Text>Preparation: 15-40 minutes
+Start #1 first; OETD, warm up, OETA, cool down
+Pause in flight requires PIREP comment
+Must have at least 2000kg of fuel on landing</Text>
 		</Type>
 	</Airline>
 </SOPs>
