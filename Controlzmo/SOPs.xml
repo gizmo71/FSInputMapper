@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
-	<Airline>
+	<Airline namr="vBAW">
 		<Callsign of="speedbird" />
 		<Callsign of="shuttle" />
 		<Type icao="A20N">
@@ -9,7 +9,18 @@ Start #2 first; warm up, cool down
 Flight time above 20%/20 minutes of scheduled requires review</Text>
 		</Type>
 	</Airline>
-	<Airline>
+	<Airline name="Dan Air Virtual">
+		<Callsign of="air-berlin" />
+		<Callsign of="fly-niki" />
+		<Callsign of="jetset" />
+		<Callsign of="jet-set" />
+		<Callsign of="meridiana" />
+		<Callsign of="sabena" />
+		<Type icao="A20N">
+			<Text>Preparation: 20-40 minutes</Text>
+		</Type>
+	</Airline>
+	<Airline name="vEZY">
 		<Callsign of="alpine" />
 		<Callsign of="easy" />
 		<Callsign of="top-swiss" />
@@ -22,7 +33,7 @@ Flight time above 30%/45 minutes of scheduled requires review
 Must have at least 1000kg fuel on landing</Text>
 		</Type>
 	</Airline>
-	<Airline>
+	<Airline name="vSAS">
 		<Callsign of="scandinavian" />
 		<Type icao="A20N">
 			<Text>Preparation: 15-40 minutes
