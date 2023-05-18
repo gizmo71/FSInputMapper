@@ -32,6 +32,7 @@ namespace SimConnectzmo
         {
 //TODO: can't load the DLL at runtime.
             var client = new WASimClient((uint)"Controlzmo".GetHashCode());
+//_logger.LogError($"{client} is my hash");
 
             // Monitor client state changes.
             client.OnClientEvent += ClientStatusHandler;
