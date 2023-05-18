@@ -33,14 +33,23 @@ Flight time above 30%/45 minutes of scheduled requires review
 Must have at least 1000kg fuel on landing</Text>
 		</Type>
 	</Airline>
+	<Airline name="LH Virtual">
+		<Callsign of="lufthansa" />
+		<Type icao="A20N">
+			<Text>Preparation: 15-60 minutes
+Start #2 first; warm up
+Flight time above 20%/20 minutes of scheduled requires review
+Must have at least 998kg of fuel on landing</Text>
+		</Type>
+	</Airline>
 	<Airline name="vSAS">
 		<Callsign of="scandinavian" />
 		<Type icao="A20N">
 			<Text>Preparation: 15-40 minutes
-Start #1 first; OETD, warm up, OETA, cool down
+Start #1 first; warm up, OETA, cool down
 Pause in flight requires PIREP comment
 Must have at least 2000kg of fuel on landing
-Worth pushing flights up just above certain hour marks</Text>
+Worth pushing block time just above certain hour marks</Text>
 		</Type>
 	</Airline>
 </SOPs>
