@@ -34,13 +34,14 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public void OnStarted(ExtendedSimConnect simConnect)
         {
-            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             hub.Clients.All.SetFromSim("atcAirline", "");
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
         }
 
         public override void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
+
             var icaoCode = data.model.ToUpper();
             var callsign = data.name.ToLower();
             var sops = $"No SOPs available for {icaoCode} with callsign {callsign}";
