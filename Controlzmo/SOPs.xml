@@ -1,5 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
+	<Airline name="ALVA">
+		<Callsign of="shamrock" />
+		<Type icao="A20N">
+			<Text>Preparation: 
+Start #1 first; OETD, warm up, OETA, cool down
+Must have between 1.5T and 10T of fuel on landing
+All PIREPs are reviewed</Text>
+		</Type>
+	</Airline>
 	<Airline namr="vBAW">
 		<Callsign of="speedbird" />
 		<Callsign of="shuttle" />
