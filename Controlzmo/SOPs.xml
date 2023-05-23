@@ -15,7 +15,7 @@ Must have between more 2243kg of fuel on landing
 All PIREPs are reviewed</Text>
 		</Type>
 	</Airline>
-	<Airline namr="vBAW">
+	<Airline name="vBAW">
 		<Callsign of="speedbird" />
 		<Callsign of="shuttle" />
 		<Type icao="A20N">
