@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 //TODO: load async?
                 doc.Load("https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
                 var context = new VariableContext { { "callsign", callsign }, { "icaoType", icaoCode } };
-                var node = doc.DocumentElement?.SelectSingleNode($"//Airline[./Callsign/@of = $callsign]/Type[@icao=$icaoType]/Text", context);
+                var node = doc.DocumentElement?.SelectSingleNode($"//Airline[./Callsign/@of = $callsign]/Type[@icao = $icaoType]/Text", context);
                 if (node != null)
                     sops = node.InnerText;
             }
