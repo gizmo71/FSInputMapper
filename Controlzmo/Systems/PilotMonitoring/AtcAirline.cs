@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
             var icaoCode = data.model.ToUpper();
             var callsign = data.name.ToLower();
-            var sops = $"No SOPs available for {icaoCode} with callsign {callsign}";
+            var sops = $"No SOPs available for '{icaoCode}' with callsign '{callsign}'";
             try
             {
                 var doc = new XmlDocument();
