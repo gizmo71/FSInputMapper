@@ -34,7 +34,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public void OnStarted(ExtendedSimConnect simConnect)
         {
-            hub.Clients.All.SetFromSim("atcAirline", "");
+            hub.Clients.All.SetFromSim("atcAirline", "Request sent...");
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
         }
 
