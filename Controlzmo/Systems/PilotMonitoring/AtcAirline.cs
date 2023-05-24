@@ -52,7 +52,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 var doc = new XmlDocument();
 //TODO: load async?
-                doc.Load(true ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
+                doc.Load(false ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
                 var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
                 var nodes = doc.DocumentElement?.SelectNodes($"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type)]", context);
                 if (nodes?.Count > 0)
