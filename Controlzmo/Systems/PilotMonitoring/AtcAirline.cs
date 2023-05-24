@@ -5,6 +5,8 @@ using SimConnectzmo;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using System.Transactions;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
@@ -49,9 +51,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 var doc = new XmlDocument();
 //TODO: load async?
-                doc.Load("https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
-                var context = new VariableContext { { "callsign", callsign }, { "icaoType", icaoCode } };
-                var node = doc.DocumentElement?.SelectSingleNode($"//Airline[./Callsign/@of = $callsign]/Type[@icao = $icaoType]/Text", context);
+                doc.Load(true ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
+                var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
+                var node = doc.DocumentElement?.SelectSingleNode($"//Airline[fn:matches($callsign, @callsign)]/Type[fn:matches($icaoType, @icao)]/Text", context);
                 if (node != null)
                     sops = node.InnerText;
             }
@@ -64,74 +66,65 @@ namespace Controlzmo.Systems.PilotMonitoring
     }
 
     // From https://stackoverflow.com/questions/19498192/xpath-injection-mitigation/19704008#19704008
-    class VariableContext : XsltContext
+    class CustomContext : XsltContext
     {
-        private Dictionary<string, object> m_values;
+        private Dictionary<string, object> m_values = new Dictionary<string, object>();
 
-        public VariableContext()
-        {
-            m_values = new Dictionary<string, object>();
-        }
-
-        public void Add(string name, object value)
-        {
-            m_values[name] = value;
-        }
-
-        public override IXsltContextVariable ResolveVariable(string prefix, string name)
-        {
-            return new XPathVariable(m_values[name]);
-        }
-
-        public override int CompareDocument(string baseUri, string nextbaseUri)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool PreserveWhitespace(XPathNavigator node)
-        {
-            throw new NotImplementedException();
-        }
+        public void Add(string name, object value) => m_values[name] = value;
+        public override IXsltContextVariable ResolveVariable(string prefix, string name) => new XPathVariable(m_values[name]);
+        public override int CompareDocument(string baseUri, string nextbaseUri) => throw new NotImplementedException();
+        public override bool PreserveWhitespace(XPathNavigator node) => throw new NotImplementedException();
 
         public override IXsltContextFunction ResolveFunction(string prefix, string name, XPathResultType[] ArgTypes)
         {
+            if (prefix == "fn" && name == "matches")
+                return new XPathMatchesPolyfill();
             throw new NotImplementedException();
         }
 
-        public override bool Whitespace
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public override bool Whitespace { get { throw new NotImplementedException(); } }
 
         private class XPathVariable : IXsltContextVariable
         {
             private object m_value;
-
-            internal XPathVariable(object value)
-            {
-                m_value = value;
-            }
-
-            public object Evaluate(XsltContext xsltContext)
-            {
-                return m_value;
-            }
-
-            public bool IsLocal
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public bool IsParam
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public XPathResultType VariableType
-            {
-                get { throw new NotImplementedException(); }
-            }
+            internal XPathVariable(object value) => m_value = value;
+            public object Evaluate(XsltContext xsltContext) => m_value;
+            public bool IsLocal { get { throw new NotImplementedException(); } }
+            public bool IsParam { get { throw new NotImplementedException(); } }
+            public XPathResultType VariableType { get { throw new NotImplementedException(); } }
         }
 
+    }
+
+    class XPathMatchesPolyfill : IXsltContextFunction // https://www.w3.org/TR/xpath-functions/#func-matches
+    {
+        public XPathResultType[] ArgTypes { get { return new XPathResultType[] { XPathResultType.String, XPathResultType.String, XPathResultType.String }; } }
+        public int Maxargs { get { return 3; } }
+        public int Minargs { get { return 2; } }
+        public XPathResultType ReturnType { get { return XPathResultType.Boolean; } }
+
+        public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
+        {
+            if (args.Length == 3) throw new NotImplementedException("Regex flags not yet supported");
+            var regex = stringFromNavigator(args[1]);
+            var needle = new Regex(regex);
+            var haystack = stringFromNavigator(args[0]);
+            return haystack == null ? false : needle.IsMatch(haystack);
+        }
+
+        private string? stringFromNavigator(object? stringOrNavigator)
+        {
+            if (stringOrNavigator == null) return null;
+            if (stringOrNavigator is string s) return s;
+            if (stringOrNavigator is XPathNodeIterator iterator)
+            {
+                // What an absolute dog's breakfast!
+                iterator.MoveNext();
+                iterator = iterator.Current.SelectDescendants(XPathNodeType.Text, false);
+                iterator.MoveNext();
+                return iterator.Current.Value;
+            }
+            throw new NotImplementedException($"Don't know how to handle {stringOrNavigator.GetType().FullName}");
+        }
     }
 }

@@ -1,46 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
-	<Airline name="ALVA">
-		<Callsign of="shamrock" />
+	<Airline name="ALVA" callsign="shamrock">
 		<Type icao="A20N">
 			<Text>Preparation: 20 to 60 minutes
 Start #1 first; OETD, warm up, OETA, cool down
 Must have between 1.5T and 10T of fuel on landing
 All PIREPs are reviewed</Text>
 		</Type>
-		<Type icao="A330">
+		<Type icao="A33[09]">
 			<Text>Preparation: 20 to 120 minutes
 Start #1 first; warm up, cool down
 Must have between more 2243kg of fuel on landing
 All PIREPs are reviewed</Text>
 		</Type>
 	</Airline>
-	<Airline name="vBAW">
-		<Callsign of="speedbird" />
-		<Callsign of="shuttle" />
+	<Airline name="vBAW" callsign="speedbird|shuttle">
 		<Type icao="A20N">
 			<Text>Preparation: 20-40 minutes
 Start #2 first; warm up, cool down
 Flight time above 20%/20 minutes of scheduled requires review</Text>
 		</Type>
 	</Airline>
-	<Airline name="Dan Air Virtual">
-		<Callsign of="air-berlin" />
-		<Callsign of="fly-niki" />
-		<Callsign of="jetset" />
-		<Callsign of="jet-set" />
-		<Callsign of="meridiana" />
-		<Callsign of="sabena" />
+	<Airline name="Dan Air Virtual" callsign="air-berlin|fly-niki|jet-?set|meridiana|sabena">
 		<Type icao="A20N">
 			<Text>Preparation: 20-40 minutes</Text>
 		</Type>
 	</Airline>
-	<Airline name="vEZY">
-		<Callsign of="alpine" />
-		<Callsign of="easy" />
-		<Callsign of="top-swiss" />
-		<Callsign of="top swiss" />
-		<Callsign of="topswiss" />
+	<Airline name="vEZY" callsign="alpine|easy|top[- ]?swiss">
 		<Type icao="A20N">
 			<Text>Preparation: 20-50 minutes
 Start #1 first; OETD, warm up, OETA, cool down
@@ -48,8 +34,7 @@ Flight time above 30%/45 minutes of scheduled requires review
 Must have at least 1000kg fuel on landing</Text>
 		</Type>
 	</Airline>
-	<Airline name="LH Virtual">
-		<Callsign of="lufthansa" />
+	<Airline name="LH Virtual" callsign="lufthansa">
 		<Type icao="A20N">
 			<Text>Preparation: 15-60 minutes
 Start #2 first; warm up
@@ -57,8 +42,7 @@ Flight time above 20%/20 minutes of scheduled requires review
 Must have at least 998kg of fuel on landing</Text>
 		</Type>
 	</Airline>
-	<Airline name="vSAS">
-		<Callsign of="scandinavian" />
+	<Airline name="vSAS" callsign="scandinavian">
 		<Type icao="A20N">
 			<Text>Preparation: 15-40 minutes
 Start #1 first; warm up, OETA, cool down
