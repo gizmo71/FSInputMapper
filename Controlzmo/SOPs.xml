@@ -27,12 +27,10 @@ Flight time above 20%/20 minutes of scheduled requires review</Text>
 		</Type>
 	</Airline>
 	<Airline name="vEZY" callsign="alpine|easy|top[- ]?swiss">
-		<Type icao="A20N">
-			<Text>Preparation: 20-50 minutes
-Start #1 first; OETD, warm up, OETA, cool down
-Flight time above 30%/45 minutes of scheduled requires review
-Must have at least 1000kg fuel on landing</Text>
-		</Type>
+		<Text type="A2[01]N|A319|A32[01]">Preparation: 20-50 minutes</Text>
+		<Text type="A20N">Start #1 first; OETD, warm up, OETA, cool down</Text>
+		<Text type="^A20N$">Flight time above 30%/45 minutes of scheduled requires review</Text>
+		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
 	</Airline>
 	<Airline name="LH Virtual" callsign="lufthansa">
 		<Type icao="A20N">

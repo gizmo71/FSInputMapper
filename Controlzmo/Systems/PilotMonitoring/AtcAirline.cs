@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Transactions;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -51,11 +52,18 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 var doc = new XmlDocument();
 //TODO: load async?
-                doc.Load(false ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
+                doc.Load(true ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
                 var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
-                var node = doc.DocumentElement?.SelectSingleNode($"//Airline[fn:matches($callsign, @callsign)]/Type[fn:matches($icaoType, @icao)]/Text", context);
-                if (node != null)
-                    sops = node.InnerText;
+                var nodes = doc.DocumentElement?.SelectNodes($"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type)]", context);
+                if (nodes?.Count > 0)
+                {
+                    sops = "";
+                    foreach (var node in nodes)
+                    {
+                        if (sops?.Length > 0) sops += '\n';
+                        sops += (node as XmlElement)?.InnerText;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -77,8 +85,11 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override IXsltContextFunction ResolveFunction(string prefix, string name, XPathResultType[] ArgTypes)
         {
-            if (prefix == "fn" && name == "matches")
-                return new XPathMatchesPolyfill();
+            if (prefix == "fn")
+            {
+                if (name == "matches")
+                    return new XPathMatchesPolyfill();
+            }
             throw new NotImplementedException();
         }
 
@@ -98,10 +109,10 @@ namespace Controlzmo.Systems.PilotMonitoring
 
     class XPathMatchesPolyfill : IXsltContextFunction // https://www.w3.org/TR/xpath-functions/#func-matches
     {
-        public XPathResultType[] ArgTypes { get { return new XPathResultType[] { XPathResultType.String, XPathResultType.String, XPathResultType.String }; } }
-        public int Maxargs { get { return 3; } }
-        public int Minargs { get { return 2; } }
-        public XPathResultType ReturnType { get { return XPathResultType.Boolean; } }
+        public XPathResultType[] ArgTypes { get => new XPathResultType[] { XPathResultType.String, XPathResultType.String, XPathResultType.String }; }
+        public int Maxargs { get => 3; }
+        public int Minargs { get => 2; }
+        public XPathResultType ReturnType { get => XPathResultType.Boolean; }
 
         public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
         {
