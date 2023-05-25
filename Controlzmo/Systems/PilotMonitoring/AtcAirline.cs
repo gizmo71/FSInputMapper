@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Transactions;
+using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -29,10 +28,12 @@ namespace Controlzmo.Systems.PilotMonitoring
     public class AtcAirlineListener : DataListener<AtcAirlineData>, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly bool isLocalSops;
 
         public AtcAirlineListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
             this.hub = hub;
+            isLocalSops = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)
@@ -41,7 +42,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
         }
 
-        public override void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
+        public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
 
@@ -50,9 +51,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             var sops = $"No SOPs available for '{icaoCode}' with callsign '{callsign}'";
             try
             {
-                var doc = new XmlDocument();
-//TODO: load async?
-                doc.Load(false ? "D:\\MSFlightSimulator\\Development\\FSInputMapper\\Controlzmo\\SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml");
+                var doc = await loadXml();
                 var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
                 var nodes = doc.DocumentElement?.SelectNodes($"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type)]", context);
                 if (nodes?.Count > 0)
@@ -69,7 +68,14 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 sops = e.ToString();
             }
-            hub.Clients.All.SetFromSim("atcAirline", sops);
+            await hub.Clients.All.SetFromSim("atcAirline", sops);
+        }
+
+        private async Task<XmlDocument> loadXml()
+        {
+            var doc = new XmlDocument();
+            await Task.Run(() => doc.Load(isLocalSops ? "SOPs.xml" : "https://github.com/gizmo71/FSInputMapper/raw/master/Controlzmo/SOPs.xml"));
+            return doc;
         }
     }
 
