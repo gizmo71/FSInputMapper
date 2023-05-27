@@ -123,13 +123,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         public object Invoke(XsltContext xsltContext, object[] args, XPathNavigator docContext)
         {
             if (args.Length == 3) throw new NotImplementedException("Regex flags not yet supported");
-            var regex = stringFromNavigator(args[1]);
+            var regex = StringFromNavigator(args[1]);
             var needle = new Regex(regex);
-            var haystack = stringFromNavigator(args[0]);
+            var haystack = StringFromNavigator(args[0]);
             return haystack == null ? false : needle.IsMatch(haystack);
         }
 
-        private string? stringFromNavigator(object? stringOrNavigator)
+        private string? StringFromNavigator(object? stringOrNavigator)
         {
             if (stringOrNavigator == null) return null;
             if (stringOrNavigator is string s) return s;
@@ -137,9 +137,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 // What an absolute dog's breakfast!
                 iterator.MoveNext();
-                iterator = iterator.Current.SelectDescendants(XPathNodeType.Text, false);
+                iterator = iterator.Current!.SelectDescendants(XPathNodeType.Text, false);
                 iterator.MoveNext();
-                return iterator.Current.Value;
+                return iterator.Current!.Value;
             }
             throw new NotImplementedException($"Don't know how to handle {stringOrNavigator.GetType().FullName}");
         }
