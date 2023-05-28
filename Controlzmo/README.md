@@ -28,12 +28,9 @@ This is similar to the problem with "normal" data requiring an off/on flip.
 * https://developer.mozilla.org/en-US/docs/Web/API/Gamepad_API/Using_the_Gamepad_API
 * https://gamepad-tester.com/for-developers	
 
-* How could we trigger timer so that we can see when the engines are cooled down?
-I suspect it actually starts measuring when the "Landed" message is logged, perhaps based on (ground?) speed rather than anything to do with the engines.
-We may have to do a flight onto a long runway and observe when the message is logged.
-Would it actually detect max reverse being used to a standstill?
-
 * https://docs.microsoft.com/en-us/previous-versions/microsoft-esp/cc526953(v=msdn.10)?redirectedfrom=MSDN#theinfix2postfixtool
+
+* Unpack `L:A32NX_EFIS_${side}_TO_WPT_IDENT_0`/`_1` *a la* [unpack](https://github.com/flybywiresim/a32nx/blob/37e1e98029c0379493abb06da45d8de4378497b6/fbw-a32nx/src/systems/shared/src/simvar.ts#L8	5), and use the results to record fuel used (`L:A32NX_FUEL_USED:1`/`:2`)/remaining (`FUEL TOTAL QUANTITY WEIGHT`) as each waypoint is passed.
 
 EFIS
 ----
