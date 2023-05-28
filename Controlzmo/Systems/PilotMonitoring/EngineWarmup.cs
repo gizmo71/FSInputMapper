@@ -1,11 +1,10 @@
-﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
-using Microsoft.AspNetCore.SignalR;
+﻿using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,43 +14,35 @@ using System.Threading.Tasks;
     const [engineState] = useSimVar(`L:A32NX_ENGINE_STATE:${engine}`, 'bool', 500);
     const availVisible = !!(N1Percent > Math.floor(N1Idle) && engineState === 2); // N1Percent sometimes does not reach N1Idle by .005 or so
 Engine state is 0 when off, then 2 whilst starting and then 1 once started. After a shutdown there's a 4 and a 3 too!
-Going from 2 to 1 on both engines would probably be a good enough trigger.*/
+Going from 2 to 1 on both engines seems to be a good enough trigger.*/
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [Component]
-    public class EngineWarmup : IOnSimStarted
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct EngineWarmupData
     {
-        private readonly Engine1State engine1State;
-        private readonly Engine2State engine2State;
+        [SimVar("L:A32NX_ENGINE_STATE:1", "number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        public Int32 engine1State;
+        [SimVar("L:A32NX_ENGINE_STATE:2", "number", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        public Int32 engine2State;
+    };
 
-        private readonly SimConnectHolder scHolder;
+    [Component]
+    public class EngineWarmupListener : DataListener<EngineWarmupData>, IRequestDataOnOpen
+    {
         private readonly JetBridgeSender jetbridge;
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public EngineWarmup(IServiceProvider serviceProvider)
-        {
-            engine1State = serviceProvider.GetRequiredService<Engine1State>();
-            engine2State = serviceProvider.GetRequiredService<Engine2State>();
-
-            engine1State.PropertyChanged += OnPropertyChanged;
-            engine2State.PropertyChanged += OnPropertyChanged;
-
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
-            scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
-        }
-
-        public void OnStarted(ExtendedSimConnect simConnect)
-        {
-            engine1State.Request(simConnect);
-            engine2State.Request(simConnect);
-        }
 
         private CancellationTokenSource? cancellationTokenSource;
 
-        private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+        public EngineWarmupListener(IServiceProvider serviceProvider)
         {
-            bool areBothRunning = engine1State == 1.0 && engine2State == 1.0;
+            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect simConnect, EngineWarmupData data)
+        {
+            bool areBothRunning = data.engine1State == 1.0 && data.engine2State == 1.0;
             if (areBothRunning)
                 if (cancellationTokenSource == null)
                 {
@@ -59,7 +50,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                     CancellationToken cancellationToken = cancellationTokenSource.Token;
                     Task.Delay(180_000, cancellationToken).ContinueWith(_ => {
                         if (!cancellationToken.IsCancellationRequested)
-                            jetbridge.Execute(scHolder.SimConnect!, "1 (>L:A32NX_CABIN_READY)");
+                            jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
                         cancellationTokenSource = null;
                     });
                 }
@@ -68,76 +59,6 @@ namespace Controlzmo.Systems.PilotMonitoring
                     cancellationTokenSource.Cancel();
                     cancellationTokenSource = null;
                 }
-        }
-    }
-
-  //[Component]
-    public class FmgcPhase : LVar, IOnSimConnection
-    {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public FmgcPhase(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
-
-        protected override string LVarName() => "A32NX_FMGC_FLIGHT_PHASE";
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
-
-
-        private void WhatIsIt(int? value)
-        {
-            if (value != -1)
-                hubContext.Clients.All.Speak($"Guidance {value}");
-        }
-    }
-
-    //[Component]
-    public class FwcPhase : LVar, IOnSimConnection
-    {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly SimConnectHolder scHolder;
-        private readonly JetBridgeSender jetbridge;
-
-        public FwcPhase(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            scHolder = serviceProvider.GetRequiredService<SimConnectHolder>();
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
-        }
-
-        protected override string LVarName() => "A32NX_FWS_FWC_1_FLIGHT_PHASE";
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
-
-        // TouchDown is 8, AtOrBelowEightyKnots 9, engines off 10 (src/systems/systems/src/shared/mod.rs).
-        private void WhatIsIt(int? value)
-        {
-            if (value != -1)
-                hubContext.Clients.All.Speak($"Warning {value}");
-        }
-    }
-
-  //[Component]
-    public class LateralMode : LVar, IOnSimConnection
-    {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public LateralMode(IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
-
-        protected override string LVarName() => "A32NX_FMA_LATERAL_MODE";
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-        protected override double? Value { set => WhatIsIt((int?)(base.Value = value)); }
-
-
-        private void WhatIsIt(int? value)
-        {
-            if (value != -1)
-                hubContext.Clients.All.Speak($"Lateral {value}");
         }
     }
 }
