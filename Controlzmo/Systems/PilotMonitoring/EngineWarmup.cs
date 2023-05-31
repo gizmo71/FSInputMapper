@@ -19,7 +19,7 @@ using System.Threading.Tasks;
     const availVisible = !!(N1Percent > Math.floor(N1Idle) && engineState === 2); // N1Percent sometimes does not reach N1Idle by .005 or so
 Engine state is 0 when off, then 2 whilst starting and then 1 once started. After a shutdown there's a 4 and a 3 too!
 Going from 2 to 1 on both engines seems to be a good enough trigger.
-Sometimes we get numbers which seem to be 10 higher...*/
+Sometimes we get numbers which seem to be 10 higher, which may be because the code thinks the sim is paused...*/
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -62,6 +62,8 @@ logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
         public override void Process(ExtendedSimConnect simConnect, EngineWarmupData data)
         {
 logging.LogWarning($"{data.engine1State} and {data.engine2State} and {isArmed}");
+            data.engine1State %= 10;
+            data.engine2State %= 10;
             bool isOneRunningAndOneStarting = data.engine1State == 2 && data.engine2State == 1 || data.engine1State == 1 && data.engine2State == 2;
             bool areBothRunning = data.engine1State == 1 && data.engine2State == 1;
             if (isOneRunningAndOneStarting && !isArmed)
