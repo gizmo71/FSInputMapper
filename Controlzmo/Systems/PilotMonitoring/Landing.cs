@@ -10,26 +10,6 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [Component]
-    public class AutobrakeSetting : LVar
-    {
-        public AutobrakeSetting(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "XMLVAR_Autobrakes_Level";
-        protected override int Milliseconds() => 0;
-        protected override double Default() => -1.0;
-    }
-
-    [Component]
-    public class AutobrakeDecelLight : LVar, IOnSimConnection
-    {
-        public AutobrakeDecelLight(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOBRAKES_DECEL_LIGHT";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
-
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-    }
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingData
     {
@@ -47,14 +27,16 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 rev1;
         [SimVar("TURB ENG REVERSE NOZZLE PERCENT:2", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 rev2;
+        [SimVar("L:XMLVAR_Autobrakes_Level", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
+        public Int32 autobrakesLevel;
+        [SimVar("L:A32NX_AUTOBRAKES_DECEL_LIGHT", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
+        public Int32 decelLight;
     };
 
     [Component]
     public class LandingListener : DataListener<LandingData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly AutobrakeSetting autobrakeSetting;
-        private readonly AutobrakeDecelLight autobrakeDecelLight;
         private readonly Chrono1Event chronoEvent;
 
         private bool? wasDecel = null;
@@ -67,14 +49,12 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-            autobrakeSetting = serviceProvider.GetRequiredService<AutobrakeSetting>();
-            autobrakeDecelLight = serviceProvider.GetRequiredService<AutobrakeDecelLight>();
             chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
+            var period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
             wasDecel = wasBelow70 = wasBelowTaxi = null;
             wasSpoilers = isOnGround ? false : null;
@@ -86,12 +66,11 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (wasDecel == null && data.kias >= 80)
             {
-                autobrakeSetting.Request(simConnect);
                 wasDecel = false;
             }
             else if (wasDecel == false)
             {
-                bool isDecel = (autobrakeSetting == 0 || autobrakeDecelLight != 0) && data.accelerationZ <= -1.5;
+                bool isDecel = (data.autobrakesLevel == 0 || data.decelLight != 0) && data.accelerationZ <= -1.5;
                 if (isDecel)
                 {
                     hubContext.Clients.All.Speak("Decell!");
