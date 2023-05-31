@@ -42,14 +42,28 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
 
         private String nextWaypoint = "";
+        private String[] log = new string[] { "", "", "", "", "" };
 
         public override void Process(ExtendedSimConnect simConnect, FuelLogData data)
         {
             String ident = unpack(new Int64[] { data.ident0, data.ident1 });
-            if (ident.Equals(nextWaypoint))
+            if (ident == nextWaypoint)
                 return;
-            hubContext.Clients.All.SetFromSim("fuelLog", $"At {nextWaypoint}: remaining {data.kgOnBoard / 1000.0f}T, used {(data.kgUsed1 + data.kgUsed2) / 1000.0f}T");
+            var lastWaypoint = nextWaypoint;
             nextWaypoint = ident;
+            if (lastWaypoint != "") {
+                log[0] = log[1];
+                log[1] = log[2];
+                log[2] = log[3];
+                log[3] = log[4];
+                log[4] = $"At {lastWaypoint}: remaining {tons(data.kgOnBoard)}, used {tons(data.kgUsed1 + data.kgUsed2)}";
+                hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
+            }
+        }
+
+        private String tons(Double kg)
+        {
+            return $"{kg / 1000.0:F1}"; //:9.9
         }
 
         // https://github.com/flybywiresim/a32nx/blob/37e1e98029c0379493abb06da45d8de4378497b6/fbw-a32nx/src/systems/shared/src/simvar.ts#L8
