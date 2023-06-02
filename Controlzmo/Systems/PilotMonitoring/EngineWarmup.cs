@@ -37,7 +37,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly JetBridgeSender jetbridge;
         private readonly Chrono1Event chronoEvent;
 private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-private readonly ILogger logging;
+//private readonly ILogger logging;
 
         private CancellationTokenSource? cancellationTokenSource;
         private bool isArmed = false;
@@ -48,7 +48,7 @@ private readonly ILogger logging;
             chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
 hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
+//logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -61,7 +61,7 @@ logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
 
         public override void Process(ExtendedSimConnect simConnect, EngineWarmupData data)
         {
-logging.LogWarning($"{data.engine1State} and {data.engine2State} and {isArmed}");
+//logging.LogWarning($"{data.engine1State} and {data.engine2State} and {isArmed}");
             data.engine1State %= 10;
             data.engine2State %= 10;
             bool isOneRunningAndOneStarting = data.engine1State == 2 && data.engine2State == 1 || data.engine1State == 1 && data.engine2State == 2;
