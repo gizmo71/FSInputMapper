@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
 	<Airline callsign="shamrock"> <!-- ALVA -->
-		<Text type="A20N">Preparation: 20 to 60 minutes</Text>
+		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
 		<Text type="A20N">Start #1 first; OETD, warm up, OETA, cool down</Text>
 		<Text type="A33[09]">Start #1 first; warm up, cool down</Text>
@@ -10,27 +10,27 @@
 		<Text type=".*">All PIREPs are reviewed</Text>
 	</Airline>
 	<Airline callsign="speedbird|shuttle"> <!-- vBAW -->
-		<Text type="A20N">Preparation: 20-40 minutes</Text>
+		<Text type="A20N">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A20N">Start #2 first; warm up, cool down</Text>
 		<Text type="A20N">Flight time above 20%/20 minutes of scheduled requires review</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
-		<Text type="A20N">Preparation: 20-40 minutes</Text>
+		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 	</Airline>
 	<Airline callsign="alpine|easy|top[- ]?swiss"> <!-- vEZY -->
-		<Text type="A2[01]N|A319|A32[01]">Preparation: 20-50 minutes</Text>
+		<Text type="A2[01]N|A319|A32[01]">Preparation 20-50 minutes, block time counts</Text>
 		<Text type="A20N">Start #1 first; OETD, warm up, OETA, cool down</Text>
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
-		<Text type="A20N">Preparation: 15-60 minutes</Text>
+		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
 		<Text type="A20N">Start #2 first; warm up</Text>
 		<Text type="A20N">Flight time above 20%/20 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 998kg of fuel on landing</Text>
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
-		<Text type="A20N">Preparation: 15-40 minutes</Text>
+		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
 		<Text type="A20N">Start #1 first; warm up, OETA, cool down</Text>
 		<Text type="A20N">Pause in flight requires PIREP comment</Text>
 		<Text type="A20N">Must have at least 2000kg of fuel on landing</Text>

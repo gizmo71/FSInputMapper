@@ -60,7 +60,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                     foreach (var node in nodes)
                     {
                         if (sops?.Length > 0) sops += '\n';
-                        sops += (node as XmlElement)?.InnerText;
+                        sops += $"\u2022 {(node as XmlElement)?.InnerText}";
                     }
                 }
             }
@@ -124,7 +124,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (args.Length == 3) throw new NotImplementedException("Regex flags not yet supported");
             var regex = StringFromNavigator(args[1]);
-            var needle = new Regex(regex);
+            var needle = new Regex(regex!);
             var haystack = StringFromNavigator(args[0]);
             return haystack == null ? false : needle.IsMatch(haystack);
         }
