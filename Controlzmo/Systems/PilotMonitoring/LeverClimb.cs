@@ -1,36 +1,40 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct AutothrustModeMessageData
+    {
+        [SimVar("L:A32NX_AUTOTHRUST_MODE_MESSAGE", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
+        public Int32 modeMessage;
+    };
+
     [Component]
-    public class LeverClimb : LVar, IOnSimConnection
+    public class LeverClimb : DataListener<AutothrustModeMessageData>, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
-        public LeverClimb(IServiceProvider serviceProvider) : base(serviceProvider)
+        public LeverClimb(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        protected override string LVarName() => "A32NX_AUTOTHRUST_MODE_MESSAGE";
-
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-
-        protected override double? Value { set => MessageShown(base.Value = value); }
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
         private CancellationTokenSource? cancellationTokenSource;
 
-        private void MessageShown(double? value)
+        public override void Process(ExtendedSimConnect simConnect, AutothrustModeMessageData data)
         {
-            if (value == 3.0) {
+            if (data.modeMessage == 3) {
                 if (cancellationTokenSource == null) {
                     cancellationTokenSource = new CancellationTokenSource();
                     CancellationToken cancellationToken = cancellationTokenSource.Token;
@@ -49,7 +53,6 @@ namespace Controlzmo.Systems.PilotMonitoring
 //hubContext.Clients.All.Speak("oh");
                 cancellationTokenSource?.Cancel();
             }
-//else if (value > 0.0) hubContext.Clients.All.Speak("whatevs");
         }
     }
 }
