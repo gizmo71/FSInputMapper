@@ -9,6 +9,10 @@
 		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
 		<Text type=".*">All PIREPs are reviewed</Text>
 	</Airline>
+	<Airline callsign="all[- ]nippon"><!-- vANA -->
+		<Text type="A20N">Preparation 20-40 minutes, unknown whether block or air time counts</Text>
+		<Text type="A20N">Warm up, OETA, cool down</Text>
+	</Airline>
 	<Airline callsign="speedbird|shuttle"> <!-- vBAW -->
 		<Text type="A20N">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A20N">Start #2 first; warm up, cool down</Text>
@@ -16,6 +20,10 @@
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
+	</Airline>
+	<Airline callsign="eurowings"><!-- vEWG -->
+		<Text type="A20N">Preparation 20-180 minutes, air time counts</Text>
+		<Text type="A20N">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="alpine|easy|top[- ]?swiss"> <!-- vEZY -->
 		<Text type="A2[01]N|A319|A32[01]">Preparation 20-50 minutes, block time counts</Text>
