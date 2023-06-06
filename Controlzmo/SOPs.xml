@@ -10,7 +10,7 @@
 		<Text type=".*">All PIREPs are reviewed</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon"><!-- vANA -->
-		<Text type="A20N">Preparation 20-40 minutes, unknown whether block or air time counts</Text>
+		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 		<Text type="A20N">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="speedbird|shuttle"> <!-- vBAW -->
