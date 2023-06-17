@@ -9,13 +9,13 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuDisplayTopLeft : CreateOnStartup
     {
         private readonly SerialPico serial;
-        private readonly FcuSpeedMachListener fcuSpeedMachListener;
+        private readonly FcuSpeed fcuSpeedMachListener;
         private readonly FcuTrackFpa fcuTrackFpa;
 
         public FcuDisplayTopLeft(IServiceProvider sp)
         {
             serial = sp.GetRequiredService<SerialPico>();
-            (fcuSpeedMachListener = sp.GetRequiredService<FcuSpeedMachListener>()).PropertyChanged += Regenerate;
+            (fcuSpeedMachListener = sp.GetRequiredService<FcuSpeed>()).PropertyChanged += Regenerate;
             (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
         }
 
@@ -32,25 +32,23 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuDisplayBottomLeft : CreateOnStartup
     {
         private readonly SerialPico serial;
-        private readonly FcuSpeedManaged fcuSpeedManaged;
         private readonly FcuHeadingManaged fcuHeadingManaged;
-        private readonly FcuSpeedSelection fcuSpeedSelection;
+        private readonly FcuSpeed fcuSpeed;
         private readonly FcuHeadingSelected fcuHeadingSelected;
         private readonly FcuHeadingDashes fcuHeadingDashes;
 
         public FcuDisplayBottomLeft(IServiceProvider sp)
         {
             serial = sp.GetRequiredService<SerialPico>();
-            (fcuSpeedManaged = sp.GetRequiredService<FcuSpeedManaged>()).PropertyChanged += Regenerate;
             (fcuHeadingManaged = sp.GetRequiredService<FcuHeadingManaged>()).PropertyChanged += Regenerate;
-            (fcuSpeedSelection = sp.GetRequiredService<FcuSpeedSelection>()).PropertyChanged += Regenerate;
+            (fcuSpeed = sp.GetRequiredService<FcuSpeed>()).PropertyChanged += Regenerate;
             (fcuHeadingSelected = sp.GetRequiredService<FcuHeadingSelected>()).PropertyChanged += Regenerate;
             (fcuHeadingDashes = sp.GetRequiredService<FcuHeadingDashes>()).PropertyChanged += Regenerate;
         }
 
         private void Regenerate(object? _, PropertyChangedEventArgs? args)
         {
-            var speedDot = fcuSpeedManaged.IsManaged ? '\x1' : ' ';
+            var speedDot = fcuSpeed.IsManaged ? '\x1' : ' ';
             var heading = fcuHeadingDashes.IsDashes || fcuHeadingSelected == -1 ? "---" : $"{(double)fcuHeadingSelected!:000}";
             var headingDot = fcuHeadingManaged.IsManaged ? '\x1' : ' ';
             var line2 = $"{Speed} {speedDot}  {heading}   {headingDot} ";
@@ -61,11 +59,12 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             get
             {
+                //TODO: move this into the supplying object.
                 string speed;
-                var selection = (double)fcuSpeedSelection!;
+                var selection = (double)fcuSpeed.DisplayedSpeed;
                 if (selection >= 0.10 && selection < 1.0)
                     speed = $"{selection:0.00}";
-                else if (selection >= 100 && selection < 1000)
+                else if (selection >= 100 && selection < 1000) // Max 399 in the A32NX
                     speed = $" {selection:000}";
                 else
                     speed = " ---";

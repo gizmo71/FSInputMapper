@@ -1,5 +1,4 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -10,26 +9,34 @@ using System.Runtime.InteropServices;
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct FcuSpeedMachData
+    public struct FcuSpeedData
     {
         [SimVar("AUTOPILOT MANAGED SPEED IN MACH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int isMach;
+        // This is the value actually shown on the FCU, even if it's a temporary selection.
+        [SimVar("L:A32NX_AUTOPILOT_SPEED_SELECTED", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.005f)]
+        public double selectedSpeed;
+        [SimVar("L:A32NX_FCU_SPD_MANAGED_DOT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int isManaged;
     };
 
     [Component]
-    public class FcuSpeedMachListener : DataListener<FcuSpeedMachData>, IRequestDataOnOpen, INotifyPropertyChanged
+    public class FcuSpeed : DataListener<FcuSpeedData>, IOnSimStarted, INotifyPropertyChanged
     {
-        private FcuSpeedMachData current = new FcuSpeedMachData { isMach = 0 };
+        private FcuSpeedData current = new FcuSpeedData { isMach = 0, selectedSpeed = 100, isManaged = 0 };
 
-        public bool IsMach { get => current.isMach != 0; }
+        public bool IsManaged { get => current.isManaged == 1; }
+        public bool IsDashes { get => current.selectedSpeed == -1; } // should match A32NX_FCU_SPD_MANAGED_DASHES
+        public bool IsMach { get => current.isMach == 1; }
+        public double DisplayedSpeed { get => current.selectedSpeed; }
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SIM_FRAME);
 
-        public override void Process(ExtendedSimConnect simConnect, FcuSpeedMachData data)
+        public override void Process(ExtendedSimConnect simConnect, FcuSpeedData data)
         {
             current = data;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FcuSpeedMachData"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FcuSpeedData"));
         }
     }
 
@@ -39,27 +46,6 @@ namespace Controlzmo.Systems.FlightControlUnit
         public string SimEvent() => "A32NX.FCU_SPD_MACH_TOGGLE_PUSH";
         public string GetId() => "speedMachToggled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
-    }
-
-    [Component]
-    public class FcuSpeedManaged : LVar, IOnSimStarted
-    {
-        public FcuSpeedManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_FCU_SPD_MANAGED_DOT";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool IsManaged { get => Value == 1; }
-    }
-
-    [Component]
-    // This is the value actually shown on the FCU, even if it's a temporary selection.
-    public class FcuSpeedSelection : LVar, IOnSimStarted
-    {
-        public FcuSpeedSelection(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOPILOT_SPEED_SELECTED";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool IsDashes { get => Value == -1; } // should match A32NX_FCU_SPD_MANAGED_DASHES
-        public bool IsMach { get => Value > 0 && Value < 10; } // 0.10 to 0.99
-        public bool IsKnots { get => Value >= 100 && Value < 1000; } // 100 to 399
     }
 
     [Component]
