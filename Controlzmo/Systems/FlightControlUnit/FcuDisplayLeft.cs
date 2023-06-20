@@ -12,9 +12,9 @@ namespace Controlzmo.Systems.FlightControlUnit
     public struct FcuTopLeftData
     {
         [SimVar("L:A32NX_TRK_FPA_MODE_ACTIVE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int isTrkFpaMode;
+        public Int32 isTrkFpaMode;
         [SimVar("AUTOPILOT MANAGED SPEED IN MACH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int isMach;
+        public Int32 isMach;
     };
 
     [Component]
