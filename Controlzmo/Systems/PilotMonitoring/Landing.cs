@@ -23,10 +23,14 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 kias;
         [SimVar("GPS GROUND SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 groundSpeed;
-        [SimVar("TURB ENG REVERSE NOZZLE PERCENT:1", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
-        public Int32 rev1;
-        [SimVar("TURB ENG REVERSE NOZZLE PERCENT:2", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
-        public Int32 rev2;
+        [SimVar("L:A32NX_REVERSER_1_DEPLOYED", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 rev1deployed;
+        [SimVar("L:A32NX_FADEC_POWERED_ENG1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 fadec1power;
+        [SimVar("L:A32NX_REVERSER_1_DEPLOYED", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 rev2deployed;
+        [SimVar("L:A32NX_FADEC_POWERED_ENG1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 fadec2power;
         [SimVar("L:XMLVAR_Autobrakes_Level", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
         public Int32 autobrakesLevel;
         [SimVar("L:A32NX_AUTOBRAKES_DECEL_LIGHT", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
@@ -56,7 +60,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             var period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
-            wasDecel = wasBelow70 = wasBelowTaxi = null;
+            wasRevGreen = wasDecel = wasBelow70 = wasBelowTaxi = null;
             wasSpoilers = isOnGround ? false : null;
         }
 
@@ -109,7 +113,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
 
             if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
-            if (wasRevGreen == false && data.rev1 > 0 && data.rev2 > 0)
+            if (wasRevGreen == false && data.rev1deployed == 1 && data.fadec1power == 1 && data.rev2deployed == 1 && data.fadec2power == 1)
             {
                 hubContext.Clients.All.Speak("Rev Green");
                 wasRevGreen = true;
