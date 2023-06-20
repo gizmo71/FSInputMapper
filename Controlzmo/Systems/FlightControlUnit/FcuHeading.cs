@@ -1,5 +1,4 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
@@ -7,33 +6,6 @@ using System.ComponentModel;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    public class FcuHeadingManaged : LVar, IOnSimStarted
-    {
-        public FcuHeadingManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_FCU_HDG_MANAGED_DOT";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool IsManaged { get => Value == 1; }
-    }
-
-    [Component] // Gets confused when flipping between TRK and HDG...
-    public class FcuHeadingSelected : LVar, IOnSimStarted
-    {
-        public FcuHeadingSelected(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_AUTOPILOT_HEADING_SELECTED";
-        protected override double Default() => 999;
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-    }
-
-    [Component] // ... so we need this to definitively decide.
-    public class FcuHeadingDashes : LVar, IOnSimStarted
-    {
-        public FcuHeadingDashes(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_FCU_HDG_MANAGED_DASHES";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool IsDashes { get => Value == 1; }
-    }
-
     [Component]
     public class FcuHeadingPulled : ISettable<bool>, IEvent
     {
