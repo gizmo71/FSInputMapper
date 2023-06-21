@@ -8,48 +8,29 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct FcuTopRightData
+    {
+        [SimVar("L:A32NX_TRK_FPA_MODE_ACTIVE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isTrkFpaMode;
+    };
+
     [Component]
-    public class FcuDisplayBottomRight : CreateOnStartup
+    public class FcuDisplayTopRight : DataListener<FcuTopRightData>, IOnSimStarted
     {
         private readonly SerialPico serial;
-        private readonly FcuAltListener fcuAltListener;
-        private readonly FcuVsState fcuVsState;
-        private readonly FcuVsSelected fcuVsSelected;
-        private readonly FcuFpaSelected fcuFpaSelected;
-        private readonly FcuTrackFpa fcuTrackFpa;
-        private readonly FcuAltManaged fcuAltManaged;
 
-        public FcuDisplayBottomRight(IServiceProvider sp)
+        public FcuDisplayTopRight(IServiceProvider sp)
         {
             serial = sp.GetRequiredService<SerialPico>();
-            (fcuAltListener = sp.GetRequiredService<FcuAltListener>()).PropertyChanged += Regenerate;
-            (fcuVsState = sp.GetRequiredService<FcuVsState>()).PropertyChanged += Regenerate;
-            (fcuVsSelected = sp.GetRequiredService<FcuVsSelected>()).PropertyChanged += Regenerate;
-            (fcuFpaSelected = sp.GetRequiredService<FcuFpaSelected>()).PropertyChanged += Regenerate;
-            (fcuTrackFpa = sp.GetRequiredService<FcuTrackFpa>()).PropertyChanged += Regenerate;
-            (fcuAltManaged = sp.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
         }
 
-        private void Regenerate(object? _, PropertyChangedEventArgs? args)
-        {
-            var managed = fcuAltManaged.IsManaged ? '\x1' : ' ';
-            var line2 = $"{fcuAltListener.Current.fcuAlt:00000}   {managed}  {VS}";
-            serial.SendLine($"fcuBR={line2}");
-        }
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SIM_FRAME);
 
-        private string VS
+        public override void Process(ExtendedSimConnect _, FcuTopRightData data)
         {
-            get
-            {
-                string vs;
-                if (fcuVsState.IsIdle)
-                    vs = "-----";
-                else if (fcuTrackFpa.IsTrkFpa)
-                    vs = $"{(double)fcuFpaSelected!:+#0.0;-#0.0} ";
-                else
-                    vs = $"{fcuVsSelected / 100:+00;-00}oo";
-                return vs;
-            }
+            var line1 = "ALT \x4LVL/CH\x5 " + (data.isTrkFpaMode == 0 ? "V/S" : "FPA");
+            serial.SendLine($"fcuTR={line1}");
         }
     }
 }
