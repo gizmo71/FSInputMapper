@@ -23,7 +23,7 @@
 	</Airline>
 	<Airline callsign="eurowings"><!-- vEWG -->
 		<Text type="A20N">Preparation 20-180 minutes, air time counts</Text>
-		<Text type="A20N">Warm up; OETA, cool down</Text>
+		<Text type="A20N">Start #2 first, warm up; OETA, cool down</Text>
 	</Airline>
 	<Airline callsign="eju|alpine|easy|top[- ]?swiss"> <!-- vEZY -->
 		<Text type="A2[01]N|A319|A32[01]">Preparation 20-50 minutes, block time counts</Text>
