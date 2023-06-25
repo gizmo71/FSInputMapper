@@ -1,5 +1,4 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.EfisControlPanel;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
