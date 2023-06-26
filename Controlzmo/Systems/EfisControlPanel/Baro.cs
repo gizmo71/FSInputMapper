@@ -48,25 +48,6 @@ namespace Controlzmo.Systems.EfisControlPanel
         }
     }
 
-    [Component]
-    public class Baro1Mode : LVar, IOnSimStarted
-    {
-        public Baro1Mode(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "XMLVAR_Baro1_Mode";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool isQnh { get => ((int?)Value & 1) == 1; } // Otherwise QFE
-        public bool isStd { get => ((int?)Value & 2) == 2; } // Otherwise QFE or QNH
-    }
-
-    [Component]
-    public class Baro1Units : LVar, IOnSimStarted
-    {
-        public Baro1Units(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        protected override string LVarName() => "XMLVar_Baro_Selector_HPA_1";
-        public bool isInHg { get => Value == 0; } // Otherwise hPa
-    }
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct BaroData
     {
@@ -74,42 +55,28 @@ namespace Controlzmo.Systems.EfisControlPanel
         public float kohlsmanMB;
         [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
         public float kohlsmanHg;
+        [SimVar("L:XMLVar_Baro_Selector_HPA_1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 baro1Units; // InHg if 0, otherwise hPa
+        [SimVar("L:XMLVAR_Baro1_Mode", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 baro1Mode; // Bit 0: 1 QNH, 0 QFE; Bit 1: 2 standard, otherwise as bit 1
     }
 
     [Component]
     public class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-        private readonly Baro1Mode baro1Mode;
-        private readonly Baro1Units baro1Units;
-        private BaroData currentSetting = new BaroData { kohlsmanHg = 0, kohlsmanMB = 0 };
 
-        public BaroDisplay(IServiceProvider sp)
-        {
-            serial = sp.GetRequiredService<SerialPico>();
-            baro1Mode = sp.GetRequiredService<Baro1Mode>();
-            baro1Units = sp.GetRequiredService<Baro1Units>();
-
-            baro1Mode.PropertyChanged += Regenerate;
-            baro1Units.PropertyChanged += Regenerate;
-        }
+        public BaroDisplay(IServiceProvider sp) => serial = sp.GetRequiredService<SerialPico>();
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
-            if (!baro1Mode.isStd || currentSetting.kohlsmanMB == 0)
-                currentSetting = data;
-            Regenerate(this, null);
-        }
-
-        private void Regenerate(object? _, PropertyChangedEventArgs? args)
-        {
             string composite = "SStd ";
-            if (!baro1Mode.isStd)
+            if ((data.baro1Mode & 2) == 0)
             {
-                var value = baro1Units.isInHg ? currentSetting.kohlsmanHg * 100 : currentSetting.kohlsmanMB;
-                composite = (baro1Mode.isQnh ? "N" : "F") + $"{value,4:0}";
+                var value = data.baro1Units == 0 ? data.kohlsmanHg * 100 : data.kohlsmanMB;
+                composite = ((data.baro1Mode & 1) == 1 ? "N" : "F") + $"{value,4:0}";
             }
             serial.SendLine($"baro={composite}");
         }
