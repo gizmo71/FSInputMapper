@@ -51,4 +51,9 @@
 		<Text type="A20N">Must have at least 2000kg of fuel on landing</Text>
 		<Text type="A20N">Worth pushing block time just above certain hour marks</Text>
 	</Airline>
+	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
+		<Text type="A20N">Preparation 0-35 minutes, air time counts</Text>
+		<Text type="A20N">Start #2 first</Text>
+		<Text type="A20N">Must have at least 1200kg of fuel on landing</Text>
+	</Airline>
 </SOPs>
