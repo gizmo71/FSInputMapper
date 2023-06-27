@@ -37,7 +37,7 @@
 		<Text type="A20N">Flight time above 20%/20 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 998kg of fuel on landing</Text>
 	</Airline>
-	<Airline callsign="condor"> <!-- vTCX Group -->
+	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type="A20N|A339">Preparation 20-60 minutes, air time counts</Text>
 		<Text type="A339">Start #1 first; cool down</Text>
 		<Text type="A20N">Start #2 first; cool down</Text>
