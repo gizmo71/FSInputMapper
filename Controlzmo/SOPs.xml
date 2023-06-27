@@ -49,7 +49,12 @@
 		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
 		<Text type="A20N">Pause in flight requires PIREP comment</Text>
 		<Text type="A20N">Must have at least 2000kg of fuel on landing</Text>
-		<Text type="A20N">Worth pushing block time just above certain hour marks</Text>
+	</Airline>
+	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
+		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
+		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Pauses in flight of over 60 cumulative minutes requires PIREP comment</Text>
+		<Text type=".*">Flight time above 25%/30 minutes of scheduled or average requires review</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type="A20N">Preparation 0-35 minutes, air time counts</Text>
