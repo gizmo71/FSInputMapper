@@ -47,7 +47,6 @@ namespace Controlzmo.Systems.Radar
         public Int32 pwsSwitch;
     };
 
-
     [Component]
     public class PredictiveWindshearSys : DataListener<PredictiveWindshearSysData>, ISettable<bool?>, IOnSimConnection
     {
