@@ -13,21 +13,17 @@ namespace Controlzmo.Systems.Radar
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct RadarSysData
     {
-        [SimVar(RadarSys.LVarName, "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:XMLVAR_A320_WeatherRadar_Sys", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radarSys;
     };
 
     [Component]
     public class RadarSys : DataListener<RadarSysData>, IOnSimConnection, ISettable<string?>
     {
-        internal const string LVarName = "L:XMLVAR_A320_WeatherRadar_Sys";
-
-        private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public RadarSys(IServiceProvider serviceProvider)
         {
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
@@ -42,8 +38,7 @@ namespace Controlzmo.Systems.Radar
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>{LVarName})");
+            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = Int16.Parse(posString!) });
         }
     }
 
