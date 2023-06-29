@@ -1,37 +1,49 @@
-﻿using System;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Radar
 {
-    [Component]
-    public class RadarSys : LVar, IOnSimConnection, ISettable<string?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct RadarSysData
     {
+        [SimVar(RadarSys.LVarName, "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 radarSys;
+    };
+
+    [Component]
+    public class RadarSys : DataListener<RadarSysData>, IOnSimConnection, ISettable<string?>
+    {
+        internal const string LVarName = "L:XMLVAR_A320_WeatherRadar_Sys";
+
         private readonly JetBridgeSender jetbridge;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public RadarSys(IServiceProvider serviceProvider) : base(serviceProvider)
+        public RadarSys(IServiceProvider serviceProvider)
         {
             jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        protected override string LVarName() => "XMLVAR_A320_WeatherRadar_Sys";
-        protected override int Milliseconds() => 4000;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
         public string GetId() => "radarSys";
 
-        protected override double? Value { set { hub.Clients.All.SetFromSim(GetId(), base.Value = value); } }
+        public override void Process(ExtendedSimConnect simConnect, RadarSysData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.radarSys);
+        }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
+            jetbridge.Execute(simConnect, $"{pos} (>{LVarName})");
         }
     }
 
