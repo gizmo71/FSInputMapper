@@ -1,63 +1,11 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.Serial;
-using Controlzmo.SimConnectzmo;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Runtime.InteropServices;
 using System.ComponentModel;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct FcuAltData
-    {
-        [SimVar("AUTOPILOT ALTITUDE LOCK VAR:3", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fcuAlt;
-    };
-
-    [Component]
-    public class FcuAltListener : DataListener<FcuAltData>, IRequestDataOnOpen, INotifyPropertyChanged
-    {
-        public FcuAltData Current { get; private set; } = new FcuAltData { fcuAlt = 0 };
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
-
-        public override void Process(ExtendedSimConnect simConnect, FcuAltData data)
-        {
-            Current = data;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FcuAltData"));
-        }
-    }
-
-    // The dot under Level Change
-    [Component]
-    public class FcuAltManaged : LVar, IOnSimStarted
-    {
-        public FcuAltManaged(IServiceProvider serviceProvider) : base(serviceProvider) { }
-        protected override string LVarName() => "A32NX_FCU_ALT_MANAGED";
-        public void OnStarted(ExtendedSimConnect simConnect) => Request(simConnect);
-        public bool IsManaged { get => Value == 1; }
-    }
-
-    [Component]
-    public class FcuAltManagedSender : CreateOnStartup
-    {
-        private readonly SerialPico serial;
-        private readonly FcuAltManaged fcuAltManaged;
-
-        public FcuAltManagedSender(IServiceProvider serviceProvider)
-        {
-            serial = serviceProvider.GetRequiredService<SerialPico>();
-            (fcuAltManaged = serviceProvider.GetRequiredService<FcuAltManaged>()).PropertyChanged += Regenerate;
-        }
-
-        private void Regenerate(object? _, PropertyChangedEventArgs? args) =>
-            serial.SendLine("FcuAltManaged=" + fcuAltManaged.IsManaged);
-    }
-
     [Component]
     public class FcuAltPulled : ISettable<bool>, IEvent
     {
