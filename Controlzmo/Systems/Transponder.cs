@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
+using Controlzmo.Systems.Radar;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -77,28 +78,35 @@ namespace Controlzmo.Systems.Transponder
         public override string GetId() => "squawkIdent";
     }
 
-    [Component]
-    public class AltRptg : LVar, ISettable<bool?>, IOnSimConnection
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct AltRptgData
     {
-        private readonly JetBridgeSender jetbridge;
+        [SimVar("L:A32NX_SWITCH_ATC_ALT", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isAltRptgOn;
+    };
+
+    [Component]
+    public class AltRptg : DataListener<AltRptgData>, ISettable<bool?>, IOnSimConnection
+    {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public AltRptg(IServiceProvider sp) : base(sp)
+        public AltRptg(IServiceProvider sp)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value == 1);
         }
 
-        protected override string LVarName() => "A32NX_SWITCH_ATC_ALT";
-        protected override int Milliseconds() => 4000;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
         public string GetId() => "altRptg";
+
+        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+
+        public override void Process(ExtendedSimConnect simConnect, AltRptgData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.isAltRptgOn == 1);
+        }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
         {
-            var value = isOn == true ? 1 : 0;
-            jetbridge.Execute(simConnect, $"{value} (>L:{LVarName()})");
+            simConnect.SendDataOnSimObject(new AltRptgData() { isAltRptgOn = isOn == true ? 1 : 0 });
         }
     }
 
