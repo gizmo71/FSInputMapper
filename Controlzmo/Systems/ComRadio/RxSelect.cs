@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.ComRadio
@@ -14,34 +14,41 @@ namespace Controlzmo.Systems.ComRadio
         public string SimEvent() => "COM2_RECEIVE_SELECT";
     }
 
-    [Component]
-    public class Com2Rx : LVar, IOnSimConnection, ISettable<bool>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct Com2RxData
     {
-        private readonly JetBridgeSender jetbridge;
+        [SimVar(Com2Rx.LVAR_NAME, "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 isCom2VhfCSwitchDown;
+    };
+
+    [Component]
+    public class Com2Rx : DataListener<Com2RxData>, IOnSimStarted, ISettable<bool>
+    {
+        internal const string LVAR_NAME = "L:XMLVAR_COM_2_VHF_C_Switch_Down";
+
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly Com2RxToggleEvent toggle;
 
-        public Com2Rx(IServiceProvider serviceProvider) : base(serviceProvider)
+        public Com2Rx(IServiceProvider serviceProvider)
         {
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             toggle = serviceProvider.GetRequiredService<Com2RxToggleEvent>();
         }
 
-        protected override string LVarName() => "XMLVAR_COM_2_VHF_C_Switch_Down";
-        protected override int Milliseconds() => 4000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+
+        public override void Process(ExtendedSimConnect simConnect, Com2RxData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.isCom2VhfCSwitchDown == 1);
+        }
 
         public string GetId() => "com2rx";
 
-        protected override double? Value { set => hub.Clients.All.SetFromSim(GetId(), (base.Value = value) == 1.0); }
-
         public void SetInSim(ExtendedSimConnect simConnect, bool isReceiving)
         {
-            var newSetting = isReceiving ? 1u : 0u;
-            jetbridge.Execute(simConnect, $"{newSetting} (>L:{LVarName()})");
+            UInt32 newSetting = isReceiving ? 1u : 0u;
+            simConnect.SendDataOnSimObject(new Com2RxData() { isCom2VhfCSwitchDown = newSetting });
             simConnect.SendEvent(toggle, newSetting);
-        }
+         }
     }
 }
