@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
+using Controlzmo.Systems.ComRadio;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -161,29 +162,37 @@ namespace Controlzmo.Systems.Transponder
         }
     }
 
-    [Component]
-    public class TransponderMode : LVar, IOnSimConnection, ISettable<string?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct TransponderModeData
     {
-        private readonly JetBridgeSender jetbridge;
+        [SimVar(Com2Rx.LVAR_NAME, "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 xpndrMode;
+    };
+
+    [Component]
+    public class TransponderMode : DataListener<TransponderModeData>, IOnSimStarted, ISettable<string?>
+    {
+        internal const string LVAR_NAME = "L:A32NX_TRANSPONDER_MODE";
+        
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public TransponderMode(IServiceProvider sp) : base(sp)
+        public TransponderMode(IServiceProvider sp)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
         }
 
-        protected override string LVarName() => "A32NX_TRANSPONDER_MODE";
-        protected override int Milliseconds() => 4000;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+
+        public override void Process(ExtendedSimConnect simConnect, TransponderModeData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.xpndrMode);
+        }
 
         public string GetId() => "transponderMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
+            simConnect.SendDataOnSimObject(new TransponderModeData() { xpndrMode = Int16.Parse(posString!) });
         }
     }
 }
