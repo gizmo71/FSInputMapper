@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
-using Controlzmo.Systems.Radar;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
