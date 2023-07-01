@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.ComRadio;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -136,44 +135,48 @@ namespace Controlzmo.Systems.Transponder
         }
     }
 
-    [Component]
-    public class TcasTraffic : LVar, IOnSimConnection, ISettable<string?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct TcasTrafficModeData
     {
-        private readonly JetBridgeSender jetbridge;
+        [SimVar("L:A32NX_SWITCH_TCAS_Traffic_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 position;
+    };
+
+    [Component]
+    public class TcasTraffic : DataListener<TcasTrafficModeData>, IOnSimStarted, ISettable<string?>
+    {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public TcasTraffic(IServiceProvider sp) : base(sp)
+        public TcasTraffic(IServiceProvider sp)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
         }
 
-        protected override string LVarName() => "A32NX_SWITCH_TCAS_Traffic_Position";
-        protected override int Milliseconds() => 4000;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+
+        public override void Process(ExtendedSimConnect simConnect, TcasTrafficModeData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.position);
+        }
 
         public string GetId() => "tcasTraffic";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
+            simConnect.SendDataOnSimObject(new TcasTrafficModeData() { position = Int16.Parse(posString!) });
         }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct TransponderModeData
     {
-        [SimVar(Com2Rx.LVAR_NAME, "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:A32NX_TRANSPONDER_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 xpndrMode;
     };
 
     [Component]
     public class TransponderMode : DataListener<TransponderModeData>, IOnSimStarted, ISettable<string?>
     {
-        internal const string LVAR_NAME = "L:A32NX_TRANSPONDER_MODE";
-        
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public TransponderMode(IServiceProvider sp)
