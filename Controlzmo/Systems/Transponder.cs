@@ -2,8 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
-using Controlzmo.Systems.JetBridge;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -109,29 +107,35 @@ namespace Controlzmo.Systems.Transponder
         }
     }
 
-    [Component]
-    public class TcasMode : LVar, IOnSimConnection, ISettable<string?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct TcasModeData
     {
-        private readonly JetBridgeSender jetbridge;
+        [SimVar("L:A32NX_SWITCH_TCAS_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 position;
+    };
+
+    [Component]
+    public class TcasMode : DataListener<TcasModeData>, IOnSimStarted, ISettable<string?>
+    {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public TcasMode(IServiceProvider sp) : base(sp)
+        public TcasMode(IServiceProvider sp)
         {
-            jetbridge = sp.GetRequiredService<JetBridgeSender>();
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            PropertyChanged += (object? _, PropertyChangedEventArgs e) => hub.Clients.All.SetFromSim(GetId(), Value);
         }
 
-        protected override string LVarName() => "A32NX_SWITCH_TCAS_Position";
-        protected override int Milliseconds() => 4000;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
+        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+
+        public override void Process(ExtendedSimConnect simConnect, TcasModeData data)
+        {
+            hub.Clients.All.SetFromSim(GetId(), data.position);
+        }
 
         public string GetId() => "tcasMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            var pos = Int16.Parse(posString!);
-            jetbridge.Execute(simConnect, $"{pos} (>L:{LVarName()})");
+            simConnect.SendDataOnSimObject(new TcasModeData() { position = Int16.Parse(posString!) });
         }
     }
 
