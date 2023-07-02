@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Controlzmo.SimConnectzmo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -72,6 +71,12 @@ namespace Controlzmo.Systems.Spoilers
         public Int32 armed;
         [SimVar("SPOILERS HANDLE POSITION", "percent", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 position;
+        [SimVar("L:A32NX_SPOILERS_ARMED", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 a32nxArmed;
+        [SimVar("L:A32NX_SPOILERS_GROUND_SPOILERS_ACTIVE", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 a32nxGroundSpoilersActive;
+        [SimVar("L:A32NX_SPOILERS_HANDLE_POSITION", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.025f)]
+        public float a32nxPosition;
     };
 
     // Output events
@@ -79,62 +84,24 @@ namespace Controlzmo.Systems.Spoilers
     [Component] public class SpoilerArmOffEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_OFF"; }
     [Component] public class SetSpoilerHandleEvent : IEvent { public string SimEvent() => "SPOILERS_SET"; }
 
-    [Component]
-    public class A32nxSpoilersArmed : LVar, IOnSimConnection
-    {
-        public A32nxSpoilersArmed(IServiceProvider sp) : base(sp) { }
-
-        protected override string LVarName() => "A32NX_SPOILERS_ARMED";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-    }
-
-    [Component]
-    public class A32nxSpoilersActive : LVar, IOnSimConnection
-    {
-        public A32nxSpoilersActive(IServiceProvider sp) : base(sp) { }
-
-        protected override string LVarName() => "A32NX_SPOILERS_GROUND_SPOILERS_ACTIVE";
-        protected override int Milliseconds() => 1000;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-    }
-
-    [Component]
-    public class A32nxSpoilerHandle : LVar, IOnSimConnection
-    {
-        public A32nxSpoilerHandle(IServiceProvider sp) : base(sp) { }
-
-        protected override string LVarName() => "A32NX_SPOILERS_HANDLE_POSITION";
-        protected override int Milliseconds() => 167;
-        protected override double Default() => -1.0;
-        public void OnConnection(ExtendedSimConnect simConnect) => Request(simConnect);
-    }
-
     public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>
     {
-        private readonly A32nxSpoilersArmed armed;
-        private readonly A32nxSpoilersActive active;
-        private readonly A32nxSpoilerHandle handle;
         protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly ILogger _logger;
 
         protected AbstractSpoilerDataListener(IServiceProvider sp)
         {
-            _logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName);
-            armed = sp.GetRequiredService<A32nxSpoilersArmed>();
-            active = sp.GetRequiredService<A32nxSpoilersActive>();
-            handle = sp.GetRequiredService<A32nxSpoilerHandle>();
+            _logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             setEvent = sp.GetRequiredService<SetSpoilerHandleEvent>();
         }
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
-            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {(double?)armed} active {(double?)active} handle {(double?)handle}");
-            if ((double?)armed == 1.0f || (double?)active == 1.0f) data.armed = 1;
-            var a32nxHandle = (double?)handle;
-            if (a32nxHandle is not null) data.position = (int)(100f * a32nxHandle);
+            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition}");
+//TODO: only do this if we're in the A32NX? Or will this never trigger?
+            if (data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1) data.armed = 1;
+//TODO: only do this if we're in the A32NX
+            data.position = (int)(100 * data.a32nxPosition);
             _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}");
 
             ProcessSpoilerDemand(simConnect, data);
