@@ -1,5 +1,4 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;

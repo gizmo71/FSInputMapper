@@ -1,7 +1,5 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using SimConnectzmo;
-using System;
 using System.ComponentModel;
 
 namespace Controlzmo.Systems.FlightControlUnit
