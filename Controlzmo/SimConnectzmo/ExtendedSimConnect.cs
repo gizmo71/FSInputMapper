@@ -32,19 +32,7 @@ namespace SimConnectzmo
         private IEnumerable<IOnSimConnection>? onConnectionHandlers;
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
 
-        // https://www.fsdeveloper.com/forum/threads/simconnect-getlastsentpacketid-for-managed-code.438397/
-        [DllImport("SimConnect.dll", CallingConvention = CallingConvention.StdCall, CharSet = CharSet.Ansi)]
-        private static extern int SimConnect_GetLastSentPacketID(IntPtr hSimConnect, out UInt32 dwSendID);
-        private readonly IntPtr hSimConnect;
-
         public bool? IsSimStarted;
-
-        public UInt32 GetLastSentPacketID()
-        {
-            UInt32 dwSendID;
-            _= SimConnect_GetLastSentPacketID(hSimConnect, out dwSendID);
-            return dwSendID;
-        }
 
         internal ExtendedSimConnect(string szName, uint UserEventWin32, WaitHandle waitHandle)
             : base(szName, hWnd, UserEventWin32, waitHandle, 0) // 6 for over IP - can we make it timeout easier?
@@ -58,12 +46,11 @@ namespace SimConnectzmo
             OnRecvSystemState += Handle_OnRecvSystemState;
 
             FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
-            hSimConnect = (IntPtr)fiSimConnect!.GetValue(this)!;
         }
 
         private void Handle_Exception(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
         {
-            _logging.LogError($"Got exception {data.dwException} packet {data.dwSendID}");
+            _logging?.LogError($"Got exception {data.dwException} packet {data.dwSendID}");
         }
 
         internal ExtendedSimConnect AssignIds(IServiceProvider serviceProvider)
@@ -159,23 +146,23 @@ namespace SimConnectzmo
                     throw new NullReferenceException($"No SimVarAttribute for {type}.{field.Name}");
                 AddToDataDefinition(id, dataField.Variable, dataField.Units,
                     dataField.Type, dataField.Epsilon, SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Registered field {type}.{field.Name} {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Registered field {type}.{field.Name} {GetLastSentPacketID()}");
             }
             GetType().GetMethod("RegisterDataDefineStruct")!.MakeGenericMethod(type)
                 .Invoke(this, new object[] { id });
-System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Registered struct {type} {GetLastSentPacketID()}");
         }
 
         private void RegisterClientDataStruct(string clientDataName, Type type, Enum id)
         {
             MapClientDataNameToID(clientDataName, id);
-System.Console.Error.WriteLine($"Mapped client data {clientDataName} to {id}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Mapped client data {clientDataName} to {id}: {GetLastSentPacketID()}");
             CreateClientData(id, (uint)Marshal.SizeOf(type), SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
-System.Console.Error.WriteLine($"Created client data for {type}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Created client data for {type}: {GetLastSentPacketID()}");
 
             GetType().GetMethod("RegisterStruct")!.MakeGenericMethod(typeof(SIMCONNECT_RECV_CLIENT_DATA), type)
                 .Invoke(this, new object[] { id });
-System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID()}");
 
             foreach (FieldInfo field in type.GetFields())
             {
@@ -206,7 +193,7 @@ System.Console.Error.WriteLine($"Registered struct {type}: {GetLastSentPacketID(
 
                 AddToClientDataDefinition(id, SimConnect.SIMCONNECT_CLIENTDATAOFFSET_AUTO,
                     clientTypeOrSize, clientVar.Epsilon, SimConnect.SIMCONNECT_UNUSED);
-System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {GetLastSentPacketID()}");
             }
         }
 
@@ -215,13 +202,13 @@ System.Console.Error.WriteLine($"Registered client field {type}.{field.Name}: {G
             foreach (var eventToEnum in eventToEnum!)
             {
                 MapClientEventToSimEvent(eventToEnum.Value, eventToEnum.Key.SimEvent());
-System.Console.Error.WriteLine($"Mapped client to sim event {eventToEnum.Key}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Mapped client to sim event {eventToEnum.Key}: {GetLastSentPacketID()}");
             }
-System.Console.Error.WriteLine($"... and now notifications to events...");
+//System.Console.Error.WriteLine($"... and now notifications to events...");
             foreach (var notificationToEvent in notificationsToEvent!)
             {
                 AddClientEventToNotificationGroup(GROUP.JUST_MASKABLE, notificationToEvent.Value, true);
-System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificationToEvent.Value}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificationToEvent.Value}: {GetLastSentPacketID()}");
             }
         }
 
@@ -229,7 +216,7 @@ System.Console.Error.WriteLine($"Added {notificationToEvent.Key} to {notificatio
         {
             //TODO: Avoid doing this if there aren't any (at the time of writing they'd all gone to standalone WASM.)
             SetNotificationGroupPriority(GROUP.JUST_MASKABLE, SIMCONNECT_GROUP_PRIORITY_HIGHEST_MASKABLE);
-System.Console.Error.WriteLine($"Set group priorities: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Set group priorities: {GetLastSentPacketID()}");
         }
 
         public void SendDataOnSimObject<StructType>(StructType data)
@@ -244,7 +231,7 @@ System.Console.Error.WriteLine($"Set group priorities: {GetLastSentPacketID()}")
             {
                 SetDataOnSimObject(id, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, data);
             }
-System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}: {GetLastSentPacketID()}");
         }
 
         public void SendEvent(IEvent eventToSend, uint data = 0u, bool slow = false, bool fast = false)
@@ -266,7 +253,7 @@ System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}:
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
             TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data, group, flags);
-_logging.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentPacketID()}");
+_logging?.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentPacketID()}");
         }
 
         public void RequestDataOnSimObject(IDataListener data, Enum period)
@@ -289,7 +276,7 @@ _logging.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentP
                                 : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
                 RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, simPeriod, flag, 0, 0, 0);
             }
-System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSentPacketID()}");
+//System.Console.Error.WriteLine($"Get data on {data} period {period}: {GetLastSentPacketID()}");
         }
 
         private void Handle_OnRecvSimobjectData(SimConnect _, SIMCONNECT_RECV_SIMOBJECT_DATA data)
