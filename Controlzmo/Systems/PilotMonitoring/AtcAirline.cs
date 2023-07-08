@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml.Xsl;
 
@@ -25,7 +26,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class AtcAirlineListener : DataListener<AtcAirlineData>, IOnSimStarted
+    public class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
@@ -36,33 +37,23 @@ namespace Controlzmo.Systems.PilotMonitoring
             isLocalSops = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         }
 
-        public void OnStarted(ExtendedSimConnect simConnect)
-        {
-            hub.Clients.All.SetFromSim("atcAirline", "Request sent...");
-            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
-        }
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
-
             var icaoCode = data.model.ToUpper();
             var callsign = data.name.ToLower();
-            var sops = $"No SOPs available for '{icaoCode}' with callsign '{callsign}'";
+            var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}':";
             try
             {
                 var doc = await loadXml();
                 var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
                 var nodes = doc.DocumentElement?.SelectNodes($"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type)]", context);
-                if (nodes?.Count > 0)
-                {
-                    sops = "";
-                    foreach (var node in nodes)
-                    {
-                        if (sops?.Length > 0) sops += '\n';
-                        sops += $"\u2022 {(node as XmlElement)?.InnerText}";
-                    }
-                }
+                if (nodes?.Count == 0)
+                    sops += $"\nNone available";
+                else
+                    foreach (var node in nodes!)
+                        sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
             }
             catch (Exception e)
             {
