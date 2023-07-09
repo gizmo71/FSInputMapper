@@ -98,7 +98,7 @@ namespace SimConnectzmo
             SetGroupPriorities();
 
             SubscribeToSystemEvent(EVENT.SimSystemState, "Sim");
-            _logging.LogInformation($"Requested SimStart subscription {GetLastSentPacketID()}");
+            _logging!.LogInformation($"Requested SimStart subscription {GetLastSentPacketID()}");
 
             TriggerInitialRequests();
         }
@@ -108,9 +108,9 @@ namespace SimConnectzmo
             if (IsSimStarted == null)
                 RequestSystemState(REQUEST.SimSystemState, "Sim");
 
+            StopAutoRequests(); // Ensure we get fresh data.
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
-                // Note that on SimStop we issue NEVERs to ensure that we start getting stuff again on SimStart.
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
 
             //TODO: can/should we convert the above into the below?
@@ -309,17 +309,22 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             }
         }
 
+        private void StopAutoRequests()
+        {
+            foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
+                RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
+        }
+
         private void HandleSimSystemStateEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
             if ((IsSimStarted = (data.dwData == 1)) == true)
             {
                 RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
-                _logging.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
+                _logging!.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
                 OnSimIsRunning();
             }
             else
-                foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
-                    RequestDataOnSimObject(request, SIMCONNECT_PERIOD.NEVER);
+                StopAutoRequests();
         }
 
         private void Handle_OnRecvSystemState(SimConnect sender, SIMCONNECT_RECV_SYSTEM_STATE data)
