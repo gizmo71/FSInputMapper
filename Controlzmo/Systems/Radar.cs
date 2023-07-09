@@ -16,7 +16,7 @@ namespace Controlzmo.Systems.Radar
     };
 
     [Component]
-    public class RadarSys : DataListener<RadarSysData>, IOnSimConnection, ISettable<string?>
+    public class RadarSys : DataListener<RadarSysData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -25,7 +25,7 @@ namespace Controlzmo.Systems.Radar
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public string GetId() => "radarSys";
 
@@ -48,7 +48,7 @@ namespace Controlzmo.Systems.Radar
     };
 
     [Component]
-    public class PredictiveWindshearSys : DataListener<PredictiveWindshearSysData>, ISettable<bool?>, IOnSimConnection
+    public class PredictiveWindshearSys : DataListener<PredictiveWindshearSysData>, IRequestDataOnOpen, ISettable<bool?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -59,7 +59,7 @@ namespace Controlzmo.Systems.Radar
 
         public string GetId() => "predictiveWindshear";
 
-        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, PredictiveWindshearSysData data)
         {

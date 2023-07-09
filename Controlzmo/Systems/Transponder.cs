@@ -83,7 +83,7 @@ namespace Controlzmo.Systems.Transponder
     };
 
     [Component]
-    public class AltRptg : DataListener<AltRptgData>, ISettable<bool?>, IOnSimConnection
+    public class AltRptg : DataListener<AltRptgData>, IRequestDataOnOpen, ISettable<bool?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -94,7 +94,7 @@ namespace Controlzmo.Systems.Transponder
 
         public string GetId() => "altRptg";
 
-        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, AltRptgData data)
         {
@@ -115,7 +115,7 @@ namespace Controlzmo.Systems.Transponder
     };
 
     [Component]
-    public class TcasMode : DataListener<TcasModeData>, IOnSimStarted, ISettable<string?>
+    public class TcasMode : DataListener<TcasModeData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -124,7 +124,7 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, TcasModeData data)
         {
@@ -147,7 +147,7 @@ namespace Controlzmo.Systems.Transponder
     };
 
     [Component]
-    public class TcasTraffic : DataListener<TcasTrafficModeData>, IOnSimStarted, ISettable<string?>
+    public class TcasTraffic : DataListener<TcasTrafficModeData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -156,7 +156,7 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, TcasTrafficModeData data)
         {
@@ -179,7 +179,7 @@ namespace Controlzmo.Systems.Transponder
     };
 
     [Component]
-    public class TransponderMode : DataListener<TransponderModeData>, IOnSimStarted, ISettable<string?>
+    public class TransponderMode : DataListener<TransponderModeData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
@@ -188,7 +188,7 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, TransponderModeData data)
         {
