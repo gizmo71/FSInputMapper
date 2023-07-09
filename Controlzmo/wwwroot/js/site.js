@@ -56,31 +56,39 @@ function speak(text) {
 
 connection.on("Speak", speak);
 
+function linkSendStyles() {
+    $(".sendBoolean").on("change", function (event) {
+        connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
+        event.preventDefault();
+    });
+    $(".sendRadio").on("change", function (event) {
+        connection.invoke("SetInSim", event.target.name, event.target.value).catch(errorHandler);
+        event.preventDefault();
+    });
+    $(".sendText").on("change", function (event) {
+        if (event.target.reportValidity()) {
+            connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
+        }
+        event.preventDefault();
+        $(event.target).blur();
+        window.scrollTo(0, 0);
+    });
+    $(".sendButton").on("click", function (event) {
+        connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
+        event.preventDefault();
+    });
+    linkSendStyles = function () { }; // Don't do it again, even if reconnected.
+}
+
 function startSignalR() {
     connection.start().then(function () {
         // Called when connection established - may want to disable things until this is received.
         connection.invoke("SendAll").catch(errorHandler);
-        $(".sendBoolean").on("change", function (event) {
-            connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
-            event.preventDefault();
-        });
-        $(".sendRadio").on("change", function (event) {
-            connection.invoke("SetInSim", event.target.name, event.target.value).catch(errorHandler);
-            event.preventDefault();
-        });
-        $(".sendText").on("change", function (event) {
-            if (event.target.reportValidity()) {
-                connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
-            }
-            event.preventDefault();
-            $(event.target).blur();
-            window.scrollTo(0, 0);
-        });
-        $(".sendButton").on("click", function (event) {
-            connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
-            event.preventDefault();
-        });
+        linkSendStyles();
     }).catch(errorHandler);
+}
+function reconnect() {
+    connection.stop().then(startSignalR, startSignalR);
 }
 
 startSignalR();
