@@ -1,5 +1,6 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -27,12 +28,14 @@ namespace Controlzmo.Systems.Lights
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct BeaconLightData
+    public partial struct BeaconLightData
     {
+        [Property]
         [SimVar("LIGHT BEACON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int beaconSwitch;
+        public int _beaconSwitch;
+        [Property]
         [SimVar("LIGHT BEACON ON", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int beaconState;
+        public int _beaconState;
     };
 
     [Component]
@@ -51,8 +54,8 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect simConnect, BeaconLightData data)
         {
-            _logging.LogDebug($"Beacon state {data.beaconState}, switch {data.beaconSwitch}");
-            hub.Clients.All.SetFromSim("lightsBeacon", data.beaconSwitch == 1);
+            _logging.LogDebug($"Beacon state {data.BeaconState}, switch {data.BeaconSwitch}");
+            hub.Clients.All.SetFromSim("lightsBeacon", data.BeaconSwitch == 1);
         }
     }
 
