@@ -23,6 +23,7 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
+//TODO: try using BEACON_LIGHTS_SET, with two parameters, the state 0/1 and the light index
             sender.Execute(simConnect, $"(A:LIGHT BEACON, Bool) {desiredValue} != if{{ 0 (>K:TOGGLE_BEACON_LIGHTS) }}");
         }
     }
