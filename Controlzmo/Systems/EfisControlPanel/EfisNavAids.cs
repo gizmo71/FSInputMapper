@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -16,6 +17,12 @@ namespace Controlzmo.Systems.EfisControlPanel
 
     public abstract class EfisNavAid<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisNavAidData
     {
+        private readonly BidirectionalDictionary<UInt32, string> ModeMap = new()
+        {
+            [0u] = "Off",
+            [1u] = "ADF",
+            [2u] = "VOR",
+        };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         protected readonly string id;
 
@@ -29,27 +36,14 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, data.Mode switch
-            {
-                0u => "Off",
-                1u => "ADF",
-                2u => "VOR",
-                _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS navaid type '{data.Mode}'")
-            });
+            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var code = label switch
-            {
-                "Off" => 0u,
-                "ADF" => 1u,
-                "VOR" => 2u,
-                _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS navaid setting '{label}'")
-            };
-            simConnect.SendDataOnSimObject(new T() { Mode = code });
+            simConnect.SendDataOnSimObject(new T() { Mode = ModeMap.Inverse[label!] });
         }
     }
 
