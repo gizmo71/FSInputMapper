@@ -60,6 +60,8 @@ namespace Controlzmo.Systems.Lights
                 code += " 2 (>K:LANDING_LIGHTS_TOGGLE)";
             if (oldRight != value)
                 code += " 3 (>K:LANDING_LIGHTS_TOGGLE)";
+            //TODO: can we do all this with some combination of LANDING_LIGHTS_SET state 0/1 index 2/3
+            // Because of the retraction issue, may not be able to dodge JetBridge; see https://github.com/search?q=LANDING_2_Retracted&type=code
             sender.Execute(simConnect, code);
         }
     }

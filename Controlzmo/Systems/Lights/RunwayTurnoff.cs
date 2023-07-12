@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             if (value != isOn) {
-                sender.Execute(simConnect, "2 (>K:TOGGLE_TAXI_LIGHTS) 3 (>K:TOGGLE_TAXI_LIGHTS)");
+                sender.Execute(simConnect, "2 (>K:TOGGLE_TAXI_LIGHTS) 3 (>K:TOGGLE_TAXI_LIGHTS)"); //TODO: or TAXI_LIGHTS_SET state 0/1, index 2/3
                 isOn = value;
             }
         }

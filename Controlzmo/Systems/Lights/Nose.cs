@@ -62,9 +62,9 @@ namespace Controlzmo.Systems.Lights
                 throw new ArgumentException($"Unknown nose light value '{value}'");
 
             if (((newPosition ^ oldPosition) & 1) != 0)
-                sender.Execute(simConnect, "1 (>K:TOGGLE_TAXI_LIGHTS)");
+                sender.Execute(simConnect, "1 (>K:TOGGLE_TAXI_LIGHTS)"); //TODO or TAXI_LIGHTS_SET 0/1 index 1
             if (((newPosition ^ oldPosition) & 2) != 0)
-                sender.Execute(simConnect, "1 (>K:LANDING_LIGHTS_TOGGLE)");
+                sender.Execute(simConnect, "1 (>K:LANDING_LIGHTS_TOGGLE)"); //TODO: or set using LANDING_LIGHTS_SET params 0/1 off/on, index 1
         }
     }
 }
