@@ -1,44 +1,73 @@
 using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
 {
-    public abstract class EfisRange : ISettable<string>
+    public interface IEfisRangeData
     {
-        protected readonly JetBridgeSender sender;
-        protected readonly string id;
-        protected readonly string lvarName;
+        public UInt32 RangeCode { get; set; } // 2^code*10 = miles
+    }
 
-        protected EfisRange(JetBridgeSender sender, string side)
+    public abstract class EfisRange<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisRangeData
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly string id;
+
+        protected EfisRange(IServiceProvider serviceProvider, string side)
         {
-            this.sender = sender;
+            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             id = $"{side}EfisNdRange";
-            var sideCode = side.Substring(0, 1).ToUpper();
-            lvarName = $"A32NX_EFIS_{sideCode}_ND_RANGE";
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect simConnect, T data)
+        {
+            hub.Clients.All.SetFromSim(id, (1 << (int) data.RangeCode) * 10);
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            UInt32 range = UInt32.Parse(label!);
-            var code = Math.Clamp(BitOperations.Log2(range / 10), 0, 5);
-            sender.Execute(simConnect, $"{code} (>L:{lvarName})");
+            var range = UInt32.Parse(label!);
+            var code = (UInt32) Math.Clamp(BitOperations.Log2(range / 10), 0, 5);
+            simConnect.SendDataOnSimObject(new T() { RangeCode = code });
         }
     }
 
-    [Component]
-    public class EfisLeftRange : EfisRange
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct LeftEfisRangeData : IEfisRangeData
     {
-        public EfisLeftRange(JetBridgeSender sender) : base(sender, "left") { }
-    }
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _rangeCode;
+    };
 
     [Component]
-    public class EfisRightRange : EfisRange
+    public class LeftEfisRange : EfisRange<LeftEfisRangeData>
     {
-        public EfisRightRange(JetBridgeSender sender) : base(sender, "right") { }
+        public LeftEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "left") { }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct RightEfisRangeData : IEfisRangeData
+    {
+        [Property]
+        [SimVar("L:A32NX_EFIS_R_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _rangeCode;
+    };
+
+    //[Component]
+    public class RightEfisRange : EfisRange<RightEfisRangeData>
+    {
+        public RightEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "right") { }
     }
 }

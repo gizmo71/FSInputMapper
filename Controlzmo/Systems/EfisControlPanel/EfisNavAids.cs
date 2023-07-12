@@ -1,22 +1,42 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
 {
-    public abstract class EfisNavAid : ISettable<string>
+    public interface IEfisNavAidData
     {
-        protected readonly JetBridgeSender sender;
-        protected readonly string id;
-        protected readonly string lvarName;
+        public UInt32 Mode { get; set; }
+    }
 
-        protected EfisNavAid(JetBridgeSender sender, string side, int number)
+    public abstract class EfisNavAid<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisNavAidData
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        protected readonly string id;
+
+        protected EfisNavAid(IServiceProvider serviceProvider, string side, int number)
         {
-            this.sender = sender;
+            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
             id = $"{side}EfisNavAid{number}";
-            var sideCode = side.Substring(0, 1).ToUpper();
-            lvarName = $"A32NX_EFIS_{sideCode}_NAVAID_{number}_MODE";
+        }
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect simConnect, T data)
+        {
+            hub.Clients.All.SetFromSim(id, data.Mode switch
+            {
+                0u => "Off",
+                1u => "ADF",
+                2u => "VOR",
+                _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS navaid type '{data.Mode}'")
+            });
         }
 
         public string GetId() => id;
@@ -25,36 +45,68 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var code = label switch
             {
-                "Off" => 0,
-                "ADF" => 1,
-                "VOR" => 2,
+                "Off" => 0u,
+                "ADF" => 1u,
+                "VOR" => 2u,
                 _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS navaid setting '{label}'")
             };
-            sender.Execute(simConnect, $"{code} (>L:{lvarName})");
+            simConnect.SendDataOnSimObject(new T() { Mode = code });
         }
     }
 
-    [Component]
-    public class EfisLeftNavAid1 : EfisNavAid
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct LeftEfisNavAid1Data : IEfisNavAidData
     {
-        public EfisLeftNavAid1(JetBridgeSender sender) : base(sender, "left", 1) { }
-    }
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _mode;
+    };
 
     [Component]
-    public class EfisLeftNavAid2 : EfisNavAid
+    public class EfisLeftNavAid1 : EfisNavAid<LeftEfisNavAid1Data>
     {
-        public EfisLeftNavAid2(JetBridgeSender sender) : base(sender, "left", 2) { }
+        public EfisLeftNavAid1(IServiceProvider sp) : base(sp, "left", 1) { }
     }
 
-    [Component]
-    public class EfisRightNavAid1 : EfisNavAid
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct LeftEfisNavAid2Data : IEfisNavAidData
     {
-        public EfisRightNavAid1(JetBridgeSender sender) : base(sender, "right", 1) { }
-    }
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _mode;
+    };
 
     [Component]
-    public class EfisRightNavAid2 : EfisNavAid
+    public class EfisLeftNavAid2 : EfisNavAid<LeftEfisNavAid2Data>
     {
-        public EfisRightNavAid2(JetBridgeSender sender) : base(sender, "right", 2) { }
+        public EfisLeftNavAid2(IServiceProvider sp) : base(sp, "left", 2) { }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct RightEfisNavAid1Data : IEfisNavAidData
+    {
+        [Property]
+        [SimVar("L:A32NX_EFIS_R_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _mode;
+    };
+
+    //[Component]
+    public class EfisRightNavAid1 : EfisNavAid<RightEfisNavAid1Data>
+    {
+        public EfisRightNavAid1(IServiceProvider sp) : base(sp, "right", 1) { }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct RightEfisNavAid2Data : IEfisNavAidData
+    {
+        [Property]
+        [SimVar("L:A32NX_EFIS_R_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _mode;
+    };
+
+    //[Component]
+    public class EfisRightNavAid2 : EfisNavAid<RightEfisNavAid2Data>
+    {
+        public EfisRightNavAid2(IServiceProvider sp) : base(sp, "right", 2) { }
     }
 }
