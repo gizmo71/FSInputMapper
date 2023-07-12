@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -16,6 +17,14 @@ namespace Controlzmo.Systems.EfisControlPanel
 
     public abstract class EfisMode<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisModeData
     {
+        private readonly BidirectionalDictionary<UInt32, string> ModeMap = new()
+        {
+            [0u] = "Rose ILS",
+            [1u] = "Rose VOR",
+            [2u] = "Rose Nav",
+            [3u] = "Arc",
+            [4u] = "Plan",
+        };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         protected readonly string id;
 
@@ -29,31 +38,14 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, data.Mode switch
-            {
-                0u => "Rose ILS",
-                1u => "Rose VOR",
-                2u => "Rose Nav",
-                3u => "Arc",
-                4u => "Plan",
-                _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS mode code '{data.Mode}'")
-            });
+            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var code = label switch
-            {
-                "Rose ILS" => 0u,
-                "Rose VOR" => 1u,
-                "Rose Nav" => 2u,
-                "Arc" => 3u,
-                "Plan" => 4u,
-                _ => throw new ArgumentOutOfRangeException($"Unrecognised EFIS mode '{label}'")
-            };
-            simConnect.SendDataOnSimObject(new T() { Mode = code });
+            simConnect.SendDataOnSimObject(new T() { Mode = ModeMap.Inverse[label!] });
         }
     }
 
