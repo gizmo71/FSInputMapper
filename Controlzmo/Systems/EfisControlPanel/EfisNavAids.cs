@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
