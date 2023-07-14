@@ -46,3 +46,5 @@ Tiller seems to be mapped to `A:GEAR STEER ANGLE PCT` on ground, or `A:STEER INP
 
 Note that there's much better documentation on the RPN on the P3D site:
 http://www.prepar3d.com/SDKv3/LearningCenter/utilities/scripting/rpn_scripting.html
+
+Other A32NX stuff? https://docs.flybywiresim.com/fbw-a32nx/a32nx-api/a32nx-flightdeck-api/#external-lights-panel

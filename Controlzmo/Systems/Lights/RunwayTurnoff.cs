@@ -1,59 +1,31 @@
-﻿using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
+﻿using Controlzmo.Hubs;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct RunwayTurnoffLightData
+    [Component]
+    public class TaxiLightSetEvent : IEvent
     {
-        [SimVar("LIGHT TAXI:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftSwitch;
-        [SimVar("LIGHT TAXI:3", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightSwitch;
-        [SimVar("LIGHT TAXI ON:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftState;
-        [SimVar("LIGHT TAXI ON:3", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightState;
-    };
+        public string SimEvent() => "TAXI_LIGHTS_SET";
+    }
 
     [Component]
-    public class RunwayTurnoffLightSystem : DataListener<RunwayTurnoffLightData>, IRequestDataOnOpen, ISettable<bool>
+    public class RunwayTurnoffLightSystem : ISettable<bool>
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly ILogger _logging;
-        private readonly JetBridgeSender sender;
+        private readonly TaxiLightSetEvent rtEvent;
 
-        private bool? isOn;
-
-        public RunwayTurnoffLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<RunwayTurnoffLightSystem> _logging, JetBridgeSender sender)
+        public RunwayTurnoffLightSystem(TaxiLightSetEvent rtEvent)
         {
-            this.hub = hub;
-            this._logging = _logging;
-            this.sender = sender;
-        }
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
-
-        public override void Process(ExtendedSimConnect simConnect, RunwayTurnoffLightData data)
-        {
-            _logging.LogDebug($"Runway turnoff light state L {data.leftState} R {data.rightState}, switch L {data.leftSwitch}, switch R {data.rightSwitch}");
-            isOn = data.leftSwitch == 1 || data.rightSwitch == 1;
-            hub.Clients.All.SetFromSim(GetId(), isOn);
+            this.rtEvent = rtEvent;
         }
 
         public string GetId() => "lightsRunwayTurnoff";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            if (value != isOn) {
-                sender.Execute(simConnect, "2 (>K:TOGGLE_TAXI_LIGHTS) 3 (>K:TOGGLE_TAXI_LIGHTS)"); //TODO: or TAXI_LIGHTS_SET state 0/1, index 2/3
-                isOn = value;
-            }
+            uint code = value ? 1u : 0u;
+            simConnect.SendEvent(rtEvent, code, 2);
+            simConnect.SendEvent(rtEvent, code, 3);
         }
     }
 }

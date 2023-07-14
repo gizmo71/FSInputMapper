@@ -234,7 +234,7 @@ namespace SimConnectzmo
 //System.Console.Error.WriteLine($"Set data of type {data.GetType()} with id {id}: {GetLastSentPacketID()}");
         }
 
-        public void SendEvent(IEvent eventToSend, uint data = 0u, bool slow = false, bool fast = false)
+        public void SendEvent(IEvent eventToSend, uint data0 = 0u, uint data1 = 0u, uint data2 = 0u, uint data3 = 0u, uint data4 = 0u, bool slow = false, bool fast = false)
         {
             EVENT @event = eventToEnum![eventToSend];
             SIMCONNECT_EVENT_FLAG flags = 0;
@@ -252,8 +252,16 @@ namespace SimConnectzmo
             }
             if (slow) flags |= SIMCONNECT_EVENT_FLAG.SLOW_REPEAT_TIMER;
             if (fast) flags |= SIMCONNECT_EVENT_FLAG.FAST_REPEAT_TIMER;
-            TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data, group, flags);
-_logging?.LogDebug($"event {eventToSend} group {group} data {data}: {GetLastSentPacketID()}");
+            if (data1 == 0u && data2 == 0u && data3 == 0u && data4 == 0u) //TODO: why do some events not work the new way?!
+            {
+                TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data0, group, flags);
+_logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {data0} flags {flags}: {GetLastSentPacketID()}");
+            }
+            else
+            {
+                TransmitClientEvent_EX1(SIMCONNECT_OBJECT_ID_USER, @event, group, flags, data0, data1, data2, data3, data4);
+_logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {data0},{data1},{data2},{data3},{data4} flags {flags}: {GetLastSentPacketID()}");
+            }
         }
 
         public void RequestDataOnSimObject(IDataListener data, Enum period)

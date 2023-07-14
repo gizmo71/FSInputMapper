@@ -1,70 +1,42 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct NoseLightData
+    [Component]
+    public class LandingLightSetEvent : IEvent
     {
-        [SimVar("LIGHT TAXI:1", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int noseTaxiSwitch;
-        [SimVar("LIGHT TAXI ON:1", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int noseTaxiState;
-        [SimVar("LIGHT LANDING:1", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int noseTakeOffSwitch;
-        [SimVar("LIGHT LANDING ON:1", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int noseTakeOffState;
-    };
+        public string SimEvent() => "LANDING_LIGHTS_SET";
+    }
 
     [Component]
-    public class NoseLightSystem : DataListener<NoseLightData>, IRequestDataOnOpen, ISettable<string?>
+    public class NoseLightSystem : ISettable<string?>
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-        private readonly ILogger _logging;
-        private readonly JetBridgeSender sender;
+        private readonly LandingLightSetEvent landingLightEvent;
+        private readonly TaxiLightSetEvent taxiLightEvent;
 
-        public NoseLightSystem(IHubContext<ControlzmoHub, IControlzmoHub> hub, ILogger<NoseLightSystem> _logging, JetBridgeSender sender)
+        public NoseLightSystem(LandingLightSetEvent llEvent, TaxiLightSetEvent rtEvent)
         {
-            this.hub = hub;
-            this._logging = _logging;
-            this.sender = sender;
+            this.taxiLightEvent = rtEvent;
+            this.landingLightEvent = llEvent;
         }
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
-
-        public override void Process(ExtendedSimConnect simConnect, NoseLightData data)
-        {
-            _logging.LogDebug($"Nose light state taxi {data.noseTaxiState} TO {data.noseTakeOffState}, switch taxi {data.noseTaxiSwitch} TO {data.noseTakeOffSwitch}");
-            oldPosition = (data.noseTaxiSwitch == 1 ? 1 : 0) + (data.noseTakeOffSwitch == 1 ? 2 : 0);
-            hub.Clients.All.SetFromSim(GetId(), oldPosition switch { 0 => "off", 1 => "taxi", 2 => "takeoff", _ => "unknown" });
-        }
-
-        private int oldPosition;
 
         public string GetId() => "lightsNose";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            int newPosition;
+            uint taxi = 1u;
+            uint landing = 0u;
             if (value == "off")
-                newPosition = 0;
-            else if (value == "taxi")
-                newPosition = 1;
+                taxi = 0u;
             else if (value == "takeoff")
-                newPosition = 2;
-            else
+                landing = 1u;
+            else if (value != "taxi")
                 throw new ArgumentException($"Unknown nose light value '{value}'");
 
-            if (((newPosition ^ oldPosition) & 1) != 0)
-                sender.Execute(simConnect, "1 (>K:TOGGLE_TAXI_LIGHTS)"); //TODO or TAXI_LIGHTS_SET 0/1 index 1
-            if (((newPosition ^ oldPosition) & 2) != 0)
-                sender.Execute(simConnect, "1 (>K:LANDING_LIGHTS_TOGGLE)"); //TODO: or set using LANDING_LIGHTS_SET params 0/1 off/on, index 1
+            simConnect.SendEvent(taxiLightEvent, taxi, 1);
+            simConnect.SendEvent(landingLightEvent, landing, 1);
         }
     }
 }
