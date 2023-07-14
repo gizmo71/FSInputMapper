@@ -24,8 +24,8 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             uint code = value ? 1u : 0u;
-            simConnect.SendEvent(rtEvent, code, 2);
-            simConnect.SendEvent(rtEvent, code, 3);
+            simConnect.SendEventEx1(rtEvent, code, 2);
+            simConnect.SendEventEx1(rtEvent, code, 3);
         }
     }
 }

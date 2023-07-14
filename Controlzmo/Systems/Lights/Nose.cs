@@ -35,8 +35,8 @@ namespace Controlzmo.Systems.Lights
             else if (value != "taxi")
                 throw new ArgumentException($"Unknown nose light value '{value}'");
 
-            simConnect.SendEvent(taxiLightEvent, taxi, 1);
-            simConnect.SendEvent(landingLightEvent, landing, 1);
+            simConnect.SendEventEx1(taxiLightEvent, taxi, 1);
+            simConnect.SendEventEx1(landingLightEvent, landing, 1);
         }
     }
 }
