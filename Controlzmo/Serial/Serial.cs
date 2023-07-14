@@ -114,7 +114,7 @@ Console.Error.WriteLine($"set {id} to {value}");
 
         public void OnStarted(ExtendedSimConnect? _)
         {
-            //TODO: do syncs in both directions only when both SimConnect and the Serial port are running and the sim is started.
+//TODO: do syncs in both directions only when both SimConnect and the Serial port are running and the sim is started.
             if (_serialPort.IsOpen)
             {
                 var syncTimer = new Timer(5000);
@@ -124,7 +124,7 @@ Console.Error.WriteLine($"set {id} to {value}");
             }
         }
 
-        private void FullSync(object sender, ElapsedEventArgs args)
+        private void FullSync(object? sender, ElapsedEventArgs args)
         {
             SendLine("SyncInputs");
             holder.SimConnect?.TriggerInitialRequests();
