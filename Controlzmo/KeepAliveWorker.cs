@@ -17,7 +17,7 @@ namespace Controlzmo
             _logger = serviceProvider.GetRequiredService<ILogger<KeepAliveWorker>>();
 
             var timer = new System.Timers.Timer(5000);
-            timer.Elapsed += (object sender, ElapsedEventArgs args) => EnsureConnectionIfPossible();
+            timer.Elapsed += (object? sender, ElapsedEventArgs args) => EnsureConnectionIfPossible();
             timer.Start();
         }
 
