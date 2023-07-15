@@ -31,16 +31,13 @@ namespace Controlzmo.Systems.FlightControlUnit
     };
 
     [Component]
-    public class FcuDisplayBottomRight : DataListener<FcuBottomRightData>, IOnSimStarted
+    public class FcuDisplayBottomRight : DataListener<FcuBottomRightData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
 
-        public FcuDisplayBottomRight(IServiceProvider sp)
-        {
-            serial = sp.GetRequiredService<SerialPico>();
-        }
+        public FcuDisplayBottomRight(IServiceProvider sp) => serial = sp.GetRequiredService<SerialPico>();
 
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SIM_FRAME);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect _, FcuBottomRightData data)
         {
