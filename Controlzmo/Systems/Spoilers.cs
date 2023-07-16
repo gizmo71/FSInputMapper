@@ -1,69 +1,123 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using Windows.Gaming.Input;
 
 namespace Controlzmo.Systems.Spoilers
 {
-/*A32NX rules:
-* You cannot arm the spoilers unless the handle is RETRACTED.
-* If the new position is anything but that, the arming state is false.
-* Ground spoilers can be active during RTO even if not armed, in which case handle position becomes FULL.
-* Similar but more complex rules during landing, and position can be PARTIAL without showing active.
-* The "SPOILERS HANDLE POSITION" is the sim position, NOT the visible position, A32NX_SPOILERS_HANDLE_POSITION (0-1).
-*/
-    // Input events
-    [Component] public class LessSpoilerArmGroundEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_TOGGLE"; }
-    [Component] public class MoreSpoilerToggleEvent : IEvent { public string SimEvent() => "SPOILERS_TOGGLE"; }
-
     [Component]
-    public class MoreSpoilerEventHandler : IEventNotification
+    public class Walrus : CreateOnStartup
     {
-        private readonly MoreSpoilerToggleEvent trigger;
-        private readonly MoreSpoiler listener;
-        private readonly ILogger _logger;
+        private readonly CancellationTokenSource cancellationTokenSource = new();
+        private readonly MoreSpoiler moreListener;
+        private readonly LessSpoiler lessListener;
+        private readonly SimConnectHolder holder;
+        private readonly ILogger _logging;
+// https://learn.microsoft.com/en-us/windows/uwp/gaming/raw-game-controller
+// Will we get inputs it we're not in focus?
+        private RawGameController? hotas;
 
-        public MoreSpoilerEventHandler(IServiceProvider sp)
+        public Walrus(IServiceProvider sp)
         {
-            trigger = sp.GetRequiredService<MoreSpoilerToggleEvent>();
-            listener = sp.GetRequiredService<MoreSpoiler>();
-            _logger = sp.GetRequiredService<ILogger<MoreSpoilerEventHandler>>();
+            _logging = sp.GetRequiredService<ILogger<Walrus>>();
+            moreListener = sp.GetRequiredService<MoreSpoiler>();
+            lessListener = sp.GetRequiredService<LessSpoiler>();
+            holder = sp.GetRequiredService<SimConnectHolder>();
+            RawGameController.RawGameControllerAdded += Added;
+            RawGameController.RawGameControllerRemoved += Removed;
+            RawGameController.RawGameControllers.ToList().ForEach(c => Added(null, c));
         }
 
-        public IEvent GetEvent() => trigger;
-
-        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
+        private void Removed(object? sender, RawGameController c)
         {
-            _logger.LogTrace("User has asked for more speedbrake (using the toggle command)");
-            simConnect.RequestDataOnSimObject(listener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+            if (IsHotas(c))
+            {
+                hotas = null;
+                hotasButtons = null;
+                _logging.LogWarning($"Removed HOTAS");
+                cancellationTokenSource.Cancel();
+            }
+        }
+
+        private void Added(object? sender, RawGameController c)
+        {
+            if (IsHotas(c) && hotas == null)
+            {
+                hotasButtons = new bool[c.ButtonCount];
+                hotas = c;
+                _logging.LogInformation($"Added HOTAS");
+                var token = cancellationTokenSource.Token;
+                Task.Factory.StartNew(() =>
+                {
+                    while (!token.IsCancellationRequested)
+                    {
+                        Poll();
+                        Thread.Sleep(1);
+                    }
+                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            }
+            else
+                _logging.LogInformation($"Not (new) HOTAS: {c.HardwareProductId} by {c.HardwareVendorId} ({c.DisplayName}) buttons {c.ButtonCount}");
+        }
+
+        private static bool IsHotas(RawGameController c)
+        {
+            // 1031 by 1103 31 butons TCA thrust levers
+            //45322 by 1103 16 buttons T16000M stick
+            //45845 by 1103 12 buttons Ferrari gamepad
+            //46727 by 1103 14 buttons is the HOTAS thingy
+            return c.HardwareVendorId == 1103 && c.HardwareProductId == 46727;
+        }
+
+        private bool[]? hotasButtons;
+
+        private void Poll()
+        {
+            var buttonArray = new bool[14];
+            var axisArray = new double[0];
+            var switchArray = new GameControllerSwitchPosition[0];
+            hotas?.GetCurrentReading(buttonArray, switchArray, axisArray);
+            for (int i = 0; i < hotas?.ButtonCount; ++i)
+            {
+                if (buttonArray[i] != hotasButtons?[i])
+                {
+                    ButtonChange(i, hotasButtons![i] = buttonArray[i]);
+                }
+            }
+        }
+
+        private void ButtonChange(int index, bool value)
+        {
+            _logging.LogDebug($"Button {index}: {value}");
+            if (value == true) // Pressed
+            {
+                switch (index)
+                {
+//TODO: what should we do if we're not in the A32NX? Send the toggles as before?
+                    case 11: // Forward
+                        _logging.LogDebug("User has asked for less speedbrake");
+                        holder.SimConnect?.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                        break;
+                    case 13: // Backward
+                        _logging.LogDebug("User has asked for more speedbrake");
+                        holder.SimConnect?.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                        break;
+                }
+            }
         }
     }
-
-    [Component]
-    public class LessSpoilerEventHandler : IEventNotification
-    {
-        private readonly LessSpoilerArmGroundEvent trigger;
-        private readonly LessSpoiler listener;
-        private readonly ILogger<LessSpoilerEventHandler> _logger;
-
-        public LessSpoilerEventHandler(IServiceProvider sp)
-        {
-            trigger = sp.GetRequiredService<LessSpoilerArmGroundEvent>();
-            listener = sp.GetRequiredService<LessSpoiler>();
-            _logger = sp.GetRequiredService<ILogger<LessSpoilerEventHandler>>();
-        }
-
-        public IEvent GetEvent() => trigger;
-
-        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
-        {
-            _logger.LogTrace("User has asked for less speedbrake (using the toggle command)");
-            simConnect.RequestDataOnSimObject(listener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-        }
-    }
-
+    /* A32NX rules:
+       You cannot arm the spoilers unless the handle is RETRACTED.
+       If the new position is anything but that, the arming state is false.
+       Ground spoilers can be active during RTO even if not armed, in which case handle position becomes FULL.
+       Similar but more complex rules during landing, and position can be PARTIAL without showing active.
+       The "SPOILERS HANDLE POSITION" is the sim position, NOT the visible position, A32NX_SPOILERS_HANDLE_POSITION (0-1). */
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct SpoilerData
     {
