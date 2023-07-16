@@ -12,7 +12,7 @@ using Windows.Gaming.Input;
 namespace Controlzmo.Systems.Spoilers
 {
     [Component]
-    public class Walrus : CreateOnStartup
+    public class Walrus : CreateOnStartup, IOnSimConnection
     {
         private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly MoreSpoiler moreListener;
@@ -99,7 +99,6 @@ namespace Controlzmo.Systems.Spoilers
             {
                 switch (index)
                 {
-//TODO: what should we do if we're not in the A32NX? Send the toggles as before?
                     case 11: // Forward
                         _logging.LogDebug("User has asked for less speedbrake");
                         holder.SimConnect?.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
@@ -111,7 +110,14 @@ namespace Controlzmo.Systems.Spoilers
                 }
             }
         }
+
+        public void OnConnection(ExtendedSimConnect simConnect)
+        {
+            //TODO: can we poll using a simconnect 'timer'?
+            //simConnect.SubscribeToSystemEvent
+        }
     }
+
     /* A32NX rules:
        You cannot arm the spoilers unless the handle is RETRACTED.
        If the new position is anything but that, the arming state is false.
@@ -131,9 +137,10 @@ namespace Controlzmo.Systems.Spoilers
         public Int32 a32nxGroundSpoilersActive;
         [SimVar("L:A32NX_SPOILERS_HANDLE_POSITION", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.025f)]
         public float a32nxPosition;
+        [SimVar("L:A32NX_IS_READY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 a32nxReady;
     };
 
-    // Output events
     [Component] public class SpoilerArmOnEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_ON"; }
     [Component] public class SpoilerArmOffEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_OFF"; }
     [Component] public class SetSpoilerHandleEvent : IEvent { public string SimEvent() => "SPOILERS_SET"; }
@@ -151,11 +158,11 @@ namespace Controlzmo.Systems.Spoilers
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
-            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition}");
-//TODO: only do this if we're in the A32NX? Or will this never trigger?
-            if (data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1) data.armed = 1;
-//TODO: only do this if we're in the A32NX
-            data.position = (int)(100 * data.a32nxPosition);
+            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX ready? {data.a32nxReady} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition}");
+            if (data.a32nxReady == 1) {
+                if (data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1) data.armed = 1;
+                data.position = (int)(100 * data.a32nxPosition);
+            }
             _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}");
 
             ProcessSpoilerDemand(simConnect, data);
@@ -181,7 +188,6 @@ namespace Controlzmo.Systems.Spoilers
             if (data.armed != 0)
             {
                 toSend = armOffEvent;
-                //newPosition = 0;
             }
             else if (data.position < 100)
             {
