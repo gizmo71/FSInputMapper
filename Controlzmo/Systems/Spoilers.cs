@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -12,15 +10,11 @@ using Windows.Gaming.Input;
 namespace Controlzmo.Systems.Spoilers
 {
     [Component]
-    public class Walrus : CreateOnStartup, IOnSimConnection
+    public class Walrus : CreateOnStartup, IOnSimFrame
     {
-        private readonly CancellationTokenSource cancellationTokenSource = new();
         private readonly MoreSpoiler moreListener;
         private readonly LessSpoiler lessListener;
-        private readonly SimConnectHolder holder;
         private readonly ILogger _logging;
-// https://learn.microsoft.com/en-us/windows/uwp/gaming/raw-game-controller
-// Will we get inputs it we're not in focus?
         private RawGameController? hotas;
 
         public Walrus(IServiceProvider sp)
@@ -28,7 +22,6 @@ namespace Controlzmo.Systems.Spoilers
             _logging = sp.GetRequiredService<ILogger<Walrus>>();
             moreListener = sp.GetRequiredService<MoreSpoiler>();
             lessListener = sp.GetRequiredService<LessSpoiler>();
-            holder = sp.GetRequiredService<SimConnectHolder>();
             RawGameController.RawGameControllerAdded += Added;
             RawGameController.RawGameControllerRemoved += Removed;
             RawGameController.RawGameControllers.ToList().ForEach(c => Added(null, c));
@@ -41,7 +34,6 @@ namespace Controlzmo.Systems.Spoilers
                 hotas = null;
                 hotasButtons = null;
                 _logging.LogWarning($"Removed HOTAS");
-                cancellationTokenSource.Cancel();
             }
         }
 
@@ -52,15 +44,6 @@ namespace Controlzmo.Systems.Spoilers
                 hotasButtons = new bool[c.ButtonCount];
                 hotas = c;
                 _logging.LogInformation($"Added HOTAS");
-                var token = cancellationTokenSource.Token;
-                Task.Factory.StartNew(() =>
-                {
-                    while (!token.IsCancellationRequested)
-                    {
-                        Poll();
-                        Thread.Sleep(1);
-                    }
-                }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
             else
                 _logging.LogInformation($"Not (new) HOTAS: {c.HardwareProductId} by {c.HardwareVendorId} ({c.DisplayName}) buttons {c.ButtonCount}");
@@ -77,7 +60,7 @@ namespace Controlzmo.Systems.Spoilers
 
         private bool[]? hotasButtons;
 
-        private void Poll()
+        public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data)
         {
             var buttonArray = new bool[14];
             var axisArray = new double[0];
@@ -87,12 +70,12 @@ namespace Controlzmo.Systems.Spoilers
             {
                 if (buttonArray[i] != hotasButtons?[i])
                 {
-                    ButtonChange(i, hotasButtons![i] = buttonArray[i]);
+                    ButtonChange(simConnect, i, hotasButtons![i] = buttonArray[i]);
                 }
             }
         }
 
-        private void ButtonChange(int index, bool value)
+        private void ButtonChange(ExtendedSimConnect simConnect, int index, bool value)
         {
             _logging.LogDebug($"Button {index}: {value}");
             if (value == true) // Pressed
@@ -101,20 +84,14 @@ namespace Controlzmo.Systems.Spoilers
                 {
                     case 11: // Forward
                         _logging.LogDebug("User has asked for less speedbrake");
-                        holder.SimConnect?.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                        simConnect.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
                         break;
                     case 13: // Backward
                         _logging.LogDebug("User has asked for more speedbrake");
-                        holder.SimConnect?.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                        simConnect.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
                         break;
                 }
             }
-        }
-
-        public void OnConnection(ExtendedSimConnect simConnect)
-        {
-            //TODO: can we poll using a simconnect 'timer'?
-            //simConnect.SubscribeToSystemEvent
         }
     }
 

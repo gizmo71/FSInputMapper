@@ -14,7 +14,7 @@ namespace SimConnectzmo
     // Change ENUM_DYNAMIC_START if you need more internal values.
     internal enum REQUEST { AircraftLoaded = 1, SimSystemState }
     internal enum STRUCT { }
-    internal enum EVENT { SimSystemState = 1 }
+    internal enum EVENT { SimSystemState = 1, Frame }
     internal enum GROUP { JUST_MASKABLE = 1 }
 
     public class ExtendedSimConnect : SimConnect
@@ -31,6 +31,7 @@ namespace SimConnectzmo
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
         private IEnumerable<IOnSimConnection>? onConnectionHandlers;
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
+        private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
 
         public bool? IsSimStarted;
 
@@ -42,6 +43,7 @@ namespace SimConnectzmo
             OnRecvSimobjectData += Handle_OnRecvSimobjectData;
             OnRecvClientData += Handle_OnRecvSimobjectData;
             OnRecvEvent += Handle_OnRecvEvent;
+            OnRecvEventFrame += Handle_OnRecvEventFrame;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
 
@@ -87,6 +89,7 @@ namespace SimConnectzmo
 
             onConnectionHandlers = serviceProvider.GetServices<IOnSimConnection>();
             onSimStartedHandlers = serviceProvider.GetServices<IOnSimStarted>();
+            onSimFrameHandlers = serviceProvider.GetServices<IOnSimFrame>();
 
             return this;
         }
@@ -98,6 +101,7 @@ namespace SimConnectzmo
             SetGroupPriorities();
 
             SubscribeToSystemEvent(EVENT.SimSystemState, "Sim");
+            SubscribeToSystemEvent(EVENT.Frame, "frame");
             _logging!.LogInformation($"Requested SimStart subscription {GetLastSentPacketID()}");
 
             TriggerInitialRequests();
@@ -307,22 +311,33 @@ _logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {dataLog} f
             listener.Process(this, data.dwData[0]);
         }
 
+        private void Handle_OnRecvEventFrame(SimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data)
+        {
+            EVENT e = (EVENT)data.uEventID;
+            if (e != EVENT.Frame)
+                return;
+            foreach (var handler in onSimFrameHandlers!)
+                handler.OnFrame(this, data);
+        }
+
         private void Handle_OnRecvEvent(SimConnect simConnect, SIMCONNECT_RECV_EVENT data)
         {
             EVENT e = (EVENT)data.uEventID;
             if (e == EVENT.SimSystemState)
             {
                 HandleSimSystemStateEvent(simConnect, data);
-                return;
             }
-            IEnumerable<IEventNotification> notifications = notificationsToEvent!
-                .Where(candidate => e == candidate.Value)
-                .Select(candidate => candidate.Key);
+            else
+            {
+                IEnumerable<IEventNotification> notifications = notificationsToEvent!
+                    .Where(candidate => e == candidate.Value)
+                    .Select(candidate => candidate.Key);
 _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Convert.ToString(data.dwData, 16)} {(int)data.dwData}s (of {data.dwSize})"
     + $" Group ID {(GROUP)data.uGroupID} with ID {data.dwID} and version {data.dwVersion}");
-            foreach (IEventNotification notification in notifications)
-            {
-                notification.OnRecieve(this, data);
+                foreach (IEventNotification notification in notifications)
+                {
+                    notification.OnRecieve(this, data);
+                }
             }
         }
 

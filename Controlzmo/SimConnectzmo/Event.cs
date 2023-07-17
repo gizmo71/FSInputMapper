@@ -3,6 +3,11 @@ using Microsoft.FlightSimulator.SimConnect;
 
 namespace SimConnectzmo
 {
+    public interface IOnSimFrame
+    {
+        public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data);
+    }
+
     public interface IOnSimConnection
     {
         public void OnConnection(ExtendedSimConnect simConnect);
