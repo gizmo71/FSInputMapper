@@ -1,27 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using Controlzmo.Systems.Autothrust;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Windows.Gaming.Input;
 
 namespace Controlzmo.Systems.Spoilers
 {
+//TODO: refactor this good and hard!
     [Component]
     public class Walrus : CreateOnStartup, IOnSimFrame
     {
         private readonly MoreSpoiler moreListener;
         private readonly LessSpoiler lessListener;
+        private readonly AutothrottleArmedDataListener autothrustListener;
         private readonly ILogger _logging;
         private RawGameController? hotas;
+        private RawGameController? tcaThrust;
 
         public Walrus(IServiceProvider sp)
         {
             _logging = sp.GetRequiredService<ILogger<Walrus>>();
             moreListener = sp.GetRequiredService<MoreSpoiler>();
             lessListener = sp.GetRequiredService<LessSpoiler>();
+            autothrustListener = sp.GetRequiredService<AutothrottleArmedDataListener>();
             RawGameController.RawGameControllerAdded += Added;
             RawGameController.RawGameControllerRemoved += Removed;
             RawGameController.RawGameControllers.ToList().ForEach(c => Added(null, c));
@@ -45,20 +50,31 @@ namespace Controlzmo.Systems.Spoilers
                 hotas = c;
                 _logging.LogInformation($"Added HOTAS");
             }
+            else if (IsTcaThrust(c) && tcaThrust == null)
+            {
+                tcaButtons = new bool[c.ButtonCount];
+                tcaThrust = c;
+                _logging.LogInformation($"Added TCA");
+            }
             else
                 _logging.LogInformation($"Not (new) HOTAS: {c.HardwareProductId} by {c.HardwareVendorId} ({c.DisplayName}) buttons {c.ButtonCount}");
         }
 
+        //45322 by 1103 16 buttons T16000M stick
+        //45845 by 1103 12 buttons Ferrari gamepad
+
         private static bool IsHotas(RawGameController c)
         {
-            // 1031 by 1103 31 butons TCA thrust levers
-            //45322 by 1103 16 buttons T16000M stick
-            //45845 by 1103 12 buttons Ferrari gamepad
-            //46727 by 1103 14 buttons is the HOTAS thingy
-            return c.HardwareVendorId == 1103 && c.HardwareProductId == 46727;
+            return c.HardwareVendorId == 1103 && c.HardwareProductId == 46727; // 14 buttons
+        }
+
+        private static bool IsTcaThrust(RawGameController c)
+        {
+            return c.HardwareVendorId == 1103 && c.HardwareProductId == 1031; // 31 (logical) butons
         }
 
         private bool[]? hotasButtons;
+        private bool[]? tcaButtons;
 
         public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data)
         {
@@ -67,17 +83,18 @@ namespace Controlzmo.Systems.Spoilers
             var switchArray = new GameControllerSwitchPosition[0];
             hotas?.GetCurrentReading(buttonArray, switchArray, axisArray);
             for (int i = 0; i < hotas?.ButtonCount; ++i)
-            {
                 if (buttonArray[i] != hotasButtons?[i])
-                {
-                    ButtonChange(simConnect, i, hotasButtons![i] = buttonArray[i]);
-                }
-            }
+                    HotasButtonChange(simConnect, i, hotasButtons![i] = buttonArray[i]);
+            buttonArray = new bool[31];
+            tcaThrust?.GetCurrentReading(buttonArray, switchArray, axisArray);
+            for (int i = 0; i < hotas?.ButtonCount; ++i)
+                if (buttonArray[i] != tcaButtons?[i])
+                    TcaButtonChange(simConnect, i, tcaButtons![i] = buttonArray[i]);
         }
 
-        private void ButtonChange(ExtendedSimConnect simConnect, int index, bool value)
+        private void HotasButtonChange(ExtendedSimConnect simConnect, int index, bool value)
         {
-            _logging.LogDebug($"Button {index}: {value}");
+            _logging.LogDebug($"HOTAS button {index}: {value}");
             if (value == true) // Pressed
             {
                 switch (index)
@@ -89,6 +106,21 @@ namespace Controlzmo.Systems.Spoilers
                     case 13: // Backward
                         _logging.LogDebug("User has asked for more speedbrake");
                         simConnect.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                        break;
+                }
+            }
+        }
+
+        private void TcaButtonChange(ExtendedSimConnect simConnect, int index, bool value)
+        {
+            _logging.LogWarning($"TCA TL button {index} is {value}");
+            if (value == true) // Pressed
+            {
+                switch (index)
+                {
+                    case 0: // Left intuitive disconnect
+                        _logging.LogDebug("User has asked to arm autothrust");
+                        simConnect.RequestDataOnSimObject(autothrustListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
                         break;
                 }
             }
