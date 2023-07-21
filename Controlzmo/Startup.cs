@@ -30,6 +30,14 @@ namespace Controlzmo
             {
                 if (candidate.GetCustomAttribute<ComponentAttribute>() == null) continue;
                 services.AddSingleton(candidate, candidate);
+                var type = candidate;
+                while ((type = type!.BaseType?.GetTypeInfo()) != null && type != typeof(Object))
+                {
+//TODO: consider whether to add for types not annotated... Does the Object test above work?
+                    services.AddSingleton(type, x => x.GetRequiredService(candidate));
+                    type = type?.BaseType?.GetTypeInfo();
+                }
+//TODO: unify the above and below somehow...
                 foreach (var also in candidate.GetInterfaces())
                     services.AddSingleton(also, x => x.GetRequiredService(candidate));
             }
