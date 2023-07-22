@@ -1,7 +1,6 @@
 ﻿using Controlzmo.Hubs;
-using Microsoft.Extensions.DependencyInjection;
+using Lombok.NET;
 using SimConnectzmo;
-using System;
 
 namespace Controlzmo.Systems.Lights
 {
@@ -12,14 +11,13 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class BeaconLight : ISettable<bool?>
+    [RequiredArgsConstructor]
+    public partial class BeaconLight : ISettable<bool?>
     {
-        private readonly BeaconLightSetEvent @event;
-
-        public BeaconLight(IServiceProvider sp) => this.@event = sp.GetRequiredService<BeaconLightSetEvent>();
+        private readonly BeaconLightSetEvent setEvent;
 
         public string GetId() => "beaconLight";
 
-        public void SetInSim(ExtendedSimConnect simConnect, bool? value) => simConnect.SendEvent(@event, value == true ? 1u : 0u);
+        public void SetInSim(ExtendedSimConnect simConnect, bool? value) => simConnect.SendEvent(setEvent, value == true ? 1u : 0u);
     }
 }
