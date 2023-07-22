@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -24,22 +25,17 @@ namespace Controlzmo.Systems.Autothrust
     [Component] public class ToggleAutothrustArmEvent : IEvent { public string SimEvent() => "AUTO_THROTTLE_ARM"; }
 
     [Component]
-    public class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>
+    [RequiredArgsConstructor]
+    public partial class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>
     {
-        protected readonly ToggleAutothrustArmEvent @event;
-        protected readonly ILogger _logger;
-
-        public AutothrottleArmedDataListener(IServiceProvider sp)
-        {
-            _logger = sp.GetRequiredService<ILogger<AutothrottleArmedDataListener>>();
-            @event = sp.GetRequiredService<ToggleAutothrustArmEvent>();
-        }
+        private readonly ToggleAutothrustArmEvent _event;
+        private readonly ILogger<AutothrottleArmedDataListener> _logger;
 
         public override void Process(ExtendedSimConnect simConnect, AutothrottleArmedData data)
         {
             _logger.LogDebug($"Is it currently armed? {data.autothrottleArmed}/{data.autothrottleActive} or {data.a32nxAutothrustMode}");
             if (data.autothrottleArmed == 0 && data.autothrottleActive == 0 && data.a32nxAutothrustMode == 0)
-                simConnect.SendEvent(@event);
+                simConnect.SendEvent(_event);
         }
     }
 }
