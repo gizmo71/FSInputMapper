@@ -39,6 +39,7 @@ namespace Controlzmo.GameControllers
         }
     }
 
+    [Component]
     public abstract class GameController : IOnSimFrame
     {
         public abstract ushort Vendor();

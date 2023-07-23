@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Controlzmo.Hubs;
 using Microsoft.AspNetCore.Builder;
@@ -26,22 +28,33 @@ namespace Controlzmo
             services.AddRazorPages();
             services.AddSignalR();
             services.AddLogging();
-            foreach (var candidate in Assembly.GetEntryAssembly()!.DefinedTypes)
+            foreach (var component in Assembly.GetEntryAssembly()!.DefinedTypes.Where(IsConcreteComponent))
             {
-                if (candidate.GetCustomAttribute<ComponentAttribute>() == null) continue;
-                services.AddSingleton(candidate, candidate);
-                var type = candidate;
-                while ((type = type!.BaseType?.GetTypeInfo()) != null && type != typeof(Object))
-                {
-//TODO: consider whether to add for types not annotated... Does the Object test above work?
-                    services.AddSingleton(type, x => x.GetRequiredService(candidate));
-                    type = type?.BaseType?.GetTypeInfo();
-                }
-//TODO: unify the above and below somehow...
-                foreach (var also in candidate.GetInterfaces())
-                    services.AddSingleton(also, x => x.GetRequiredService(candidate));
+                Console.WriteLine($"{component}");
+                services.AddSingleton(component, component);
+                foreach (var also in GetInterfacesAndParentComponents(component))
+                    services.AddSingleton(also, x => x.GetRequiredService(component));
             }
         }
+
+        private static IEnumerable<TypeInfo> GetInterfacesAndParentComponents(TypeInfo type)
+        {
+            foreach (var also in type.GetInterfaces())
+            {
+                Console.WriteLine($"\t{also} interface for {type}");
+                yield return also.GetTypeInfo();
+            }
+            for (TypeInfo? @base = type; (@base = @base!.BaseType?.GetTypeInfo()) != null;)
+            {
+                if (IsComponent(@base)) {
+                    Console.WriteLine($"\t{@base} base for {type}");
+                    yield return @base;
+                }
+            }
+        }
+
+        private static bool IsConcreteComponent(TypeInfo type) => !type.IsAbstract && IsComponent(type);
+        private static bool IsComponent(TypeInfo type) => type.GetCustomAttribute<ComponentAttribute>() != null;
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
