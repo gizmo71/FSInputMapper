@@ -1,5 +1,7 @@
 ﻿using Controlzmo;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -12,20 +14,24 @@ namespace SimConnectzmo
     {
         private readonly SimConnectHolder holder;
         private readonly IServiceProvider serviceProvider;
+        private readonly ILogger _log;
         private readonly AutoResetEvent MessageSignal = new AutoResetEvent(false);
 
-        public Adapter(IServiceProvider serviceProvider) : base(serviceProvider)
+        public Adapter(IServiceProvider sp) : base(sp)
         {
-            this.holder = serviceProvider.GetRequiredService<SimConnectHolder>();
-            this.serviceProvider = serviceProvider;
+            this.serviceProvider = sp;
+            _log = serviceProvider.GetRequiredService<ILogger<Adapter>>();
+            holder = serviceProvider.GetRequiredService<SimConnectHolder>();
         }
 
         private const uint WM_USER_SIMCONNECT = 0x0402;
 
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
+_log.LogInformation("Adapter starting <<<--->>>");
             holder.SimConnect = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
                 .AssignIds(serviceProvider);
+_log.LogInformation("Adapter started <<<--->>>");
         }
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
@@ -33,9 +39,7 @@ namespace SimConnectzmo
             if (MessageSignal!.WaitOne(5_000))
             {
                 holder.SimConnect!.ReceiveMessage();
-//_logger.LogInformation("Got somet' from SimConnect");
             }
-//else _logger.LogDebug("Got nowt from SimConnect");
         }
 
         protected override void OnStop(object? sender, DoWorkEventArgs args)
