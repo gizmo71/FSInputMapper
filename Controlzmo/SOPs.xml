@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <SOPs>
-	<Airline callsign="shamrock"> <!-- ALVA -->
+	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
 		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
