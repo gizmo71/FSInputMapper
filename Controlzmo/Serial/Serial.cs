@@ -104,7 +104,7 @@ Console.Error.WriteLine($"set {id} to {value}");
             holder = serviceProvider.GetRequiredService<SimConnectHolder>();
             inbound = serviceProvider.GetRequiredService<SerialInbound>();
 
-            _serialPort = new SerialPort(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
+            _serialPort = new(portName: "COM3", baudRate: 115200, parity: Parity.None, dataBits: 8);
             _serialPort.StopBits = StopBits.One;
             _serialPort.Handshake = Handshake.RequestToSend;
             _serialPort.DtrEnable = true;
