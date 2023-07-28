@@ -13,7 +13,7 @@ namespace Controlzmo.GameControllers
         private readonly MoreSpoiler moreListener;
         private readonly LessSpoiler lessListener;
 
-        public T16000mHotas(IServiceProvider sp) : base(sp, 14)
+        public T16000mHotas(IServiceProvider sp) : base(sp, 14, 8, 1)
         {
             moreListener = sp.GetRequiredService<MoreSpoiler>();
             lessListener = sp.GetRequiredService<LessSpoiler>();

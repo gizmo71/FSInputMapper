@@ -12,7 +12,7 @@ namespace Controlzmo.GameControllers
     {
         private readonly AutothrottleArmedDataListener autothrustListener;
 
-        public TcaAirbusQuadrant(IServiceProvider sp) : base(sp, 31)
+        public TcaAirbusQuadrant(IServiceProvider sp) : base(sp, 31, 7, 0)
         {
             autothrustListener = sp.GetRequiredService<AutothrottleArmedDataListener>();
         }

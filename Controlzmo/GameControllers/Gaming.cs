@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Gaming.Input;
 
-//45322 by 1103 16 buttons T16000M stick
-//45845 by 1103 12 buttons Ferrari gamepad
+//45322 by 1103, T16000M stick: 16 buttons, 4 axes, 1 switch
+//45845 by 1103, Ferrari gamepad: 12 buttons, 4 axes, 1 switch
 namespace Controlzmo.GameControllers
 {
     [Component]
@@ -29,6 +29,7 @@ namespace Controlzmo.GameControllers
         private void Added(object? sender, RawGameController c)
         {
             _log.LogDebug($"Controller {c.HardwareVendorId} {c.HardwareProductId} = {c.DisplayName} added");
+            _log.LogDebug($"\thas {c.ButtonCount} buttons, {c.AxisCount} axes, {c.SwitchCount} switches");
             foreach (var gc in controllers)
                 gc.Offer(c);
         }
@@ -45,14 +46,24 @@ namespace Controlzmo.GameControllers
         public abstract ushort Vendor();
         public abstract ushort Product();
 
-        private readonly bool[] buttonState;
+        private readonly bool[] buttonsOld;
+        private readonly double[] axesOld;
+        private readonly GameControllerSwitchPosition[] switchesOld;
+        private readonly bool[] buttonsNew;
+        private readonly double[] axesNew;
+        private readonly GameControllerSwitchPosition[] switchesNew;
         private ulong? lastReadingTimestamp;
         protected readonly ILogger _log;
         private RawGameController? raw;
 
-        protected GameController(IServiceProvider sp, int buttons)
+        protected GameController(IServiceProvider sp, int buttons, int axes, int switches)
         {
-            buttonState = new bool[buttons];
+            buttonsOld = new bool[buttons];
+            buttonsNew = (bool[])buttonsOld.Clone();
+            axesOld = new double[axes];
+            axesNew = (double[])axesOld.Clone();
+            switchesOld = new GameControllerSwitchPosition[switches];
+            switchesNew = (GameControllerSwitchPosition[]) switchesOld.Clone();
             _log = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
         }
 
@@ -62,22 +73,19 @@ namespace Controlzmo.GameControllers
                 return;
             }
             raw = candidate;
-            _log.LogDebug($"{GetHashCode()} claimed {raw} {buttonState.Length} = {raw.ButtonCount}?");
+            _log.LogDebug($"{GetHashCode()} claimed {raw} {buttonsOld.Length} = {raw.ButtonCount}?");
         }
 
-        private double[] axisArray = { };
-        private GameControllerSwitchPosition[] switchArray = { };
         public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data)
         {
 //_log.LogCritical($"{raw} in {GetHashCode()}");
-            var buttonArray = new bool[buttonState.Length]; //TODO: just create this once when the class starts.
-            var timestamp = raw?.GetCurrentReading(buttonArray, switchArray, axisArray);
+            var timestamp = raw?.GetCurrentReading(buttonsNew, switchesNew, axesNew);
 //_log.LogCritical($"{lastReadingTimestamp} -> {timestamp} @ {raw}");
             if (timestamp == lastReadingTimestamp) return;
             lastReadingTimestamp = timestamp;
-            for (int i = 0; i < buttonState.Length; ++i)
-                if (buttonArray[i] != buttonState[i])
-                    OnButtonChange(simConnect, i, buttonState[i] = buttonArray[i]);
+            for (int i = 0; i < buttonsOld.Length; ++i)
+                if (buttonsNew[i] != buttonsOld[i])
+                    OnButtonChange(simConnect, i, buttonsOld[i] = buttonsNew[i]);
         }
 
         public abstract void OnButtonChange(ExtendedSimConnect simConnect, int index, bool isPressed);
