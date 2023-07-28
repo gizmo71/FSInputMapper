@@ -47,7 +47,8 @@ namespace SimConnectzmo
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
 
-            FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
+//TODO: What's this for?
+            //FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         private void Handle_Exception(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
