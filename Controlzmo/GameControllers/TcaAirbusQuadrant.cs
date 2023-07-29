@@ -20,18 +20,13 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 1031;
 
-        public override void OnButtonChange(ExtendedSimConnect simConnect, int index, bool isPressed)
+        private static readonly int BUTTON_LEFT_INTUITIVE_DISCONNECT = 0;
+        protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-            _log.LogWarning($"TCA TL button {index} = {isPressed}");
-            if (isPressed)
+            if (buttonsNew[BUTTON_LEFT_INTUITIVE_DISCONNECT] && !buttonsOld[BUTTON_LEFT_INTUITIVE_DISCONNECT])
             {
-                switch (index)
-                {
-                    case 0: // Left intuitive disconnect
-                        _log.LogDebug("User has asked to arm autothrust");
-                        simConnect.RequestDataOnSimObject(autothrustListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                        break;
-                }
+                _log.LogDebug("User has asked to arm autothrust");
+                simConnect.RequestDataOnSimObject(autothrustListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
             }
         }
     }

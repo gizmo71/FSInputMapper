@@ -46,12 +46,13 @@ namespace Controlzmo.GameControllers
         public abstract ushort Vendor();
         public abstract ushort Product();
 
-        private readonly bool[] buttonsOld;
-        private readonly double[] axesOld;
-        private readonly GameControllerSwitchPosition[] switchesOld;
-        private readonly bool[] buttonsNew;
-        private readonly double[] axesNew;
-        private readonly GameControllerSwitchPosition[] switchesNew;
+        protected readonly bool[] buttonsOld;
+        protected readonly bool[] buttonsNew;
+        protected readonly double[] axesOld;
+        protected readonly double[] axesNew;
+        protected readonly GameControllerSwitchPosition[] switchesOld;
+        protected readonly GameControllerSwitchPosition[] switchesNew;
+
         private ulong? lastReadingTimestamp;
         protected readonly ILogger _log;
         private RawGameController? raw;
@@ -62,7 +63,7 @@ namespace Controlzmo.GameControllers
             buttonsNew = (bool[])buttonsOld.Clone();
             axesOld = new double[axes];
             axesNew = (double[])axesOld.Clone();
-            switchesOld = new GameControllerSwitchPosition[switches];
+            switchesOld = new GameControllerSwitchPosition[switches]; //TODO: initialise to centre?
             switchesNew = (GameControllerSwitchPosition[]) switchesOld.Clone();
             _log = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
         }
@@ -83,11 +84,12 @@ namespace Controlzmo.GameControllers
 //_log.LogCritical($"{lastReadingTimestamp} -> {timestamp} @ {raw}");
             if (timestamp == lastReadingTimestamp) return;
             lastReadingTimestamp = timestamp;
-            for (int i = 0; i < buttonsOld.Length; ++i)
-                if (buttonsNew[i] != buttonsOld[i])
-                    OnButtonChange(simConnect, i, buttonsOld[i] = buttonsNew[i]);
+            OnUpdate(simConnect);
+            buttonsNew.CopyTo(buttonsOld, 0);
+            axesNew.CopyTo(axesOld, 0);
+            switchesNew.CopyTo(switchesOld, 0);
         }
 
-        public abstract void OnButtonChange(ExtendedSimConnect simConnect, int index, bool isPressed);
+        protected abstract void OnUpdate(ExtendedSimConnect simConnect);
     }
 }

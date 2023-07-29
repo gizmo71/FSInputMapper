@@ -22,22 +22,27 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 46727;
 
-        public override void OnButtonChange(ExtendedSimConnect simConnect, int index, bool isPressed)
+        private static readonly int AXIS_MINISTICK_HORIZONTAL = 0;
+        private static readonly int AXIS_MINISTICK_VERTICAL = 1;
+        private static readonly int AXIS_THROTTLE = 2;
+        private static readonly int AXIS_RUDDER_PADDLES = 5;
+        private static readonly int AXIS_WHEEL = 7; // ThrustMaster call it "Antenna".
+
+        private static readonly int BUTTON_BOTTOM_HAT_FORE = 11;
+        private static readonly int BUTTON_BOTTOM_HAT_AFT = 13;
+        protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-            _log.LogDebug($"HOTAS button {index}: {isPressed}");
-            if (isPressed)
+            /*for (int i = 0; i < axesOld.Length; ++i)
+                if (axesOld[i] != axesNew[i])
+                    _log.LogDebug($"HOTAS: axes[{i}] {axesOld[i]} -> {axesNew[i]}");*/
+            if (!buttonsOld[BUTTON_BOTTOM_HAT_FORE] && buttonsNew[BUTTON_BOTTOM_HAT_FORE]) {
+                _log.LogDebug("User has asked for less speedbrake");
+                simConnect.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+            }
+            if (!buttonsOld[BUTTON_BOTTOM_HAT_AFT] && buttonsNew[BUTTON_BOTTOM_HAT_AFT])
             {
-                switch (index)
-                {
-                    case 11: // Forward
-                        _log.LogDebug("User has asked for less speedbrake");
-                        simConnect.RequestDataOnSimObject(lessListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                        break;
-                    case 13: // Backward
-                        _log.LogDebug("User has asked for more speedbrake");
-                        simConnect.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                        break;
-                }
+                _log.LogDebug("User has asked for more speedbrake");
+                simConnect.RequestDataOnSimObject(moreListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
             }
         }
 
