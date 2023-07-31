@@ -31,6 +31,12 @@
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
 	</Airline>
+	<Airline callsign="goldberg"><!-- AirGoldberg -->
+		<Text type="A20N">Preparation 10-40 minutes, air time counts</Text>
+		<Text type="A20N">Start #2 first, warm up; cool down</Text>
+		<Text type="A20N">Taxi in/out time above 50% of expectation requires review</Text>
+		<Text type="A20N">Must have at least 1000kg fuel on pushback and landing</Text>
+	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
 		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
 		<Text type="A20N">Start #2 first, warm up</Text>
