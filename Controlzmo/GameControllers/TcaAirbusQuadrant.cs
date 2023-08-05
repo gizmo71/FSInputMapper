@@ -20,6 +20,20 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 1031;
 
+        /* Buttons
+        0 left intuitive disconnect
+        1 rigth intuitive disconnect
+        2 left engine master
+        3 right engine master
+        4 left fire "light"
+        4 right fire "light"
+        6 engine mode crank
+        7 engine mode ignition/start
+        /* Axes
+        0 left thrust lever (0 TOGA->1 max reverse)
+        1 right thrust lever (0 TOGA->1 max reverse)
+        /* Switches
+         */
         private static readonly int BUTTON_LEFT_INTUITIVE_DISCONNECT = 0;
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {

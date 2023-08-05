@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Gaming.Input;
 
-//45322 by 1103, T16000M stick: 16 buttons, 4 axes, 1 switch
-//45845 by 1103, Ferrari gamepad: 12 buttons, 4 axes, 1 switch
 namespace Controlzmo.GameControllers
 {
     [Component]
