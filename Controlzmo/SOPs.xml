@@ -3,7 +3,8 @@
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
-		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
+		<Text type="A20N">Start #1 first, warm up; cool down</Text>
+		<Text type="A20N">OETD, OETA (not when substituting for A320)</Text>
 		<Text type="A33[09]">Start #1 first; warm up, cool down</Text>
 		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
 		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
