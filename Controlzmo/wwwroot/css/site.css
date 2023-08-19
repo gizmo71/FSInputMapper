@@ -101,3 +101,11 @@ ul.tab-menu li {
 .tableCaption {
     writing-mode: vertical-lr;
 }
+
+@media (min-width: 1500px) {
+    .gridContainer {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-gap: 5px;
+    }
+}
