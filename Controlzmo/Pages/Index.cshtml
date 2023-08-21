@@ -104,8 +104,13 @@
                         </tr>
         -->
         </table>
-        <div style="float: right; writing-mode: vertical-lr;">
-            &nbsp;<input type="button" id="ecamButtonTakeOffConfig" value="T.O.&#x00A;Config" class="sendButton" />
+        <div style="float: right;">
+            <br />
+            <input type="button" id="ecamButtonTakeOffConfig" value="T.O.&#x00A;Config" class="sendButton" style="-webkit-transform: rotate(0deg);" />
+            <br /><br />
+            <label for="cockpitDoor">Cockpit<br />door<br />locked</label>
+            <br />
+            <input type="checkbox" id="cockpitDoor" class="sendBoolean" />
         </div>
         <table style="font-size: larger">
             <tr style="font-size: smaller;">
@@ -145,13 +150,13 @@
                     <input id="com2standby" is="com-frequency" class="lcdDisplay sendText" />
                 </td>
             </tr>
-                    <!--
-                    <input type="button" id="com3rxToggle" value="Rx" class="sendButton" />
-                    <label for="com3standby">COM3</label>
-                    <input id="com3active" readonly size="7" class="lcdDisplay" />
-                    <input type="button" id="com3swap" value="↔" class="sendButton" />
-                    <input id="com3standby" type="number" size="7" min="118.0" max="136.975" step="0.005" pattern="1[1-3]\d\.\d(\d[05]?)?" class="sendText" />
-                    -->
+                <!--
+                <input type="button" id="com3rxToggle" value="Rx" class="sendButton" />
+                <label for="com3standby">COM3</label>
+                <input id="com3active" readonly size="7" class="lcdDisplay" />
+                <input type="button" id="com3swap" value="↔" class="sendButton" />
+                <input id="com3standby" type="number" size="7" min="118.0" max="136.975" step="0.005" pattern="1[1-3]\d\.\d(\d[05]?)?" class="sendText" />
+                -->
         </table>
         <table style="font-size: larger">
             <tr style="font-size: smaller;">
