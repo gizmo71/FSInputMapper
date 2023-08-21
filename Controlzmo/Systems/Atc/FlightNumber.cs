@@ -36,12 +36,12 @@ namespace Controlzmo.Systems.Atc
         {
             if (badPattern.IsMatch(data.flight))
             {
-                var was = data.flight;
+//var was = data.flight;
                 data.flight = "4DG";
-hub.Clients.All.Speak($"{was} becoming {data.flight}");
+//hub.Clients.All.Speak($"{was} becoming {data.flight}");
                 simConnect.SendDataOnSimObject(data);
             }
-else hub.Clients.All.Speak($"just {data.flight}");
+//else hub.Clients.All.Speak($"just {data.flight}");
         }
     }
 }
