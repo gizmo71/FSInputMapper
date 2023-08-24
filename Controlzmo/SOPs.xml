@@ -3,13 +3,14 @@
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
-		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
+		<Text type="A20N">Start #1 first, warm up; cool down</Text>
+		<Text type="A20N">OETD, OETA (not when substituting for A320)</Text>
 		<Text type="A33[09]">Start #1 first; warm up, cool down</Text>
 		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
 		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
 		<Text type=".*">All PIREPs are reviewed</Text>
 	</Airline>
-	<Airline callsign="all[- ]nippon"><!-- vANA -->
+	<Airline callsign="all[- ]nippon"> <!-- vANA -->
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 		<Text type="A20N">Warm up, cool down</Text>
 	</Airline>
@@ -21,7 +22,7 @@
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 	</Airline>
-	<Airline callsign="eurowings"><!-- vEWG -->
+	<Airline callsign="eurowings"> <!-- vEWG -->
 		<Text type="A20N">Preparation 20-180 minutes, air time counts</Text>
 		<Text type="A20N">Start #2 first, warm up; OETA, cool down</Text>
 	</Airline>
@@ -30,6 +31,12 @@
 		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
+	</Airline>
+	<Airline callsign="goldberg"> <!-- AirGoldberg -->
+		<Text type="A20N">Preparation 10-40 minutes, air time counts</Text>
+		<Text type="A20N">Start #2 first, warm up; cool down</Text>
+		<Text type="A20N">Taxi in/out time above 50% of expectation requires review</Text>
+		<Text type="A20N">Must have at least 1000kg fuel on pushback and landing</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<Text type="A20N">Preparation 10-50 minutes, block time counts</Text>

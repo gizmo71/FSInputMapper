@@ -1,7 +1,8 @@
 ﻿"use strict";
 
 $(function () {
-    $("#tabs").tabs();
+    // Only do this if mobile?
+    if ($(window).width() < 1500) $("#tabs").tabs();
 });
 
 var noSleep = new NoSleep();

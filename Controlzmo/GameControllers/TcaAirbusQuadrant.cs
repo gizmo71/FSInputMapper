@@ -12,7 +12,7 @@ namespace Controlzmo.GameControllers
     {
         private readonly AutothrottleArmedDataListener autothrustListener;
 
-        public TcaAirbusQuadrant(IServiceProvider sp) : base(sp, 31)
+        public TcaAirbusQuadrant(IServiceProvider sp) : base(sp, 31, 7, 0)
         {
             autothrustListener = sp.GetRequiredService<AutothrottleArmedDataListener>();
         }
@@ -20,18 +20,27 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 1031;
 
-        public override void OnButtonChange(ExtendedSimConnect simConnect, int index, bool isPressed)
+        /* Buttons
+        0 left intuitive disconnect
+        1 rigth intuitive disconnect
+        2 left engine master
+        3 right engine master
+        4 left fire "light"
+        4 right fire "light"
+        6 engine mode crank
+        7 engine mode ignition/start
+        /* Axes
+        0 left thrust lever (0 TOGA->1 max reverse)
+        1 right thrust lever (0 TOGA->1 max reverse)
+        /* Switches
+         */
+        private static readonly int BUTTON_LEFT_INTUITIVE_DISCONNECT = 0;
+        protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-            _log.LogWarning($"TCA TL button {index} = {isPressed}");
-            if (isPressed)
+            if (buttonsNew[BUTTON_LEFT_INTUITIVE_DISCONNECT] && !buttonsOld[BUTTON_LEFT_INTUITIVE_DISCONNECT])
             {
-                switch (index)
-                {
-                    case 0: // Left intuitive disconnect
-                        _log.LogDebug("User has asked to arm autothrust");
-                        simConnect.RequestDataOnSimObject(autothrustListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                        break;
-                }
+                _log.LogDebug("User has asked to arm autothrust");
+                simConnect.RequestDataOnSimObject(autothrustListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
             }
         }
     }
