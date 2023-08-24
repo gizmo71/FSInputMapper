@@ -31,6 +31,13 @@
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
 		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
 	</Airline>
+	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
+		<Text type="A20N">Preparation 10-50 minutes, block time counts</Text>
+		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
+		<Text type="A20N">Taxi times >200% of average or pre-set maximum requires review</Text>
+		<Text type="A20N">OETD/OETA</Text>
+		<Text type="A20N">Must have at least 1500kg of fuel on landing</Text>
+	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
 		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
 		<Text type="A20N">Start #2 first, warm up</Text>
