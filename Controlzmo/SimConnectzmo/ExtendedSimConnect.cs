@@ -371,17 +371,17 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
                 if ((IsSimStarted = (data.dwInteger == 1)) == true)
                     OnSimIsRunning();
                 else
-                    aircraftFile = "";
+                    aircraftFile = "(sim not running)";
             }
             else if (data.dwRequestID == (uint)REQUEST.AircraftLoaded)
             {
-                var regex = new Regex(@"^SimObjects\\Airplanes\\[^\\]+\\aircraft.CFG$", RegexOptions.IgnoreCase);
+                var regex = new Regex(@"^SimObjects\\Airplanes\\([^\\]+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
                 var match = regex.Match(data.szString);
                 aircraftFile = match.Success ? match.Groups[1].Value : data.szString;
             }
         }
 
-        private string aircraftFile;
+        private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
 
         private void OnSimIsRunning()
