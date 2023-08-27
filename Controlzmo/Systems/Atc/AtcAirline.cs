@@ -22,6 +22,12 @@ namespace Controlzmo.Systems.Atc
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         [SimVar("ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
         public string model;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        [SimVar("ATC ID", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
+        public string tailNumber; // SDK says up to 10 characters! May noy be a default for some liveries; for some it's junk.
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        [SimVar("TITLE", null, SIMCONNECT_DATATYPE.STRING128, 0.0f)]
+        public string title; // This is what vAMSYS will use.
     };
 
     [Component]
@@ -42,7 +48,9 @@ namespace Controlzmo.Systems.Atc
         {
             var icaoCode = data.model.ToUpper();
             var callsign = data.name.ToLower();
-            var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}':";
+            var _ = data.tailNumber.ToUpper();
+            var aircraftCfg = simConnect.AircraftFile.ToLower();
+            var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}', file '{aircraftCfg}', title '{data.title}':";
             try
             {
                 var doc = await loadXml();
