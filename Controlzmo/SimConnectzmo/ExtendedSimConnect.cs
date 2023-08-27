@@ -8,6 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
+using System.Text.RegularExpressions;
+using Windows.Networking.Sockets;
+using Microsoft.AspNetCore.Http.Headers;
 
 namespace SimConnectzmo
 {
@@ -367,8 +370,19 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             if (data.dwRequestID == (uint)REQUEST.SimSystemState && IsSimStarted == null) {
                 if ((IsSimStarted = (data.dwInteger == 1)) == true)
                     OnSimIsRunning();
+                else
+                    aircraftFile = "";
+            }
+            else if (data.dwRequestID == (uint)REQUEST.AircraftLoaded)
+            {
+                var regex = new Regex(@"^SimObjects\\Airplanes\\[^\\]+\\aircraft.CFG$", RegexOptions.IgnoreCase);
+                var match = regex.Match(data.szString);
+                aircraftFile = match.Success ? match.Groups[1].Value : data.szString;
             }
         }
+
+        private string aircraftFile;
+        public string AircraftFile { get => aircraftFile; }
 
         private void OnSimIsRunning()
         {
