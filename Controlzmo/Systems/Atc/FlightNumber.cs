@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
-using System;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
@@ -11,7 +10,6 @@ namespace Controlzmo.Systems.Atc
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AtcFlightNumberData
     {
-        // "ATC ID" is the aircraft's registration, e.g. "G-IZMO", as a fall back if flight number is blank.
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 8)]
         [SimVar("ATC FLIGHT NUMBER", null, SIMCONNECT_DATATYPE.STRING8, 0.0f)]
         public string flight; // SDK says up to 6 characters, but 7 works too.

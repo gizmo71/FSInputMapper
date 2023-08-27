@@ -95,7 +95,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 wasBelowTaxi = false;
             }
-            else if (wasBelowTaxi == false && data.groundSpeed < 40)
+            else if (wasBelowTaxi == false && data.groundSpeed < 30)
             {
                 simConnect.SendEvent(chronoEvent);
                 wasBelowTaxi = true;
