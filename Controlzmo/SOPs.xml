@@ -1,13 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<!-- All FBW: 'flybywire_a320_neo'
- Titles:
-	'FlyByWire Airbus A320 Neo IndiGo'
-	'Airbus A320 Neo JetBlue (N624JB)' (there are four more too)
-	'FWB Delta (Dirty)'
-	'Airbus A320Neo EasyJet Europe OE-LSI'
-	'FlyByWire EasyJet HB-AYE'
-	'Airbus A320neo Easyjet NEO c/s'
--->
+<!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
@@ -20,6 +12,7 @@
 		<Text type=".*">All PIREPs are reviewed</Text>
 	</Airline>
 	<Airline callsign="air[- ]china"> <!-- Virtual Air China -->
+		<Text type="A20N">Block time counts</Text>
 		<Text type="A20N">Start #2 first, warm up; cool down</Text>
 		<Text type="A20N">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
 	</Airline>
@@ -36,6 +29,7 @@
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 	</Airline>
 	<Airline callsign="delta"> <!-- Virtual Delta -->
+		<!-- 'FWB Delta (Dirty)' -->
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Must have no more than 20T of fuel on landing</Text>
@@ -45,6 +39,7 @@
 		<Text type="A20N">Start #2 first, warm up; OETA, cool down</Text>
 	</Airline>
 	<Airline callsign="eju|alpine|easy|top[- ]?swiss"> <!-- vEZY -->
+		<!-- 'Airbus A320Neo EasyJet Europe OE-LSI', 'FlyByWire EasyJet HB-AYE', Airbus A320neo Easyjet NEO c/s' -->
 		<Text type="A2[01]N|A319|A32[01]">Preparation 20-50 minutes, block time counts</Text>
 		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
@@ -56,7 +51,16 @@
 		<Text type="A20N">Taxi in/out time above 50% of expectation requires review</Text>
 		<Text type="A20N">Must have at least 1000kg fuel on pushback and landing</Text>
 	</Airline>
+	<Airline callsign="i-fly"><!-- IndoGo Virtual -->
+		<!-- 'FlyByWire Airbus A320 Neo IndiGo' -->
+		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
+		<Text type="A20N">Start #2 first unless OETD, warm up; OETA, cool down</Text>
+		<Text type="A20N">Flight time above 20%/30 minutes of scheduled requires review</Text>
+		<Text type="A20N">Taxi times >150% of average or pre-set maximum requires review</Text>
+		<Text type="A20N">Must have between 1T and 10T fuel on landing</Text>
+	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
+		<!-- 'Airbus A320 Neo JetBlue (N624JB)' (there are four more too) -->
 		<Text type="A20N">Preparation 10-50 minutes, block time counts</Text>
 		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
 		<Text type="A20N">Taxi times >200% of average or pre-set maximum requires review</Text>
