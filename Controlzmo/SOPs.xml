@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- All FBW: 'flybywire_a320_neo'
+ Titles: 'FlyByWire Airbus A320 Neo IndiGo' -->
 <SOPs>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
