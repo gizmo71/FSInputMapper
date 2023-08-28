@@ -3,6 +3,10 @@
  Titles:
 	'FlyByWire Airbus A320 Neo IndiGo'
 	'Airbus A320 Neo JetBlue (N624JB)' (there are four more too)
+	'FWB Delta (Dirty)'
+	'Airbus A320Neo EasyJet Europe OE-LSI'
+	'FlyByWire EasyJet HB-AYE'
+	'Airbus A320neo Easyjet NEO c/s'
 -->
 <SOPs>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
