@@ -80,6 +80,10 @@
 		<Text type="A20N">Must have at least 2000kg fuel on landing</Text>
 		<Text type="A339">Must have between 2T and 20T fuel on landing</Text>
 	</Airline>
+	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
+		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first</Text>
+	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
 		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
