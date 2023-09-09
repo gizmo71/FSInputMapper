@@ -46,7 +46,7 @@ namespace Controlzmo.Systems.Atc
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            var icaoCode = data.model.ToUpper();
+            var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM.AC_MODEL_(.*)\.0\.TEXT$", @"$1");
             var callsign = data.name.ToLower();
             var _ = data.tailNumber.ToUpper();
             var aircraftCfg = simConnect.AircraftFile.ToLower();
