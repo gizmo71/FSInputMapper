@@ -2,14 +2,16 @@
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
-		<Text type="A20N">Preparation 20 to 60 minutes, air time counts</Text>
+		<Text type="A320">Preparation 20 to 40 minutes</Text>
+		<Text type="A20N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
-		<Text type="A20N">Start #1 first, warm up; cool down</Text>
-		<Text type="A20N">OETD, OETA (not when substituting for A320)</Text>
+		<Text type="A20N|A320">Start #1 first, warm up; cool down</Text>
 		<Text type="A33[09]">Start #1 first; warm up, cool down</Text>
+		<Text type="A20N">OETD, OETA</Text>
+		<Text type="A320">Must have at least 1T of fuel on landing</Text>
 		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
 		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
-		<Text type=".*">All PIREPs are reviewed</Text>
+		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
 	</Airline>
 	<Airline callsign="air[- ]china"> <!-- Virtual Air China -->
 		<Text type="A20N">Block time counts</Text>
