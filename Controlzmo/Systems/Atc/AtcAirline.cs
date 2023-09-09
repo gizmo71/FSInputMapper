@@ -54,8 +54,14 @@ namespace Controlzmo.Systems.Atc
             try
             {
                 var doc = await loadXml();
-                var context = new CustomContext { { "callsign", callsign }, { "icaoType", icaoCode } };
-                var nodes = doc.DocumentElement?.SelectNodes($"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type)]", context);
+                var context = new CustomContext {
+                    { "callsign", callsign },
+                    { "icaoType", icaoCode },
+                    { "aircraft", aircraftCfg },
+                    { "title", data.title },
+                };
+                var nodes = doc.DocumentElement?.SelectNodes(
+                    @"//Airline[fn:matches($callsign, @callsign)]/Text[fn:matches($icaoType, @type) or fn:matches($aircraft, @aircraft) or fn:matches($title, @title)]", context);
                 if (nodes?.Count == 0)
                     sops += $"\nNone available";
                 else

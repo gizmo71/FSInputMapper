@@ -81,8 +81,8 @@
 		<Text type="A339">Must have between 2T and 20T fuel on landing</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first</Text>
+		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text title="Airbus A320 IAE LDA">Start #2 first</Text>
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
