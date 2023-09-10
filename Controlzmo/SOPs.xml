@@ -98,6 +98,14 @@
 		<Text type=".*">Pauses in flight of over 60 cumulative minutes requires PIREP comment</Text>
 		<Text type=".*">Flight time above 25%/30 minutes of scheduled or average requires review</Text>
 	</Airline>
+	<Airline callsign="zap"> <!-- Titan Virtual -->
+		<Text type="A320">Preparation 20-40 minutes, block time counts</Text>
+		<Text type="A320">Start #2 first, warm up; cool down</Text>
+		<Text type="A320|A2[01]N">Must have at least 1800kg of fuel on landing</Text>
+		<Text type="A333">Must have at least 2500kg of fuel on landing</Text>
+		<Text type=".*">Flight time above 30%/40 minutes of scheduled or average requires review</Text>
+		<Text type=".*">Taxi in time >80% of average or pre-set maximum (out unclear) requires review</Text>
+	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type="A20N">Preparation 0-35 minutes, air time counts</Text>
 		<Text type="A20N">Start #2 first</Text>
