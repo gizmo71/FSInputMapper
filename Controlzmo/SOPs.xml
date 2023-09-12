@@ -20,7 +20,7 @@
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*	">Warm up, cool down</Text>
+		<Text type=".*">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
 		<Text type="A20N">Preparation 20-40 minutes, block time counts</Text>
