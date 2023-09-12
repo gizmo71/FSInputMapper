@@ -18,9 +18,9 @@
 		<Text type="A20N">Start #2 first, warm up; cool down</Text>
 		<Text type="A20N">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
 	</Airline>
-	<Airline callsign="all[- ]nippon"> <!-- vANA -->
-		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
-		<Text type="A20N">Warm up, cool down</Text>
+	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
+		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*	">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
 		<Text type="A20N">Preparation 20-40 minutes, block time counts</Text>
