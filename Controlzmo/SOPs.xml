@@ -19,13 +19,14 @@
 		<Text type="A20N">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
+		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
-		<Text type="A20N">Preparation 20-40 minutes, block time counts</Text>
-		<Text type="A20N">Start #2 first, warm up; cool down</Text>
-		<Text type="A20N">Flight time above 20%/20 minutes of scheduled requires review</Text>
+		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Flight time above 20%/20 minutes of scheduled requires review</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
@@ -55,25 +56,25 @@
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndoGo Virtual -->
 		<!-- 'FlyByWire Airbus A320 Neo IndiGo' -->
-		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
-		<Text type="A20N">Start #2 first unless OETD, warm up; OETA, cool down</Text>
-		<Text type="A20N">Flight time above 20%/30 minutes of scheduled requires review</Text>
-		<Text type="A20N">Taxi times >150% of average or pre-set maximum requires review</Text>
-		<Text type="A20N">Must have between 1T and 10T fuel on landing</Text>
+		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first unless OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Flight time above 20%/30 minutes of scheduled requires review</Text>
+		<Text type=".*">Taxi times >150% of average or pre-set maximum requires review</Text>
+		<Text type=".*">Must have between 1T and 10T fuel on landing</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
-		<!-- 'Airbus A320 Neo JetBlue (N624JB)' (there are four more too) -->
-		<Text type="A20N">Preparation 10-50 minutes, block time counts</Text>
-		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
-		<Text type="A20N">Taxi times >200% of average or pre-set maximum requires review</Text>
-		<Text type="A20N">OETD/OETA</Text>
-		<Text type="A20N">Must have at least 1500kg of fuel on landing</Text>
+		<!-- 'Airbus A320 Neo JetBlue (N624JB)' and 'Airbus A320 IAE JBU' (many others for both) -->
+		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
+		<Text type=".*">Flight time above 30%/45 minutes of scheduled requires review</Text>
+		<Text type=".*">Taxi times >200% of average or pre-set maximum requires review</Text>
+		<Text type=".*">OETD/OETA</Text>
+		<Text type=".*">Must have at least 1500kg of fuel on landing</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
-		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
-		<Text type="A20N">Start #2 first, warm up</Text>
-		<Text type="A20N">Flight time above 20%/20 minutes of scheduled requires review</Text>
-		<Text type="A20N">Must have at least 998kg of fuel on landing</Text>
+		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first, warm up</Text>
+		<Text type=".*">Flight time above 20%/20 minutes of scheduled requires review</Text>
+		<Text type=".*">Must have at least 998kg of fuel on landing</Text>
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type="A20N|A339">Preparation 20-60 minutes, air time counts</Text>
