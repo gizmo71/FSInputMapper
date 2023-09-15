@@ -111,6 +111,7 @@
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first</Text>
+		<Text type=".*">Consider: no flap 3 departure, set flaps after both engines started</Text>
 		<Text type=".*">Must have at least 1200kg of fuel on landing</Text>
 	</Airline>
 </SOPs>
