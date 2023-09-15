@@ -109,8 +109,8 @@
 		<Text type=".*">Taxi in time >80% of average or pre-set maximum (out unclear) requires review</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
-		<Text type="A20N">Preparation 0-35 minutes, air time counts</Text>
-		<Text type="A20N">Start #2 first</Text>
-		<Text type="A20N">Must have at least 1200kg of fuel on landing</Text>
+		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first</Text>
+		<Text type=".*">Must have at least 1200kg of fuel on landing</Text>
 	</Airline>
 </SOPs>
