@@ -15,7 +15,7 @@
 	</Airline>
 	<Airline callsign="air[- ]china"> <!-- Virtual Air China -->
 		<Text type=".*">Block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Start #2 first, warm up (critical!); cool down (critical!)</Text>
 		<Text type=".*">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
