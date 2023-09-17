@@ -24,7 +24,6 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
-        bool? wasAirspeedAlive = null;
         bool? wasAbove80 = null;
         bool? wasAboveV1 = null;
         bool? wasAboveVR = null;
@@ -40,14 +39,13 @@ namespace Controlzmo.Systems.PilotMonitoring
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
             //TODO: also reset in case of RTO.
-            wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = null;
+            wasAbove80 = wasAboveV1 = wasAboveVR = null;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
-            if (data.kias < 39)
-                wasAirspeedAlive = wasAbove80 = wasAboveV1 = wasAboveVR = false;
-            _ = SetAndCallIfRequired(40, data.kias, "airspeed alive", ref wasAirspeedAlive, 0);
+            if (data.kias < 49)
+                wasAbove80 = wasAboveV1 = wasAboveVR = false;
             _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80, 0);
             if (data.vr < data.v1 + 3)
             {

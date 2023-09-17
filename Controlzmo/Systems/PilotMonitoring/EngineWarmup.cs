@@ -25,8 +25,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 engine1State;
         [SimVar("L:A32NX_ENGINE_STATE:2", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 engine2State;
-        [SimVar("ABSOLUTE TIME", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0001f)]
-        public Double now; // Only has second granularity - does stop for pauses
+        [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 2.5f)]
+        public Double now; // Only has second granularity, despite apparent precision; stops for pauses
     };
 
     [Component]

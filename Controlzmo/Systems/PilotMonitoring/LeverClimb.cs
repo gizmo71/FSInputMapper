@@ -1,58 +1,65 @@
 ﻿using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AutothrustModeMessageData
     {
-//TODO: can we also check for a positive speed trend before announcing?
+//TODO: can/should we also check for a positive speed trend before announcing? Or only TLA is above CLB?
+// "ACCELERATION BODY Z"? Or will just increasing the delay help, by spotting it if accidental during flight?
         [SimVar("L:A32NX_AUTOTHRUST_MODE_MESSAGE", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
         public Int32 modeMessage;
+        [SimVar("L:A32NX_AUTOTHRUST_STATUS", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
+        public Int32 status;
+        [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 1.0f)]
+        public Double now; // Only has second granularity, despite apparent precision; stops for pauses
+        [SimVar("ACCELERATION BODY Z", "feet per second squared", SIMCONNECT_DATATYPE.FLOAT64, 100.0f)]
+        public Double accZ; // Or L:A32NX_FAC_1_SPEED_TREND in knots?
     };
 
     [Component]
     public class LeverClimb : DataListener<AutothrustModeMessageData>, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly ILogger logging;
 
         public LeverClimb(IServiceProvider serviceProvider)
         {
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            logging = serviceProvider.GetRequiredService<ILogger<LeverClimb>>();
         }
 
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
-        private CancellationTokenSource? cancellationTokenSource;
+        private Double? callAfter = null;
+        private bool wantPositiveSpeedTrend = false;
 
         public override void Process(ExtendedSimConnect simConnect, AutothrustModeMessageData data)
         {
+logging.LogInformation($"Level climb monitor {data.now} mode {data.modeMessage} accZ {data.accZ} status {data.status}");
             if (data.modeMessage == 3) {
-                if (cancellationTokenSource == null) {
-                    cancellationTokenSource = new CancellationTokenSource();
-                    CancellationToken cancellationToken = cancellationTokenSource.Token;
-                    Task.Delay(5_000, cancellationToken).ContinueWith(_ => {
-                        if (!cancellationToken.IsCancellationRequested)
-                            hubContext.Clients.All.Speak("Lever climb?");
-//else hubContext.Clients.All.Speak("never mind");
-                        cancellationTokenSource = null;
-                    });
-//hubContext.Clients.All.Speak("er...");
+                if (callAfter == null)
+                {
+                    wantPositiveSpeedTrend = data.status == 1; // Armed
+                    callAfter = data.now + 2.9;
                 }
-//else hubContext.Clients.All.Speak("ditto");
+                else if (data.now > callAfter && (!wantPositiveSpeedTrend || data.accZ > 1))
+                {
+                    callAfter = Double.PositiveInfinity;
+                    hubContext.Clients.All.Speak("Lever climb?");
+                }
             }
             else
             {
-//hubContext.Clients.All.Speak("oh");
-                cancellationTokenSource?.Cancel();
+                callAfter = null;
             }
         }
     }
