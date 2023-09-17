@@ -14,6 +14,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AutothrustModeMessageData
     {
+//TODO: can we also check for a positive speed trend before announcing?
         [SimVar("L:A32NX_AUTOTHRUST_MODE_MESSAGE", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
         public Int32 modeMessage;
     };

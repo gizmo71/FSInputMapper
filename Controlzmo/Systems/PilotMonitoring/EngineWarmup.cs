@@ -1,7 +1,5 @@
-﻿using Controlzmo.Hubs;
-using Controlzmo.Systems.EfisControlPanel;
+﻿using Controlzmo.Systems.EfisControlPanel;
 using Controlzmo.Systems.JetBridge;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -9,8 +7,6 @@ using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 /* The logic for the AVAIL message is buried in N1.tsx:
     const [N1Percent] = useSimVar(`L:A32NX_ENGINE_N1:${engine}`, 'percent', 60);
@@ -29,6 +25,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 engine1State;
         [SimVar("L:A32NX_ENGINE_STATE:2", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 engine2State;
+        [SimVar("ABSOLUTE TIME", null, SIMCONNECT_DATATYPE.FLOAT64, 0.0001f)]
+        public Double now; // Only has second granularity - does stop for pauses
     };
 
     [Component]
@@ -36,19 +34,17 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender jetbridge;
         private readonly Chrono1Event chronoEvent;
-private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-//private readonly ILogger logging;
+        private readonly ILogger logging;
 
-        private CancellationTokenSource? cancellationTokenSource;
         private bool isArmed = false;
+        private Double? warmAt = null;
 
         public EngineWarmupListener(IServiceProvider serviceProvider)
         {
             jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-//logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
+            logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -56,55 +52,37 @@ hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, ICont
             var period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
             if (!isOnGround)
-                MaybeCancel();
+                warmAt = null;
         }
 
         public override void Process(ExtendedSimConnect simConnect, EngineWarmupData data)
         {
-//logging.LogWarning($"{data.engine1State} and {data.engine2State} and {isArmed}");
+//logging.LogError($"at {data.now}");
             data.engine1State %= 10;
             data.engine2State %= 10;
             bool isOneRunningAndOneStarting = data.engine1State == 2 && data.engine2State == 1 || data.engine1State == 1 && data.engine2State == 2;
             bool areBothRunning = data.engine1State == 1 && data.engine2State == 1;
             if (isOneRunningAndOneStarting && !isArmed)
             {
-                MaybeCancel();
+                warmAt = null;
                 isArmed = true;
             }
             else if (areBothRunning && isArmed)
             {
-                if (cancellationTokenSource == null) //TODO: we should not need this check any more
-                {
-                    cancellationTokenSource = new CancellationTokenSource();
-                    CancellationToken cancellationToken = cancellationTokenSource.Token;
-                    Task.Delay(180_000, cancellationToken).ContinueWith(_ =>
-                    {
-                        if (!cancellationToken.IsCancellationRequested)
-                        {
-hubContext.Clients.All.Speak("Engines warmed up");
-                            jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
-                        }
-                        cancellationTokenSource = null;
-                    });
-                    simConnect.SendEvent(chronoEvent); // This is going to be annoying if it triggers too often
-                }
-else hubContext.Clients.All.Speak("How do we get to be armed but with a cancellation token source?");
+                warmAt = data.now + 3 * 60.0;
+                simConnect.SendEvent(chronoEvent); // This is going to be annoying if it triggers too often
                 isArmed = false;
             }
             else if (data.engine1State == 0 || data.engine2State == 0 || data.engine1State == 3 || data.engine2State == 3)
             {
                 isArmed = false;
-                MaybeCancel();
+                warmAt = null;
             }
-        }
-
-        private void MaybeCancel()
-        {
-            if (cancellationTokenSource != null)
+            else if (areBothRunning && warmAt != null && data.now >= warmAt)
             {
-hubContext.Clients.All.Speak("Cancel timer");
-                cancellationTokenSource.Cancel();
-                cancellationTokenSource = null;
+                jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
+                isArmed = false;
+                warmAt = null;
             }
         }
     }
