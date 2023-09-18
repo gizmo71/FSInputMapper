@@ -15,7 +15,7 @@
 	</Airline>
 	<Airline callsign="air[- ]china"> <!-- Virtual Air China -->
 		<Text type=".*">Block time counts</Text>
-		<Text type=".*">Start #2 first, warm up (critical!); cool down (critical!)</Text>
+		<Text type=".*">Start #2 first, *warm up*; *cool down*</Text>
 		<Text type=".*">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
@@ -41,12 +41,12 @@
 		<Text type=".*">Preparation 20-180 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; OETA, cool down</Text>
 	</Airline>
-	<Airline callsign="eju|alpine|easy|top[- ]?swiss"> <!-- vEZY -->
-		<!-- 'Airbus A320Neo EasyJet Europe OE-LSI', 'FlyByWire EasyJet HB-AYE', Airbus A320neo Easyjet NEO c/s' -->
-		<Text type="A2[01]N|A319|A32[01]">Preparation 20-50 minutes, block time counts</Text>
-		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
-		<Text type="A20N">Flight time above 30%/45 minutes of scheduled requires review</Text>
-		<Text type="A20N">Must have at least 1000kg fuel on landing</Text>
+	<Airline callsign="alpine|easy|top[- ]?swiss"> <!-- vEZY -->
+		<!-- 'Airbus A320Neo EasyJet Europe OE-LSI', 'FlyByWire EasyJet HB-AYE', 'Airbus A320neo Easyjet NEO c/s', 'Airbus A320 CFM EZY3' -->
+		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
+		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Flight time above 30%/45 minutes of scheduled requires review</Text>
+		<Text type=".*">Must have at least 1.5T fuel on landing (some contestable exceptions)</Text>
 	</Airline>
 	<Airline callsign="goldberg"> <!-- AirGoldberg -->
 		<Text type="A20N">Preparation 10-40 minutes, air time counts</Text>
