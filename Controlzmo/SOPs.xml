@@ -38,6 +38,7 @@
 		<Text type=".*">Must have no more than 20T of fuel on landing</Text>
 	</Airline>
 	<Airline callsign="eurowings|ocean"> <!-- vEWG -->
+		<!-- 'Airbus A320 CFM SL EWG' (the Discover one) -->
 		<Text type=".*">Preparation 20-180 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; OETA, cool down</Text>
 	</Airline>
