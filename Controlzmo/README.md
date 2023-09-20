@@ -36,6 +36,21 @@ EFIS
 * The LS pushbuttons under Baro are `L:BTN_LS_1/2_FILTER_ACTIVE` (read/write).
 * Perhaps even automatically start the chrono after second engine start or shutdown (and call 3 minutes), and after setting 50% thrust on takeoff.
 
+View Control
+------------
+
+Now that we have full control over buttons, do we need to look again and things like glance right/left, outside glances and so on?
+
+* `CAMERA STATE` has the current 'mode' (e.g. 2=Cockpit, 3=External/Chase, 4=Drone and so on) (and also `CAMERA SUBSTATE`?).
+* `CAMERA VIEW TYPE AND INDEX:`*n* appears to be similar... effectively a multidimensional array
+  (see the [notes](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm)).
+* [Lots of useful events](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm),
+  though sadly the chase view (the one we'd like to use for taxi/takeoff) appears quite anaemic.
+* `CameraSetRelative6DOF` appears to jump us into a completely custom camera!
+
+Suggested camera mappings:
+* Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 ?, 4 glance left, 5 taxi/landing, 6 glance right, 7 ?, 8 overhead, 9 ?
+
 Other useful things?
 --------------------
 
