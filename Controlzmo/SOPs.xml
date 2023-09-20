@@ -71,6 +71,7 @@
 		<Text type=".*">Must have at least 1500kg of fuel on landing</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
+		<!-- 'Airbus A319 CFM Lufthansa2' -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up</Text>
 		<Text type=".*">Flight time above 20%/20 minutes of scheduled requires review</Text>
