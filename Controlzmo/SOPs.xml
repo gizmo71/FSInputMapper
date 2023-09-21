@@ -29,7 +29,7 @@
 		<Text type=".*">Flight time above 20%/20 minutes of scheduled requires review</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
-		<Text type="A20N">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 	</Airline>
 	<Airline callsign="delta"> <!-- Virtual Delta -->
 		<!-- 'FWB Delta (Dirty)' -->
