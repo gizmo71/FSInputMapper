@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, AutothrustModeMessageData data)
         {
-logging.LogInformation($"Level climb monitor {data.now} mode {data.modeMessage} accZ {data.accZ} status {data.status}");
+//logging.LogInformation($"Level climb monitor {data.now} mode {data.modeMessage} accZ {data.accZ} status {data.status}");
             if (data.modeMessage == 3) {
                 if (callAfter == null)
                 {
