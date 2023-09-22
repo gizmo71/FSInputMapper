@@ -42,18 +42,6 @@ namespace Controlzmo.GameControllers
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
 #if false
-            for (int i = 0; i < axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"HOTAS: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
-            for (int i = 0; i < this.buttonsOld.Length; ++i)
-                if (buttonsOld[i] != buttonsNew[i])
-                    _log.LogDebug($"Button {i} now {buttonsNew[i]}");
-            for (int i = 0; i < this.axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"Axis {i} now {axesNew[i]}");
-            for (int i = 0; i < this.switchesOld.Length; ++i)
-                if (switchesOld[i] != switchesNew[i])
-                    _log.LogDebug($"Switch {i} now {switchesNew[i]}");
             // x/y/z, p/b/h
             // x: negative left, positive right
             // y: positive above, negative below
