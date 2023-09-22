@@ -27,7 +27,7 @@ namespace Controlzmo.Views
     public partial class LookFlyPad : IButtonCallback
     {
         private readonly VirtualJoy vJoy;
-        public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
+        public int GetButton() => T16000mHotas.BUTTON_FRONT_RIGHT_RED;
         public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(101u);
     }
 }
