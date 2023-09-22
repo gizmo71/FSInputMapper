@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
 using System.Text.RegularExpressions;
-using Windows.Networking.Sockets;
-using Microsoft.AspNetCore.Http.Headers;
 
 namespace SimConnectzmo
 {
