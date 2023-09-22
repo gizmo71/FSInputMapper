@@ -13,12 +13,12 @@ namespace Controlzmo.GameControllers
     public class GameControllers : CreateOnStartup
     {
         private readonly ILogger _log;
-        private readonly IEnumerable<GameController> controllers;
+        private readonly IEnumerable<IGameController> controllers;
 
         public GameControllers(IServiceProvider sp)
         {
             _log = sp.GetRequiredService<ILogger<GameControllers>>();
-            controllers = sp.GetServices<GameController>();
+            controllers = sp.GetServices<IGameController>();
             RawGameController.RawGameControllerAdded += Added;
             RawGameController.RawGameControllerRemoved += Removed;
             RawGameController.RawGameControllers.ToList().ForEach(c => Added(null, c));
@@ -38,8 +38,13 @@ namespace Controlzmo.GameControllers
         }
     }
 
+    public interface IGameController
+    {
+        public void Offer(RawGameController candidate);
+    }
+
     [Component]
-    public abstract class GameController : IOnSimFrame
+    public abstract class GameController<T> : IGameController, IOnSimFrame where T : GameController<T>
     {
         public abstract ushort Vendor();
         public abstract ushort Product();
@@ -53,6 +58,7 @@ namespace Controlzmo.GameControllers
 
         private ulong? lastReadingTimestamp;
         protected readonly ILogger _log;
+        private readonly IEnumerable<IButtonCallback<T>> buttonCallbacks;
         private RawGameController? raw;
 
         protected GameController(IServiceProvider sp, int buttons, int axes, int switches)
@@ -64,6 +70,7 @@ namespace Controlzmo.GameControllers
             switchesOld = new GameControllerSwitchPosition[switches]; //TODO: initialise to centre?
             switchesNew = (GameControllerSwitchPosition[]) switchesOld.Clone();
             _log = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
+            buttonCallbacks = sp.GetServices<IButtonCallback<T>>();
         }
 
         public void Offer(RawGameController candidate)
@@ -83,6 +90,15 @@ namespace Controlzmo.GameControllers
             if (timestamp == lastReadingTimestamp) return;
             lastReadingTimestamp = timestamp;
             OnUpdate(simConnect);
+
+            foreach (var callback in buttonCallbacks)
+            {
+                if (!buttonsOld[callback.GetButton()] && buttonsNew[callback.GetButton()])
+                    callback.OnPress(simConnect);
+                else if (buttonsOld[callback.GetButton()] && !buttonsNew[callback.GetButton()])
+                    callback.OnRelease(simConnect);
+            }
+
             buttonsNew.CopyTo(buttonsOld, 0);
             axesNew.CopyTo(axesOld, 0);
             switchesNew.CopyTo(switchesOld, 0);

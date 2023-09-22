@@ -16,7 +16,7 @@ namespace Controlzmo.Views
     }
 
     [Component]
-    public class CockpitExternalToggle : DataListener<CockpitExternalToggleData>, IButtonCallback
+    public class CockpitExternalToggle : DataListener<CockpitExternalToggleData>, IButtonCallback<T16000mHotas>
     {
         protected readonly ILogger _logger;
 

@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using SimConnectzmo;
+﻿using SimConnectzmo;
 using System;
 
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class T16000mStick : GameController
+    public class T16000mStick : GameController<T16000mStick>
     {
         public T16000mStick(IServiceProvider sp) : base(sp, 16, 4, 1) { }
 

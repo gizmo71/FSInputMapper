@@ -35,7 +35,7 @@ namespace Controlzmo.Systems.Spoilers
     [Component] public class SpoilerArmOffEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_OFF"; }
     [Component] public class SetSpoilerHandleEvent : IEvent { public string SimEvent() => "SPOILERS_SET"; }
 
-    public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>, IButtonCallback
+    public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>, IButtonCallback<T16000mHotas>
     {
         protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly ILogger _logger;

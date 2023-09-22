@@ -8,7 +8,7 @@ using System;
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class TcaAirbusQuadrant : GameController
+    public class TcaAirbusQuadrant : GameController<TcaAirbusQuadrant>
     {
         private readonly AutothrottleArmedDataListener autothrustListener;
 

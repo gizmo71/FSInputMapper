@@ -6,7 +6,7 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class LookOverheadPanel : IButtonCallback
+    public partial class LookOverheadPanel : IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_UP;
@@ -16,7 +16,7 @@ namespace Controlzmo.Views
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class LookMainPanelAndPedastal : IButtonCallback
+    public partial class LookMainPanelAndPedastal : IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_DOWN;
@@ -26,7 +26,7 @@ namespace Controlzmo.Views
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class LookFlyPad : IButtonCallback
+    public partial class LookFlyPad : IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_RIGHT_RED;

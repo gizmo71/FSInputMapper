@@ -1,19 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SimConnectzmo;
+﻿using SimConnectzmo;
 using System;
-using System.Collections.Generic;
 
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class T16000mHotas : GameController
+    public class T16000mHotas : GameController<T16000mHotas>
     {
-        private readonly IEnumerable<IButtonCallback> hotasViews;
-
-        public T16000mHotas(IServiceProvider sp) : base(sp, 14, 8, 1)
-        {
-            hotasViews = sp.GetServices<IButtonCallback>();
-        }
+        public T16000mHotas(IServiceProvider sp) : base(sp, 14, 8, 1) { }
 
         public override ushort Vendor() => 1103;
         public override ushort Product() => 46727;
@@ -77,11 +70,6 @@ namespace Controlzmo.GameControllers
                     simConnect.CameraSetRelative6DOF(0f, 100f, 0f, 90f, 0f, 0f);
             }
 #endif
-            foreach (var callback in hotasViews)
-                if (!buttonsOld[callback.GetButton()] && buttonsNew[callback.GetButton()])
-                    callback.OnPress(simConnect);
-                else if (buttonsOld[callback.GetButton()] && !buttonsNew[callback.GetButton()])
-                    callback.OnRelease(simConnect);
         }
 
     }

@@ -2,7 +2,7 @@
 
 namespace Controlzmo.GameControllers
 {
-    public interface IButtonCallback
+    public interface IButtonCallback<C> where C : IGameController
     {
         public abstract int GetButton();
         public virtual void OnPress(ExtendedSimConnect _) { }

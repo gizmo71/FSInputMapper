@@ -25,7 +25,7 @@ namespace Controlzmo.Views
     }
 
     [Component]
-    public class ResetView : DataListener<ResetViewData>, IButtonCallback
+    public class ResetView : DataListener<ResetViewData>, IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
 
