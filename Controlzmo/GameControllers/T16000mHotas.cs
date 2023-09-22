@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Generic;
 
 namespace Controlzmo.GameControllers
 {
@@ -13,15 +14,13 @@ namespace Controlzmo.GameControllers
     {
         private readonly MoreSpoiler moreListener;
         private readonly LessSpoiler lessListener;
-        private readonly IDataListener cockpitExternalToggle;
-        private readonly IDataListener resetView;
+        private readonly IEnumerable<IButtonCallback> hotasViews;
 
         public T16000mHotas(IServiceProvider sp) : base(sp, 14, 8, 1)
         {
             moreListener = sp.GetRequiredService<MoreSpoiler>();
             lessListener = sp.GetRequiredService<LessSpoiler>();
-            cockpitExternalToggle = sp.GetRequiredService<CockpitExternalToggle>();
-            resetView = sp.GetRequiredService<ResetView>();
+            hotasViews = sp.GetServices<IButtonCallback>();
         }
 
         public override ushort Vendor() => 1103;
@@ -50,10 +49,10 @@ namespace Controlzmo.GameControllers
           9 middle big "rocker" pad aft
           10 bottom "castle" up
           12 bottom "castle" down */
-        private static readonly int BUTTON_SIDE_RED = 0;
-        private static readonly int BUTTON_MINISTICK = 5;
-        private static readonly int BUTTON_BOTTOM_HAT_FORE = 11; // bottom "castle" fore
-        private static readonly int BUTTON_BOTTOM_HAT_AFT = 13; // bottom "castle" aft
+        public static readonly int BUTTON_SIDE_RED = 0;
+        public static readonly int BUTTON_MINISTICK = 5;
+        public static readonly int BUTTON_BOTTOM_HAT_FORE = 11; // bottom "castle" fore
+        public static readonly int BUTTON_BOTTOM_HAT_AFT = 13; // bottom "castle" aft
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
             /*for (int i = 0; i < axesOld.Length; ++i)
@@ -78,7 +77,6 @@ namespace Controlzmo.GameControllers
             for (int i = 0; i < this.switchesOld.Length; ++i)
                 if (switchesOld[i] != switchesNew[i])
                     _log.LogDebug($"Switch {i} now {switchesNew[i]}");
-#endif
             // x/y/z, p/b/h
             // x: negative left, positive right
             // y: positive above, negative below
@@ -94,10 +92,10 @@ namespace Controlzmo.GameControllers
                 else
                     simConnect.CameraSetRelative6DOF(0f, 100f, 0f, 90f, 0f, 0f);
             }
-            if (!buttonsOld[BUTTON_SIDE_RED] && buttonsNew[BUTTON_SIDE_RED])
-                simConnect.RequestDataOnSimObject(cockpitExternalToggle, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-            if (!buttonsOld[BUTTON_MINISTICK] && buttonsNew[BUTTON_MINISTICK])
-                simConnect.RequestDataOnSimObject(resetView, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+#endif
+            foreach (var callback in hotasViews)
+                if (!buttonsOld[callback.GetButton()] && buttonsNew[callback.GetButton()])
+                    callback.OnPress(simConnect);
         }
 
     }

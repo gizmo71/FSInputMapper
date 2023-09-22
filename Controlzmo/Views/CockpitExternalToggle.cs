@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Controlzmo.GameControllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -17,7 +18,7 @@ namespace Controlzmo.Views
     }
 
     [Component]
-    public class CockpitExternalToggle : DataListener<CockpitExternalToggleData>
+    public class CockpitExternalToggle : DataListener<CockpitExternalToggleData>, IButtonCallback
     {
         protected readonly ILogger _logger;
 
@@ -25,6 +26,9 @@ namespace Controlzmo.Views
         {
             _logger = sp.GetRequiredService<ILogger<CockpitExternalToggle>>();
         }
+
+        public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
+        public void OnPress(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
 
         public override void Process(ExtendedSimConnect simConnect, CockpitExternalToggleData data)
         {
