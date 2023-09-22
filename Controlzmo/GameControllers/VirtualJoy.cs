@@ -1,5 +1,8 @@
 ﻿using CoreDX.vJoy.Wrapper;
 using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Controlzmo.GameControllers
 {
@@ -21,6 +24,16 @@ namespace Controlzmo.GameControllers
         {
             vJoyManager.RelinquishController(controller1);
             vJoyManager.Dispose();
+        }
+    }
+
+    public static class IVJoyControllerExtensions
+    {
+        private static readonly CancellationToken token = new CancellationToken();
+
+        public static Task<bool> QuickClick(this IVJoyController controller, uint button)
+        {
+            return controller.ClickButtonAsync(button, 100, token);
         }
     }
 }

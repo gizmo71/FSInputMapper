@@ -45,7 +45,6 @@ namespace Controlzmo.Views
             simConnect.SendDataOnSimObject(new ResetCameraData() { resetAction = 1 });
             if (data.cameraState == 2) // Cockpit
             {
-                //TODO: 102u if in cockpit prep, whatever that means - perhaps neither engine running or NWS disco?
                 var button = data.terrainHeight > 2500 ? 100u : 105u;
                 vJoy.getController().ClickButtonAsync(button, 100, new CancellationToken());
             }
