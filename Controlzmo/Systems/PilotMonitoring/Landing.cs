@@ -1,4 +1,5 @@
-﻿using Controlzmo.Hubs;
+﻿
+using Controlzmo.Hubs;
 using Controlzmo.Systems.EfisControlPanel;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,6 +98,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (wasBelowTaxi == false && data.groundSpeed < 30)
             {
+//TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
                 simConnect.SendEvent(chronoEvent);
                 wasBelowTaxi = true;
             }
