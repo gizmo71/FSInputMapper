@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Controlzmo.GameControllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
-using vJoy.Wrapper;
+using System.Threading;
 
 namespace Controlzmo.Views
 {
@@ -37,13 +38,12 @@ namespace Controlzmo.Views
     public class ResetView : DataListener<ResetViewData>
     {
         private readonly ILogger _logger;
-        private readonly VirtualJoystick vJoy;
+        private readonly VirtualJoy vJoy;
 
         public ResetView(IServiceProvider sp)
         {
             _logger = sp.GetRequiredService<ILogger<ResetView>>();
-            vJoy = new VirtualJoystick(1);
-            vJoy.Aquire();
+            vJoy = sp.GetRequiredService<VirtualJoy>();
         }
 
         public override void Process(ExtendedSimConnect simConnect, ResetViewData data)
@@ -51,20 +51,15 @@ namespace Controlzmo.Views
 _logger.LogCritical($"reset view {data.cameraState}/{data.cameraSubState} type/index {data.cameraViewType}/{data.cameraViewIndex} zoom {data.cockpitCameraZoom}/{data.chaseCameraZoom} above ground {data.terrainHeight}");
             if (data.cameraState == 2) // Cockpit
             {
-                //data.cameraSubState = 1;
-                //data.cameraViewType = 1;
-                //data.cameraViewIndex = 1; // Doesn't seem to take effect. :-(
-                //data.cockpitCameraZoom = 50;
-                vJoy.SetJoystickButton(true, 1);
-                vJoy.SetJoystickButton(false, 1);
+                data.resetAction = 1;
+                simConnect.SendDataOnSimObject(data);
+                vJoy.getController().ClickButtonAsync(105, 100, new CancellationToken());
             }
-            else if (data.cameraState == 3)
+            else if (data.cameraState == 3) // Chase
             {
-                //data.chaseCameraZoom = 50;
-                //simConnect.SendEvent(setEvent, 0);
+                data.resetAction = 1;
+                simConnect.SendDataOnSimObject(data);
             }
-            data.resetAction = 1;
-            simConnect.SendDataOnSimObject(data);
         }
     }
 }
