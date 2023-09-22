@@ -1,5 +1,4 @@
-﻿using Controlzmo.Views;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
@@ -81,6 +80,8 @@ namespace Controlzmo.GameControllers
             foreach (var callback in hotasViews)
                 if (!buttonsOld[callback.GetButton()] && buttonsNew[callback.GetButton()])
                     callback.OnPress(simConnect);
+                else if (buttonsOld[callback.GetButton()] && !buttonsNew[callback.GetButton()])
+                    callback.OnRelease(simConnect);
         }
 
     }

@@ -1,5 +1,4 @@
 ﻿using Controlzmo.GameControllers;
-using Controlzmo.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;

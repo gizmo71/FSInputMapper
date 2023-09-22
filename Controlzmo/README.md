@@ -49,7 +49,7 @@ Now that we have full control over buttons, do we need to look again and things 
 * `CameraSetRelative6DOF` appears to jump us into a completely custom camera!
 
 Suggested camera mappings:
-* Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 ?, 4 glance left, 5 taxi/landing, 6 glance right, 7 ?, 8 overhead, 9 ?
+* Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 ?, 4 glance left, 5 taxi/landing, 6 glance right, 7 ?, 8 overhead, 9 upper overhead
 
 Other useful things?
 --------------------

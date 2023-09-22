@@ -10,7 +10,8 @@ namespace Controlzmo.Views
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_UP;
-        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(108u);
+        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(109u);
+        public void OnRelease(ExtendedSimConnect _) => vJoy.getController().QuickClick(108u);
     }
 
     [Component]
@@ -20,6 +21,7 @@ namespace Controlzmo.Views
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_DOWN;
         public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(102u);
+        public void OnRelease(ExtendedSimConnect _) => vJoy.getController().QuickClick(100u);
     }
 
     [Component]

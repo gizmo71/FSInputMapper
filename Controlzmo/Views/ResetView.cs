@@ -4,7 +4,6 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace Controlzmo.Views
 {
@@ -23,8 +22,6 @@ namespace Controlzmo.Views
     {
         [SimVar("CAMERA STATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 cameraState;
-        [SimVar("PLANE ALT ABOVE GROUND", "feet", SIMCONNECT_DATATYPE.INT32, 50f)]
-        public Int32 terrainHeight;
     }
 
     [Component]
@@ -45,8 +42,7 @@ namespace Controlzmo.Views
             simConnect.SendDataOnSimObject(new ResetCameraData() { resetAction = 1 });
             if (data.cameraState == 2) // Cockpit
             {
-                var button = data.terrainHeight > 2500 ? 100u : 105u;
-                vJoy.getController().ClickButtonAsync(button, 100, new CancellationToken());
+                vJoy.getController().QuickClick(105u);
             }
         }
     }
