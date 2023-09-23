@@ -41,23 +41,6 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_BOTTOM_HAT_AFT = 13;
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-#if false
-            // x/y/z, p/b/h
-            // x: negative left, positive right
-            // y: positive above, negative below
-            // z: positive is ahead, negative is behind
-            // p: positive is down, negative is up
-            // h: 0 is forward, -90 left, 90 right
-            if (axesNew[AXIS_WHEEL] != axesOld[AXIS_WHEEL] && false)
-            {
-                if (axesNew[AXIS_WHEEL] < 0.3)
-                    simConnect.CameraSetRelative6DOF(0f, 20f, -100f, 20f, 0f, 180f);
-                else if (axesNew[AXIS_WHEEL] > 0.3)
-                    simConnect.CameraSetRelative6DOF(0f, 20f, 100f, 20f, 0f, 0f);
-                else
-                    simConnect.CameraSetRelative6DOF(0f, 100f, 0f, 90f, 0f, 0f);
-            }
-#endif
         }
 
     }
