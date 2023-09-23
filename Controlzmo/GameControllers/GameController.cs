@@ -29,6 +29,7 @@ namespace Controlzmo.GameControllers
         private ulong? lastReadingTimestamp;
         protected readonly ILogger _log;
         private readonly IEnumerable<IButtonCallback<T>> buttonCallbacks;
+        private readonly IEnumerable<ISwitchCallback<T>> switchCallbacks;
         private RawGameController? raw;
 
         protected GameController(IServiceProvider sp, int buttons, int axes, int switches)
@@ -41,6 +42,7 @@ namespace Controlzmo.GameControllers
             switchesNew = (GameControllerSwitchPosition[]) switchesOld.Clone();
             _log = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             buttonCallbacks = sp.GetServices<IButtonCallback<T>>();
+            switchCallbacks = sp.GetServices<ISwitchCallback<T>>();
         }
 
         public void Offer(RawGameController candidate)
@@ -68,6 +70,9 @@ namespace Controlzmo.GameControllers
                 else if (buttonsOld[callback.GetButton()] && !buttonsNew[callback.GetButton()])
                     callback.OnRelease(simConnect);
             }
+            foreach (var callback in switchCallbacks)
+                if (switchesOld[callback.GetSwitch()] != switchesNew[callback.GetSwitch()])
+                    callback.OnChange(simConnect, switchesOld[callback.GetSwitch()], switchesNew[callback.GetSwitch()]);
 
             buttonsNew.CopyTo(buttonsOld, 0);
             axesNew.CopyTo(axesOld, 0);

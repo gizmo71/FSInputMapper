@@ -21,14 +21,14 @@ namespace Controlzmo.GameControllers
         7/8/9 bottom right/middle/left left side base
         10/11/12 top right/middle/left right side base
         13/14/15 bottom left/middle/right right side base
-        /* Axes
+        *//* Axes
         0 roll (0 left, 1 right)
         1 pitch (0 forward, 1 aft)
         2 rudder (twist; 0 left, 1 right)
         3 throttle (0 forward, 1 aft)
-        /* Switches
-        0 top hot
         */
+        public static readonly int SWITCH_TOP_HAT = 0;
+
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
 #if false
