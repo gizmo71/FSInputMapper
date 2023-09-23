@@ -34,8 +34,16 @@ namespace Controlzmo.Views
 // p: positive is down, negative is up
 // b: negative anticlockwise, positive clockwise
 // h: 0 is forward, -90 left, 90 right
-                case GameControllerSwitchPosition.Up: simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f); break;
-                case GameControllerSwitchPosition.Down: simConnect.CameraSetRelative6DOF(0.525f, -2f, -25f, 15f, 0f, 0f); break;
+                case GameControllerSwitchPosition.Up:
+                case GameControllerSwitchPosition.UpLeft:
+                case GameControllerSwitchPosition.UpRight:
+                    simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f);
+                    break;
+                case GameControllerSwitchPosition.Down:
+                case GameControllerSwitchPosition.DownLeft:
+                case GameControllerSwitchPosition.DownRight:
+                    simConnect.CameraSetRelative6DOF(0.525f, -2f, -25f, 15f, 0f, 0f);
+                    break;
                 default:
                     simConnect.SendDataOnSimObject(new ResetViewData() { cameraState = 2 });
                     resetView.OnPress(simConnect);
