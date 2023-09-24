@@ -111,6 +111,10 @@
 		<Text type=".*">Flight time above 30%/40 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Taxi in time >80% of average or pre-set maximum (out unclear) requires review</Text>
 	</Airline>
+	<Airline callsign="united"> <!-- United -->
+		<Text type=".*">Preparation 20-40 minutes</Text>
+		<Text type=".*">Start #2 first</Text>
+	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first</Text>
