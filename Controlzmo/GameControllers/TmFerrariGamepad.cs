@@ -1,11 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using SimConnectzmo;
+﻿using SimConnectzmo;
 using System;
 
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class TmFerrariGamepad : GameController
+    public class TmFerrariGamepad : GameController<TmFerrariGamepad>
     {
         public TmFerrariGamepad(IServiceProvider sp) : base(sp, 12, 4, 1) { }
 

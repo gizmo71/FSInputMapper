@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Controlzmo.GameControllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -34,7 +35,7 @@ namespace Controlzmo.Systems.Spoilers
     [Component] public class SpoilerArmOffEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_OFF"; }
     [Component] public class SetSpoilerHandleEvent : IEvent { public string SimEvent() => "SPOILERS_SET"; }
 
-    public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>
+    public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>, IButtonCallback<T16000mHotas>
     {
         protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly ILogger _logger;
@@ -44,6 +45,9 @@ namespace Controlzmo.Systems.Spoilers
             _logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             setEvent = sp.GetRequiredService<SetSpoilerHandleEvent>();
         }
+
+        public abstract int GetButton();
+        public void OnPress(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
@@ -69,6 +73,8 @@ namespace Controlzmo.Systems.Spoilers
         {
             armOffEvent = sp.GetRequiredService<SpoilerArmOffEvent>();
         }
+
+        public override int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_AFT;
 
         protected override void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data)
         {
@@ -108,6 +114,8 @@ namespace Controlzmo.Systems.Spoilers
         {
             armOnEvent = sp.GetRequiredService<SpoilerArmOnEvent>();
         }
+
+        public override int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_FORE;
 
         protected override void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data)
         {
