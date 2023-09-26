@@ -111,8 +111,8 @@
 	</Airline>
 	<Airline callsign="zap"> <!-- Titan Virtual -->
 		<!-- 'Airbus A320 IAE AWC2' -->
-		<Text type="A320">Preparation 20-40 minutes, block time counts</Text>
-		<Text type="A320">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type="A320|A2[01]N">Must have at least 1800kg of fuel on landing</Text>
 		<Text type="A333">Must have at least 2500kg of fuel on landing</Text>
 		<Text type=".*">Flight time above 30%/40 minutes of scheduled or average requires review</Text>

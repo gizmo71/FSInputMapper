@@ -1,11 +1,7 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
-using System;
-using System.Runtime.InteropServices;
 using Windows.Gaming.Input;
 
 namespace Controlzmo.Views
@@ -20,9 +16,22 @@ namespace Controlzmo.Views
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
 
+        private GameControllerSwitchPosition current = GameControllerSwitchPosition.Center;
+
         public void OnChange(ExtendedSimConnect simConnect, GameControllerSwitchPosition old, GameControllerSwitchPosition @new)
         {
-            _log.LogCritical($"top hat {old}->{@new}");
+            _log.LogDebug($"top hat {old}/{current}->{@new}");
+            switch (@new)
+            {
+                case GameControllerSwitchPosition.UpLeft:
+                case GameControllerSwitchPosition.UpRight:
+                case GameControllerSwitchPosition.DownLeft:
+                case GameControllerSwitchPosition.DownRight:
+                    @new = current;
+                    break;
+            }
+            if (@new == current)
+                return;
             switch (@new)
             {
                 case GameControllerSwitchPosition.Left: vJoy.getController().QuickClick(104u); break;
@@ -35,13 +44,9 @@ namespace Controlzmo.Views
 // b: negative anticlockwise, positive clockwise
 // h: 0 is forward, -90 left, 90 right
                 case GameControllerSwitchPosition.Up:
-                case GameControllerSwitchPosition.UpLeft:
-                case GameControllerSwitchPosition.UpRight:
                     simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f);
                     break;
                 case GameControllerSwitchPosition.Down:
-                case GameControllerSwitchPosition.DownLeft:
-                case GameControllerSwitchPosition.DownRight:
                     simConnect.CameraSetRelative6DOF(0.525f, -2f, -25f, 15f, 0f, 0f);
                     break;
                 default:
@@ -49,6 +54,7 @@ namespace Controlzmo.Views
                     resetView.OnPress(simConnect);
                     break;
             }
+            current = @new;
         }
     }
 }
