@@ -38,13 +38,6 @@ namespace Controlzmo.Views
             {
                 case GameControllerSwitchPosition.Left: vJoy.getController().QuickClick(104u); break;
                 case GameControllerSwitchPosition.Right: vJoy.getController().QuickClick(106u); break;
-// x/y/z, p/b/h
-// x: negative left, positive right
-// y: positive above, negative below
-// z: positive is ahead, negative is behind
-// p: positive is down, negative is up
-// b: negative anticlockwise, positive clockwise
-// h: 0 is forward, -90 left, 90 right
                 case GameControllerSwitchPosition.Up:
                     simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f);
                     break;

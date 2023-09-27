@@ -24,8 +24,22 @@ namespace Controlzmo.Views
 
         public override void Process(ExtendedSimConnect simConnect, TaxiCamData data)
         {
-            _log.LogCritical($"**--** taxi cam! '{data.title}'");
-            simConnect.CameraSetRelative6DOF(0.525f, -2f, -25f, 15f, 0f, 0f);
+            _log.LogCritical($"**--** taxi cam! '{data.title}' for '{simConnect.AircraftFile}'");
+// x/y/z, p/b/h
+// x: negative left, positive right
+// y: positive above, negative below
+// z: positive is ahead, negative is behind
+// p: positive is down, negative is up
+// b: negative anticlockwise, positive clockwise
+// h: 0 is forward, -90 left, 90 right
+            var y = -2f;
+            var z = -25f;
+            if ("aircrafta321neopw" == simConnect.AircraftFile)
+            {
+                y = -2.4f;
+                z = -28f;
+            }
+            simConnect.CameraSetRelative6DOF(0.525f, y, z, 15f, 0f, 0f);
         }
     }
 }
