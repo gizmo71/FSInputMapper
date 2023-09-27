@@ -51,7 +51,7 @@
 	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Warm up (5m?), OETD; OETA(?), cool down</Text>
+		<Text type=".*">Warm up (5m?), OETD; OETA(#2?), cool down</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
 		<Text type=".*">Must have at least 748kg fuel on landing</Text> <!-- "lessFuelThan"-->
 	</Airline>
@@ -64,8 +64,8 @@
 	<Airline callsign="i-fly"><!-- IndoGo Virtual -->
 		<!-- 'FlyByWire Airbus A320 Neo IndiGo' -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first unless OETD, warm up; OETA, cool down</Text>
-		<!-- The cool down time is listed as both 2 and 3 minutes  in the tracker data. Huh? -->
+		<Text type=".*">Start #2 first unless OETD, warm up; OETA(#2?), cool down</Text>
+		<!-- The cool down time is listed as both 2 and 3 minutes in the tracker data. Huh? -->
 		<Text type=".*">Flight time above 20%/30 minutes of scheduled requires review</Text>
 		<Text type=".*">Taxi times >150% of average or pre-set maximum requires review</Text>
 		<Text type=".*">Must have between 1T and 10T fuel on landing</Text>
@@ -99,7 +99,7 @@
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
-		<Text type="A20N">Start #1 first, warm up; OETA, cool down</Text>
+		<Text type="A20N">Start #1 first, OETD(#2?), warm up; OETA, cool down</Text>
 		<Text type="A20N">Pause in flight requires PIREP comment</Text>
 		<Text type="A20N">Must have at least 2000kg of fuel on landing</Text>
 	</Airline>
