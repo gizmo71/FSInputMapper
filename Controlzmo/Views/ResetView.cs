@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -25,14 +26,10 @@ namespace Controlzmo.Views
     }
 
     [Component]
-    public class ResetView : DataListener<ResetViewData>, IButtonCallback<T16000mHotas>
+    [RequiredArgsConstructor]
+    public partial class ResetView : DataListener<ResetViewData>, IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
-
-        public ResetView(IServiceProvider sp)
-        {
-            vJoy = sp.GetRequiredService<VirtualJoy>();
-        }
 
         public int GetButton() => T16000mHotas.BUTTON_MINISTICK;
         public void OnPress(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);

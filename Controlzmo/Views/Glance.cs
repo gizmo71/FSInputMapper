@@ -1,6 +1,7 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using Windows.Gaming.Input;
 
@@ -12,6 +13,7 @@ namespace Controlzmo.Views
     {
         private readonly ILogger<Glance> _log;
         private readonly ResetView resetView;
+        private readonly TaxiCam taxiCam;
         private readonly VirtualJoy vJoy;
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
@@ -47,7 +49,7 @@ namespace Controlzmo.Views
                     simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f);
                     break;
                 case GameControllerSwitchPosition.Down:
-                    simConnect.CameraSetRelative6DOF(0.525f, -2f, -25f, 15f, 0f, 0f);
+                    simConnect.RequestDataOnSimObject(taxiCam, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
                     break;
                 default:
                     simConnect.SendDataOnSimObject(new ResetViewData() { cameraState = 2 });
