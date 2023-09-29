@@ -15,4 +15,10 @@ namespace Controlzmo.GameControllers
         public abstract int GetSwitch();
         public abstract void OnChange(ExtendedSimConnect _, GameControllerSwitchPosition old, GameControllerSwitchPosition @new);
     }
+
+    public interface IAxisCallback<C> where C : IGameController
+    {
+        public abstract int GetAxis();
+        public abstract void OnChange(ExtendedSimConnect _, double old, double @new);
+    }
 }

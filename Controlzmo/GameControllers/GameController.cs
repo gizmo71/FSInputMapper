@@ -30,6 +30,7 @@ namespace Controlzmo.GameControllers
         protected readonly ILogger _log;
         private readonly IEnumerable<IButtonCallback<T>> buttonCallbacks;
         private readonly IEnumerable<ISwitchCallback<T>> switchCallbacks;
+        private readonly IEnumerable<IAxisCallback<T>> axisCallbacks;
         private RawGameController? raw;
 
         protected GameController(IServiceProvider sp, int buttons, int axes, int switches)
@@ -43,6 +44,7 @@ namespace Controlzmo.GameControllers
             _log = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             buttonCallbacks = sp.GetServices<IButtonCallback<T>>();
             switchCallbacks = sp.GetServices<ISwitchCallback<T>>();
+            axisCallbacks = sp.GetServices<IAxisCallback<T>>();
         }
 
         public void Offer(RawGameController candidate)
@@ -73,6 +75,9 @@ namespace Controlzmo.GameControllers
             foreach (var callback in switchCallbacks)
                 if (switchesOld[callback.GetSwitch()] != switchesNew[callback.GetSwitch()])
                     callback.OnChange(simConnect, switchesOld[callback.GetSwitch()], switchesNew[callback.GetSwitch()]);
+            foreach (var callback in axisCallbacks)
+                if (axesOld[callback.GetAxis()] != axesNew[callback.GetAxis()])
+                    callback.OnChange(simConnect, axesOld[callback.GetAxis()], axesNew[callback.GetAxis()]);
 
             buttonsNew.CopyTo(buttonsOld, 0);
             axesNew.CopyTo(axesOld, 0);
