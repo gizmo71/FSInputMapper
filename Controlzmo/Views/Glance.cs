@@ -9,7 +9,7 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class Glance : ISwitchCallback<T16000mStick>
+    public partial class Glance : ISwitchCallback<T16000mStick>, IAxisCallback<T16000mHotas>
     {
         private readonly ILogger<Glance> _log;
         private readonly ResetView resetView;
@@ -39,7 +39,7 @@ namespace Controlzmo.Views
                 case GameControllerSwitchPosition.Left: vJoy.getController().QuickClick(104u); break;
                 case GameControllerSwitchPosition.Right: vJoy.getController().QuickClick(106u); break;
                 case GameControllerSwitchPosition.Up:
-                    simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 90f, 0f, 0f);
+                    simConnect.SendDataOnSimObject(new CameraVariableData() { cameraState = 3, cameraSubState = 3, viewType = 4, viewIndex = 3 });
                     break;
                 case GameControllerSwitchPosition.Down:
                     simConnect.RequestDataOnSimObject(taxiCam, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
@@ -50,6 +50,13 @@ namespace Controlzmo.Views
                     break;
             }
             current = @new;
+        }
+
+        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
+
+        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
+        {
+            simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 180f * (float) @new, 0f, 0f);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;

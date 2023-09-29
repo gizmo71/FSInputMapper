@@ -49,7 +49,16 @@ Now that we have full control over buttons, do we need to look again and things 
   (see the [notes](https://docs.flightsimulator.com/html/Programming_Tools/SimVars/Camera_Variables.htm)).
 * [Lots of useful events](https://docs.flightsimulator.com/html/Programming_Tools/Event_IDs/View_Camera_Events.htm),
   though sadly the chase view (the one we'd like to use for taxi/takeoff) appears quite anaemic.
-* `CameraSetRelative6DOF` appears to jump us into a completely custom camera!
+* `CameraSetRelative6DOF` appears to jump us into a completely custom camera! Except that with SU13 it appears to be borked. :-(
+```
+// x/y/z, p/b/h
+// x: negative left, positive right
+// y: positive above, negative below
+// z: positive is ahead, negative is behind
+// p: positive is down, negative is up
+// b: negative anticlockwise, positive clockwise
+// h: 0 is forward, -90 left, 90 right
+```
 
 Suggested camera mappings:
 * Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 ?, 4 glance left, 5 taxi/landing, 6 glance right, 7 ?, 8 overhead, 9 upper overhead
