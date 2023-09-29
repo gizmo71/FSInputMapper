@@ -9,7 +9,7 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class Glance : ISwitchCallback<T16000mStick>, IAxisCallback<T16000mHotas>
+    public partial class Glance : ISwitchCallback<T16000mStick>//, IAxisCallback<T16000mHotas>
     {
         private readonly ILogger<Glance> _log;
         private readonly ResetView resetView;
@@ -52,11 +52,13 @@ namespace Controlzmo.Views
             current = @new;
         }
 
+#if false
         public int GetAxis() => T16000mHotas.AXIS_WHEEL;
 
         public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
         {
             simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 180f * (float) @new, 0f, 0f);
         }
+#endif
     }
 }
