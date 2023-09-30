@@ -33,10 +33,13 @@ namespace Controlzmo.Views
         private readonly ILogger<CameraState> log;
         [Property]
         private Boolean _isCockpit = false;
+        [Property]
+        private Boolean _isChase = false;
 
         public override void Process(ExtendedSimConnect simConnect, CameraStateData data)
         {
             _isCockpit = data.cameraState == 2;
+            _isChase = data.cameraState == 3;
             log.LogCritical($"camera state {data.cameraState}/{data.cameraSubState}: cockpit? {_isCockpit}");
         }
 

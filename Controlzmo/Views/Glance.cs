@@ -54,7 +54,7 @@ namespace Controlzmo.Views
                 }
 
             }
-            else
+            else if (cameraState.IsChase)
             {
                 vJoy.getController().ReleaseButton(110u);
                 vJoy.getController().ReleaseButton(111u);
