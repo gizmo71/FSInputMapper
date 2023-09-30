@@ -1,7 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using Windows.Gaming.Input;
 
@@ -9,12 +8,13 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class Glance : ISwitchCallback<T16000mStick>//, IAxisCallback<T16000mHotas>
+    public partial class Glance : ISwitchCallback<T16000mStick>
     {
         private readonly ILogger<Glance> _log;
-        private readonly ResetView resetView;
-        private readonly TaxiCam taxiCam;
         private readonly VirtualJoy vJoy;
+        private readonly CameraState cameraState;
+        private readonly CameraView cameraView;
+        private readonly ResetView reset;
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
 
@@ -34,31 +34,49 @@ namespace Controlzmo.Views
             }
             if (@new == current)
                 return;
-            switch (@new)
+            if (cameraState.IsCockpit)
             {
-                case GameControllerSwitchPosition.Left: vJoy.getController().QuickClick(104u); break;
-                case GameControllerSwitchPosition.Right: vJoy.getController().QuickClick(106u); break;
-                case GameControllerSwitchPosition.Up:
-                    simConnect.SendDataOnSimObject(new CameraVariableData() { cameraState = 3, cameraSubState = 3, viewType = 4, viewIndex = 3 });
-                    break;
-                case GameControllerSwitchPosition.Down:
-                    simConnect.RequestDataOnSimObject(taxiCam, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                    break;
-                default:
-                    simConnect.SendDataOnSimObject(new ResetViewData() { cameraState = 2 });
-                    resetView.OnPress(simConnect);
-                    break;
+                switch (@new)
+                {
+                    case GameControllerSwitchPosition.Up:
+                    case GameControllerSwitchPosition.Down:
+                        //TODO: what?
+                        break;
+                    case GameControllerSwitchPosition.Left:
+                        vJoy.getController().QuickClick(104u);
+                        break;
+                    case GameControllerSwitchPosition.Right:
+                        vJoy.getController().QuickClick(106u);
+                        break;
+                    case GameControllerSwitchPosition.Center:
+                        reset.OnPress(simConnect);
+                        break;
+                }
+
+            }
+            else
+            {
+                vJoy.getController().ReleaseButton(110u);
+                vJoy.getController().ReleaseButton(111u);
+                vJoy.getController().ReleaseButton(112u);
+                vJoy.getController().ReleaseButton(113u);
+                switch (@new)
+                {
+                    case GameControllerSwitchPosition.Up:
+                        vJoy.getController().PressButton(110u);
+                        break;
+                    case GameControllerSwitchPosition.Down:
+                        vJoy.getController().PressButton(111u);
+                        break;
+                    case GameControllerSwitchPosition.Left:
+                        vJoy.getController().PressButton(113u);
+                        break;
+                    case GameControllerSwitchPosition.Right:
+                        vJoy.getController().PressButton(112u);
+                        break;
+                }
             }
             current = @new;
         }
-
-#if false
-        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
-
-        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
-        {
-            simConnect.CameraSetRelative6DOF(0f, 100f, -15f, 180f * (float) @new, 0f, 0f);
-        }
-#endif
     }
 }
