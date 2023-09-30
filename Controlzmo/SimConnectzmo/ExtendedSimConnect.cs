@@ -9,11 +9,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
 using System.Text.RegularExpressions;
+using Controlzmo.GameControllers;
+using Lombok.NET;
+using Microsoft.AspNetCore.Http.Metadata;
 
 namespace SimConnectzmo
 {
     // Change ENUM_DYNAMIC_START if you need more internal values.
-    internal enum REQUEST { AircraftLoaded = 1, SimSystemState }
+    internal enum REQUEST { AircraftLoaded = 1, SimSystemState, Wibble1, Wibble2, Wibble3 }
     internal enum STRUCT { }
     internal enum EVENT { SimSystemState = 1, Frame }
     internal enum GROUP { JUST_MASKABLE = 1 }
@@ -33,6 +36,7 @@ namespace SimConnectzmo
         private IEnumerable<IOnSimConnection>? onConnectionHandlers;
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
+private Wibbleator wibble;
 
         public bool? IsSimStarted;
 
@@ -47,6 +51,8 @@ namespace SimConnectzmo
             OnRecvEventFrame += Handle_OnRecvEventFrame;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
+OnRecvControllersList += Wibble_OnRecvControllersList;
+OnRecvEnumerateInputEvents += Wibble_OnRecvEnumerateInputEvents;
 
 //TODO: What's this for?
             //FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -62,6 +68,7 @@ namespace SimConnectzmo
             const int ENUM_DYNAMIC_START = 10; // Leave some space for explicit enum values.
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
             serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
+wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()
@@ -387,6 +394,62 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             foreach (var handler in onSimStartedHandlers!)
                 serializedExecutor!.Enqueue(handler.OnStarted);
             TriggerInitialRequests();
+        }
+
+        private void Wibble_OnRecvControllersList(SimConnect sender, SIMCONNECT_RECV_CONTROLLERS_LIST data)
+        {
+            wibble.OnRecvControllersList(this, data);
+        }
+
+        private void Wibble_OnRecvEnumerateInputEvents(SimConnect sender, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS data)
+        {
+            wibble.OnRecvEnumerateInputEvents(this, data);
+        }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class Wibbleator : IButtonCallback<T16000mHotas>
+    {
+        private readonly ILogger<Wibbleator> log;
+        public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
+        
+        public virtual void OnPress(ExtendedSimConnect sc) {
+            //TODO: can we use this to find new events, if there are any? And perhaps avoid vJoy?
+#if true
+            sc.EnumerateInputEvents(REQUEST.Wibble1);
+            log.LogCritical($"Asked for wibbleations 1 {REQUEST.Wibble1} => {sc.GetLastSentPacketID()}");
+#endif
+#if false
+            sc.EnumerateControllers();
+            log.LogCritical($"Asked for wibbleations 2 => {sc.GetLastSentPacketID()}");
+#endif
+        }
+
+        public void OnRecvControllersList(ExtendedSimConnect sc, SIMCONNECT_RECV_CONTROLLERS_LIST data)
+        {
+            log.LogCritical($"wibbleate 2 @ {data.dwEntryNumber}! {data.rgData.Length} v {data.dwArraySize}");
+            for (var i = 0 ; i < data.dwArraySize; ++i)
+            {
+                var item = data.rgData[i] as SIMCONNECT_CONTROLLER_ITEM;
+                // Name  is whatever random text you've altered MSFS to carry for that device.
+                // DevID is just a sequential number starting from 0 and probably reflecting the order they show up in in the control options screen.
+                // ProductID is the same as the USB one. No VendorID though, making it not far off useless!
+                // CompositeID always seems to be 0.
+                log.LogCritical($"wibbleate 2 [{i}] = {item.DeviceName}@{item.DeviceId} = {item.ProductId} and {item.CompositeID}");
+            }
+        }
+
+        public void OnRecvEnumerateInputEvents(ExtendedSimConnect sc, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS data)
+        {
+            log.LogCritical($"wibbleate 1 @ {data.dwEntryNumber}! {data.rgData.Length} which should be the same as {data.dwArraySize}");
+            // https://devsupport.flightsimulator.com/t/what-does-simconnect-enumerateinputevents-really-do/6509
+            for (var i = 0 ; i < data.dwArraySize; ++i)
+            {
+                var item = data.rgData[i] as SIMCONNECT_INPUT_EVENT_DESCRIPTOR;
+                // Is eType one of SIMCONNECT_INPUT_EVENT_TYPE? (none, double, string)
+                log.LogCritical($"wibbleate 1 [{i}] = {item.Name}@{item.eType} = {item.Hash}");
+            }
         }
     }
 }
