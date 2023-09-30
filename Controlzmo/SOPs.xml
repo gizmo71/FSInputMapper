@@ -97,10 +97,12 @@
 		<Text title="Airbus A320 IAE LDA">Start #2 first</Text>
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
+		<Text type="A319">Preparation 10-40 minutes, block time counts</Text>
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
+		<Text type="A319">OETD(#2?), warm up; OETA, cool down</Text>
 		<Text type="A20N">Start #1 first, OETD(#2?), warm up; OETA, cool down</Text>
-		<Text type="A20N">Pause in flight requires PIREP comment</Text>
-		<Text type="A20N">Must have at least 2000kg of fuel on landing</Text>
+		<Text type=".*">Must have at least 2000kg of fuel on landing</Text>
+		<Text type=".*">Pause in flight requires PIREP comment</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
 		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
