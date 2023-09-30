@@ -11,7 +11,6 @@ using Controlzmo;
 using System.Text.RegularExpressions;
 using Controlzmo.GameControllers;
 using Lombok.NET;
-using Microsoft.AspNetCore.Http.Metadata;
 
 namespace SimConnectzmo
 {

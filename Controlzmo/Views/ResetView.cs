@@ -15,31 +15,17 @@ namespace Controlzmo.Views
     }
 
     [Component]
-    public class ResetCameraAction : IData<ResetCameraData> { }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct ResetViewData
-    {
-        [SimVar("CAMERA STATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 cameraState;
-    }
-
-    [Component]
     [RequiredArgsConstructor]
-    public partial class ResetView : DataListener<ResetViewData>, IButtonCallback<T16000mHotas>
+    public partial class ResetView : IData<ResetCameraData>, IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
+        private readonly CameraState cameraState;
 
         public int GetButton() => T16000mHotas.BUTTON_MINISTICK;
-        public void OnPress(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-
-        public override void Process(ExtendedSimConnect simConnect, ResetViewData data)
-        {
+        public void OnPress(ExtendedSimConnect simConnect) {
             simConnect.SendDataOnSimObject(new ResetCameraData() { resetAction = 1 });
-            if (data.cameraState == 2) // Cockpit
-            {
+            if (cameraState.Current.cameraState == CameraState.COCKPIT)
                 vJoy.getController().QuickClick(105u);
-            }
         }
     }
 }

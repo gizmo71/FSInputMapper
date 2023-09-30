@@ -61,7 +61,7 @@ Now that we have full control over buttons, do we need to look again and things 
 ```
 
 Suggested camera mappings:
-* Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 ?, 4 glance left, 5 taxi/landing, 6 glance right, 7 ?, 8 overhead, 9 upper overhead
+* Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 check nose, 4 glance left, 5 taxi/landing, 6 glance right, 7 check sky, 8 overhead, 9 upper overhead
 
 Map vJoy:
 * 100-109 to Camera->Cockpit Camera->Load Custom Camera 0-9

@@ -13,8 +13,8 @@ namespace Controlzmo.Views
         private readonly ILogger<Glance> _log;
         private readonly VirtualJoy vJoy;
         private readonly CameraState cameraState;
-        private readonly CameraView cameraView;
-        private readonly ResetView reset;
+        //private readonly CameraView cameraView;
+        //private readonly ResetView reset;
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
 
@@ -34,13 +34,15 @@ namespace Controlzmo.Views
             }
             if (@new == current)
                 return;
-            if (cameraState.IsCockpit)
+            if (cameraState.Current.cameraState == CameraState.COCKPIT)
             {
                 switch (@new)
                 {
                     case GameControllerSwitchPosition.Up:
+                        vJoy.getController().QuickClick(103u);
+                        break;
                     case GameControllerSwitchPosition.Down:
-                        //TODO: what?
+                        vJoy.getController().QuickClick(107u);
                         break;
                     case GameControllerSwitchPosition.Left:
                         vJoy.getController().QuickClick(104u);
@@ -49,12 +51,12 @@ namespace Controlzmo.Views
                         vJoy.getController().QuickClick(106u);
                         break;
                     case GameControllerSwitchPosition.Center:
-                        reset.OnPress(simConnect);
+                        vJoy.getController().QuickClick(105u);
                         break;
                 }
 
             }
-            else if (cameraState.IsChase)
+            else if (cameraState.Current.cameraState == CameraState.CHASE)
             {
                 vJoy.getController().ReleaseButton(110u);
                 vJoy.getController().ReleaseButton(111u);
@@ -76,6 +78,7 @@ namespace Controlzmo.Views
                         break;
                 }
             }
+            else _log.LogDebug($"unhandled camera state {cameraState.Current.cameraState}");
             current = @new;
         }
     }
