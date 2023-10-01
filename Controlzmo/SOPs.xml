@@ -3,12 +3,13 @@
 <SOPs>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
-		<Text type="A20N">Preparation 20 to 60 minutes</Text>
+		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
 		<Text type=".*">Start #1 first; warm up, cool down</Text>
-		<Text type="A20N">OETD, OETA</Text>
+		<Text type="A2[01]N">OETD, OETA</Text>
 		<Text type="A320">Must have at least 1T of fuel on landing</Text>
 		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
+		<Text type="A21N">Must have at least 2T of fuel on landing</Text>
 		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
 		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
 	</Airline>
