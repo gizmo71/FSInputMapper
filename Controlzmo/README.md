@@ -32,6 +32,7 @@ This is similar to the problem with "normal" data requiring an off/on flip.
 
 Look into the new `SimConnect_EnumerateControllers`, `SimConnect_EnumerateInputEvents` and `SimConnect_SubscribeInputEvent`
 calls as an alternative to needing to scan the USB devices. Or is that not what they do? Do they just list the existing events?
+_Apparently it's just B: `InputEvent`s from the XML, of which the A32NX no longer has any._
 
 EFIS
 ----
