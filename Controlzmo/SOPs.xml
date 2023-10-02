@@ -6,7 +6,7 @@
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
 		<Text type=".*">Start #1 first; warm up, cool down</Text>
-		<Text type="A2[01]N">OETD, OETA</Text>
+		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
 		<Text type="A320">Must have at least 1T of fuel on landing</Text>
 		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
 		<Text type="A21N">Must have at least 2T of fuel on landing</Text>
