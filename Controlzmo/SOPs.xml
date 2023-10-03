@@ -127,6 +127,7 @@
 		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first</Text>
 		<Text type=".*">Consider: no flap 3 departure, set flaps after both engines started</Text>
-		<Text type=".*">Must have at least 1200kg of fuel on landing</Text>
+		<Text type="A320|A20N">Must have fuel ≥ 1200kg on landing</Text>
+		<Text type="A21N">Must have 1500kg ≥ fuel ≥ 20T on landing</Text>
 	</Airline>
 </SOPs>
