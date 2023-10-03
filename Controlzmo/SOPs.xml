@@ -4,19 +4,19 @@
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
-		<Text type="A33[039]">Preparation: 20 to 120 minutes</Text>
+		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
 		<Text type=".*">Start #1 first; warm up, cool down</Text>
 		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
-		<Text type="A320">Must have at least 1T of fuel on landing</Text>
-		<Text type="A20N">Must have between 1.5T and 10T of fuel on landing</Text>
-		<Text type="A21N">Must have at least 2T of fuel on landing</Text>
-		<Text type="A33[09]">Must have between more 2243kg of fuel on landing</Text>
+		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
+		<Text type="A20N">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
+		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
+		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
 		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
 	</Airline>
 	<Airline callsign="air[- ]china"> <!-- Virtual Air China -->
 		<Text type=".*">Block time counts</Text>
 		<Text type=".*">Start #2 first, *warm up*; *cool down*</Text>
-		<Text type=".*">Must have at least 1.5T fuel on pushback and 1T on landing</Text>
+		<Text type=".*">Must have fuel ≥ 1.5T on pushback &amp; ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
@@ -35,7 +35,7 @@
 		<!-- 'FWB Delta (Dirty)' -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">Must have no more than 20T of fuel on landing</Text>
+		<Text type=".*">Must have fuel ≤ 20T on landing</Text>
 	</Airline>
 	<Airline callsign="eurowings|ocean"> <!-- vEWG -->
 		<!-- 'Airbus A320 CFM SL EWG' (the Discover one) -->
@@ -47,19 +47,19 @@
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
 		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
-		<Text type=".*">Must have at least 1.5T fuel on landing (some contestable exceptions)</Text>
+		<Text type=".*">Must have fuel ≥ 1.5T on landing (contestable exceptions)</Text>
 	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Warm up (5m?), OETD; OETA(#2?), cool down</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
-		<Text type=".*">Must have at least 748kg fuel on landing</Text> <!-- "lessFuelThan"-->
+		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
 	</Airline>
 	<Airline callsign="goldberg"> <!-- AirGoldberg -->
-		<Text type="A20N">Preparation 10-40 minutes, air time counts</Text>
-		<Text type="A20N">Start #2 first, warm up; cool down</Text>
-		<Text type="A20N">Taxi in/out time &gt;50% of expectation requires review</Text>
-		<Text type="A20N">Must have at least 1000kg fuel on pushback and landing</Text>
+		<Text type=".*">Preparation 10-40 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Taxi in/out time &gt;50% of expectation requires review</Text>
+		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndoGo Virtual -->
 		<!-- 'FlyByWire Airbus A320 Neo IndiGo' -->
@@ -68,7 +68,7 @@
 		<!-- The cool down time is listed as both 2 and 3 minutes in the tracker data. Huh? -->
 		<Text type=".*">Flight time &gt;20%/30 minutes of scheduled requires review</Text>
 		<Text type=".*">Taxi times &gt;150% of average or pre-set maximum requires review</Text>
-		<Text type=".*">Must have between 1T and 10T fuel on landing</Text>
+		<Text type=".*">Must have 1T ≤ fuel ≤ 10T on landing</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<!-- 'Airbus A320 Neo JetBlue (N624JB)' and 'Airbus A320 IAE JBU' (many others for both) -->
@@ -76,21 +76,21 @@
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">Taxi times &gt;200% of average or pre-set maximum requires review</Text>
 		<Text type=".*">OETD/OETA</Text>
-		<Text type=".*">Must have at least 1500kg of fuel on landing</Text>
+		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
 		<!-- 'Airbus A319 CFM Lufthansa2' -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
-		<Text type=".*">Must have at least 998kg of fuel on landing</Text>
+		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
 		<Text type="A339">Start #1 first; cool down</Text>
 		<Text type="A20N|A320">Start #2 first; cool down</Text>
-		<Text type="A20N|A320">Must have at least 2000kg fuel on landing</Text>
-		<Text type="A339">Must have between 2T and 20T fuel on landing</Text>
+		<Text type="A20N|A320">Must have fuel ≥ 2T on landing</Text>
+		<Text type="A339">Must have 2T ≤ fuel ≤ 20T on landing</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
@@ -101,7 +101,7 @@
 		<Text type="A319">Preparation 10-40 minutes, block time counts</Text>
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
-		<Text type=".*">Must have at least 2000kg of fuel on landing</Text>
+		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
@@ -114,8 +114,8 @@
 		<!-- 'Airbus A320 IAE AWC2' -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type="A320|A2[01]N">Must have at least 1800kg of fuel on landing</Text>
-		<Text type="A333">Must have at least 2500kg of fuel on landing</Text>
+		<Text type="A320|A2[01]N">Must have fuel ≥ 1800kg on landing</Text>
+		<Text type="A333">Must have at fuel ≥ 2500kg on landing</Text>
 		<Text type=".*">Flight time &gt;30%/40 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Taxi in time &gt;80% of average or pre-set maximum (out unclear) requires review</Text>
 	</Airline>
@@ -128,6 +128,6 @@
 		<Text type=".*">Start #2 first</Text>
 		<Text type=".*">Consider: no flap 3 departure, set flaps after both engines started</Text>
 		<Text type="A320|A20N">Must have fuel ≥ 1200kg on landing</Text>
-		<Text type="A21N">Must have 1500kg ≥ fuel ≥ 20T on landing</Text>
+		<Text type="A21N">Must have 1500kg ≤ fuel ≤ 20T on landing</Text>
 	</Airline>
 </SOPs>
