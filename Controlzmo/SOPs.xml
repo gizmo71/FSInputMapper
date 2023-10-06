@@ -98,7 +98,7 @@
 		<Text title="Airbus A320 IAE LDA">Start #2 first</Text>
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
-		<Text type="A319">Preparation 10-40 minutes, block time counts</Text>
+		<Text type="A319|A21M">Preparation 10-40 minutes, block time counts</Text>
 		<Text type="A20N">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
 		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
