@@ -87,10 +87,10 @@
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
-		<Text type="A339">Start #1 first; cool down</Text>
+		<Text type="A33[09]">Start #1 first; cool down</Text>
 		<Text type="A20N|A320">Start #2 first; cool down</Text>
 		<Text type="A20N|A320">Must have fuel ≥ 2T on landing</Text>
-		<Text type="A339">Must have 2T ≤ fuel ≤ 20T on landing</Text>
+		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
