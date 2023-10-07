@@ -13,8 +13,6 @@ namespace Controlzmo.Views
         private readonly ILogger<Glance> _log;
         private readonly VirtualJoy vJoy;
         private readonly CameraState cameraState;
-        //private readonly CameraView cameraView;
-        //private readonly ResetView reset;
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
 
