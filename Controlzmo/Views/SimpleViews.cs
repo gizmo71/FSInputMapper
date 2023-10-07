@@ -10,8 +10,14 @@ namespace Controlzmo.Views
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_UP;
-        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(109u);
-        public void OnRelease(ExtendedSimConnect _) => vJoy.getController().QuickClick(108u);
+
+        public void OnPress(ExtendedSimConnect _) {
+            vJoy.getController().QuickClick(109u);
+        }
+
+        public void OnRelease(ExtendedSimConnect _) {
+            vJoy.getController().QuickClick(108u);
+        }
     }
 
     [Component]
@@ -19,9 +25,18 @@ namespace Controlzmo.Views
     public partial class LookMainPanelAndPedastal : IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
+        private ViewSticker sticker = new ViewSticker();
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_DOWN;
-        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(102u);
-        public void OnRelease(ExtendedSimConnect _) => vJoy.getController().QuickClick(100u);
+
+        public void OnPress(ExtendedSimConnect _) {
+            vJoy.getController().QuickClick(102u);
+            sticker.TriggerAction();
+        }
+
+        public void OnRelease(ExtendedSimConnect _) {
+            if (!sticker.IsStuck())
+                vJoy.getController().QuickClick(100u);
+        }
     }
 
     [Component]
