@@ -2,11 +2,12 @@
 
 namespace Controlzmo.Views
 {
+    [Component]
     public class ViewSticker
     {
         private DateTime glanceStarted = DateTime.UtcNow;
 
-        public void TriggerAction() => glanceStarted = DateTime.UtcNow;
-        public Boolean IsStuck() => DateTime.UtcNow > glanceStarted.AddSeconds(1);
+        public void TriggerStart() => glanceStarted = DateTime.UtcNow;
+        public Boolean IsStuck(double millis) => DateTime.UtcNow > glanceStarted.AddMilliseconds(millis);
     }
 }
