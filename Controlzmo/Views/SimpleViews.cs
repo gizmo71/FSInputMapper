@@ -13,13 +13,11 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_UP;
 
         public void OnPress(ExtendedSimConnect _) {
-            vJoy.getController().QuickClick(108u);
             sticker.TriggerStart();
         }
 
         public void OnRelease(ExtendedSimConnect _) {
-            if (sticker.IsStuck(500))
-                vJoy.getController().QuickClick(109u);
+            vJoy.getController().QuickClick(sticker.IsStuck(500) ? 109u: 108u);
         }
     }
 
@@ -32,13 +30,11 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_FRONT_ROCKER_DOWN;
 
         public void OnPress(ExtendedSimConnect _) {
-            vJoy.getController().QuickClick(100u);
             sticker.TriggerStart();
         }
 
         public void OnRelease(ExtendedSimConnect _) {
-            if (sticker.IsStuck(500))
-                vJoy.getController().QuickClick(102u);
+            vJoy.getController().QuickClick(sticker.IsStuck(500) ? 102u: 100u);
         }
     }
 
