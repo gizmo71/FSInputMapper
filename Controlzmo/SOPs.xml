@@ -14,9 +14,9 @@
 		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
 	</Airline>
 	<Airline callsign="air[- ]china|cathay"> <!-- Virtual Air China -->
-		<Text type=".*">Block time counts</Text>
-		<Text type=".*">Start #2 first, *warm up*; *cool down*</Text>
-		<Text type=".*">Must have fuel ≥ 1.5T on pushback &amp; ≥ 1T on landing</Text>
+		<Text type=".*">Block time counts (to be reconfirmed?)</Text>
+		<Text type=".*">*Warm up*; *cool down*</Text>
+		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->

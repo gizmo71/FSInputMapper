@@ -160,7 +160,7 @@ static void updateOled() {
       oled.set2X();
       oled.setCursor(20 + 22 * (i - 1), 4);
       oled.print(current[i] = desiredBaro[i]);
-      break;
+      return;
     }
   }
 }
@@ -315,6 +315,7 @@ void loop(void) {
   // Why aren't these added to the task manager?
   ioDeviceSync(io23017lights);
   ioDeviceSync(io23017board);
+ // ioDeviceSync(ioPico);
   taskManager.runLoop();
 
   updateLcds();
