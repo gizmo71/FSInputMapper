@@ -19,7 +19,7 @@
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="allegiant">
-		<Text type=".*">Preparation 10-45 minutes, mode unknown</Text>
+		<Text type=".*">Preparation 10-45 minutes, air time counts</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
