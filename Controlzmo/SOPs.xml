@@ -67,7 +67,7 @@
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india"> <!-- Air India -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-40 minutes, air time counts(?)</Text>
 		<Text type=".*">Start #2 first unless OETD, warm up</Text>
 		<Text type=".*">OETA#2, cool down</Text>
 		<!-- The cool down time is listed as both 2 and 3 minutes in the tracker data. Huh? -->
