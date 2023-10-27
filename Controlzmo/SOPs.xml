@@ -56,7 +56,7 @@
 	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Warm up (5m?), OETD; OETA(#2?), cool down</Text>
+		<Text type=".*">Warm up (5m), OETD; OETA(#2), cool down</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
 		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
 	</Airline>
