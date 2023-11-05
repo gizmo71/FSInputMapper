@@ -33,7 +33,7 @@ namespace Controlzmo.GameControllers
 
         public static Task<bool> QuickClick(this IVJoyController controller, uint button)
         {
-            return controller.ClickButtonAsync(button, 100, token);
+            return controller.ClickButtonAsync(button, 250, token);
         }
     }
 }
