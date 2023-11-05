@@ -9,6 +9,7 @@
 		<Text type=".*">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type=".*">Flight time &gt;50%/20 minutes of scheduled requires review</Text>
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
+		<Text type=".*">Post at least one screenshot in Discord!</Text>
 	</Airline>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
