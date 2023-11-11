@@ -18,11 +18,16 @@ namespace Controlzmo.Views
     [Component]
     public class CockpitExternalToggle : DataListener<CockpitExternalToggleData>, IButtonCallback<T16000mHotas>
     {
+        private const Int32 COCKPIT = 2;
+        private const Int32 CHASE = 3;
+
         protected readonly ILogger _logger;
+        private readonly VirtualJoy vJoy;
 
         public CockpitExternalToggle(IServiceProvider sp)
         {
             _logger = sp.GetRequiredService<ILogger<CockpitExternalToggle>>();
+            vJoy = sp.GetRequiredService<VirtualJoy>();
         }
 
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
@@ -30,13 +35,11 @@ namespace Controlzmo.Views
 
         public override void Process(ExtendedSimConnect simConnect, CockpitExternalToggleData data)
         {
-            if (data.cameraState == 2) // If cockpit...
-                data.cameraState = 3; // ... go chase
-            else if (data.cameraState == 3 || data.cameraState == 4) // If chase or drone...
-                data.cameraState = 2; // ... go cockpit...
-            else
-                return;
-            simConnect.SendDataOnSimObject(data);
+            if (data.cameraState == COCKPIT || data.cameraState == CHASE) {
+_logger.LogWarning($"Sedning 114 for {data.cameraState}");
+                vJoy.getController().QuickClick(114u);
+            } else
+                _logger.LogWarning($"Wrong camera state for chase view toggle {data.cameraState}");
         }
     }
 }
