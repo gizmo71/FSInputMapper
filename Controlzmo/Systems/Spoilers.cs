@@ -53,7 +53,7 @@ namespace Controlzmo.Systems.Spoilers
         {
             _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX ready? {data.a32nxReady} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition}");
             if (data.a32nxReady == 1) {
-                if (data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1) data.armed = 1;
+                data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
                 data.position = (int)(100 * data.a32nxPosition);
             }
             _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}");
