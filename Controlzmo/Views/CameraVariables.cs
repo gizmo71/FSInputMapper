@@ -39,6 +39,7 @@ namespace Controlzmo.Views
         }
     }
 
+#if false
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct CameraViewData
     {
@@ -66,4 +67,5 @@ namespace Controlzmo.Views
             simConnect.RequestDataOnSimObject(this, @new > 0 ? SIMCONNECT_CLIENT_DATA_PERIOD.VISUAL_FRAME : SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
         }
     }
+#endif
 }
