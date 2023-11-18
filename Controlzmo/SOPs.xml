@@ -69,7 +69,7 @@
 		<Text type=".*">Taxi in/out time &gt;50% of expectation requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
-	<Airline callsign="air[- ]?india|Red[- ]?Knight|Express[- ]India|Vistara|Allied"> <!-- Air India -->
+	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first unless OETD, warm up</Text>
 		<Text type=".*">OETA#2, cool down</Text>
