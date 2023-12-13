@@ -13,7 +13,7 @@
 		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
 		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
 	</Airline>
-	<Airline callsign="air[- ]?canada|jazz|provincial|rouge">
+	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 	</Airline>
 	<Airline callsign="air[- ]china|cathay"> <!-- Virtual Air China -->
