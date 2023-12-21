@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
-using Controlzmo.GameControllers;
 
 namespace Controlzmo.Views
 {
