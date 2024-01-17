@@ -11,7 +11,7 @@
 		<Text type="A20N">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
 		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
-		<Text type=".*">All PIREPs are reviewed; air time counts</Text>
+		<Text type=".*">Air time counts</Text>
 	</Airline>
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
@@ -21,7 +21,7 @@
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
-	<Airline callsign="allegiant">
+	<Airline callsign="allegiant|aay"> <!-- Game won't let me enter "Allegiant"! -->
 		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Start #1 first, warm up; cool down</Text>
 	</Airline>
