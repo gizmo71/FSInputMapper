@@ -96,12 +96,25 @@
 		<Text type=".*">OETD/OETA</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
+	<Airline callsign="Jet[ -]?Star">
+		<Text type=".*">Preparation 20-50 minutes</Text>
+		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
+		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
+		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
+	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
 		<!-- 'Airbus A319 CFM Lufthansa2' -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
+	</Airline>
+	<Airline callsign="Qantas([ -]Link)?">
+		<Text type="A32[1]|A2[01]N">Preparation 15-30 minutes</Text>
+		<Text type="A339">Preparation 20-40 minutes</Text>
+		<Text type="A32[1]|A2[01]N">Start #2 first</Text>
+		<Text type=".*">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="qatari">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
