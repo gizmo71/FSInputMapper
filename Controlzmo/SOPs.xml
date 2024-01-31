@@ -111,9 +111,9 @@
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -](jet|link)|net[ -]?link">
-		<Text type="A32[1]|A2[01]N">Preparation 15-30 minutes</Text>
+		<Text type="A32[01]|A2[01]N">Preparation 15-30 minutes</Text>
 		<Text type="A339">Preparation 20-40 minutes</Text>
-		<Text type="A32[1]|A2[01]N">Start #2 first</Text>
+		<Text type="A32[01]|A2[01]N">Start #2 first</Text>
 		<Text type=".*">Warm up, cool down</Text>
 	</Airline>
 	<Airline callsign="qatari">
