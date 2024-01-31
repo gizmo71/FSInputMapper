@@ -97,7 +97,7 @@
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
 	<Airline callsign="jet[ -]?star">
-		<Text type=".*">Preparation 20-50 minutes</Text>
+		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
@@ -111,7 +111,7 @@
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
-		<Text type="A32[01]|A2[01]N">Preparation 15-30 minutes</Text>
+		<Text type="A32[01]|A2[01]N">Preparation 15-30 minutes, block time counts</Text>
 		<Text type="A339">Preparation 20-40 minutes</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 	</Airline>
