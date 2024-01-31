@@ -96,7 +96,7 @@
 		<Text type=".*">OETD/OETA</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
-	<Airline callsign="Jet[ -]?Star">
+	<Airline callsign="jet[ -]?star">
 		<Text type=".*">Preparation 20-50 minutes</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
@@ -110,7 +110,7 @@
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
 	</Airline>
-	<Airline callsign="Qantas([ -]Link)?">
+	<Airline callsign="qantas([ -]link)?">
 		<Text type="A32[1]|A2[01]N">Preparation 15-30 minutes</Text>
 		<Text type="A339">Preparation 20-40 minutes</Text>
 		<Text type="A32[1]|A2[01]N">Start #2 first</Text>
