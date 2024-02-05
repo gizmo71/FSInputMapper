@@ -100,7 +100,8 @@
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Start #1 first unless OETD(#2), warm up</Text>
+		<Text type=".*">OETA(#1), cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
