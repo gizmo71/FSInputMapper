@@ -162,8 +162,8 @@
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first</Text>
 	</Airline>
-	<Airline callsign="velocity"> <!-- VRGN Virtual -->
-		<Text type=".*">There are basically no rules!</Text>
+	<Airline callsign="redwood|velocity|virgin(?:[- ]nigeria)?"> <!-- VRGN Virtual -->
+		<Text type=".*">Air time counts</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
