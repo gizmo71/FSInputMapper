@@ -16,7 +16,7 @@
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 	</Airline>
-	<Airline callsign="air[- ]china|cathay"> <!-- Virtual Air China -->
+	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
 		<Text type=".*">Block time counts</Text>
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
