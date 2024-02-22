@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
+	<Airline callsign="alpaca|new[- ]?sky"> <!-- All the Newsky together -->
+		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
+	</Airline>
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 	</Airline>
