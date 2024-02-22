@@ -2,6 +2,9 @@
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
 	<Airline callsign="alpaca|new[- ]?sky"> <!-- All the Newsky together -->
+		<Text type=".*">Departure within ±15 minutes of booked</Text>
+		<Text type=".*">Positive v/s at touchdown treated as crash!</Text>
+		<Text type=".*">Maximum speed 50kts when vacating</Text>
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
