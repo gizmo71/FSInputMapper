@@ -1,18 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
-	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
-		<Text type="A320">Preparation 20 to 40 minutes</Text>
-		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
-		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
-		<Text type=".*">Start #1 first; warm up, cool down</Text>
-		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
-		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
-		<Text type="A20N">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
-		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
-		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
-		<Text type=".*">Air time counts</Text>
-	</Airline>
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 	</Airline>
@@ -104,6 +92,18 @@
 		<Text type=".*">OETA(#1), cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 	</Airline>
+	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
+		<Text type="A320">Preparation 20 to 40 minutes</Text>
+		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
+		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
+		<Text type=".*">Start #1 first; warm up, cool down</Text>
+		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
+		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
+		<Text type="A20N">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
+		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
+		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
+		<Text type=".*">Air time counts</Text>
+	</Airline>
 	<Airline callsign="batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi"><!-- Lion Group -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
@@ -130,13 +130,6 @@
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
 		<Text type=".*">Step climb; screenshots for Discord!</Text>
 	</Airline>
-	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
-		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
-		<Text type="A33[09]">Start #1 first; cool down</Text>
-		<Text type="A2[01]N|A320">Start #2 first; cool down</Text>
-		<Text type="A2[01]N|A320">Must have fuel ≥ 2T on landing</Text>
-		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
-	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled or average requires review</Text>
@@ -153,6 +146,13 @@
 		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type=".*">Pauses in flight &gt;60m (cumulative) require PIREP comment</Text>
 		<Text type=".*">Flight time &gt;25%/30 minutes of scheduled or average requires review</Text>
+	</Airline>
+	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
+		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
+		<Text type="A33[09]">Start #1 first; cool down</Text>
+		<Text type="A2[01]N|A320">Start #2 first; cool down</Text>
+		<Text type="A2[01]N|A320">Must have fuel ≥ 2T on landing</Text>
+		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
 	</Airline>
 	<Airline callsign="channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap"> <!-- Titan Virtual -->
 		<!-- 'Airbus A320 IAE AWC2' -->
