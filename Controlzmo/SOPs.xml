@@ -134,7 +134,6 @@
 		<Text type=".*">Must have fuel ≥ 2T on pushback</Text>
 		<Text type=".*">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type=".*">Flight time &gt;50%/20 minutes of scheduled requires review</Text>
-		<Text type=".*">Pause in flight requires PIREP comment</Text>
 		<Text type=".*">Step climb; screenshots for Discord!</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
