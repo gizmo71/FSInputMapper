@@ -124,8 +124,8 @@
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
-		<Text type=".*">Preparation 20-40 minutes</Text>
-		<Text type=".*">OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
+		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
