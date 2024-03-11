@@ -165,7 +165,7 @@
 		<Text type="A2[01]N|A320">Must have fuel ≥ 2T on landing</Text>
 		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
 	</Airline>
-	<Airline callsign="channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap"> <!-- Titan Virtual -->
+	<Airline callsign="ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap"> <!-- Titan Virtual -->
 		<!-- 'Airbus A320 IAE AWC2' -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
