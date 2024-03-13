@@ -53,7 +53,7 @@
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1.5T on landing (contestable exceptions)</Text>
 	</Airline>
-	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
+	<Airline callsign="frontier[- ]flight|volaris"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Warm up (5m), OETD; OETA(#2), cool down</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
