@@ -28,7 +28,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, OnRunwayStateData data)
         {
-            hubContext.Clients.All.Speak((data.onAnyRunway == 1 ? "" : "not ") + "on any runway");
+            //hubContext.Clients.All.Speak((data.onAnyRunway == 1 ? "" : "not ") + "on any runway");
         }
     }
 

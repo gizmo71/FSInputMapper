@@ -9,11 +9,9 @@ recognition.interimResults = false;
 recognition.lang = "en-GB";
 
 recognition.onresult = function (e) {
-    addMessage(e.results[0][0].transcript);
+    speak("Heard " + e.results[0][0].transcript);
 };
 
 recognition.onerror = function (e) {
     recognition.stop();
 };
-
-recognition.start();

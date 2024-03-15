@@ -93,3 +93,8 @@ function reconnect() {
 }
 
 startSignalR();
+
+function testCallout() {
+    recognition.start();
+    speak('Monitoring');
+}
