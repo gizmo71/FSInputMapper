@@ -178,7 +178,8 @@
 	</Airline>
 	<Airline callsign="united"> <!-- United -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first</Text>
+		<Text type="A319|A320">Start #2 first, warm up; cool down</Text>
+		<Text type="A3[35][09]">Start #2 first</Text>
 	</Airline>
 	<Airline callsign="redwood|velocity|virgin(?:[- ]nigeria)?"> <!-- VRGN Virtual -->
 		<Text type=".*">Air time counts</Text>
