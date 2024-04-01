@@ -9,6 +9,8 @@
         <li>&mdash;</li>
         <li><a href="#tabs-mcdu">MCDU</a></li>
         <li>&mdash;</li>
+        <li><a href="#tabs-sops">SOP/Log</a></li>
+        <li>&mdash;</li>
         <li><a href="#tabs-debug">Debug</a></li>
     </ul>
   <div class="gridContainer">
@@ -209,6 +211,25 @@
         </table>
     </div>
     <iframe id="tabs-mcdu" src="http://controlzmo.aquarium.davegymer.org:8380/interfaces/mcdu/" style="width: 100%; height: 525px;">MCDU</iframe>
+    <div id="tabs-sops">
+        <textarea id="atcAirline" rows="15" cols="40"></textarea>
+        <textarea id="gsxPushback" rows="15" cols="40" style="display: none;">
+QuickEdit controls
+
+Cursor to move; Shift for faster
+F7/F8 rotate (15 degrees); NumPad 1/3 finer
+NumPad 5 to insert start/end waypoints
+F1/F4 cycle end/all waypoints
+F5/F6 remove/insert (before current) waypoint
+        </textarea>
+        <div style="float: right;" class="tableCaption">
+            <span onclick="$('#gsxPushback').hide(); $('#atcAirline').show();">SOPs</span>
+            &nbsp;&nbsp;
+            <span onclick="$('#atcAirline').hide(); $('#gsxPushback').show();">GSX Pushback</span>
+         </div>
+        <textarea id="fuelLog" rows="8" cols="40"></textarea>
+        <label for="fuelLog" style="float: right;" class="tableCaption">Fuel Log</label>
+    </div>
     <div id="tabs-debug">
         <label for="jetbridge"><b>JetBridge</b></label>
         <input id="jetbridge" size="80" maxlength="127" class="sendText" />
@@ -221,12 +242,6 @@
         <input type="button" id="testVoice" value="Test Callout" onClick="testCallout()" />
         <input type="button" id="reconnect" value="Reconnect" onClick="reconnect()" />
         <input type="button" id="remcdu" value="MCDU" onClick="document.getElementById('tabs-mcdu').src = document.getElementById('tabs-mcdu').src" />
-        <div>
-            <textarea id="atcAirline" rows="11" cols="40"></textarea>
-            <label for="atcAirline" style="float: right;" class="tableCaption">SOPs</label>
-            <textarea id="fuelLog" rows="5" cols="40"></textarea>
-            <label for="fuelLog" style="float: right;" class="tableCaption">Fuel Log</label>
-            </div>
     </div>
   </div>
 </div>
