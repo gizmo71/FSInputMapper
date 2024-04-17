@@ -386,6 +386,8 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
+        public bool IsFBW { get => false; /*TODO: implement somehow...*/ }
+        public bool IsFenix { get => false; /*TODO: implement somehow...*/ }
 
         private void OnSimIsRunning()
         {

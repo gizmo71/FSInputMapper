@@ -27,7 +27,16 @@ namespace Controlzmo.Serial
 
         public ApuFault(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuFaultData data) => serial.SendLine("ApuFault=" + (data.isApuFault == 1 || data.isApuFaultFenix == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuFaultData data) {
+            Boolean state;
+            if (simConnect.IsFBW)
+                state = data.isApuFault == 1;
+            else if (simConnect.IsFenix)
+                state = data.isApuFaultFenix == 1;
+            else
+                return;
+            serial.SendLine("ApuFault=" + state);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -57,7 +66,10 @@ namespace Controlzmo.Serial
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
-            sender.Execute(simConnect, $"1 (L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON, Bool) - (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)");
+            if (simConnect.IsFBW)
+                sender.Execute(simConnect, "1 (L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON, Bool) - (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)");
+            else if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_OH_ELEC_APU_MASTER) ! (>L:S_OH_ELEC_APU_MASTER)");
         }
     }
 
