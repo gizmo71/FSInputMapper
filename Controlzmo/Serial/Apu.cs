@@ -16,6 +16,8 @@ namespace Controlzmo.Serial
     {
         [SimVar("L:A32NX_OVHD_APU_MASTER_SW_PB_HAS_FAULT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuFault;
+        [SimVar("L:I_OH_ELEC_APU_MASTER_U", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isApuFaultFenix;
     };
 
     [Component]
@@ -25,7 +27,7 @@ namespace Controlzmo.Serial
 
         public ApuFault(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuFaultData data) => serial.SendLine("ApuFault=" + (data.isApuFault == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuFaultData data) => serial.SendLine("ApuFault=" + (data.isApuFault == 1 || data.isApuFaultFenix == 1));
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -33,6 +35,8 @@ namespace Controlzmo.Serial
     {
         [SimVar("L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuMasterOn;
+        [SimVar("L:I_OH_ELEC_APU_MASTER_L", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isApuMasterOnFenix;
     };
 
     [Component]
@@ -41,7 +45,7 @@ namespace Controlzmo.Serial
         private readonly SerialPico serial;
         public ApuMasterOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) => serial.SendLine("ApuMasterOn=" + (data.isApuMasterOn == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) => serial.SendLine("ApuMasterOn=" + (data.isApuMasterOn == 1 || data.isApuMasterOnFenix == 1));
     }
 
     [Component]
@@ -62,16 +66,18 @@ namespace Controlzmo.Serial
     {
         [SimVar("L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuAvail;
+        [SimVar("L:I_OH_ELEC_APU_START_U", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isApuAvailFenix;
     };
 
     [Component]
-    public class ApuAvail : DataListener<ApuAvailData>, IOnSimStarted
+    public class ApuAvail : DataListener<ApuAvailData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
 
         public ApuAvail(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) => serial.SendLine("ApuAvail=" + (data.isApuAvail == 1));
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+        public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) => serial.SendLine("ApuAvail=" + (data.isApuAvail == 1 || data.isApuAvailFenix == 1));
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -79,6 +85,8 @@ namespace Controlzmo.Serial
     {
         [SimVar("L:A32NX_OVHD_APU_START_PB_IS_ON", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuStartOn;
+        [SimVar("L:I_OH_ELEC_APU_START_L", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isApuStartOnFenix;
     };
 
     [Component]
@@ -88,7 +96,7 @@ namespace Controlzmo.Serial
 
         public ApuStartOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) => serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) => serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1 || data.isApuStartOnFenix == 1));
     }
 
     [Component]
