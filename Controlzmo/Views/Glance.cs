@@ -2,6 +2,7 @@
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
+using System;
 using Windows.Gaming.Input;
 
 namespace Controlzmo.Views
@@ -13,10 +14,12 @@ namespace Controlzmo.Views
         private readonly ILogger<Glance> _log;
         private readonly VirtualJoy vJoy;
         private readonly CameraState cameraState;
+        private readonly ViewSticker sticker;
 
         public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
 
         private GameControllerSwitchPosition current = GameControllerSwitchPosition.Center;
+        private UInt32 unstuckView = 105u;
 
         public void OnChange(ExtendedSimConnect simConnect, GameControllerSwitchPosition old, GameControllerSwitchPosition @new)
         {
@@ -37,9 +40,13 @@ namespace Controlzmo.Views
                 switch (@new)
                 {
                     case GameControllerSwitchPosition.Up:
+                        sticker.TriggerStart();
                         vJoy.getController().QuickClick(103u);
+                        unstuckView = 100u;
                         break;
                     case GameControllerSwitchPosition.Down:
+                        sticker.TriggerStart();
+                        unstuckView = 108u;
                         vJoy.getController().QuickClick(107u);
                         break;
                     case GameControllerSwitchPosition.Left:
@@ -49,7 +56,8 @@ namespace Controlzmo.Views
                         vJoy.getController().QuickClick(106u);
                         break;
                     case GameControllerSwitchPosition.Center:
-                        vJoy.getController().QuickClick(105u);
+                        vJoy.getController().QuickClick(sticker.IsStuck(350) ? 105u : unstuckView);
+                        unstuckView = 105u;
                         break;
                 }
 
