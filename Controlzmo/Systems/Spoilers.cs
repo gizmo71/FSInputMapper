@@ -8,6 +8,11 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Spoilers
 {
+    /* Fenix:
+       LVar A_FC_SPEEDBRAKE
+       0 = spoilers armed
+       1 to 3 = speedbrake positions
+    */
     /* A32NX rules:
        You cannot arm the spoilers unless the handle is RETRACTED.
        If the new position is anything but that, the arming state is false.
