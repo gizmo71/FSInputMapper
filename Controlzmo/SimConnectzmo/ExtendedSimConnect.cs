@@ -380,14 +380,14 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             {
                 var regex = new Regex(@"^SimObjects\\Airplanes\\([^\\]+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
                 var match = regex.Match(data.szString);
-                aircraftFile = match.Success ? match.Groups[1].Value : data.szString;
+                aircraftFile = match.Success ? match.Groups[1].Value.ToUpper() : data.szString;
             }
         }
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
-        public bool IsFBW { get => false; /*TODO: implement somehow...*/ }
-        public bool IsFenix { get => false; /*TODO: implement somehow...*/ }
+        public bool IsFBW { get => aircraftFile.Equals("FLYBYWIRE_A320_NEO"); }
+        public bool IsFenix { get => aircraftFile.StartsWith("FNX_320_"); }
 
         private void OnSimIsRunning()
         {
