@@ -1,5 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -26,23 +28,33 @@ namespace Controlzmo.Systems.Lights
     };
 
     [Component]
-    public class LandingLightSystem : ISettable<bool>, IData<LandingLightData>
+    [RequiredArgsConstructor]
+    public partial class LandingLightSystem : ISettable<bool>, IData<LandingLightData>
     {
+        private readonly JetBridgeSender sender;
+
         public string GetId() => "lightsLanding";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            int code = value ? 0 : 2;
-            int retracted = value ? 0 : 1;
-            int circuit = value ? 1 : 0;
-            simConnect.SendDataOnSimObject(new LandingLightData() {
-                landingSwitchLeft = code,
-                landingSwitchRight = code,
-                leftRetracted = retracted,
-                rightRetracted = retracted,
-                leftCircuit = circuit,
-                rightCircuit = circuit,
-            });
+            if (simConnect.IsFBW) {
+                int code = value ? 0 : 2;
+                int retracted = value ? 0 : 1;
+                int circuit = value ? 1 : 0;
+                simConnect.SendDataOnSimObject(new LandingLightData() {
+                    landingSwitchLeft = code,
+                    landingSwitchRight = code,
+                    leftRetracted = retracted,
+                    rightRetracted = retracted,
+                    leftCircuit = circuit,
+                    rightCircuit = circuit,
+                });
+            }
+            else if (simConnect.IsFenix)
+            {
+                int code = value ? 2 : 0;
+                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_LANDING_L) {code} (>L:S_OH_EXT_LT_LANDING_R) {code} (>L:S_OH_EXT_LT_LANDING_BOTH) ");
+            }
         }
     }
 }
