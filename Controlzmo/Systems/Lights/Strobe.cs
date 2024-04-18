@@ -23,10 +23,17 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, string? position)
         {
-            var auto = position == "auto" ? 1 : 0;
-            var set = position != "off" ? 1 : 0;
-            var value = position switch { "on" => 0, "auto" => 1, "off" => 2, _ => throw new ArgumentException($"Unknown strobe position {position}") };
-            sender.Execute(simConnect, $"{auto} (>L:STROBE_0_Auto) {set} 0 r (>K:2:STROBES_SET) {value} (>L:LIGHTING_STROBE_0)");
+            if (simConnect.IsFBW) {
+                var auto = position == "auto" ? 1 : 0;
+                var set = position != "off" ? 1 : 0;
+                var value = position switch { "on" => 0, "auto" => 1, "off" => 2, _ => throw new ArgumentException($"Unknown strobe position {position}") };
+                sender.Execute(simConnect, $"{auto} (>L:STROBE_0_Auto) {set} 0 r (>K:2:STROBES_SET) {value} (>L:LIGHTING_STROBE_0)");
+            }
+            else if (simConnect.IsFenix)
+            {
+                var code = position switch {  "on" => 2, "auto" => 1, _ => 0 };
+                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_STROBE)");
+            }
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
@@ -10,22 +12,25 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component]
-    public class RunwayTurnoffLightSystem : ISettable<bool>
+    [RequiredArgsConstructor]
+    public partial class RunwayTurnoffLightSystem : ISettable<bool>
     {
         private readonly TaxiLightSetEvent rtEvent;
-
-        public RunwayTurnoffLightSystem(TaxiLightSetEvent rtEvent)
-        {
-            this.rtEvent = rtEvent;
-        }
+        private readonly JetBridgeSender sender;
 
         public string GetId() => "lightsRunwayTurnoff";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             uint code = value ? 1u : 0u;
-            simConnect.SendEventEx1(rtEvent, code, 2);
-            simConnect.SendEventEx1(rtEvent, code, 3);
+            if (simConnect.IsFBW) {
+                simConnect.SendEventEx1(rtEvent, code, 2);
+                simConnect.SendEventEx1(rtEvent, code, 3);
+            }
+            else if (simConnect.IsFenix)
+            {
+                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_RWY_TURNOFF)");
+            }
         }
     }
 }

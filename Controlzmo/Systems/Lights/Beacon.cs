@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
 
@@ -15,9 +16,16 @@ namespace Controlzmo.Systems.Lights
     public partial class BeaconLight : ISettable<bool?>
     {
         private readonly BeaconLightSetEvent setEvent;
+        private readonly JetBridgeSender sender;
 
         public string GetId() => "beaconLight";
 
-        public void SetInSim(ExtendedSimConnect simConnect, bool? value) => simConnect.SendEvent(setEvent, value == true ? 1u : 0u);
+        public void SetInSim(ExtendedSimConnect simConnect, bool? value) {
+            var code = value == true ? 1u : 0u;
+            if (simConnect.IsFBW)
+                simConnect.SendEvent(setEvent, code);
+            else if (simConnect.IsFenix)
+                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_BEACON)");
+        }
     }
 }
