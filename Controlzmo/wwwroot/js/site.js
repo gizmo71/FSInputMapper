@@ -47,6 +47,10 @@ connection.on("SetFromSim", function (name, newValue) {
     jqInput.prop('disabled', newValue == null);
 });
 
+connection.on("SetMcduType", function (type) {
+    $('#tabs-mcdu').attr('src', 'http://controlzmo.aquarium.davegymer.org:' + (type == 'fenix' ? '8083/#/mcdu' : '8380/interfaces/mcdu/'));
+});
+
 function speak(text) {
     // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis
     var utterance = new SpeechSynthesisUtterance(text);

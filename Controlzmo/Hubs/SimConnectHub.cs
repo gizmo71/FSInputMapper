@@ -15,6 +15,7 @@ namespace Controlzmo.Hubs
     {
         public Task SetFromSim(string name, object? value);
         public Task Speak(string text);
+        public Task SetMcduType(string type);
     }
 
     public partial class ControlzmoHub : Hub<IControlzmoHub>
