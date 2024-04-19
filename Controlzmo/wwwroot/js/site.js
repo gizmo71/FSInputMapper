@@ -100,6 +100,6 @@ startSignalR();
 
 function testCallout() {
     connection.invoke("SetInSim", 'resetMcdu', true);
-    recognition.start();
+    //recognition.start();
     speak('Monitoring');
 }
