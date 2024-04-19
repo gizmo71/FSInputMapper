@@ -88,7 +88,7 @@ function linkSendStyles() {
 function startSignalR() {
     connection.start().then(function () {
         // Called when connection established - may want to disable things until this is received.
-        connection.invoke("SendAll").catch(errorHandler);
+        connection.invoke("SendAll");
         linkSendStyles();
     }).catch(errorHandler);
 }
@@ -99,6 +99,7 @@ function reconnect() {
 startSignalR();
 
 function testCallout() {
+    connection.invoke("SetInSim", 'resetMcdu', true);
     recognition.start();
     speak('Monitoring');
 }

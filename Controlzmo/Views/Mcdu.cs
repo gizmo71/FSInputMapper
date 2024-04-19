@@ -7,7 +7,7 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class Mcdu : IOnSimStarted
+    public partial class Mcdu : IOnSimStarted, ISettable<object>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         public void OnStarted(ExtendedSimConnect simConnect)
@@ -15,5 +15,13 @@ namespace Controlzmo.Views
             var type = simConnect.IsFenix ? "fenix" : "fbw";
             hub.Clients.All.SetMcduType(type);
         }
+ 
+        public string GetId() => "resetMcdu";
+
+        public void SetInSim(ExtendedSimConnect simConnect, object? value)
+        {
+            OnStarted(simConnect);
+        }
+
     }
 }
