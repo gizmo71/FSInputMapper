@@ -120,7 +120,10 @@ namespace Controlzmo.Serial
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
-            sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
+            if (simConnect.IsFBW)
+                sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
+            else if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_OH_ELEC_APU_START) 2 + (>L:S_OH_ELEC_APU_START)");
         }
     }
 }
