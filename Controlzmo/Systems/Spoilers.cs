@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -8,11 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Spoilers
 {
-    /* Fenix:
-       LVar A_FC_SPEEDBRAKE
-       0 = spoilers armed
-       1 to 3 = speedbrake positions
-    */
+    // Fenix LVar: A_FC_SPEEDBRAKE, 0 = spoilers armed, 1 to 3 = speedbrake positions
     /* A32NX rules:
        You cannot arm the spoilers unless the handle is RETRACTED.
        If the new position is anything but that, the arming state is false.
@@ -44,11 +41,13 @@ namespace Controlzmo.Systems.Spoilers
     {
         protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly ILogger _logger;
+        protected readonly JetBridgeSender sender;
 
         protected AbstractSpoilerDataListener(IServiceProvider sp)
         {
             _logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             setEvent = sp.GetRequiredService<SetSpoilerHandleEvent>();
+            sender = sp.GetRequiredService<JetBridgeSender>();
         }
 
         public abstract int GetButton();
@@ -83,6 +82,12 @@ namespace Controlzmo.Systems.Spoilers
 
         protected override void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data)
         {
+            if (simConnect.IsFenix)
+            {
+                sender.Execute(simConnect, "(L:A_FC_SPEEDBRAKE) 1 + 3 min (>L:A_FC_SPEEDBRAKE)");
+                return;
+            }
+
             int? newPosition = null;
             IEvent? toSend = null;
             if (data.armed != 0)
@@ -124,6 +129,12 @@ namespace Controlzmo.Systems.Spoilers
 
         protected override void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data)
         {
+            if (simConnect.IsFenix)
+            {
+                sender.Execute(simConnect, "(L:A_FC_SPEEDBRAKE) 1 - 0 max (>L:A_FC_SPEEDBRAKE)");
+                return;
+            }
+
             if (data.position > 0)
             {
                 int newPosition = Math.Max(data.position - 25, 0);
