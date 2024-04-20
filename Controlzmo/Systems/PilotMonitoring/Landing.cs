@@ -1,6 +1,7 @@
 ﻿
 using Controlzmo.Hubs;
 using Controlzmo.Systems.EfisControlPanel;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -38,23 +39,17 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class LandingListener : DataListener<LandingData>
+    [RequiredArgsConstructor]
+    public partial class LandingListener : DataListener<LandingData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly Chrono1Event chronoEvent;
+        private readonly ChronoButton chronoButton;
 
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
         private bool? wasRevGreen = null;
         bool? wasBelow70 = null;
         bool? wasBelowTaxi = null;
-
-        public LandingListener(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-            chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
-        }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
@@ -99,7 +94,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             else if (wasBelowTaxi == false && data.groundSpeed < 30)
             {
 //TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
-                simConnect.SendEvent(chronoEvent);
+                chronoButton.SetInSim(simConnect, null);
                 wasBelowTaxi = true;
             }
 
