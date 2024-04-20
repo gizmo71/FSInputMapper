@@ -102,6 +102,10 @@ ul.tab-menu li {
     writing-mode: vertical-lr;
 }
 
+.vspeed {
+    width: 2.5em;
+}
+
 @media (min-width: 1500px) {
     .gridContainer {
         display: grid;

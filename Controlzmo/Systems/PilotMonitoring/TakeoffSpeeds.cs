@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -18,6 +20,33 @@ namespace Controlzmo.Systems.PilotMonitoring
         [SimVar("L:AIRLINER_VR_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
         public Int32 vr;
     };
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class ToSpeedV1 : ISettable<string>
+    {
+        private readonly JetBridgeSender sender;
+        public string GetId() => "toSpeedV1";
+        public void SetInSim(ExtendedSimConnect simConnect, string? value) => sender.Execute(simConnect, $"{value.Parse(0)} (>L:AIRLINER_V1_SPEED)");
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class ToSpeedVr : ISettable<string>
+    {
+        private readonly JetBridgeSender sender;
+        public string GetId() => "toSpeedVr";
+        public void SetInSim(ExtendedSimConnect simConnect, string? value) => sender.Execute(simConnect, $"{value.Parse(0)} (>L:AIRLINER_VR_SPEED)");
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class ToSpeedV2 : ISettable<string>
+    {
+        private readonly JetBridgeSender sender;
+        public string GetId() => "toSpeedV2";
+        public void SetInSim(ExtendedSimConnect simConnect, string? value) => sender.Execute(simConnect, $"{value.Parse(0)} (>L:AIRLINER_V2_SPEED)");
+    }
 
     [Component]
     public class TakeOffListener : DataListener<TakeOffData>
