@@ -13,6 +13,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     public interface IEfisModeData
     {
         public UInt32 Mode { get; set; }
+        public UInt32 ModeFenix { get; set; }
     }
 
     public abstract class EfisMode<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisModeData
@@ -45,7 +46,8 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            simConnect.SendDataOnSimObject(new T() { Mode = ModeMap.Inverse[label!] });
+            var value = ModeMap.Inverse[label!];
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value });
         }
     }
 
@@ -55,6 +57,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeFenix;
     };
 
     [Component]
@@ -69,6 +74,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:S_FCU_EFIS2_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeFenix;
     };
 
     //[Component]
