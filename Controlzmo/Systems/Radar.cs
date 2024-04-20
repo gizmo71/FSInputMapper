@@ -13,6 +13,8 @@ namespace Controlzmo.Systems.Radar
     {
         [SimVar("L:XMLVAR_A320_WeatherRadar_Sys", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radarSys;
+        [SimVar("L:S_WR_SYS", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 radarSysFenix;
     };
 
     [Component]
@@ -31,12 +33,13 @@ namespace Controlzmo.Systems.Radar
 
         public override void Process(ExtendedSimConnect simConnect, RadarSysData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.radarSys);
+            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.radarSysFenix : data.radarSys);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = Int16.Parse(posString!) });
+            var code = Int16.Parse(posString!);
+            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = code, radarSysFenix = code });
         }
     }
 
