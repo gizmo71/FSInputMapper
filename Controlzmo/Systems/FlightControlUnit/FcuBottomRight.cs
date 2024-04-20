@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Serial;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -22,36 +23,52 @@ namespace Controlzmo.Systems.FlightControlUnit
          * In FPA, the number is always shown except for condition 0. */
         [SimVar("L:A320_NE0_FCU_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 vsState;
+        [SimVar("L:B_FCU_VERTICALSPEED_DASHED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenixState;
         [SimVar("L:A32NX_AUTOPILOT_VS_SELECTED", "feet per minute", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 vsSelected;
         [SimVar("L:A32NX_AUTOPILOT_FPA_SELECTED", "Degrees", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
         public float fpaSelected;
+        [SimVar("L:N_FCU_VS", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        public float fenixSelected; // In FPA, this is angle in degrees multiplied by 1000
         [SimVar("L:A32NX_FCU_ALT_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isManaged;
+        [SimVar("L:N_FCU_ALTITUDE", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fcuAltFenix;
+        [SimVar("L:I_FCU_ALTITUDE_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isManagedFenix;
     };
 
     [Component]
-    public class FcuDisplayBottomRight : DataListener<FcuBottomRightData>, IRequestDataOnOpen
+    [RequiredArgsConstructor]
+    public partial class FcuDisplayBottomRight : DataListener<FcuBottomRightData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-
-        public FcuDisplayBottomRight(IServiceProvider sp) => serial = sp.GetRequiredService<SerialPico>();
+        private readonly FcuDisplayTopRight trkFpaHolder;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
-        public override void Process(ExtendedSimConnect _, FcuBottomRightData data)
+        public override void Process(ExtendedSimConnect simConnect, FcuBottomRightData data)
         {
+            // Normalise Fenix to FBW...
+            if (simConnect.IsFenix)
+            {
+                data.isManaged = data.isManagedFenix;
+                data.fcuAlt = data.fcuAltFenix;
+                //TODO: v/s
+            }
+
             var managed = data.isManaged == 1 ? '\x1' : ' ';
             var line2 = $"{data.fcuAlt:00000}   {managed}  {VS(data)}";
             serial.SendLine($"fcuBR={line2}");
         }
 
-        private static string VS(FcuBottomRightData data)
+        private string VS(FcuBottomRightData data)
         {
             string vs;
             if (data.vsState == 0)
                 vs = "-----";
-            else if (data.isTrkFpaMode == 1)
+            else if (trkFpaHolder.isTrkFpa)
                 vs = $"{data.fpaSelected!:+#0.0;-#0.0} ";
             else
                 vs = $"{data.vsSelected / 100:+00;-00}oo";

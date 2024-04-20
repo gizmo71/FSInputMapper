@@ -1,24 +1,39 @@
 ﻿using Controlzmo.Hubs;
-using Microsoft.Extensions.DependencyInjection;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using SimConnectzmo;
 using System;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
-    public class FcuVsPulled : ISettable<bool>, IEvent
+    [RequiredArgsConstructor]
+    public partial class FcuVsPulled : ISettable<bool>, IEvent
     {
+        private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PULL";
         public string GetId() => "fcuVsPulled";
-        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) {
+            if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
+            else
+                simConnect.SendEvent(this);
+        }
     }
 
     [Component]
-    public class FcuVsPushed : ISettable<bool>, IEvent
+    [RequiredArgsConstructor]
+    public partial class FcuVsPushed : ISettable<bool>, IEvent
     {
+        private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PUSH";
         public string GetId() => "fcuVsPushed";
-        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) {
+            if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
+            else
+                simConnect.SendEvent(this);
+        }
     }
 
     [Component]
@@ -34,25 +49,28 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuVsDelta : ISettable<Int16>
+    [RequiredArgsConstructor]
+    public partial class FcuVsDelta : ISettable<Int16>
     {
         private readonly FcuVsInc inc;
         private readonly FcuVsDec dec;
-
-        public FcuVsDelta(IServiceProvider sp)
-        {
-            inc = sp.GetRequiredService<FcuVsInc>();
-            dec = sp.GetRequiredService<FcuVsDec>();
-        }
+        private readonly JetBridgeSender sender;
 
         public string GetId() => "fcuVsDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            while (value != 0)
+            if (simConnect.IsFenix) {
+                var op = value < 0 ? "-" : "+";
+                sender.Execute(simConnect, $"(L:E_FCU_VS) {Math.Abs(value)} {op} (>L:E_FCU_VS)");
+            }
+            else
             {
-                simConnect.SendEvent(value < 0 ? dec : inc);
-                value -= (short)Math.Sign(value);
+                while (value != 0)
+                {
+                    simConnect.SendEvent(value < 0 ? dec : inc);
+                    value -= (short)Math.Sign(value);
+                }
             }
 //TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
         }

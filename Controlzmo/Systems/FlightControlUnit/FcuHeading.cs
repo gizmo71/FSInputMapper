@@ -1,5 +1,6 @@
 ﻿using Controlzmo.Hubs;
-using Microsoft.Extensions.DependencyInjection;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -7,19 +8,33 @@ using System.ComponentModel;
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
-    public class FcuHeadingPulled : ISettable<bool>, IEvent
+    [RequiredArgsConstructor]
+    public partial class FcuHeadingPulled : ISettable<bool>, IEvent
     {
+        private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_HDG_PULL";
         public string GetId() => "fcuHeadingPulled";
-        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) {
+            if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
+            else
+                simConnect.SendEvent(this);
+        }
     }
 
     [Component]
-    public class FcuHeadingPushed : ISettable<bool>, IEvent
+    [RequiredArgsConstructor]
+    public partial class FcuHeadingPushed : ISettable<bool>, IEvent
     {
+        private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_HDG_PUSH";
         public string GetId() => "fcuHeadingPushed";
-        public void SetInSim(ExtendedSimConnect simConnect, bool _) => simConnect.SendEvent(this);
+        public void SetInSim(ExtendedSimConnect simConnect, bool _) {
+            if (simConnect.IsFenix)
+                sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
+            else
+                simConnect.SendEvent(this);
+        }
     }
 
     [Component]
@@ -35,25 +50,28 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuHeadingDelta : ISettable<Int16>
+    [RequiredArgsConstructor]
+    public partial class FcuHeadingDelta : ISettable<Int16>
     {
         private readonly FcuHeadingInc inc;
         private readonly FcuHeadingDec dec;
-
-        public FcuHeadingDelta(IServiceProvider sp)
-        {
-            inc = sp.GetRequiredService<FcuHeadingInc>();
-            dec = sp.GetRequiredService<FcuHeadingDec>();
-        }
+        private readonly JetBridgeSender sender;
 
         public string GetId() => "fcuHeadingDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            while (value != 0)
+            if (simConnect.IsFenix) {
+                var op = value < 0 ? "-" : "+";
+                sender.Execute(simConnect, $"(L:E_FCU_HEADING) {Math.Abs(value)} {op} (>L:E_FCU_HEADING)");
+            }
+            else
             {
-                simConnect.SendEvent(value < 0 ? dec : inc);
-                value -= (short)Math.Sign(value);
+                while (value != 0)
+                {
+                    simConnect.SendEvent(value < 0 ? dec : inc);
+                    value -= (short)Math.Sign(value);
+                }
             }
         }
     }

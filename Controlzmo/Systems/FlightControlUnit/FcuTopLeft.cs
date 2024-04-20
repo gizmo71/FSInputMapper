@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Serial;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -11,25 +12,26 @@ namespace Controlzmo.Systems.FlightControlUnit
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct FcuTopLeftData
     {
-        [SimVar("L:A32NX_TRK_FPA_MODE_ACTIVE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 isTrkFpaMode;
         [SimVar("AUTOPILOT MANAGED SPEED IN MACH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isMach;
+        [SimVar("L:B_FCU_SPEED_MACH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isMachFenix;
     };
 
     [Component]
-    public class FcuDisplayTopLeft : DataListener<FcuTopLeftData>, IRequestDataOnOpen
+    [RequiredArgsConstructor]
+    public partial class FcuDisplayTopLeft : DataListener<FcuTopLeftData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-
-        public FcuDisplayTopLeft(IServiceProvider sp) => serial = sp.GetRequiredService<SerialPico>();
+        private readonly FcuDisplayTopRight trkFpaHolder;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
-        public override void Process(ExtendedSimConnect _, FcuTopLeftData data)
+        public override void Process(ExtendedSimConnect simConnect, FcuTopLeftData data)
         {
-            var speedMachLabel = data.isMach == 1 ? " MACH" : "SPD  ";
-            var hdgTrkLabel = data.isTrkFpaMode == 0 ? "HDG  " : "  TRK";
+//TODO: does the Fenix not report it the standard way too?
+            var speedMachLabel = (simConnect.IsFenix ? data.isMachFenix : data.isMach) == 1 ? " MACH" : "SPD  ";
+            var hdgTrkLabel = trkFpaHolder.isTrkFpa ? "HDG  " : "  TRK";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
             serial.SendLine($"fcuTL={line1}");
         }
