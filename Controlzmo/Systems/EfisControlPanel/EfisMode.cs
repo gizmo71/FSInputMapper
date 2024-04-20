@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
+            hub.Clients.All.SetFromSim(id, ModeMap[simConnect.IsFenix ? data.ModeFenix : data.Mode]);
         }
 
         public string GetId() => id;

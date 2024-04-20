@@ -31,7 +31,8 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, (1 << (int) data.RangeCode) * 10);
+            var value = (1 << (int) (simConnect.IsFenix ? data.RangeFenix : data.RangeCode)) * 10;
+            hub.Clients.All.SetFromSim(id, value);
         }
 
         public string GetId() => id;

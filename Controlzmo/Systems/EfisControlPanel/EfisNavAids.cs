@@ -6,6 +6,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -24,8 +25,8 @@ namespace Controlzmo.Systems.EfisControlPanel
             [1u] = "ADF",
             [2u] = "VOR",
         };
-        private readonly IDictionary<string, UInt32> MapModeFenix = new Dictionary<string, UInt32>()
-        { // Can't read values from sim. :-(
+        private readonly BidirectionalDictionary<string, UInt32> MapModeFenix = new()
+        {
             ["ADF"] = 0u,
             ["Off"] = 1u,
             ["VOR"] = 2u,
@@ -43,10 +44,8 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            if (simConnect.IsFBW) {
-                var value = ModeMap[data.Mode];
-                hub.Clients.All.SetFromSim(id, value);
-            }
+            var value = simConnect.IsFenix ? MapModeFenix.Inverse[data.ModeFenix] : ModeMap[data.Mode];
+            hub.Clients.All.SetFromSim(id, value);
         }
 
         public string GetId() => id;
