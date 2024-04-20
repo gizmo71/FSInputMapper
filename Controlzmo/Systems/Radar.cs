@@ -45,6 +45,8 @@ namespace Controlzmo.Systems.Radar
     {
         [SimVar("L:A32NX_SWITCH_RADAR_PWS_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 pwsSwitch;
+        [SimVar("L:S_WR_PRED_WS", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 pwsSwitchFenix;
     };
 
     [Component]
@@ -63,12 +65,13 @@ namespace Controlzmo.Systems.Radar
 
         public override void Process(ExtendedSimConnect simConnect, PredictiveWindshearSysData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.pwsSwitch == 1);
+            hub.Clients.All.SetFromSim(GetId(), (simConnect.IsFenix ? data.pwsSwitchFenix : data.pwsSwitch) == 1);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)
         {
-            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() { pwsSwitch = isAuto == true ? 1 : 0 });
+            Int32 value = isAuto == true ? 1 : 0;
+            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() { pwsSwitch = value, pwsSwitchFenix = value });
         }
     }
 }
