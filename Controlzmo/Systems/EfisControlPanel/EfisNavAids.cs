@@ -24,7 +24,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             [1u] = "ADF",
             [2u] = "VOR",
         };
-        private readonly Dictionary<string, UInt32> MapModeFenix = new()
+        private readonly IDictionary<string, UInt32> MapModeFenix = new Dictionary<string, UInt32>()
         { // Can't read values from sim. :-(
             ["ADF"] = 0u,
             ["Off"] = 1u,
@@ -53,7 +53,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var value = (simConnect.IsFenix ? ModeMapFenix : ModeMap.Inverse)[label!];
+            var value = (simConnect.IsFenix ? MapModeFenix : ModeMap.Inverse)[label!];
             simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value });
         }
     }
