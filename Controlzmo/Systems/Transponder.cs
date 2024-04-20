@@ -1,7 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Transactions;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -69,10 +72,26 @@ namespace Controlzmo.Systems.Transponder
     }
 
     [Component]
-    public class SquawkIdent1Swap : AbstractButton
+    public class SquawkIdent : AbstractButton
     {
-        public SquawkIdent1Swap(SquawkIdentEvent squawkIdentEvent) : base(squawkIdentEvent) { }
+        private readonly JetBridgeSender sender;
+        public SquawkIdent(SquawkIdentEvent squawkIdentEvent, JetBridgeSender sender) : base(squawkIdentEvent)
+        {
+            this.sender = sender;
+        }
+
         public override string GetId() => "squawkIdent";
+
+        public override void SetInSim(ExtendedSimConnect simConnect, object? value)
+        {
+            if (simConnect.IsFenix)
+            {
+                for (int i = 1; i >= 0; --i)
+                    sender.Execute(simConnect, $"{i} (>L:S_XPDR_IDENT)");
+            }
+            else
+                base.SetInSim(simConnect, value);
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -80,17 +99,15 @@ namespace Controlzmo.Systems.Transponder
     {
         [SimVar("L:A32NX_SWITCH_ATC_ALT", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isAltRptgOn;
+        [SimVar("L:S_XPDR_ALTREPORTING", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isAltRptgOnFenix;
     };
 
     [Component]
-    public class AltRptg : DataListener<AltRptgData>, IRequestDataOnOpen, ISettable<bool?>
+    [RequiredArgsConstructor]
+    public partial class AltRptg : DataListener<AltRptgData>, IRequestDataOnOpen, ISettable<bool?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-
-        public AltRptg(IServiceProvider sp)
-        {
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
 
         public string GetId() => "altRptg";
 
@@ -98,12 +115,13 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, AltRptgData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.isAltRptgOn == 1);
+            hub.Clients.All.SetFromSim(GetId(), (simConnect.IsFenix ? data.isAltRptgOnFenix : data.isAltRptgOn) == 1);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
         {
-            simConnect.SendDataOnSimObject(new AltRptgData() { isAltRptgOn = isOn == true ? 1 : 0 });
+            var value = isOn == true ? 1 : 0;
+            simConnect.SendDataOnSimObject(new AltRptgData() { isAltRptgOn = value, isAltRptgOnFenix = value });
         }
     }
 
@@ -112,6 +130,8 @@ namespace Controlzmo.Systems.Transponder
     {
         [SimVar("L:A32NX_SWITCH_TCAS_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 position;
+        [SimVar("L:S_XPDR_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 positionFenix;
     };
 
     [Component]
@@ -124,18 +144,19 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, TcasModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.position);
+            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.positionFenix : data.position);
         }
 
         public string GetId() => "tcasMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            simConnect.SendDataOnSimObject(new TcasModeData() { position = Int16.Parse(posString!) });
+            var code = Int16.Parse(posString!);
+            simConnect.SendDataOnSimObject(new TcasModeData() { position = code, positionFenix = code });
         }
     }
 
@@ -144,6 +165,8 @@ namespace Controlzmo.Systems.Transponder
     {
         [SimVar("L:A32NX_SWITCH_TCAS_Traffic_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 position;
+        [SimVar("L:S_TCAS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 positionFenix;
     };
 
     [Component]
@@ -156,18 +179,19 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, TcasTrafficModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.position);
+            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.positionFenix : data.position);
         }
 
         public string GetId() => "tcasTraffic";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            simConnect.SendDataOnSimObject(new TcasTrafficModeData() { position = Int16.Parse(posString!) });
+            var code = Int16.Parse(posString!);
+            simConnect.SendDataOnSimObject(new TcasTrafficModeData() { position = code, positionFenix = code });
         }
     }
 
@@ -176,6 +200,8 @@ namespace Controlzmo.Systems.Transponder
     {
         [SimVar("L:A32NX_TRANSPONDER_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 xpndrMode;
+        [SimVar("L:S_XPDR_OPERATION", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 xpndrModeFenix;
     };
 
     [Component]
@@ -188,18 +214,19 @@ namespace Controlzmo.Systems.Transponder
             hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, TransponderModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), data.xpndrMode);
+            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.xpndrModeFenix : data.xpndrMode);
         }
 
         public string GetId() => "transponderMode";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
-            simConnect.SendDataOnSimObject(new TransponderModeData() { xpndrMode = Int16.Parse(posString!) });
+            var code = Int16.Parse(posString!);
+            simConnect.SendDataOnSimObject(new TransponderModeData() { xpndrMode = code, xpndrModeFenix = code });
         }
     }
 }

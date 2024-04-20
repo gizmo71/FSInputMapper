@@ -8,6 +8,6 @@ namespace Controlzmo.Systems
         private readonly IEvent buttonEvent;
         public AbstractButton(IEvent buttonEvent) => this.buttonEvent = buttonEvent;
         public abstract string GetId();
-        public void SetInSim(ExtendedSimConnect simConnect, object? _) => simConnect.SendEvent(buttonEvent);
+        public virtual void SetInSim(ExtendedSimConnect simConnect, object? _) => simConnect.SendEvent(buttonEvent);
     }
 }
