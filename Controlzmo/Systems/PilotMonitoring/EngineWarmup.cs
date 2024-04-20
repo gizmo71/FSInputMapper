@@ -16,6 +16,7 @@ using System.Runtime.InteropServices;
 Engine state is 0 when off, then 2 whilst starting and then 1 once started. After a shutdown there's a 4 and a 3 too!
 Going from 2 to 1 on both engines seems to be a good enough trigger.
 Sometimes we get numbers which seem to be 10 higher, which may be because the code thinks the sim is paused...*/
+//TODO: use the criteria that Pegasus does so that it works with the Fenix...
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -33,8 +34,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public class EngineWarmupListener : DataListener<EngineWarmupData>
     {
         private readonly JetBridgeSender jetbridge;
-        private readonly Chrono1Event chronoEvent;
-        private readonly ILogger logging;
+        private readonly ChronoButton chronoButton;
 
         private bool isArmed = false;
         private Double? warmAt = null;
@@ -42,9 +42,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public EngineWarmupListener(IServiceProvider serviceProvider)
         {
             jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
-            chronoEvent = serviceProvider.GetRequiredService<Chrono1Event>();
+            chronoButton = serviceProvider.GetRequiredService<ChronoButton>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-            logging = serviceProvider.GetRequiredService<ILogger<EngineWarmupListener>>();
         }
 
         private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
@@ -70,7 +69,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             else if (areBothRunning && isArmed)
             {
                 warmAt = data.now + 3 * 60.0;
-                simConnect.SendEvent(chronoEvent); // This is going to be annoying if it triggers too often
+                chronoButton.SetInSim(simConnect, null);
                 isArmed = false;
             }
             else if (data.engine1State == 0 || data.engine2State == 0 || data.engine1State == 3 || data.engine2State == 3)
@@ -80,6 +79,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (areBothRunning && warmAt != null && data.now >= warmAt)
             {
+                //TODO: is there a Fenix equivalent?
                 jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
                 isArmed = false;
                 warmAt = null;
