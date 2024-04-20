@@ -13,6 +13,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     public interface IEfisNavAidData
     {
         public UInt32 Mode { get; set; }
+        public UInt32 ModeFenix { get; set; }
     }
 
     public abstract class EfisNavAid<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisNavAidData
@@ -22,6 +23,12 @@ namespace Controlzmo.Systems.EfisControlPanel
             [0u] = "Off",
             [1u] = "ADF",
             [2u] = "VOR",
+        };
+        private readonly Dictionary<string, UInt32> MapModeFenix = new()
+        { // Can't read values from sim. :-(
+            ["ADF"] = 0u,
+            ["Off"] = 1u,
+            ["VOR"] = 2u,
         };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         protected readonly string id;
@@ -36,14 +43,18 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
+            if (simConnect.IsFBW) {
+                var value = ModeMap[data.Mode];
+                hub.Clients.All.SetFromSim(id, value);
+            }
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            simConnect.SendDataOnSimObject(new T() { Mode = ModeMap.Inverse[label!] });
+            var value = (simConnect.IsFenix ? ModeMapFenix : ModeMap.Inverse)[label!];
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value });
         }
     }
 
@@ -53,6 +64,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:S_FCU_EFIS1_NAV1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeFenix;
     };
 
     [Component]
@@ -67,39 +81,14 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:S_FCU_EFIS1_NAV2", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeFenix;
     };
 
     [Component]
     public class EfisLeftNavAid2 : EfisNavAid<LeftEfisNavAid2Data>
     {
         public EfisLeftNavAid2(IServiceProvider sp) : base(sp, "left", 2) { }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public partial struct RightEfisNavAid1Data : IEfisNavAidData
-    {
-        [Property]
-        [SimVar("L:A32NX_EFIS_R_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _mode;
-    };
-
-    //[Component]
-    public class EfisRightNavAid1 : EfisNavAid<RightEfisNavAid1Data>
-    {
-        public EfisRightNavAid1(IServiceProvider sp) : base(sp, "right", 1) { }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public partial struct RightEfisNavAid2Data : IEfisNavAidData
-    {
-        [Property]
-        [SimVar("L:A32NX_EFIS_R_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _mode;
-    };
-
-    //[Component]
-    public class EfisRightNavAid2 : EfisNavAid<RightEfisNavAid2Data>
-    {
-        public EfisRightNavAid2(IServiceProvider sp) : base(sp, "right", 2) { }
     }
 }
