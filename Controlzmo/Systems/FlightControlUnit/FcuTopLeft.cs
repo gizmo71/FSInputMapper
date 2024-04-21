@@ -28,7 +28,6 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopLeftData data)
         {
-//TODO: does the Fenix not report it the standard way too?
             var speedMachLabel = (simConnect.IsFenix ? data.isMachFenix : data.isMach) == 1 ? " MACH" : "SPD  ";
             var hdgTrkLabel = trkFpaHolder.isTrkFpa ? "HDG  " : "  TRK";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
