@@ -70,7 +70,8 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (engines == running && warmAt != null && data.now >= warmAt) // We are not armed at this point.
             {
-                //TODO: is there a Fenix equivalent? Could we just hit Chrono twice?
+                chronoButton.SetInSim(simConnect, null);
+                chronoButton.SetInSim(simConnect, null);
                 jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
                 isArmed = false;
                 warmAt = null;
