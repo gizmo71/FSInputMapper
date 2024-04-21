@@ -19,7 +19,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuDisplayTopLeft : DataListener<FcuTopLeftData>, IRequestDataOnOpen
+    public partial class FcuDisplayTopLeft : DataListener<FcuTopLeftData>, ITrkFpaListener
     {
         private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 data.isMach = data.isMachFenix;
 
             var speedMachLabel = data.isMach == 1 ? " MACH" : "SPD  ";
-            var hdgTrkLabel = trkFpaHolder.isTrkFpa ? "HDG  " : "  TRK";
+            var hdgTrkLabel = trkFpaHolder.IsTrkFpa ? "  TRK" : "HDG  ";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
             serial.SendLine($"fcuTL={line1}");
         }

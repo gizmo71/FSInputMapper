@@ -1,10 +1,12 @@
 ﻿using Controlzmo.Serial;
 using Lombok.NET;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using static Controlzmo.Systems.PilotMonitoring.RunwayCallsStateListener;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -17,21 +19,30 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isTrkFpaModeFenix;
     };
 
+    interface ITrkFpaListener : IRequestDataOnOpen { }
+
     [Component]
     [RequiredArgsConstructor]
     public partial class FcuDisplayTopRight : DataListener<FcuTopRightData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
+        private readonly IServiceProvider serviceProvider;
 
-        public bool isTrkFpa = false;
+        private bool isTrkFpa = false;
+        public bool IsTrkFpa { get => isTrkFpa; }
+
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopRightData data)
         {
-            isTrkFpa = (simConnect.IsFenix ? data.isTrkFpaModeFenix : data.isTrkFpaMode) == 0;
-//TODO: notify everyone who wants it... perhaps triggering them to get their own data again...
-            var line1 = "ALT \x4LVL/CH\x5 " + (isTrkFpa ? "V/S" : "FPA");
+            isTrkFpa = (simConnect.IsFenix ? data.isTrkFpaModeFenix : data.isTrkFpaMode) == 1;
+            var line1 = "ALT \x4LVL/CH\x5 " + (isTrkFpa ? "FPA" : "V/S");
             serial.SendLine($"fcuTR={line1}");
+
+            foreach (var listener in serviceProvider.GetServices<ITrkFpaListener>()) {
+                simConnect.RequestDataOnSimObject(listener, SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
+                simConnect.RequestDataOnSimObject(listener, listener.GetInitialRequestPeriod());
+            }
         }
     }
 }
