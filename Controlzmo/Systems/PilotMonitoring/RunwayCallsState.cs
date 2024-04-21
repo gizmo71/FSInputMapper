@@ -22,7 +22,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     [RequiredArgsConstructor]
     public partial class OnRunwayStateListener : DataListener<OnRunwayStateData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        //private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
