@@ -28,7 +28,10 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopLeftData data)
         {
-            var speedMachLabel = (simConnect.IsFenix ? data.isMachFenix : data.isMach) == 1 ? " MACH" : "SPD  ";
+            if (simConnect.IsFenix)
+                data.isMach = data.isMachFenix;
+
+            var speedMachLabel = data.isMach == 1 ? " MACH" : "SPD  ";
             var hdgTrkLabel = trkFpaHolder.isTrkFpa ? "HDG  " : "  TRK";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
             serial.SendLine($"fcuTL={line1}");
