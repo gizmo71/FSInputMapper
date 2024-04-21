@@ -5,12 +5,6 @@ $(function () {
     if ($(window).width() < 1500) $("#tabs").tabs();
 });
 
-var noSleep = new NoSleep();
-document.addEventListener('click', function enableNoSleep() {
-    document.removeEventListener('click', enableNoSleep, false);
-    noSleep.enable();
-}, false);
-
 class ComFrequency extends HTMLInputElement {
     constructor() {
         super();
@@ -99,6 +93,7 @@ function reconnect() {
 startSignalR();
 
 function testCallout() {
+    new NoSleep().enable();
     connection.invoke("SetInSim", 'resetMcdu', true);
     //recognition.start();
     speak('Monitoring');
