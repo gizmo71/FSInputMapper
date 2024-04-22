@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -31,10 +32,13 @@ namespace Controlzmo.Systems.Atc
     };
 
     [Component]
-    public class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
+    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
+
+        [Property]
+        private int _warmupMinutes;
 
         public AtcAirlineListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
@@ -46,6 +50,7 @@ namespace Controlzmo.Systems.Atc
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
+            WarmupMinutes = 3;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM.AC_MODEL_(.*)\.0\.TEXT$", @"$1");
             var callsign = data.name.ToLower();
             var _ = data.tailNumber.ToUpper();

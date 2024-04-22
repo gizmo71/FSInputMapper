@@ -1,4 +1,5 @@
-﻿using Controlzmo.Systems.EfisControlPanel;
+﻿using Controlzmo.Systems.Atc;
+using Controlzmo.Systems.EfisControlPanel;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -25,6 +26,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender jetbridge;
         private readonly ChronoButton chronoButton;
+        private AtcAirlineListener atcAirline;
 
         private bool isArmed = false;
         private Double? warmAt = null;
@@ -33,6 +35,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
             chronoButton = serviceProvider.GetRequiredService<ChronoButton>();
+            atcAirline = serviceProvider.GetRequiredService<AtcAirlineListener>();
             serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
         }
 
@@ -58,8 +61,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (running == engines && isArmed)
             {
-//TODO: allow the warmup time to be configured, e.g. for Frontier (5m).
-                warmAt = data.now + 3 * 60.0;
+                warmAt = data.now + atcAirline.WarmupMinutes * 60.0;
                 chronoButton.SetInSim(simConnect, null);
                 isArmed = false;
             }
