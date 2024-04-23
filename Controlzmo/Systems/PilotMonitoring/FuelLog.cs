@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -25,17 +26,12 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class FuelLogListener : DataListener<FuelLogData>
+    [RequiredArgsConstructor]
+    public partial class FuelLogListener : DataListener<FuelLogData>, IOnGroundHandler
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
-        public FuelLogListener(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-        }
-
-        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
             nextWaypoint = "";

@@ -1,6 +1,7 @@
 ﻿using Controlzmo.Systems.Atc;
 using Controlzmo.Systems.EfisControlPanel;
 using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -22,7 +23,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     };
 
     [Component]
-    public class EngineWarmupListener : DataListener<EngineWarmupData>
+    [RequiredArgsConstructor]
+    public partial class EngineWarmupListener : DataListener<EngineWarmupData>, IOnGroundHandler
     {
         private readonly JetBridgeSender jetbridge;
         private readonly ChronoButton chronoButton;
@@ -31,15 +33,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private bool isArmed = false;
         private Double? warmAt = null;
 
-        public EngineWarmupListener(IServiceProvider serviceProvider)
-        {
-            jetbridge = serviceProvider.GetRequiredService<JetBridgeSender>();
-            chronoButton = serviceProvider.GetRequiredService<ChronoButton>();
-            atcAirline = serviceProvider.GetRequiredService<AtcAirlineListener>();
-            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-        }
-
-        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             var period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);

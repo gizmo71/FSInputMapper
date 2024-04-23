@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class LandingListener : DataListener<LandingData>
+    public partial class LandingListener : DataListener<LandingData>, IOnGroundHandler
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly ChronoButton chronoButton;
@@ -50,7 +50,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         bool? wasBelow70 = null;
         bool? wasBelowTaxi = null;
 
-        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             var period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);

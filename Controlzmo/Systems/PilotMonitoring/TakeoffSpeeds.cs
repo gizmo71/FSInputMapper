@@ -49,7 +49,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     }
 
     [Component]
-    public class TakeOffListener : DataListener<TakeOffData>
+    [RequiredArgsConstructor]
+    public partial class TakeOffListener : DataListener<TakeOffData>, IOnGroundHandler
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
 
@@ -57,13 +58,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         bool? wasAboveV1 = null;
         bool? wasAboveVR = null;
 
-        public TakeOffListener(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            serviceProvider.GetRequiredService<RunwayCallsStateListener>().onGroundHandlers += OnGroundHandler;
-        }
- 
-        private void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
+        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
             SIMCONNECT_PERIOD period = isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(this, period);
