@@ -1,9 +1,11 @@
 ﻿using Controlzmo.Hubs;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -33,7 +35,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
     }
 
-    interface IOnGroundHandler
+    public interface IOnGroundHandler
     {
         void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround);
     }
@@ -48,9 +50,10 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class OnGroundHandlerAttacher : CreateOnStartup
     {
-        OnGroundHandlerAttacher(IList<IOnGroundHandler> handlers, RunwayCallsStateListener listener)
+        public OnGroundHandlerAttacher(IServiceProvider sp)
         {
-            foreach (var handler in handlers)
+            var listener = sp.GetRequiredService<RunwayCallsStateListener>();
+            foreach (var handler in sp.GetServices<IOnGroundHandler>())
                listener.handlers += handler.OnGroundHandler;
         }
     }
