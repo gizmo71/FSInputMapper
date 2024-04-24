@@ -2,6 +2,7 @@
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -50,11 +51,10 @@ namespace Controlzmo.Systems.PilotMonitoring
     [Component]
     public class OnGroundHandlerAttacher : CreateOnStartup
     {
-        public OnGroundHandlerAttacher(IServiceProvider sp)
+        public OnGroundHandlerAttacher(RunwayCallsStateListener listener, IEnumerable<IOnGroundHandler> handlers, ILogger<OnGroundHandlerAttacher> foo)
         {
-            var listener = sp.GetRequiredService<RunwayCallsStateListener>();
-            foreach (var handler in sp.GetServices<IOnGroundHandler>())
-               listener.handlers += handler.OnGroundHandler;
+            foreach (var handler in handlers)
+                listener.handlers += handler.OnGroundHandler;
         }
     }
 
