@@ -36,6 +36,7 @@ namespace Controlzmo.Systems.Atc
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
+        private readonly static Regex warmupRegex = new Regex(@"Warm up \((\d)m\)");
 
         [Property]
         private int _warmupMinutes;
@@ -72,6 +73,9 @@ namespace Controlzmo.Systems.Atc
                 else
                     foreach (var node in nodes!)
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
+                var match = warmupRegex.Match(sops);
+                if (match.Success)
+                    WarmupMinutes = int.Parse(match.Groups[1].Value);
             }
             catch (Exception e)
             {
