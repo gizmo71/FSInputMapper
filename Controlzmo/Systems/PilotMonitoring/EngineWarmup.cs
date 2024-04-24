@@ -28,7 +28,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender jetbridge;
         private readonly ChronoButton chronoButton;
-        private AtcAirlineListener atcAirline;
+        private readonly AtcAirlineListener atcAirline;
 
         private bool isArmed = false;
         private Double? warmAt = null;
