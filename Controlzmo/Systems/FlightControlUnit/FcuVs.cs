@@ -3,6 +3,7 @@ using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
 using System;
+using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -56,13 +57,19 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuVsDec dec;
         private readonly JetBridgeSender sender;
 
+        private Int32 fenixAdjustment = 0;
+
         public string GetId() => "fcuVsDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
             if (simConnect.IsFenix) {
-                var op = value < 0 ? "-" : "+";
-                sender.Execute(simConnect, $"(L:E_FCU_VS) {Math.Abs(value)} {op} (>L:E_FCU_VS)");
+                Interlocked.Add(ref fenixAdjustment, value);
+                sender.Execute(simConnect, delegate() {
+                    var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+                    var op = toSend < 0 ? "-" : "+";
+                    return $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
+                });
             }
             else
             {

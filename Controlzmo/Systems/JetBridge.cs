@@ -56,6 +56,8 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         private readonly ILogger<JetBridgeSender> logger;
         private readonly SerializedExecutor serializedExecutor;
 
+        public delegate string DynamicQueueEntry();
+
         public JetBridgeSender(ILogger<JetBridgeSender> logger, SerializedExecutor serializedExecutor)
         {
             this.logger = logger;
@@ -66,12 +68,21 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
 
         public void Execute(ExtendedSimConnect _, string code)
         {
-            var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
-            if (data.data.Length > 127)
-                throw new ArgumentOutOfRangeException($"'{code}' is {data.data.Length - 127} too long");
+            Execute(_, delegate() { return code; });
+        }
+
+        public void Execute(ExtendedSimConnect _, DynamicQueueEntry codeSource)
+        {
             serializedExecutor.Enqueue(delegate (ExtendedSimConnect simConnect) {
+                var code = codeSource.Invoke();
+                if (code == null)
+                    return false;
+                var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };
+                if (data.data.Length > 127)
+                    throw new ArgumentOutOfRangeException($"'{code}' is {data.data.Length - 127} too long");
                 simConnect.SendDataOnSimObject(data);
                 logger.LogDebug($"Sent {code} with id {data.id}");
+                return true;
             });
         }
     }

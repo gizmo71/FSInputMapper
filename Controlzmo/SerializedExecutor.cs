@@ -10,7 +10,7 @@ namespace Controlzmo
     [Component]
     public class SerializedExecutor : CreateOnStartup
     {
-        private readonly BlockingCollection<Action<ExtendedSimConnect>> _jobs = new BlockingCollection<Action<ExtendedSimConnect>> ();
+        private readonly BlockingCollection<Func<ExtendedSimConnect, Boolean>> _jobs = new BlockingCollection<Func<ExtendedSimConnect, Boolean>> ();
         private readonly ILogger _logging;
         private readonly SimConnectHolder holder;
 
@@ -24,7 +24,7 @@ namespace Controlzmo
             thread.Start();
         }
 
-        public void Enqueue(Action<ExtendedSimConnect> job)
+        public void Enqueue(Func<ExtendedSimConnect, Boolean> job)
         {
             _jobs.TryAdd(job);
         }
@@ -32,7 +32,7 @@ namespace Controlzmo
         private static readonly TimeSpan dequeueTimeout = TimeSpan.FromSeconds(10);
         private void OnStart()
         {
-            Action<ExtendedSimConnect>? job;
+            Func<ExtendedSimConnect, Boolean>? job;
             for (;;)
             {
                 if (_jobs.TryTake(out job, dequeueTimeout))
@@ -40,7 +40,8 @@ namespace Controlzmo
                     _logging.LogInformation($"Serializing action {job}");
                     try
                     {
-                        job.Invoke(holder.SimConnect!);
+                        if (!job.Invoke(holder.SimConnect!))
+                            continue; // Did nothing, don't need to pause.
                     }
                     catch (Exception e)
                     {

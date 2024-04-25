@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -58,13 +59,19 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcultDec dec;
         private readonly JetBridgeSender sender;
 
+        private Int32 fenixAdjustment = 0;
+
         public string GetId() => "fcuAltDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
             if (simConnect.IsFenix) {
-                var op = value < 0 ? "-" : "+";
-                sender.Execute(simConnect, $"(L:E_FCU_ALTITUDE) {Math.Abs(value)} {op} (>L:E_FCU_ALTITUDE)");
+                Interlocked.Add(ref fenixAdjustment, value);
+                sender.Execute(simConnect, delegate() {
+                    var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+                    var op = toSend < 0 ? "-" : "+";
+                    return $"(L:E_FCU_ALTITUDE) {Math.Abs(toSend)} {op} (>L:E_FCU_ALTITUDE)";
+                });
             }
             else
                 while (value != 0)
