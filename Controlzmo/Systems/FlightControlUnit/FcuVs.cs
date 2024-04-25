@@ -68,7 +68,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, delegate() {
                     var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
                     var op = toSend < 0 ? "-" : "+";
-                    return $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
+                    return toSend == 0 ? null : $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
                 });
             }
             else

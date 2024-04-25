@@ -56,7 +56,7 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         private readonly ILogger<JetBridgeSender> logger;
         private readonly SerializedExecutor serializedExecutor;
 
-        public delegate string DynamicQueueEntry();
+        public delegate string? DynamicQueueEntry();
 
         public JetBridgeSender(ILogger<JetBridgeSender> logger, SerializedExecutor serializedExecutor)
         {
