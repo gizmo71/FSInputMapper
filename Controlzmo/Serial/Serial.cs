@@ -150,7 +150,7 @@ Console.Error.WriteLine($"set {id} to {value}");
 _logger.LogInformation($"Sending '{value}'");
             byte[] data = Encoding.ASCII.GetBytes(value + "\n");
             _serialPort.Write(data, 0, data.Length);
-        }
+            }
 
         protected override void OnLoop(object? sender, DoWorkEventArgs args)
         {
