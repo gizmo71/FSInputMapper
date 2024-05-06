@@ -314,7 +314,7 @@ _logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {dataLog} f
                 .Where(candidate => candidate.Value == request)
                 .Select(candidate => candidate.Key)
                 .Single();
-            _logging!.LogDebug($"Received {request} for {listener} via OnRecvSimobjectData");
+            _logging!.LogTrace($"Received {request} for {listener} via OnRecvSimobjectData");
             listener.Process(this, data.dwData[0]);
         }
 

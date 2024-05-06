@@ -25,12 +25,13 @@ namespace Controlzmo
         {
             if (bw == null)
             {
-_logger.LogDebug("Starting background worker for " + GetType());
+                _logger.LogDebug("Starting background worker for " + GetType());
                 bw = new BackgroundWorker() { WorkerSupportsCancellation = true };
                 bw.DoWork += DonkeyOuter;
                 bw.RunWorkerAsync();
             }
-else _logger.LogDebug("Existing background worker for " + GetType());
+            else
+                _logger.LogTrace("Existing background worker for " + GetType());
         }
 
         private void DonkeyOuter(object? sender, DoWorkEventArgs args)

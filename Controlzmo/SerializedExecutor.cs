@@ -50,7 +50,7 @@ namespace Controlzmo
                     Thread.Sleep(250);
                 }
                 else
-                    _logging.LogInformation("No serialized actions to perform");
+                    _logging.LogTrace("No serialized actions to perform");
             }
         }
     }
