@@ -6,7 +6,6 @@ using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using static Controlzmo.Systems.PilotMonitoring.RunwayCallsStateListener;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -17,6 +16,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isTrkFpaMode;
         [SimVar("L:I_FCU_TRACK_FPA_MODE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isTrkFpaModeFenix;
+        [SimVar("L:INI_TRACK_FPA_STATE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isTrkFpaModeIni;
     };
 
     interface ITrkFpaListener : IRequestDataOnOpen { }
@@ -35,7 +36,13 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopRightData data)
         {
-            isTrkFpa = (simConnect.IsFenix ? data.isTrkFpaModeFenix : data.isTrkFpaMode) == 1;
+            // Normalise to FBW.
+            if (simConnect.IsFenix)
+                data.isTrkFpaMode = data.isTrkFpaModeFenix;
+            else if (simConnect.IsIni320)
+                data.isTrkFpaMode = data.isTrkFpaModeIni;
+            isTrkFpa = data.isTrkFpaMode == 1;
+
             var line1 = "ALT \x4LVL/CH\x5 " + (isTrkFpa ? "FPA" : "V/S");
             serial.SendLine($"fcuTR={line1}");
 

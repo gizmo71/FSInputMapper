@@ -386,8 +386,9 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
-        public bool IsFBW { get => !IsFenix; } // For now, just assume everything which isn't Fenix is FBW...
+        public bool IsFBW { get => !IsFenix && !IsIni320; } // For now... otherwise we have to worry about all the LVFRs, Headwind etc
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_320_"); }
+        public bool IsIni320 { get => aircraftFile.StartsWith("to do !"); }
 
         private void OnSimIsRunning()
         {

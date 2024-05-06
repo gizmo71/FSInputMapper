@@ -36,6 +36,12 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 fcuAltFenix;
         [SimVar("L:I_FCU_ALTITUDE_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isManagedFenix;
+        [SimVar("L:INI_Altitude_Dial", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fcuAltIni;
+        [SimVar("L:INI_vvi_dial", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 iniVsSelected;
+        [SimVar("L:INI_FPA_DIAL", "number", SIMCONNECT_DATATYPE.INT32, 0.1f)]
+        public Int32 iniFpaSelected;
     };
 
     [Component]
@@ -49,7 +55,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public override void Process(ExtendedSimConnect simConnect, FcuBottomRightData data)
         {
-            // Normalise Fenix to FBW...
+            // Normalise to FBW...
             if (simConnect.IsFenix)
             {
                 data.isManaged = data.isManagedFenix;
@@ -57,6 +63,14 @@ namespace Controlzmo.Systems.FlightControlUnit
                 data.fpaSelected = data.fenixSelected / 1000.0f;
                 data.vsSelected = data.fenixSelected;
                 data.vsState = 1 - data.fenixState;
+            }
+            else if (simConnect.IsIni320)
+            {
+                //TODO: data.isManaged = ?;
+                data.fcuAlt = data.fcuAltIni;
+                data.fpaSelected = data.iniFpaSelected;
+                data.vsSelected = data.iniVsSelected;
+                //TODO: data.vsState = ?;
             }
 
             var managed = data.isManaged == 1 ? '\x1' : ' ';

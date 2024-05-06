@@ -1,7 +1,6 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.Extensions.DependencyInjection;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -19,6 +18,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
+            else if (simConnect.IsIni320)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND)");
             else
                 simConnect.SendEvent(this);
         }
@@ -34,6 +35,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) -- (>L:S_FCU_ALTITUDE)");
+            else if (simConnect.IsIni320)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND)");
             else
                 simConnect.SendEvent(this);
         }
@@ -76,7 +79,14 @@ namespace Controlzmo.Systems.FlightControlUnit
             else
                 while (value != 0)
                 {
-                    simConnect.SendEvent(value < 0 ? dec : inc);
+                    if (simConnect.IsIni320)
+                    {
+                        var dir = value < 0 ? "DN" : "UP";
+//TODO: can we do more than one at a time? Otherwise it's going to be super slow...
+                        sender.Execute(simConnect, $"1 (>L:INI_ALTITUDE_DIAL_{dir}_COMMAND)");
+                    }
+                    else
+                        simConnect.SendEvent(value < 0 ? dec : inc);
                     value -= (short)Math.Sign(value);
                 }
         }
@@ -92,6 +102,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, (value == 1000 ? 1 : 0) + " (>L:S_FCU_ALTITUDE_SCALE)");
+            else if (simConnect.IsIni320)
+                sender.Execute(simConnect, (value == 1000 ? 1 : 0) + " (>L:INI_FCU_ALTITUDE_MODE_COMMAND)");
             else
                 simConnect.SendEvent(this, value);
         }
