@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Spoilers
 {
-    // Fenix LVar: A_FC_SPEEDBRAKE, 0 = spoilers armed, 1 to 3 = speedbrake positions
     /* A32NX rules:
        You cannot arm the spoilers unless the handle is RETRACTED.
        If the new position is anything but that, the arming state is false.
@@ -31,6 +30,8 @@ namespace Controlzmo.Systems.Spoilers
         public float a32nxPosition;
         [SimVar("L:A32NX_IS_READY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 a32nxReady;
+        [SimVar("L:A_FC_SPEEDBRAKE", "Bool", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
+        public float fenix; // Fenix LVar: A_FC_SPEEDBRAKE, 0 = spoilers armed, 1 to 3 = speedbrake positions
     };
 
     [Component] public class SpoilerArmOnEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_ON"; }
@@ -60,7 +61,7 @@ namespace Controlzmo.Systems.Spoilers
                 data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
                 data.position = (int)(100 * data.a32nxPosition);
             }
-            _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}");
+            _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}; Fenix {data.fenix}");
 
             ProcessSpoilerDemand(simConnect, data);
         }
@@ -84,7 +85,8 @@ namespace Controlzmo.Systems.Spoilers
         {
             if (simConnect.IsFenix)
             {
-                sender.Execute(simConnect, "(L:A_FC_SPEEDBRAKE) 1 + 3 min (>L:A_FC_SPEEDBRAKE)");
+                var value = data.fenix < 1 ? 1 : Math.Min(data.fenix + 0.5, 3);
+                sender.Execute(simConnect, $"{value} (>L:A_FC_SPEEDBRAKE)");
                 return;
             }
 
@@ -131,7 +133,8 @@ namespace Controlzmo.Systems.Spoilers
         {
             if (simConnect.IsFenix)
             {
-                sender.Execute(simConnect, "(L:A_FC_SPEEDBRAKE) 1 - 0 max (>L:A_FC_SPEEDBRAKE)");
+                var value = data.fenix > 1 ? Math.Max(data.fenix - 0.5, 1) : 0;
+                sender.Execute(simConnect, $"{value} (>L:A_FC_SPEEDBRAKE)");
                 return;
             }
 
