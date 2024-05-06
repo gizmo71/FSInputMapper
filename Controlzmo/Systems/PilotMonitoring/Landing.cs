@@ -141,6 +141,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 coolAt = data.now + 3 * 60.0;
             else if (data.now >= coolAt)
             {
+                chronoButton.SetInSim(simConnect, null);
                 coolAt = null;
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
 //TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
