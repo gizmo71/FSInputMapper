@@ -1,5 +1,4 @@
-﻿
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.EfisControlPanel;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
@@ -42,7 +41,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public partial class LandingListener : DataListener<LandingData>, IOnGroundHandler
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly ChronoButton chronoButton;
+        private readonly EngineCooldownListener cooldown;
 
         private bool? wasDecel = null;
         private bool? wasSpoilers = null;
@@ -92,8 +91,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (wasBelowTaxi == false && data.groundSpeed < 30)
             {
-//TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
-                chronoButton.SetInSim(simConnect, null);
+                cooldown.StartTimer(simConnect);
                 wasBelowTaxi = true;
             }
 
@@ -113,6 +111,43 @@ namespace Controlzmo.Systems.PilotMonitoring
                 hubContext.Clients.All.Speak("Rev Green");
                 wasRevGreen = true;
             }
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct EngineCooldownData
+    {
+        [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 2.5f)]
+        public Double now; // See notes in warmup version.
+    };
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class EngineCooldownListener : DataListener<EngineCooldownData>
+    {
+        private readonly ChronoButton chronoButton;
+
+        private Double? coolAt;
+
+        internal void StartTimer(ExtendedSimConnect simConnect)
+        {
+            coolAt = null;
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
+        }
+
+        public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
+        {
+            if (coolAt == null)
+                coolAt = data.now + 3 * 60.0;
+            else if (data.now >= coolAt)
+            {
+                coolAt = null;
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
+//TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
+            }
+            else
+                return;
+            chronoButton.SetInSim(simConnect, null);
         }
     }
 }
