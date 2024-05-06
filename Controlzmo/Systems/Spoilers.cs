@@ -61,7 +61,7 @@ namespace Controlzmo.Systems.Spoilers
                 data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
                 data.position = (int)(100 * data.a32nxPosition);
             }
-            _logger.LogDebug($"... processed data pos {data.position} armed {data.armed}; Fenix {data.fenix}");
+            _logger.LogDebug("... processed data pos {} armed {}; Fenix {}", data.position, data.armed, data.fenix);
 
             ProcessSpoilerDemand(simConnect, data);
         }
@@ -103,7 +103,7 @@ namespace Controlzmo.Systems.Spoilers
 
             if (toSend != null)
             {
-                _logger.LogDebug($"Now send {toSend}");
+                _logger.LogDebug("Now send {}", toSend);
                 simConnect.SendEvent(toSend);
             }
 
@@ -111,7 +111,7 @@ namespace Controlzmo.Systems.Spoilers
             {
                 uint eventData = (uint)newPosition * 164;
                 eventData = Math.Min(eventData, 16384u);
-                _logger.LogDebug($"Now demand position {newPosition} or as U {eventData}");
+                _logger.LogDebug("Now demand position {} or as U {}", newPosition, eventData);
                 simConnect.SendEvent(setEvent, eventData);
             }
         }
