@@ -14,11 +14,11 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         [SimVar("AIRSPEED INDICATED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
         public Int32 kias;
-        [SimVar("L:AIRLINER_V1_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        [SimVar("L:AIRLINER_V1_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 v1;
-        [SimVar("L:AIRLINER_VR_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        [SimVar("L:AIRLINER_VR_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 vr;
-        [SimVar("L:AIRLINER_V2_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 1.0f)]
+        [SimVar("L:AIRLINER_V2_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 v2;
     };
 
@@ -58,16 +58,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly ToSpeedVr vrSetter;
         private readonly ToSpeedV2 v2Setter;
 
-        private SIMCONNECT_PERIOD period = SIMCONNECT_PERIOD.NEVER;
-
         bool? wasAbove80 = null;
         bool? wasAboveV1 = null;
         bool? wasAboveVR = null;
 
         public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            period = isOnGround ? SIMCONNECT_PERIOD.ONCE : SIMCONNECT_PERIOD.NEVER;
-            simConnect.RequestDataOnSimObject(this, period);
+            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
             //TODO: also reset in case of RTO.
             wasAbove80 = wasAboveV1 = wasAboveVR = null;
         }
@@ -76,18 +73,11 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (data.kias < 49) {
                 wasAbove80 = wasAboveV1 = wasAboveVR = false;
-//TODO: do we need to call with NEVER first?
-                if (period != SIMCONNECT_PERIOD.SECOND)
-                    simConnect.RequestDataOnSimObject(this, period = SIMCONNECT_PERIOD.SECOND);
                 hubContext.Clients.All.SetFromSim(v1Setter.GetId(), data.v1);
                 hubContext.Clients.All.SetFromSim(vrSetter.GetId(), data.vr);
                 hubContext.Clients.All.SetFromSim(v2Setter.GetId(), data.v2);
             }
-            else if (period != SIMCONNECT_PERIOD.SIM_FRAME)
-            {
-//TODO: do we need to call with NEVER first?
-                simConnect.RequestDataOnSimObject(this, period = SIMCONNECT_PERIOD.SIM_FRAME);
-            }
+
             _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80, 0);
             if (data.vr < data.v1 + 3)
             {
