@@ -28,7 +28,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, OnGroundAndGearData data)
         {
-            var period = data.gear1IfDown == 1 && data.onGround == 1 ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
+            var period = data.gear1IfDown == 1 && data.onGround == 0 ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
             simConnect.RequestDataOnSimObject(positiveClimbListener, period);
         }
     }
