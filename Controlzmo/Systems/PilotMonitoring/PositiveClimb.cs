@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -9,27 +10,26 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct GearData
+    public struct OnGroundAndGearData
     {
         [SimVar("GEAR HANDLE POSITION", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 gear1IfDown;
+        [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 onGround;
     };
 
     [Component]
-    public class GearListener : DataListener<GearData>, IRequestDataOnOpen
+    [RequiredArgsConstructor]
+    public partial class GearListener : DataListener<OnGroundAndGearData>, IRequestDataOnOpen
     {
         private readonly PositiveClimbListener positiveClimbListener;
 
-        public GearListener(PositiveClimbListener positiveClimbListener)
-        {
-            this.positiveClimbListener = positiveClimbListener;
-        }
-
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
-        public override void Process(ExtendedSimConnect simConnect, GearData data)
+        public override void Process(ExtendedSimConnect simConnect, OnGroundAndGearData data)
         {
-            positiveClimbListener.SetIsLIstening(simConnect, data.gear1IfDown == 1);
+            var period = data.gear1IfDown == 1 && data.onGround == 1 ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
+            simConnect.RequestDataOnSimObject(positiveClimbListener, period);
         }
     }
 
@@ -50,18 +50,12 @@ namespace Controlzmo.Systems.PilotMonitoring
             hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
         }
 
-        internal void SetIsLIstening(ExtendedSimConnect simConnect, bool IsListening)
-        {
-            SIMCONNECT_PERIOD period = IsListening ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER;
-            simConnect.RequestDataOnSimObject(this, period);
-        }
-
         public override void Process(ExtendedSimConnect simConnect, ClimbRateData data)
         {
             if (data.feetPerMinute > 500)
             {
                 hubContext.Clients.All.Speak("positive climb");
-                SetIsLIstening(simConnect, false);
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             }
         }
     }
