@@ -9,15 +9,18 @@
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
+	<!-- Gone to... -->
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 	</Airline>
+	<!-- vAMSYS -->
 	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
 		<Text type=".*">Block time counts</Text>
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
+		<Text type=".*">Rejected 500fpm</Text>
 	</Airline>
-	<Airline callsign="allegiant|aay"> <!-- Game won't let me enter "Allegiant"! -->
+	<Airline callsign="allegiant|aay"> <!-- Game won't let me enter "Allegiant"! Now Alaska, rules might be different -->
 		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Start #1 first, warm up; cool down</Text>
 	</Airline>
@@ -25,27 +28,32 @@
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Warm up, cool down</Text>
+		<Text type=".*">Rejected 400fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
+		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Departure: flaps up by 4000agl</Text>
 		<Text type=".*">Arrival: flaps not before 5000agl/15nm, gear 2500agl/7.5nm</Text>
+		<Text type=".*">Rejected 650fpm; Invalidated 750fpm</Text>
 	</Airline>
 	<Airline callsign="delta"> <!-- Virtual Delta -->
 		<!-- 'FWB Delta (Dirty)' -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Must have fuel ≤ 20T on landing</Text>
+		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
 	<Airline callsign="eurowings|ocean|black[- ]?pearl"> <!-- vEWG -->
 		<!-- 'Airbus A320 CFM SL EWG' (the Discover one) -->
 		<Text type=".*">Preparation 20-180 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; OETA, cool down</Text>
+		<Text type=".*">Rejected 450fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="alpine|easy|top[- ]?swiss"> <!-- vEZY -->
 		<!-- 'Airbus A320Neo EasyJet Europe OE-LSI', 'FlyByWire EasyJet HB-AYE', 'Airbus A320neo Easyjet NEO c/s', 'Airbus A320 CFM EZY3' -->
@@ -53,18 +61,21 @@
 		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1.5T on landing (contestable exceptions)</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 999fpm</Text>
 	</Airline>
 	<Airline callsign="frontier[- ]flight|volaris"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Warm up (5m), OETD; OETA(#2), cool down</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
 		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
+		<Text type=".*">Rejected 550fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="goldberg"> <!-- AirGoldberg -->
 		<Text type=".*">Preparation 10-40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Taxi in/out time &gt;50% of expectation requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
+		<Text type=".*">Rejected 500fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
@@ -73,6 +84,7 @@
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing (and pushback!)</Text>
+		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
 		<!-- 'FlyByWire Airbus A320 Neo IndiGo' -->
@@ -83,6 +95,7 @@
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have fuel ≤ 19T on pushback</Text>
 		<Text type=".*">Must have 1T ≤ fuel ≤ 10T on landing</Text>
+		<Text type=".*">Rejected 700fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<!-- 'Airbus A320 Neo JetBlue (N624JB)' and 'Airbus A320 IAE JBU' (many others for both) -->
@@ -91,6 +104,7 @@
 		<Text type=".*">Taxi times &gt;200% of average or pre-set maximum requires review</Text>
 		<Text type=".*">OETD/OETA</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
+		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="jet[ -]?star">
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
@@ -99,6 +113,7 @@
 		<Text type=".*">Start #1 first unless OETD(#2), warm up</Text>
 		<Text type=".*">OETA(#1), cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
+		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
@@ -111,11 +126,13 @@
 		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
 		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
 		<Text type=".*">Air time counts</Text>
+		<Text type=".*">Rejected 800fpm</Text>
 	</Airline>
 	<Airline callsign="batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi"><!-- Lion Group -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">Start #2 first</Text>
+		<Text type=".*">Review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="lufthansa"> <!-- LH Virtual -->
 		<!-- 'Airbus A319 CFM Lufthansa2' -->
@@ -123,11 +140,13 @@
 		<Text type=".*">Start #2 first, warm up</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
 		<Text type=".*">Must have fuel ≥ 998kg on landing</Text>
+		<Text type=".*">Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
+		<Text type=".*">Review at 600fpm; Rejected 700fpm</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
 		<Text type="A32[01]|A2[01]N">Preparation 15-30 minutes</Text>
@@ -135,31 +154,36 @@
 		<Text type=".*">Block time counts</Text>
 		<Text type="A32[01]|A2[01]N">Start #2 first</Text>
 		<Text type=".*">Warm up; cool down</Text>
+		<Text type=".*">Invalidated 800fpm</Text>
 	</Airline>
-	<Airline callsign="qatari">
+	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, OETD, warm up; OETA(#2), cool down</Text>
 		<Text type=".*">Must have fuel ≥ 2T on pushback</Text>
 		<Text type=".*">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type=".*">Flight time &gt;50%/20 minutes of scheduled requires review</Text>
 		<Text type=".*">Step climb; screenshots for Discord!</Text>
+		<Text type=".*">Rejected 551fpm; Invalidated 700fpm</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled or average requires review</Text>
 		<Text title=".* A320 .*">Start #2 first</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="scandinavian"> <!-- vSAS -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
 		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
+		<Text type=".*">Review at 750fpm</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
 		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
 		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type=".*">Pauses in flight &gt;60m (cumulative) require PIREP comment</Text>
 		<Text type=".*">Flight time &gt;25%/30 minutes of scheduled or average requires review</Text>
+		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
@@ -167,6 +191,7 @@
 		<Text type="A2[01]N|A320">Start #2 first; cool down</Text>
 		<Text type="A2[01]N|A320">Must have fuel ≥ 2T on landing</Text>
 		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
+		<Text type=".*">Rejected  600fpm</Text>
 	</Airline>
 	<Airline callsign="ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap"> <!-- Titan Virtual -->
 		<!-- 'Airbus A320 IAE AWC2' -->
@@ -176,15 +201,18 @@
 		<Text type="A333">Must have at fuel ≥ 2500kg on landing</Text>
 		<Text type=".*">Flight time &gt;30%/40 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Taxi in time &gt;80% of average or pre-set maximum (out unclear) requires review</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="united"> <!-- United -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A319|A320">Start #2 first, warm up; cool down</Text>
 		<Text type="A3[35][09]">Start #2 first</Text>
+		<Text type=".*">Rejected 650fpm</Text>
 	</Airline>
 	<Airline callsign="redwood|velocity|virgin(?:[- ]nigeria)?|vir"> <!-- VRGN Virtual -->
 		<!-- Annoyingly, some of the skins seem to struggle to set the callsign. :-( -->
 		<Text type=".*">Air time counts</Text>
+		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
@@ -192,5 +220,6 @@
 		<Text type=".*">Flight time &gt;5%/20 minutes of scheduled or average requires review</Text>
 		<Text type="A320|A20N">Must have fuel ≥ 1200kg on landing</Text>
 		<Text type="A21N">Must have 1500kg ≤ fuel ≤ 20T on landing</Text>
+		<Text type=".*">Rejected 650fpm; Invalidated 651fpm(!)</Text>
 	</Airline>
 </SOPs>
