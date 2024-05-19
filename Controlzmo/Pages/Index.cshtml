@@ -216,7 +216,7 @@
             </tr>
         </table>
     </div>
-    <iframe id="tabs-mcdu" src="about:blank" style="width: 100%; height: 525px;">MCDU</iframe>
+    <iframe id="tabs-mcdu" src="mcdu.html" style="width: 100%; height: 525px;">MCDU</iframe>
     <div id="tabs-sops">
         <textarea id="atcAirline" rows="15" cols="40"></textarea>
         <textarea id="gsxPushback" rows="15" cols="40" style="display: none;">
@@ -247,7 +247,7 @@ F5/F6 remove/insert (before current) waypoint
         </div>
         <input type="button" id="testVoice" value="Test Callout" onClick="testCallout()" />
         <input type="button" id="reconnect" value="Reconnect" onClick="reconnect()" />
-        <input type="button" id="remcdu" value="MCDU" onClick="document.getElementById('tabs-mcdu').src = document.getElementById('tabs-mcdu').src" />
+        <input type="button" id="remcdu" value="Reset MCDU page" onClick="document.getElementById('tabs-mcdu').src = 'mcdu.html'" />
     </div>
   </div>
 </div>
