@@ -94,3 +94,9 @@ function testCallout() {
     //recognition.start();
     speak('Monitoring');
 }
+
+connection.on("UpdateLandingRate", function (fpm) {
+    //TODO: something more like an AoA indicator
+    var jqInput = $("#landingRate");
+    jqInput.prop('value', fpm == null ? 'n/a' : fpm);
+});
