@@ -1,15 +1,10 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
-using SimConnectzmo;
-using System.Runtime.InteropServices;
-using System;
-using System;
-using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -26,18 +21,19 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly LandingApproachRate rateListener;
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private SIMCONNECT_PERIOD current = SIMCONNECT_PERIOD.NEVER;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateTriggerData data)
         {
-            var period = SIMCONNECT_PERIOD.SECOND;
-            if (data.radioAlt > 50.0 && data.radioAlt < 0.1)
+            var period = data.radioAlt > 50.0 && data.radioAlt < 0.1 ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SECOND;
+            if (period != current)
             {
-                 period = SIMCONNECT_PERIOD.NEVER;
-                hub.Clients.All.UpdateLandingRate(null);
+                simConnect.RequestDataOnSimObject(rateListener, current = period);
+                if (period == SIMCONNECT_PERIOD.NEVER)
+                    hub.Clients.All.UpdateLandingRate(null, null);
             }
-            simConnect.RequestDataOnSimObject(rateListener, period);
         }
     }
 
@@ -46,6 +42,8 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         [SimVar("VELOCITY BODY Y", "Feet per minute", SIMCONNECT_DATATYPE.INT32, 10.0f)]
         public Int32 feetPerMinute;
+        [SimVar("PLANE ALT ABOVE GROUND", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 radioAlt;
     };
 
     [Component]
@@ -55,7 +53,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateData data)
         {
-            hub.Clients.All.UpdateLandingRate(data.feetPerMinute);
+            hub.Clients.All.UpdateLandingRate(data.feetPerMinute, data.radioAlt);
         }
     }
 }
