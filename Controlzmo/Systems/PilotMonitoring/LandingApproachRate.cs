@@ -11,8 +11,10 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingApproachRateTriggerData
     {
-        [SimVar("PLANE ALT ABOVE GROUND", "feet", SIMCONNECT_DATATYPE.INT32, 0.1f)]
+        [SimVar("PLANE ALT ABOVE GROUND MINUS CG", "feet", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public float radioAlt;
+        [SimVar("SIM ON GROUND", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 onGround;
     };
 
     [Component]
@@ -27,7 +29,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateTriggerData data)
         {
-            var period = data.radioAlt > 50.0 && data.radioAlt < 0.1 ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SECOND;
+            var period = data.radioAlt > 50.0 && data.onGround == 1 ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SECOND;
             if (period != current)
             {
                 simConnect.RequestDataOnSimObject(rateListener, current = period);
@@ -40,9 +42,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingApproachRateData
     {
-        [SimVar("VELOCITY BODY Y", "Feet per minute", SIMCONNECT_DATATYPE.INT32, 10.0f)]
-        public Int32 feetPerMinute;
-        [SimVar("PLANE ALT ABOVE GROUND", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("VERTICAL SPEED", "Feet per minute", SIMCONNECT_DATATYPE.FLOAT32, 10.0f)]
+        public float feetPerSecond;
+        [SimVar("PLANE ALT ABOVE GROUND MINUS CG", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radioAlt;
     };
 
@@ -51,9 +53,11 @@ namespace Controlzmo.Systems.PilotMonitoring
     public partial class LandingApproachRate : DataListener<LandingApproachRateData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        [Property]
+        private int correction = 0;
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateData data)
         {
-            hub.Clients.All.UpdateLandingRate(data.feetPerMinute, data.radioAlt);
+            hub.Clients.All.UpdateLandingRate((int) (data.feetPerSecond * 1), data.radioAlt - correction);
         }
     }
 }
