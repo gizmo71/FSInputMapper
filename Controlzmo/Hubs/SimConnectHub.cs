@@ -16,7 +16,7 @@ namespace Controlzmo.Hubs
         public Task SetFromSim(string name, object? value);
         public Task Speak(string text);
         public Task SetMcduType(string type);
-        public Task UpdateLandingRate(int? fpm, int? agl);
+        public Task UpdateLandingRate(int? fpm, int? agl, string colour);
     }
 
     public partial class ControlzmoHub : Hub<IControlzmoHub>

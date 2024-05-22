@@ -29,12 +29,12 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateTriggerData data)
         {
-            var period = (data.radioAlt > 100 || data.onGround == 1) ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SIM_FRAME;
+            var period = (data.radioAlt > 10000 || data.onGround == 1) ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SIM_FRAME;
             if (period != current)
             {
                 simConnect.RequestDataOnSimObject(rateListener, current = period);
                 if (period == SIMCONNECT_PERIOD.NEVER)
-                    hub.Clients.All.UpdateLandingRate(null, null);
+                    hub.Clients.All.UpdateLandingRate(null, null, "white");
             }
         }
     }
@@ -43,7 +43,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public struct LandingApproachRateData
     {
         [SimVar("VERTICAL SPEED", "Feet per minute", SIMCONNECT_DATATYPE.INT32, 10.0f)]
-        public Int32 feetPerSecond;
+        public Int32 feetPerMinute;
         [SimVar("PLANE ALT ABOVE GROUND MINUS CG", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radioAlt;
     };
@@ -55,7 +55,18 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateData data)
         {
-            hub.Clients.All.UpdateLandingRate(data.feetPerSecond, data.radioAlt);
+            var colour = "yellow";
+            if (data.feetPerMinute < -500)
+                colour = "red";
+            else if (data.feetPerMinute < -350)
+                colour = "olive";
+            else if (data.feetPerMinute < -150)
+                colour = "green";
+            else if (data.feetPerMinute < 0)
+                colour = "greenyellow";
+            else if (data.feetPerMinute >= 0)
+                colour = "cyan";
+            hub.Clients.All.UpdateLandingRate(data.feetPerMinute, data.radioAlt, colour);
         }
     }
 }
