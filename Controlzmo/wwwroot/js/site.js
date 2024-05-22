@@ -96,7 +96,16 @@ function testCallout() {
 }
 
 connection.on("UpdateLandingRate", function (fpm, agl) {
-    //TODO: something more like an AoA indicator
     $("#landingRate").prop('value', fpm == null ? 'n/a' : fpm);
     $("#landingAgl").prop('value', agl == null ? 'n/a' : agl);
+    var colour = 'white';
+    if (fpm < -500)
+        colour = 'red';
+    else if (fpm < -350)
+        colour = 'green';
+    else if (fpm < -200)
+        colour = 'green';
+    else if (fpm >= 0)
+        colour = 'cyan';
+    $('#tabs').css('background-color', colour);
 });
