@@ -29,7 +29,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, LandingApproachRateTriggerData data)
         {
-            var period = (data.radioAlt > 10000 || data.onGround == 1) ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SIM_FRAME;
+            var period = (data.radioAlt > 1000 || data.onGround == 1) ? SIMCONNECT_PERIOD.NEVER : SIMCONNECT_PERIOD.SIM_FRAME;
             if (period != current)
             {
                 simConnect.RequestDataOnSimObject(rateListener, current = period);
