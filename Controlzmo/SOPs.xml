@@ -106,7 +106,7 @@
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
-	<Airline callsign="jet[ -]?star">
+	<Airline callsign="jet[ -]?star(?:-asia)?|orange[ -]?liner">
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
