@@ -251,10 +251,11 @@ F5/F6 remove/insert (before current) waypoint
         <div id="landingRateWidgit" style="margin: 10px;">
             Rate <input id="landingRate" />, AGL <input id="landingAgl" />
         </div>
-        METAR <input id="metarIcao" maxlength="4" size="4em" />
-            <input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value).catch(errorHandler);' />
-        <textarea cols="40" rows="5" id="metar"></textarea>
-        <input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
+        METAR
+            <input id="metarIcao" maxlength="4" size="4em" />
+            <input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
+            <textarea cols="40" rows="5" id="metar"></textarea>
+            <input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
     </div>
   </div>
 </div>
