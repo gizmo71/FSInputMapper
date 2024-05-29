@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace Controlzmo.Systems.Atc
 {
@@ -11,6 +12,8 @@ namespace Controlzmo.Systems.Atc
     [RequiredArgsConstructor]
     public partial class FetchMetar : ISettable<string>
     {
+        private readonly static Regex icaoRegex = new Regex(@"^[A-Z]{4}$");
+
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly ILogger<FetchMetar> _log;
 
@@ -18,13 +21,14 @@ namespace Controlzmo.Systems.Atc
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            //TODO: validate "value" properly
-            if (value != null)
+            if (value != null && icaoRegex.IsMatch(value))
             {
                 // https://aviationweather.gov/data/api/#cache e.g. https://aviationweather.gov/api/data/metar?ids=EGMC&format=raw&taf=false
-                _log.LogCritical("Fetch METAR for {}", value);
+                _log.LogInformation("Fetch METAR for {}", value);
                 fetchMetar(value);
             }
+            else
+                _log.LogCritical("Not a valid ICAO for metar '{}'", value);
         }
 
         private async void fetchMetar(string icao)
