@@ -58,8 +58,10 @@
 	<Airline callsign="alpine|easy|top[- ]?swiss"> <!-- vEZY -->
 		<!-- 'Airbus A320Neo EasyJet Europe OE-LSI', 'FlyByWire EasyJet HB-AYE', 'Airbus A320neo Easyjet NEO c/s', 'Airbus A320 CFM EZY3' -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
+		<Text type=".*">Pausing preferred to holding</Text>
 		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
+		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1.5T on landing (contestable exceptions)</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 999fpm</Text>
 	</Airline>
