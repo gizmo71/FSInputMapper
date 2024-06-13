@@ -27,10 +27,10 @@ namespace Controlzmo.Views
         public void OnPress(ExtendedSimConnect simConnect)
         {
             if (state.Current.cameraState == COCKPIT || state.Current.cameraState == CHASE) {
-_logger.LogWarning($"Sedning 114 for {state.Current.cameraState}");
+                _logger.LogTrace($"Sending 114 for {state.Current.cameraState}");
                 vJoy.getController().QuickClick(114u);
             } else
-                _logger.LogWarning($"Wrong camera state for chase view toggle {state.Current.cameraState}");
+                _logger.LogTrace($"Wrong camera state for chase view toggle {state.Current.cameraState}");
         }
     }
 }
