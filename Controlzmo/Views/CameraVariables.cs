@@ -29,7 +29,7 @@ namespace Controlzmo.Views
         public override void Process(ExtendedSimConnect simConnect, CameraStateData data)
         {
             Current = data;
-            log.LogCritical($"camera state {Current.cameraState}");
+            log.LogTrace($"camera state {Current.cameraState}");
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)
