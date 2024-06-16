@@ -20,6 +20,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 vr;
         [SimVar("L:AIRLINER_V2_SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 v2;
+        // These can't be written to.
+        [SimVar("L:N_MISC_PERF_TO_V1", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 v1Fenix;
+        [SimVar("L:N_MISC_PERF_TO_VR", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 vrFenix;
+        [SimVar("L:N_MISC_PERF_TO_V2", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 v2Fenix;
     };
 
     [Component]
@@ -71,6 +78,13 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
         {
+            if (simConnect.IsFenix)
+            {
+                data.v1 = data.v1Fenix;
+                data.vr = data.vrFenix;
+                data.v2 = data.v2Fenix;
+            }
+
             if (data.kias < 49) {
                 wasAbove80 = wasAboveV1 = wasAboveVR = false;
                 hubContext.Clients.All.SetFromSim(v1Setter.GetId(), data.v1);
