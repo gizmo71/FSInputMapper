@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
 using System.IO;
-using System.Linq;
 
 namespace Controlzmo
 {
@@ -12,6 +11,7 @@ namespace Controlzmo
     [RequiredArgsConstructor]
     public partial class Print : ISettable<string>, IDisposable
     {
+        private readonly String SEPARATOR = new String('-', 15);
         private readonly ILogger<Print> _log;
         private string? file;
 
@@ -30,7 +30,7 @@ namespace Controlzmo
             {
                 outputFile.WriteLine(value);
                 outputFile.WriteLine();
-                outputFile.WriteLine(String.Concat('-', 15));
+                outputFile.WriteLine(SEPARATOR);
             }
             using (var p = new System.Diagnostics.Process()) {
                 p.StartInfo.FileName = "notepad";
