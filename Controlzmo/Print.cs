@@ -11,7 +11,6 @@ namespace Controlzmo
     [RequiredArgsConstructor]
     public partial class Print : ISettable<string>, IDisposable
     {
-        private readonly String SEPARATOR = new String('-', 15);
         private readonly ILogger<Print> _log;
         private string? file;
 
@@ -30,7 +29,7 @@ namespace Controlzmo
             {
                 outputFile.WriteLine(value);
                 outputFile.WriteLine();
-                outputFile.WriteLine(SEPARATOR);
+                outputFile.WriteLine(new String('-', 15));
             }
             using (var p = new System.Diagnostics.Process()) {
                 p.StartInfo.FileName = "notepad";
