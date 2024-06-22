@@ -6,7 +6,6 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -15,6 +14,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         public UInt32 Mode { get; set; }
         public UInt32 ModeFenix { get; set; }
+        public UInt32 ModeIni { get; set; }
     }
 
     public abstract class EfisNavAid<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisNavAidData
@@ -25,7 +25,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             [1u] = "ADF",
             [2u] = "VOR",
         };
-        private readonly BidirectionalDictionary<string, UInt32> MapModeFenix = new()
+        private readonly BidirectionalDictionary<string, UInt32> MapModeIniFenix = new()
         {
             ["ADF"] = 0u,
             ["Off"] = 1u,
@@ -44,16 +44,28 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            var value = simConnect.IsFenix ? MapModeFenix.Inverse[data.ModeFenix] : ModeMap[data.Mode];
-            hub.Clients.All.SetFromSim(id, value);
+            var modeMap = ModeMap;
+            var mode = data.Mode;
+            if (simConnect.IsFenix)
+            {
+                modeMap = MapModeIniFenix.Inverse;
+                mode = data.ModeFenix;
+            }
+            else if (simConnect.IsIni320)
+            {
+                modeMap = MapModeIniFenix.Inverse;
+                mode = data.ModeIni;
+            }
+            hub.Clients.All.SetFromSim(id, modeMap[mode]);
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var value = (simConnect.IsFenix ? MapModeFenix : ModeMap.Inverse)[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value });
+            var modeMap = simConnect.IsFenix || simConnect.IsIni320 ? MapModeIniFenix : ModeMap.Inverse;
+            var value = modeMap[label!];
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
         }
     }
 
@@ -66,6 +78,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:S_FCU_EFIS1_NAV1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
+        [Property]
+        [SimVar("L:INI_VOR_ADF1_CAPT_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeIni;
     };
 
     [Component]
@@ -83,6 +98,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:S_FCU_EFIS1_NAV2", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
+        [Property]
+        [SimVar("L:INI_VOR_ADF2_CAPT_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeIni;
     };
 
     [Component]
