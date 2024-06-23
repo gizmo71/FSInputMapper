@@ -160,7 +160,7 @@
 	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 15 to 45 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, OETD?, warm up; OETA(#2?), cool down</Text>
+		<Text type=".*">Start #2 first, OETD, warm up; OETA(#2), cool down</Text>
 		<Text type=".*">Must have fuel ≥ 2T on pushback</Text>
 		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
