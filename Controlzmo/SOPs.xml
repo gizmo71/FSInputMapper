@@ -21,7 +21,7 @@
 		<Text type=".*">Rejected 500fpm</Text>
 	</Airline>
 	<Airline callsign="alaska">
-		<Text type=".*">Preparation 10-40 minutes, what time counts?</Text>
+		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">No landing rates rules!</Text>
 		<Text type=".*">Expect reviews!</Text>
