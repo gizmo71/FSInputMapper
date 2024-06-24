@@ -190,9 +190,11 @@
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
-		<Text type="A33[09]">Start #1 first; cool down</Text>
+		<Text type="A33[0239]">Start #1 first; cool down</Text>
 		<Text type="A2[01]N|A320">Start #2 first; cool down</Text>
-		<Text type="A2[01]N|A320">Must have fuel ≥ 2T on landing</Text>
+		<Text type="A2[01]N|A319">Must have fuel ≥ 2T on pushback</Text>
+		<Text type="A32[01]|33[12]">Must have fuel ≥ 2T on landing</Text>
+		<Text type="A2[01]N">Must have fuel ≥ 3T on landing</Text>
 		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
 		<Text type=".*">Rejected  600fpm</Text>
 	</Airline>
