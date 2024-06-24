@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.Atc;
 using Controlzmo.Systems.EfisControlPanel;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
@@ -126,6 +127,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public partial class EngineCooldownListener : DataListener<EngineCooldownData>
     {
         private readonly ChronoButton chronoButton;
+        private readonly AtcAirlineListener atcAirline;
 
         private Double? coolAt;
 
@@ -138,7 +140,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
         {
             if (coolAt == null)
-                coolAt = data.now + 3 * 60.0;
+                coolAt = data.now + atcAirline.CooldownMinutes * 60.0;
             else if (data.now >= coolAt)
             {
                 chronoButton.SetInSim(simConnect, null);

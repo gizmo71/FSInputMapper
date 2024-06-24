@@ -40,6 +40,8 @@ namespace Controlzmo.Systems.Atc
 
         [Property]
         private int _warmupMinutes;
+        [Property]
+        private int _cooldownMinutes;
 
         public AtcAirlineListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
@@ -75,6 +77,7 @@ namespace Controlzmo.Systems.Atc
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
                 var match = warmupRegex.Match(sops);
                 WarmupMinutes = match.Success ? (match.Groups[1].Value == "" ? 3: int.Parse(match.Groups[1].Value)) : 1;
+                CooldownMinutes = 3; //TODO: read from XML
             }
             catch (Exception e)
             {
