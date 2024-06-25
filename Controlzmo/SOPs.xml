@@ -138,7 +138,7 @@
 		<Text type=".*">Start #2 first</Text>
 		<Text type=".*">Review at 700fpm</Text>
 	</Airline>
-	<Airline callsign="lufthansa"> <!-- LH Virtual -->
+	<Airline callsign="lufthansa|city[ -]air|hansaline"> <!-- LH Virtual -->
 		<!-- 'Airbus A319 CFM Lufthansa2' -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up</Text>
