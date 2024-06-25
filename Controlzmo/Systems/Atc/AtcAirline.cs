@@ -37,6 +37,7 @@ namespace Controlzmo.Systems.Atc
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
         private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
 
         [Property]
         private int _warmupMinutes;
@@ -75,15 +76,20 @@ namespace Controlzmo.Systems.Atc
                 else
                     foreach (var node in nodes!)
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
-                var match = warmupRegex.Match(sops);
-                WarmupMinutes = match.Success ? (match.Groups[1].Value == "" ? 3: int.Parse(match.Groups[1].Value)) : 1;
-                CooldownMinutes = 3; //TODO: read from XML
+                WarmupMinutes = Minutes(warmupRegex, sops);
+                CooldownMinutes = Minutes(cooldownRegex, sops);
             }
             catch (Exception e)
             {
                 sops = e.ToString();
             }
             await hub.Clients.All.SetFromSim("atcAirline", sops);
+        }
+
+        private int Minutes(Regex regex, String sops)
+        {
+            var match = regex.Match(sops);
+            return match.Success ? (match.Groups[1].Value == "" ? 3: int.Parse(match.Groups[1].Value)) : 1;
         }
 
         private async Task<XmlDocument> loadXml()
