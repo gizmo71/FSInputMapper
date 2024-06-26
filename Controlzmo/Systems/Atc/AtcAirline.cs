@@ -25,19 +25,20 @@ namespace Controlzmo.Systems.Atc
         public string model;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         [SimVar("ATC ID", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
-        public string tailNumber; // SDK says up to 10 characters! May noy be a default for some liveries; for some it's junk.
+        public string tailNumber; // SDK says up to 10 characters! May not be a default for some liveries; for some it's junk.
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         [SimVar("TITLE", null, SIMCONNECT_DATATYPE.STRING128, 0.0f)]
         public string title; // This is what vAMSYS will use.
     };
 
     [Component]
-    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
+    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IOnSimConnection
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
         private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
         private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
+        private readonly static int DEFAULT_ENGINE_WAIT_MINUTES = 3;
 
         [Property]
         private int _warmupMinutes;
@@ -50,11 +51,11 @@ namespace Controlzmo.Systems.Atc
             isLocalSops = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public void OnConnection(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            WarmupMinutes = 3;
+            WarmupMinutes = CooldownMinutes = DEFAULT_ENGINE_WAIT_MINUTES;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM.AC_MODEL_(.*)\.0\.TEXT$", @"$1");
             var callsign = data.name.ToLower();
             var _ = data.tailNumber.ToUpper();
@@ -89,7 +90,7 @@ namespace Controlzmo.Systems.Atc
         private int Minutes(Regex regex, String sops)
         {
             var match = regex.Match(sops);
-            return match.Success ? (match.Groups[1].Value == "" ? 3: int.Parse(match.Groups[1].Value)) : 1;
+            return match.Success ? (match.Groups[1].Value == "" ? DEFAULT_ENGINE_WAIT_MINUTES: int.Parse(match.Groups[1].Value)) : 1;
         }
 
         private async Task<XmlDocument> loadXml()
