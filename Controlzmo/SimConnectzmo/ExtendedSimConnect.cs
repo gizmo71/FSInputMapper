@@ -32,7 +32,6 @@ namespace SimConnectzmo
         private Dictionary<IDataListener, REQUEST>? typeToRequest;
         internal Dictionary<IEvent, EVENT>? eventToEnum;
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
-        private IEnumerable<IOnSimConnection>? onConnectionHandlers;
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
 private Wibbleator wibble;
@@ -94,7 +93,6 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             notificationsToEvent = serviceProvider.GetServices<IEventNotification>()
                 .ToDictionary(en => en, en => eventToEnum[en.GetEvent()]);
 
-            onConnectionHandlers = serviceProvider.GetServices<IOnSimConnection>();
             onSimStartedHandlers = serviceProvider.GetServices<IOnSimStarted>();
             onSimFrameHandlers = serviceProvider.GetServices<IOnSimFrame>();
 
@@ -123,10 +121,6 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
-
-            //TODO: can/should we convert the above into the below?
-            foreach (var handler in onConnectionHandlers!)
-                handler.OnConnection(this);
         }
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)

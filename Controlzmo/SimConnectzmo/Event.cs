@@ -8,11 +8,8 @@ namespace SimConnectzmo
         public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data);
     }
 
-    public interface IOnSimConnection
-    {
-        public void OnConnection(ExtendedSimConnect simConnect);
-    }
-
+    /*TODO: be warned that this does not trigger when the app starts.
+     * My suspicion is that during startup it comes up too early. */
     public interface IOnSimStarted
     {
         public void OnStarted(ExtendedSimConnect simConnect);
