@@ -15,6 +15,9 @@ class ComFrequency extends HTMLInputElement {
         this.setAttribute('step', '0.005');
         // 00, 05, 10, 15, 25, 30, 35, 40, 50, 55, 60, 65, 75, 80, 85, 90
         // Does nothing in Firefox: this.setAttribute('pattern', '1[123]\d\.\d(\d[05]?)?');
+        this.addEventListener('click', () => {
+            this.select();
+        });
     }
 }
 customElements.define('com-frequency', ComFrequency, { extends: "input" });
