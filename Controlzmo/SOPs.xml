@@ -18,7 +18,7 @@
 		<Text type=".*">Block time counts</Text>
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
-		<Text type=".*">Rejected 500fpm</Text>
+		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="alaska">
 		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
