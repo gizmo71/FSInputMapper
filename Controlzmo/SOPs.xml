@@ -9,6 +9,16 @@
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
+	<Airline callsign="azul">
+		<Text type="A2[01]N">Preparation 10-45 minutes, what time counts?</Text>
+		<Text type="A33?">Preparation 10-45 minutes, what time counts?</Text>
+		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
+		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
+		<Text type=".*">Pauses in flight sent for review</Text>
+		<Text type=".*">Rejected 600fpm</Text>
+		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
+	</Airline>
 	<!-- Gone to... -->
 	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
