@@ -27,8 +27,12 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 rev1deployed;
         [SimVar("L:A32NX_FADEC_POWERED_ENG1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 fadec1power;
-        [SimVar("L:A32NX_REVERSER_1_DEPLOYED", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [SimVar("L:A32NX_REVERSER_2_DEPLOYED", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 rev2deployed;
+        [SimVar("L:A320_Engine_Reverser_Left", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.4f)]
+        public float rev1fenix;
+        [SimVar("L:A320_Engine_Reverser_Right", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.4f)]
+        public float rev2fenix;
         [SimVar("L:A32NX_FADEC_POWERED_ENG1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 fadec2power;
         [SimVar("L:XMLVAR_Autobrakes_Level", "number", SIMCONNECT_DATATYPE.INT32, 1f)]
@@ -104,6 +108,13 @@ namespace Controlzmo.Systems.PilotMonitoring
                     hubContext.Clients.All.Speak("Spoilers!");
                     wasSpoilers = true;
                 }
+            }
+
+            if (simConnect.IsFenix)
+            {
+                data.rev1deployed = data.rev1fenix == 100.0 ? 1 : 0;
+                data.rev2deployed = data.rev2fenix == 100.0 ? 1 : 0;
+                data.fadec1power = data.fadec2power = 1;
             }
 
             if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
