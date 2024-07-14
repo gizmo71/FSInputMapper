@@ -68,7 +68,7 @@ function linkSendStyles() {
             connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         }
         event.preventDefault();
-        $(event.target).blur();
+        $(event.target).trigger('blur');
         window.scrollTo(0, 0);
     });
     $(".sendButton").on("click", function (event) {
