@@ -251,7 +251,7 @@
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
-		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
+		<Text type=".*">Preparation 0-35 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;5%/20 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 2500kg on pushback</Text> <!-- Not universally enforced -->
