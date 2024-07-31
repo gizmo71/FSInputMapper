@@ -54,7 +54,10 @@ namespace Controlzmo.Serial
         private readonly SerialPico serial;
         public ApuMasterOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) => serial.SendLine("ApuMasterOn=" + (data.isApuMasterOn == 1 || data.isApuMasterOnFenix == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) {
+            if (simConnect.IsFenix) data.isApuMasterOn = data.isApuMasterOnFenix;
+            serial.SendLine("ApuMasterOn=" + (data.isApuMasterOn == 1));
+        }
     }
 
     [Component]
@@ -89,7 +92,10 @@ namespace Controlzmo.Serial
 
         public ApuAvail(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
-        public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) => serial.SendLine("ApuAvail=" + (data.isApuAvail == 1 || data.isApuAvailFenix == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) {
+            if (simConnect.IsFenix) data.isApuAvail = data.isApuAvailFenix;
+            serial.SendLine("ApuAvail=" + (data.isApuAvail == 1));
+        }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -108,7 +114,10 @@ namespace Controlzmo.Serial
 
         public ApuStartOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
-        public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) => serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1 || data.isApuStartOnFenix == 1));
+        public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) {
+            if (simConnect.IsFenix) data.isApuStartOn = data.isApuStartOnFenix;
+            serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1));
+        }
     }
 
     [Component]
