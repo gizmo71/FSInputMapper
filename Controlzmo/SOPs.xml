@@ -191,7 +191,7 @@
 		<Text title=".* A320 .*">Start #2 first</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
-	<Airline callsign="scandinavian"> <!-- vSAS -->
+	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
 		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
 		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
