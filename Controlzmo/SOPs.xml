@@ -193,7 +193,8 @@
 	</Airline>
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
-		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
+		<Text type=".*">OETD(#2), warm up; OETA(#2?), cool down</Text>
+		<Text type=".*">Does OETA require minimum 5 minutes taxi?</Text>
 		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
 		<Text type=".*">Review at 750fpm</Text>
