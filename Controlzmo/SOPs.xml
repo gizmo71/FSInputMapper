@@ -140,6 +140,7 @@
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
+		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
 		<Text type=".*">Start #1 first; warm up, cool down</Text>
 		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
 		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
