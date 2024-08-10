@@ -19,9 +19,10 @@
 		<Text type=".*">Rejected 600fpm</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
 	</Airline>
-	<!-- Gone to... -->
-	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
-		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
+	<Airline callsign="american">
+		<Text type=".*">Preparation 15 to 40 minutes, what? time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
 	<!-- vAMSYS -->
 	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
@@ -29,12 +30,6 @@
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
-	</Airline>
-	<Airline callsign="alaska">
-		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">No landing rates rules!</Text>
-		<Text type=".*">Expect reviews!</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
