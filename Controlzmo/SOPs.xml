@@ -20,7 +20,7 @@
 		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
 	</Airline>
 	<Airline callsign="american">
-		<Text type=".*">Preparation 15 to 40 minutes, what? time counts</Text>
+		<Text type=".*">Preparation 15 to 40 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
