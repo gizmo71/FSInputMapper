@@ -19,9 +19,10 @@
 		<Text type=".*">Rejected 600fpm</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
 	</Airline>
-	<!-- Gone to... -->
-	<Airline callsign="air[- ]?canada|jazz|provincial|rouge|american">
-		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
+	<Airline callsign="american">
+		<Text type=".*">Preparation 15 to 40 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
 	<!-- vAMSYS -->
 	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
@@ -29,12 +30,6 @@
 		<Text type=".*">*Warm up*; *cool down*</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
-	</Airline>
-	<Airline callsign="alaska">
-		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">No landing rates rules!</Text>
-		<Text type=".*">Expect reviews!</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
@@ -140,6 +135,7 @@
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
+		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
 		<Text type=".*">Start #1 first; warm up, cool down</Text>
 		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
 		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
@@ -191,9 +187,10 @@
 		<Text title=".* A320 .*">Start #2 first</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
-	<Airline callsign="scandinavian"> <!-- vSAS -->
+	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
-		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
+		<Text type=".*">OETD(#2), warm up; OETA(#2?), cool down</Text>
+		<Text type=".*">Does OETA require minimum 5 minutes taxi?</Text>
 		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
 		<Text type=".*">Pause in flight requires PIREP comment</Text>
 		<Text type=".*">Review at 750fpm</Text>
@@ -250,9 +247,9 @@
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
-		<Text type=".*">Preparation 0-35 minutes, air time counts</Text>
+		<Text type=".*">Preparation 0-35 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">Flight time &gt;5%/20 minutes of scheduled or average requires review</Text>
+		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 2500kg on pushback</Text> <!-- Not universally enforced -->
 		<Text type=".*">Must have 1500kg ≤ fuel ≤ 20T on landing</Text> <!-- Actually some allow only 1200kg -->
 		<Text type=".*">Rejected 650fpm; Invalidated 651fpm(!)</Text>
