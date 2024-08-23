@@ -131,12 +131,12 @@
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
-	<Airline callsign="tam"> <!-- LATAM-->
+	<Airline callsign="aerolane|lan[- ].*|paraguaya|tam"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, what time counts?</Text>
 		<Text type=".*">Start #2 first</Text>
 		<Text type=".*">-50 points at ≥ 500fpm</Text>
 	</Airline>
-	<Airline callsign="shamrock|gem[ -]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
+	<Airline callsign="shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type="A320">Preparation 20 to 40 minutes</Text>
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
