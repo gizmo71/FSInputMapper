@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SimConnectzmo;
+﻿using SimConnectzmo;
 using System;
 
 namespace Controlzmo.GameControllers
@@ -27,24 +26,11 @@ namespace Controlzmo.GameControllers
         2 rudder (twist; 0 left, 1 right)
         3 throttle (0 forward, 1 aft)
         */
+        public static readonly int BUTTON_STICK_TOP_THUMB = 1;
         public static readonly int SWITCH_TOP_HAT = 0;
 
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-#if false
-            for (int i = 0; i < axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"HOTAS: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
-            for (int i = 0; i < this.buttonsOld.Length; ++i)
-                if (buttonsOld[i] != buttonsNew[i])
-                    _log.LogDebug($"Button {i} now {buttonsNew[i]}");
-            for (int i = 0; i < this.axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"Axis {i} now {axesNew[i]}");
-            for (int i = 0; i < this.switchesOld.Length; ++i)
-                if (switchesOld[i] != switchesNew[i])
-                    _log.LogDebug($"Switch {i} now {switchesNew[i]}");
-#endif
         }
     }
 }
