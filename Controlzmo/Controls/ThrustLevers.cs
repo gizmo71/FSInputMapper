@@ -3,27 +3,41 @@ using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Controlzmo.Controls
 {
-    [Component] public class Throttle3Event : IEvent { public string SimEvent() => "THROTTLE3_AXIS_SET_EX1"; }
+    [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class LeftThrustLever : IAxisCallback<TcaAirbusQuadrant>
+    public partial class RightThrustLever : IAxisCallback<TcaAirbusQuadrant>
     {
-        private readonly Throttle3Event setEvent;
-        private readonly ILogger<Throttle3Event> _logger;
+        private readonly Throttle2Event setEvent;
+        private readonly ILogger<RightThrustLever> _logger;
 
-        public int GetAxis() => TcaAirbusQuadrant.AXIS_LEFT_THRUST;
+        public int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
-            if (!sc.IsB748) return;
-            var input = (Int32) (16384.0 - 32768 * @new);
-            var raw = BitConverter.ToUInt32(BitConverter.GetBytes(input), 0);
-_logger.LogError($"Hmm {@new} -> {input} -> {raw:x}");
-            sc.SendEvent(setEvent, raw);
+            double normalised;
+            if (sc.IsFBW || sc.IsFenix)
+                /*TODO: ought to be something like this in order to put idle at the logcial midpoint:
+                normalised = @new <= 0.725 ? 1 - @new / 0.725 : (0.725 - @new) / 0.275;
+                In the control settings it look like  full reverse was at -100% (i.e. 1.0), and idle was at +45% (i.e. 1 - 0.725 = 0.275).
+                Sadly, it seems I didn't test the idea properly and ended up with the midpoint on the opposite side. */
+                normalised = @new <= 0.275 ? 1 - @new / 0.275 : (0.275 - @new) / 0.725;
+            else // The default is to return the non-reverse range as if the reversers were elsewhere.
+            { 
+                normalised = @new < 0.71 ? 1 - 2 * @new / 0.71 : -1;
+                if (@new > 0.8) ; //TODO: activate reversers somehow
+            }
+
+            var raw = (Int32) (16384 * normalised);
+            var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(raw), 0);
+_logger.LogError($"Hmm {@new} -> {normalised} -> {raw} -> {encoded:x}");
+            sc.SendEvent(setEvent, encoded);
         }
     }
 }
