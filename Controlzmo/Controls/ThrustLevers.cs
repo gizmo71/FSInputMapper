@@ -3,21 +3,28 @@ using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
-using System.Security.Cryptography;
-using System.Text;
+using System.Threading;
 
 namespace Controlzmo.Controls
 {
+    [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class RightThrustLever : IAxisCallback<TcaAirbusQuadrant>
+    //TODO: why not? [RequiredArgsConstructor]
+    public abstract class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
     {
-        private readonly Throttle2Event setEvent;
-        private readonly ILogger<RightThrustLever> _logger;
+        private readonly ILogger _logger;
+        private readonly IEvent setEvent;
+        private readonly int axis;
 
-        public int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
+        protected AbstractThrustLever(ILogger logger, IEvent setEvent, int axis)
+        {
+            this._logger = logger;
+            this.setEvent = setEvent;
+            this.axis = axis;
+        }
+
+        public int GetAxis() => axis;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
@@ -38,6 +45,26 @@ namespace Controlzmo.Controls
             var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(raw), 0);
 _logger.LogError($"Hmm {@new} -> {normalised} -> {raw} -> {encoded:x}");
             sc.SendEvent(setEvent, encoded);
+        }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class LeftThrustLever : AbstractThrustLever
+    {
+        public LeftThrustLever(ILogger<RightThrustLever> logger, Throttle1Event setEvent)
+            : base(logger, setEvent, TcaAirbusQuadrant.AXIS_LEFT_THRUST)
+        {
+        }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class RightThrustLever : AbstractThrustLever
+    {
+        public RightThrustLever(ILogger<RightThrustLever> logger, Throttle2Event setEvent)
+            : base(logger, setEvent, TcaAirbusQuadrant.AXIS_RIGHT_THRUST)
+        {
         }
     }
 }
