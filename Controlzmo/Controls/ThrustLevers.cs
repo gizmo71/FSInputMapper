@@ -3,26 +3,18 @@ using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
-using System.Threading;
 
 namespace Controlzmo.Controls
 {
     [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
 
-    //TODO: why not? [RequiredArgsConstructor]
-    public abstract class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
+    [RequiredArgsConstructor]
+    public abstract partial class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
     {
         private readonly ILogger _logger;
         private readonly IEvent setEvent;
         private readonly int axis;
-
-        protected AbstractThrustLever(ILogger logger, IEvent setEvent, int axis)
-        {
-            this._logger = logger;
-            this.setEvent = setEvent;
-            this.axis = axis;
-        }
 
         public int GetAxis() => axis;
 
