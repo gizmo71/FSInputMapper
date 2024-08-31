@@ -15,8 +15,12 @@
 		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
 	<Airline callsign="arabia">
-		<Text type=".*">Preparation 20 to 60 minutes, what time counts?</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Preparation 20 to 60 minutes, block time</Text>
+		<Text type="A21N">Start #2 first</Text>
+		<Text type="A32[01]">Start #1 first</Text>
+		<Text type=".*">Warm up; cool down</Text>
+		<Text type="A320">OETA, OETD</Text>
+		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">Reviewed >600fpm</Text>
 		<Text type=".*">Must have fuel ≥1500kg on landing</Text>
 	</Airline>
