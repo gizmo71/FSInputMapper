@@ -14,6 +14,12 @@
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
+	<Airline callsign="arabia">
+		<Text type=".*">Preparation 20 to 60 minutes, what time counts?</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Reviewed >600fpm</Text>
+		<Text type=".*">Must have fuel ≥1500kg on landing</Text>
+	</Airline>
 	<Airline callsign="azul">
 		<Text type="A2[01]N">Preparation 10-45 minutes, air time counts</Text>
 		<Text type="A33?">Preparation 20-45 minutes, air time counts</Text>
@@ -22,7 +28,7 @@
 		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">Rejected 600fpm</Text>
-		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
+		<Text type=".*">Must have fuel ≥1500kg on landing</Text>
 	</Airline>
 	<!-- vAMSYS -->
 	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
