@@ -9,6 +9,11 @@
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
+	<Airline callsign="american">
+		<Text type=".*">Preparation 15 to 40 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Rejected 551fpm</Text>
+	</Airline>
 	<Airline callsign="azul">
 		<Text type="A2[01]N">Preparation 10-45 minutes, air time counts</Text>
 		<Text type="A33?">Preparation 20-45 minutes, air time counts</Text>
@@ -18,11 +23,6 @@
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg	 on landing</Text>
-	</Airline>
-	<Airline callsign="american">
-		<Text type=".*">Preparation 15 to 40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
 	<!-- vAMSYS -->
 	<Airline callsign="cathay|air[- ]?china|shenzhen[- ]air"> <!-- Virtual Air China -->
