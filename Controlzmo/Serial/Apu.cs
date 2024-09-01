@@ -7,8 +7,14 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-// Bleed button states: `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-// Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
+/*TODO:
+   Bleed button states: `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
+   Fenix: 'L:I_OH_PNEUMATIC_APU_BLEED_L', 'L:I_OH_PNEUMATIC_APU_BLEED_U'
+   Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
+   Fenix: '(L:S_OH_PNEUMATIC_APU_BLEED) ! (>L:S_OH_PNEUMATIC_APU_BLEED)' (is this genuinely a 'latched' switch?)
+   Would like to detect when AVAIL comes up, bleed isn't on, and perhaps are on the ground, and start a timer.
+   Then after 1-3 minutes, turn bleed on... unless AVAIL is lost, then stop timer.
+   If AVAIL and bleed are both on, and master is not on, turn the bleed off immediately. */
 namespace Controlzmo.Serial
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
