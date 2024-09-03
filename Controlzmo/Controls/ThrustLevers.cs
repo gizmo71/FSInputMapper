@@ -15,11 +15,13 @@ namespace Controlzmo.Controls
         private readonly ILogger _logger;
         private readonly IEvent setEvent;
         private readonly int axis;
+        private bool isFirstTime = true;
 
         public int GetAxis() => axis;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
+if (isFirstTime) { isFirstTime = false; return; } //TODO: hmm, why does right hand TL always jump to TOGA at first?!
             double normalised;
             if (sc.IsFBW || sc.IsFenix)
                 /*TODO: ought to be something like this in order to put idle at the logcial midpoint:
@@ -35,7 +37,7 @@ namespace Controlzmo.Controls
 
             var raw = (Int32) (16384 * normalised);
             var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(raw), 0);
-_logger.LogError($"Hmm {@new} -> {normalised} -> {raw} -> {encoded:x}");
+//_logger.LogError($"Hmm {@new} -> {normalised} -> {raw} -> {encoded:x}");
             sc.SendEvent(setEvent, encoded);
         }
     }
