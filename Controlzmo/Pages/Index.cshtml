@@ -193,7 +193,7 @@
         </table>
         <table style="font-size: larger;">
             <tr style="font-size: smaller; line-height: 1;">
-                <td style="line-height: 1;">
+                <td rowspan="2" style="line-height: 1;">
                     <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeStandby" value="0" />
                     <label for="transponderModeStandby">Stby</label><br />
                     <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeAuto" value="1" />
@@ -201,18 +201,19 @@
                     <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeOn" value="2" />
                     <label for="transponderModeOn">On</label>
                 </td>
-                <th>ATC</th>
+                <th rowspan="2">ATC</th>
                 <td>
                     <input type="checkbox" id="altRptg" class="sendBoolean" />
                     <label for="altRptg">Alt<br />Rptg</label>
                 </td>
-                <th>Alt<br />Rptg</th>
-                <td rowspan="2" class="tableCaption">ATC</td>
+                <td rowspan="3" class="tableCaption">ATC</td>
+            </tr>
+            <tr style="font-size: smaller; line-height: 1;">
+                <td><input type="button" id="squawkIdent" value="Ident" class="sendButton" /></td>
             </tr>
             <tr style="font-size: smaller; line-height: 1;">
                 <th colspan="2"><label for="xpndrCode">Transponder Code</label></th>
                 <td><input id="xpndrCode" size="4" maxlength="4" class="sendText" /></td>
-                <td><input type="button" id="squawkIdent" value="Ident" class="sendButton" /></td>
             </tr>
         </table>
     </div>
