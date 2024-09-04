@@ -9,14 +9,14 @@ namespace Controlzmo.Views
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class Glance : ISwitchCallback<T16000mStick>
+    public partial class Glance : ISwitchCallback<UrsaMinorFighterR>
     {
         private readonly ILogger<Glance> _log;
         private readonly VirtualJoy vJoy;
         private readonly CameraState cameraState;
         private readonly ViewSticker sticker;
 
-        public int GetSwitch() => T16000mStick.SWITCH_TOP_HAT;
+        public int GetSwitch() => UrsaMinorFighterR.SWITCH_SQUARE_HAT;
 
         private GameControllerSwitchPosition current = GameControllerSwitchPosition.Center;
         private UInt32 unstuckView = 105u;

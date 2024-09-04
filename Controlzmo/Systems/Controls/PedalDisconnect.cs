@@ -7,11 +7,11 @@ namespace Controlzmo.Systems.Controls
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class PedalDisconnect : IButtonCallback<T16000mStick>
+    public partial class PedalDisconnect : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
 
-        public int GetButton() => T16000mStick.BUTTON_STICK_TOP_THUMB;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_PINKY;
 
         public virtual void OnPress(ExtendedSimConnect sc) {
             sender.Execute(sc, "1 (>L:S_FC_CAPT_TILLER_PEDAL_DISCONNECT)");
