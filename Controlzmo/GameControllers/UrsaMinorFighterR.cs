@@ -69,13 +69,13 @@ namespace Controlzmo.GameControllers
         {
             /*for (int i = 0; i < axesOld.Length; ++i)
                 if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"UMFR: axes[{i}] {axesOld[i]} -> {axesNew[i]}");*/
+                    _log.LogDebug($"UMFR: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
             for (int i = 0; i < this.buttonsOld.Length; ++i)
                 if (buttonsOld[i] != buttonsNew[i])
                     _log.LogDebug($"UMFR: button {i} now {buttonsNew[i]}");
             for (int i = 0; i < this.switchesOld.Length; ++i)
                 if (switchesOld[i] != switchesNew[i])
-                    _log.LogDebug($"UMFR: switch {i} now {switchesNew[i]}");
+                    _log.LogDebug($"UMFR: switch {i} now {switchesNew[i]}");*/
         }
 
     }
