@@ -14,7 +14,7 @@
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Rejected 551fpm</Text>
 	</Airline>
-	<Airline callsign="arabia">
+	<Airline callsign="arabia([- ].*)?|nawras|okaab|arna">
 		<Text type=".*">Preparation 20 to 60 minutes, block time</Text>
 		<Text type="A21N">Start #2 first</Text>
 		<Text type="A32[01]">Start #1 first</Text>
