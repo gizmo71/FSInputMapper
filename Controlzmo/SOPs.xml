@@ -31,7 +31,7 @@
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
-		<Text type=".*">Rejected 600fpm</Text>
+		<Text type=".*">Rejected 500fpm</Text>
 		<Text type=".*">Must have fuel ≥1500kg on landing</Text>
 	</Airline>
 	<!-- vAMSYS -->
