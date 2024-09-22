@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
@@ -7,21 +8,33 @@ using System;
 namespace Controlzmo.Views
 {
     [Component]
-    public class CockpitExternalToggle : IButtonCallback<T16000mHotas>
+    [RequiredArgsConstructor]
+    public partial class CockpitExternalToggleStick : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly CockpitExternalToggleHotas hotas;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_SQUARE_HAT_PRESS;
+
+        public void OnPress(ExtendedSimConnect simConnect) => hotas.OnPress(simConnect);
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class CockpitExternalToggleHotas : IButtonCallback<T16000mHotas>
     {
         private const Int32 COCKPIT = 2;
         private const Int32 CHASE = 3;
 
-        protected readonly ILogger _logger;
+        private readonly ILogger<CockpitExternalToggleHotas> _logger;
         private readonly VirtualJoy vJoy;
         private readonly CameraState state;
 
-        public CockpitExternalToggle(IServiceProvider sp)
+/*        public CockpitExternalToggleHotas(IServiceProvider sp)
         {
-            _logger = sp.GetRequiredService<ILogger<CockpitExternalToggle>>();
+            _logger = sp.GetRequiredService<ILogger<CockpitExternalToggleHotas>>();
             state = sp.GetRequiredService<CameraState>();
             vJoy = sp.GetRequiredService<VirtualJoy>();
-        }
+        }*/
 
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
