@@ -142,7 +142,7 @@
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="aerolane|lan[- ].*|paraguaya|tam"> <!-- LATAM -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first</Text>
 		<Text type=".*">-50 points at ≥ 500fpm</Text>
 	</Airline>
