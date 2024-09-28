@@ -1,6 +1,5 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
@@ -28,13 +27,6 @@ namespace Controlzmo.Views
         private readonly ILogger<CockpitExternalToggleHotas> _logger;
         private readonly VirtualJoy vJoy;
         private readonly CameraState state;
-
-/*        public CockpitExternalToggleHotas(IServiceProvider sp)
-        {
-            _logger = sp.GetRequiredService<ILogger<CockpitExternalToggleHotas>>();
-            state = sp.GetRequiredService<CameraState>();
-            vJoy = sp.GetRequiredService<VirtualJoy>();
-        }*/
 
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
