@@ -151,14 +151,13 @@
 		<Text type="A2[01]N">Preparation 20 to 60 minutes</Text>
 		<Text type="A33[039]">Preparation 20 to 120 minutes</Text>
 		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
-		<Text type=".*">Start #1 first; warm up, cool down</Text>
-		<Text type="A2[01]N">OETA</Text> <!-- OETD supported but only on engine #2 which costs 10 points compared to starting #1 first -->
-		<Text type="A320">Must have at fuel ≥ 1T on landing</Text>
-		<Text type="A20N">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
+		<Text type=".*">Start #1 first, 10s between engines; warm up, cool down</Text>
+		<Text type="A2[01]N">OETA</Text> <old comment="OETD supported but only on engine #2 which costs 10 points compared to starting #1 first" />
+		<Text type="A20N|A320">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type="A21N">Must have at fuel ≥ 2T on landing</Text>
 		<Text type="A33[09]">Must have fuel ≥ 2243kg on landing</Text>
-		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Rejected 800fpm</Text>
+		<Text type=".*">Air time counts</Text>
 	</Airline>
 	<Airline callsign="batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi"><!-- Lion Group -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
