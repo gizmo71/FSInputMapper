@@ -105,8 +105,7 @@
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first unless OETD, warm up</Text>
-		<Text type=".*">OETA#2, cool down</Text>
+		<Text type=".*">1s between starts, warm up, OETD; OETA, cool down, 1s between shutdowns</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing (and pushback!)</Text>
@@ -119,9 +118,8 @@
 		<Text type=".*">OETA#2, cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have fuel ≤ 19T on pushback</Text>
-		<Text type=".*">Must have 1T ≤ fuel ≤ 10T on landing</Text>
-		<Text type=".*">Rejected 700fpm</Text>
+		<Text type=".*">Must have 1200kg ≤ fuel ≤ 6T on landing</Text>
+		<Text type=".*">Rejected 750fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<!-- 'Airbus A320 Neo JetBlue (N624JB)' and 'Airbus A320 IAE JBU' (many others for both) -->
