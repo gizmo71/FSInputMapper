@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Atc
     };
 
     [Component]
-    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IRequestDataOnOpen
+    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IOnAircraftLoaded
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
@@ -51,7 +51,9 @@ namespace Controlzmo.Systems.Atc
             isLocalSops = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("VisualStudioEdition"));
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public void OnAircraftLoaded(ExtendedSimConnect simConnect) {
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.ONCE);
+        }
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
