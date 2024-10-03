@@ -14,11 +14,19 @@ namespace Controlzmo.Systems.Controls
         public int GetButton() => UrsaMinorFighterR.BUTTON_PINKY;
 
         public virtual void OnPress(ExtendedSimConnect sc) {
-            sender.Execute(sc, "1 (>L:S_FC_CAPT_TILLER_PEDAL_DISCONNECT)");
+            setTillerPedal(sc, true);
         }
 
         public virtual void OnRelease(ExtendedSimConnect sc) {
-            sender.Execute(sc, "0 (>L:S_FC_CAPT_TILLER_PEDAL_DISCONNECT)");
+            setTillerPedal(sc, false);
+        }
+
+        private void setTillerPedal(ExtendedSimConnect sc, bool disconnected)
+        {
+            var value = disconnected ? 1 : 0;
+//TODO: A32NX doesn't appear to support an LVar, despite what the docs suggest.
+            var variable = sc.IsFenix ? "S_FC_CAPT_TILLER_PEDAL_DISCONNECT" : "notWorkingA32NX_TILLER_PEDAL_DISCONNECT";
+            sender.Execute(sc, $"{value} (>L:{variable})");
         }
     }
 }
