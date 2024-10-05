@@ -55,6 +55,7 @@
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">30s between engine starts</Text>
 		<Text type=".*">Departure: flaps up by 4000agl</Text>
 		<Text type=".*">Arrival: flaps not before 5000agl/15nm, gear 2500agl/7.5nm</Text>
 		<Text type=".*">Rejected 650fpm; Invalidated 750fpm</Text>
