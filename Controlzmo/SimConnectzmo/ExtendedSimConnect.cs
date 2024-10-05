@@ -17,7 +17,7 @@ namespace SimConnectzmo
     // Change ENUM_DYNAMIC_START if you need more internal values.
     internal enum REQUEST { AircraftLoaded = 1, SimSystemState }
     internal enum STRUCT { }
-    internal enum EVENT { SimSystemState = 1, Frame }
+    internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded }
     internal enum GROUP { JUST_MASKABLE = 1 }
 
     public class ExtendedSimConnect : SimConnect
@@ -34,6 +34,7 @@ namespace SimConnectzmo
         private Dictionary<IEventNotification, EVENT>? notificationsToEvent;
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
+        private IEnumerable<IOnAircraftLoaded> onAircraftLoadedHandlers;
 private Wibbleator wibble;
 
         public bool? IsSimStarted;
@@ -95,6 +96,7 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             onSimStartedHandlers = serviceProvider.GetServices<IOnSimStarted>();
             onSimFrameHandlers = serviceProvider.GetServices<IOnSimFrame>();
+            onAircraftLoadedHandlers = serviceProvider.GetServices<IOnAircraftLoaded>();
 
             return this;
         }
@@ -107,6 +109,7 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             SubscribeToSystemEvent(EVENT.SimSystemState, "Sim");
             SubscribeToSystemEvent(EVENT.Frame, "frame");
+            SubscribeToSystemEvent(EVENT.AircraftLoaded, "AircraftLoaded");
             _logging!.LogInformation($"Requested SimStart subscription {GetLastSentPacketID()}");
 
             TriggerInitialRequests();
@@ -325,9 +328,9 @@ _logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {dataLog} f
         {
             EVENT e = (EVENT)data.uEventID;
             if (e == EVENT.SimSystemState)
-            {
                 HandleSimSystemStateEvent(simConnect, data);
-            }
+            else if (e == EVENT.AircraftLoaded) // We could get the name directly from this event, but it's hard work.
+                RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
             else
             {
                 IEnumerable<IEventNotification> notifications = notificationsToEvent!
@@ -375,6 +378,8 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
                 var regex = new Regex(@"^SimObjects\\Airplanes\\([^\\]+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
                 var match = regex.Match(data.szString);
                 aircraftFile = match.Success ? match.Groups[1].Value.ToUpper() : data.szString;
+                foreach (var handler in onAircraftLoadedHandlers)
+                    handler.OnAircraftLoaded(this);
             }
         }
 

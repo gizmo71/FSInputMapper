@@ -15,6 +15,11 @@ namespace SimConnectzmo
         public void OnStarted(ExtendedSimConnect simConnect);
     }
 
+    public interface IOnAircraftLoaded
+    {
+        public void OnAircraftLoaded(ExtendedSimConnect simConnect);
+    }
+
     [AttributeUsage(AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     public class EventAttribute : Attribute
     {
