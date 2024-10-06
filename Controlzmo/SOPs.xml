@@ -188,12 +188,11 @@
 		<Text type=".*">Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
-		<Text type=".*">Preparation 15 to 45 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, OETD, warm up; OETA(#2), cool down</Text>
-		<Text type=".*">Must have fuel ≥ 2T on pushback</Text>
-		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
+		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
+		<Text type=".*">Start #2 first, 5s between, warm up; cool down</Text>
+		<Text type=".*">Must have fuel ≥ 1.8T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
-		<Text type=".*">Rejected 551fpm; Invalidated 700fpm</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
