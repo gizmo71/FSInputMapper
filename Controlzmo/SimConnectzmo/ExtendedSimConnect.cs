@@ -124,6 +124,8 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
+            foreach (var handler in onAircraftLoadedHandlers)
+                handler.OnAircraftLoaded(this);
         }
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
