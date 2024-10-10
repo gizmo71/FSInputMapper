@@ -42,9 +42,8 @@
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
-		<!-- 'Airbus A320 NX ANA All Nippon Airways JA219A SoccerYCA' and 'Airbus A320 CFM APJ' -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Warm up, cool down</Text>
+		<Text type=".*">Air time counts</Text>
+		<Text type=".*">Warm up; OETA, 3m between; cool down</Text>
 		<Text type=".*">Rejected 400fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
@@ -97,13 +96,6 @@
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
 		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
 		<Text type=".*">Rejected 550fpm; Invalidated 600fpm</Text>
-	</Airline>
-	<Airline callsign="goldberg"> <!-- AirGoldberg -->
-		<Text type=".*">Preparation 10-40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">Taxi in/out time &gt;50% of expectation requires review</Text>
-		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
-		<Text type=".*">Rejected 500fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
