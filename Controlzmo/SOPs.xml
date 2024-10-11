@@ -53,7 +53,7 @@
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
 		<Text type=".*">30s between engine starts</Text>
 		<Text type=".*">Departure: flaps up by 4000agl</Text>
 		<Text type=".*">Arrival: flaps not before 5000agl/15nm, gear 2500agl/7.5nm</Text>
@@ -116,13 +116,13 @@
 		<Text type=".*">Rejected 750fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
-		<!-- 'Airbus A320 Neo JetBlue (N624JB)' and 'Airbus A320 IAE JBU' (many others for both) -->
 		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">Taxi times &gt;200% of average or pre-set maximum requires review</Text>
-		<Text type=".*">OETD/OETA</Text>
+		<Text type=".*">30s between starts; OETD, any delay</Text>
+		<Text type=".*">OETA, any delay</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
-		<Text type=".*">Rejected 600fpm</Text>
+		<Text type=".*">-50 score >600fpm</Text>
 	</Airline>
 	<Airline callsign="jet[ -]?star(?:-asia)?|orange[ -]?liner">
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
@@ -237,10 +237,11 @@
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="united"> <!-- United -->
-		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
+		<!-- Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A319|A320">Start #2 first, warm up; cool down</Text>
-		<Text type="A3[35][09]">Start #2 first</Text>
+		<Text type="A3[35][09]">Start #2 first</Text -->
 		<Text type=".*">Rejected 650fpm</Text>
+		<Text type=".*">No other scoring rules as of 11 Oct</Text>
 	</Airline>
 	<Airline callsign="turkish|anatolian">
 		<Text type=".*">Air time counts</Text>
