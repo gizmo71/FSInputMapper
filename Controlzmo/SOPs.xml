@@ -209,12 +209,11 @@
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
-		<Text type=".*">Preparation 20-60 minutes, block time counts</Text>
-		<Text type="A33[0239]">Start #1 first; cool down</Text>
-		<Text type="A2[01]N|A319|A320">Start #2 first; cool down</Text>
-		<Text type="A319|A32[01]|A2[01]N|A33[12]">Must have fuel ≥ 2T on landing</Text>
-		<Text type="A33[09]">Must have 2T ≤ fuel ≤ 20T on landing</Text>
-		<Text type=".*">Rejected  600fpm</Text>
+		<Text type=".*">Preparation 0-60 minutes, block time counts</Text>
+		<Text type=".*">5s between starts</Text>
+		<Text type=".*">OETA, 3m between; cool down</Text>
+		<Text type=".*">Must have fuel ≥ 1300kg on landing</Text>
+		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="nordvind|viva|sun[- ]?express"> <!-- vAvion -->
 		<!-- Different from Titan -->
