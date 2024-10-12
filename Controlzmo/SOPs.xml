@@ -106,7 +106,7 @@
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-45 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first unless OETD, 3m between; 5s between starts; warm up (2m)</Text>
 		<Text type=".*">OETA#2, 3m between; cool down (2m)</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
