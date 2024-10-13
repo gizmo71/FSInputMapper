@@ -172,11 +172,9 @@
 		<Text type=".*">Review at 600fpm; Rejected 700fpm</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
-		<Text type="A32[01]|A2[01]N">Preparation 15-30 minutes</Text>
-		<Text type="A33[0239]">Preparation 20 to 40 minutes</Text>
+		<Text type=".*">Preparation 15-60 minutes</Text>
 		<Text type=".*">Block time counts</Text>
-		<Text type="A32[01]|A2[01]N">Start #2 first</Text>
-		<Text type=".*">Warm up; cool down</Text>
+		<Text type=".*">5s between starts; warm up; cool down</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
