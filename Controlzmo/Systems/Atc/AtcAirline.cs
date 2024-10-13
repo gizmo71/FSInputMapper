@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Atc
     };
 
     [Component]
-    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IOnAircraftLoaded, IOnSimStarted, I
+    public partial class AtcAirlineListener : DataListener<AtcAirlineData>, IOnAircraftLoaded, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
