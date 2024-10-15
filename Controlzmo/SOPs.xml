@@ -152,9 +152,9 @@
 		<Text type=".*">Air time counts</Text>
 	</Airline>
 	<Airline callsign="batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi"><!-- Lion Group -->
-		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
+		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
-		<Text type=".*">Start #2 first</Text>
+		<Text type=".*">5s between starts</Text>
 		<Text type=".*">Review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$"> <!-- LH Virtual -->
