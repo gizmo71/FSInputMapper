@@ -1,6 +1,8 @@
-﻿using Controlzmo.Hubs;
+﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -102,5 +104,25 @@ namespace Controlzmo.Systems.FlightControlUnit
                 }
             }
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly FcuSpeedDelta delta;
+        private Timer? timer;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
+        public virtual void OnPress(ExtendedSimConnect simConnect)
+        {
+            OnRelease(simConnect); // Just in case.
+            HandlerTimer(simConnect); // Immediate click.
+            timer = new Timer(HandlerTimer, simConnect, 500, 100); // Then repeats.
+        }
+
+        private void HandlerTimer(object? simConnect) => delta.SetInSim((ExtendedSimConnect) simConnect!, +1);
+
+        public virtual void OnRelease(ExtendedSimConnect simConnect) { timer?.Dispose(); timer = null; }
     }
 }
