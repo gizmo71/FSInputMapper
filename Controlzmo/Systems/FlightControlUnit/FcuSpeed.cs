@@ -108,21 +108,47 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    public partial class FcuSpeedThing
     {
         private readonly FcuSpeedDelta delta;
-        private Timer? timer;
 
-        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        public virtual void OnPress(ExtendedSimConnect simConnect)
+        private Timer? timer;
+        private short direction = 0;
+
+        private void HandlerTimer(object? simConnect) => delta.SetInSim((ExtendedSimConnect) simConnect!, direction);
+
+        internal void Start(ExtendedSimConnect simConnect, short direction)
         {
-            OnRelease(simConnect); // Just in case.
+            this.direction = direction;
+            Stop(); // Just in case.
             HandlerTimer(simConnect); // Immediate click.
             timer = new Timer(HandlerTimer, simConnect, 500, 100); // Then repeats.
         }
 
-        private void HandlerTimer(object? simConnect) => delta.SetInSim((ExtendedSimConnect) simConnect!, +1);
+        internal void Stop()
+        {
+            timer?.Dispose();
+            timer = null;
+        }
+    }
 
-        public virtual void OnRelease(ExtendedSimConnect simConnect) { timer?.Dispose(); timer = null; }
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly FcuSpeedThing thing;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Start(simConnect, +1);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Stop();
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class DecFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly FcuSpeedThing thing;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Start(simConnect, -1);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Stop();
     }
 }
