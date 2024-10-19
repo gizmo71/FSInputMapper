@@ -2,7 +2,8 @@
 using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.FlightSimulator.SimConnect;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -111,24 +112,43 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class FcuSpeedThing
     {
         private readonly FcuSpeedDelta delta;
+        private readonly FcuSpeedMachToggled toggle;
 
         private Timer? timer;
-        private short direction = 0;
+        private Int16 direction = 0;
+        private Boolean isFiring = false;
 
-        private void HandlerTimer(object? simConnect) => delta.SetInSim((ExtendedSimConnect) simConnect!, direction);
-
-        internal void Start(ExtendedSimConnect simConnect, short direction)
-        {
-            this.direction = direction;
-            Stop(); // Just in case.
-            HandlerTimer(simConnect); // Immediate click.
-            timer = new Timer(HandlerTimer, simConnect, 500, 100); // Then repeats.
+        private void HandlerTimer(object? simConnect) {
+            isFiring = true;
+            if (direction != 0)
+                delta.SetInSim((ExtendedSimConnect) simConnect!, direction);
         }
 
-        internal void Stop()
+        internal void Press(ExtendedSimConnect simConnect, ref readonly Int16 direction)
+        {
+            var isBoth = this.direction == -direction;
+            timer?.Dispose();
+            isFiring = false;
+            if (isBoth)
+            {
+                this.direction = 0;
+                if (!isFiring)
+                    toggle.SetInSim(simConnect, false);
+            }
+            else
+            {
+                this.direction = direction;
+                timer = new Timer(HandlerTimer, simConnect, 200, 100);
+            }
+        }
+
+        internal void Release(ExtendedSimConnect simConnect)
         {
             timer?.Dispose();
+            if (direction != 0 && !isFiring)
+                HandlerTimer(simConnect); // Didn't actually get round to running one, so do it now.
             timer = null;
+            direction = 0;
         }
     }
 
@@ -137,9 +157,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly FcuSpeedThing thing;
+        private static readonly Int16 direction = +1;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Start(simConnect, +1);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Stop();
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, in direction);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
     }
 
     [Component]
@@ -147,8 +168,9 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class DecFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly FcuSpeedThing thing;
+        private static readonly Int16 direction = -1;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Start(simConnect, -1);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Stop();
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, in direction);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
     }
 }
