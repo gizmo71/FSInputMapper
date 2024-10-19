@@ -212,24 +212,23 @@
 		<Text type=".*">Must have fuel ≥ 1300kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
-	<Airline callsign="nordvind|viva|sun[- ]?express"> <!-- vAvion -->
+	<Airline callsign="^(?:nordvind|viva|sun[- ]?express)$"> <!-- vAvion -->
 		<!-- Different from Titan -->
-		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled or average requires review</Text>
-		<Text type=".*">Taxi in time &gt;50% of average or pre-set maximum requires review</Text>
-		<!-- Same as Titan -->
+		<Text type=".*">Flight time &gt;30%/40 minutes of scheduled or average requires review</Text>
+		<Text type=".*">Taxi in time above expected requires review</Text>
+		<!-- Same as Titan? -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, warm up; cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1800kg on landing</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
-	<Airline callsign="ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap"> <!-- Titan Virtual -->
-		<!-- 'Airbus A320 IAE AWC2' -->
-		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
+	<Airline callsign="^(?:ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap)$"> <!-- Titan Virtual -->
+		<Text type=".*">Preparation 20-60 minutes, block time counts</Text>
+		<Text type=".*">Start #2 first, 5 s between; warm up; cool down</Text>
 		<Text type="A320|A2[01]N">Must have fuel ≥ 1800kg on landing</Text>
-		<Text type="A333">Must have at fuel ≥ 2500kg on landing</Text>
-		<Text type=".*">Flight time &gt;30%/40 minutes of scheduled or average requires review</Text>
-		<Text type=".*">Taxi in time &gt;80% of average or pre-set maximum (out unclear) requires review</Text>
+		<Text type="A333">Must have at fuel ≥ 2T on landing</Text>
+		<Text type=".*">Flight time &gt;30%/40m of scheduled or average requires review</Text>
+		<Text type=".*">Excessive taxi in time requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="united"> <!-- United -->
