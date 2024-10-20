@@ -2,8 +2,6 @@
 using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -60,6 +58,17 @@ namespace Controlzmo.Systems.FlightControlUnit
             else
                 simConnect.SendEvent(this);
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class PushPullFcuSpeed : AbstractButtonShortLongPress<UrsaMinorFighterR>
+    {
+        private readonly FcuSpeedPulled pull;
+        private readonly FcuSpeedPushed push;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_ROUND;
+        public override void OnLongPress(ExtendedSimConnect simConnect) => pull.SetInSim(simConnect, true);
+        public override void OnShortPress(ExtendedSimConnect simConnect) => push.SetInSim(simConnect, true);
     }
 
     [Component]
