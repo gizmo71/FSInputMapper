@@ -41,13 +41,13 @@ namespace Controlzmo
         {
             foreach (var also in type.GetInterfaces())
             {
-                Console.WriteLine($"\t{also} interface for {type}");
+                //Console.WriteLine($"\t{also} interface for {type}");
                 yield return also.GetTypeInfo();
             }
             for (TypeInfo? @base = type; (@base = @base!.BaseType?.GetTypeInfo()) != null;)
             {
                 if (IsComponent(@base)) {
-                    Console.WriteLine($"\t{@base} base for {type}");
+                    //Console.WriteLine($"\t{@base} base for {type}");
                     yield return @base;
                 }
             }
