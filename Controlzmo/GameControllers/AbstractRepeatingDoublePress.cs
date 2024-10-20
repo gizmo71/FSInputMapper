@@ -55,4 +55,13 @@ namespace Controlzmo.GameControllers
         protected abstract void UpAction(ExtendedSimConnect? simConnect);
         protected abstract void DownAction(ExtendedSimConnect? simConnect);
     }
+
+    public abstract class RepeatingDoublePressButton<T> : IButtonCallback<T> where T : GameController<T>
+    {
+        protected abstract AbstractRepeatingDoublePress Controller { get; }
+        protected abstract AbstractRepeatingDoublePress.Direction GetDirection();
+        public abstract int GetButton();
+        public virtual void OnPress(ExtendedSimConnect simConnect) => Controller.Press(simConnect, GetDirection());
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => Controller.Release(simConnect);
+    }
 }

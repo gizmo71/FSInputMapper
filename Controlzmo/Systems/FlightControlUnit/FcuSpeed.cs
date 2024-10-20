@@ -2,6 +2,7 @@
 using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.AspNetCore.Mvc;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
@@ -132,19 +133,18 @@ namespace Controlzmo.Systems.FlightControlUnit
     [RequiredArgsConstructor]
     public partial class IncOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly FcuSpeedRepeatingDoublePress controller;
+        private readonly FcuSpeedRepeatingDoublePress _controller;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => controller.Press(simConnect, AbstractRepeatingDoublePress.Direction.Up);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => controller.Release(simConnect);
+        protected AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
     }
 
     [Component]
     [RequiredArgsConstructor]
     public partial class DecOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly FcuSpeedRepeatingDoublePress controller;
+        [Property]
+        private readonly FcuSpeedRepeatingDoublePress _controller;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => controller.Press(simConnect, AbstractRepeatingDoublePress.Direction.Down);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => controller.Release(simConnect);
+        protected AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
