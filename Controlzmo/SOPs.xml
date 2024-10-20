@@ -27,9 +27,9 @@
 		<Text type="A2[01]N">Preparation 10-45 minutes, air time counts</Text>
 		<Text type="A33?">Preparation 20-45 minutes, air time counts</Text>
 		<Text type=".*">Start #1 first, OETD, warm up; OETA, cool down</Text>
-		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
-		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
-		<Text type=".*">Pauses in flight sent for review</Text>
+		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled → review</Text>
+		<Text type=".*">Taxi in/out time &gt;200% of expectation → review</Text>
+		<Text type=".*">Pauses in flight → review</Text>
 		<Text type=".*">Rejected 500fpm</Text>
 		<Text type=".*">Must have fuel ≥1500kg on landing</Text>
 	</Airline>
@@ -45,10 +45,11 @@
 		<Text type=".*">Warm up; OETA, 3m between; cool down</Text>
 		<Text type=".*">Rejected 400fpm; Invalidated 600fpm</Text>
 	</Airline>
-	<Airline callsign="baw|speed[- ]?bird|shuttle"> <!-- vBAW -->
+	<Airline callsign="^(?:speed[- ]?bird|shuttle)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
-		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
+		<Text type=".*">Start #2 first, 60s between starts; OETD(#2) 2m between; warm up</Text>
+		<Text type=".*">OETA, 30s between; cool down</Text>
+		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
@@ -91,7 +92,7 @@
 	</Airline>
 	<Airline callsign="frontier[- ]flight|volaris"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start 60s between engines, OETD(#2)</Text>
+		<Text type=".*">60s between engine starts; OETD(#2)</Text>
 		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
 		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
 		<Text type=".*">Rejected 550fpm; Invalidated 600fpm</Text>
