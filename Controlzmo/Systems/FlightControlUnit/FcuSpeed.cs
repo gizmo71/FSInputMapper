@@ -118,7 +118,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuSpeedThing : AbstractRepeatingDoublePress
+    public partial class FcuSpeedRepeatingDoublePress : AbstractRepeatingDoublePress
     {
         private readonly FcuSpeedDelta delta;
         private readonly FcuSpeedMachToggled toggle;
@@ -130,21 +130,21 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    public partial class IncOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly FcuSpeedThing thing;
+        private readonly FcuSpeedRepeatingDoublePress controller;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, AbstractRepeatingDoublePress.Direction.Up);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
+        public virtual void OnPress(ExtendedSimConnect simConnect) => controller.Press(simConnect, AbstractRepeatingDoublePress.Direction.Up);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => controller.Release(simConnect);
     }
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class DecFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    public partial class DecOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly FcuSpeedThing thing;
+        private readonly FcuSpeedRepeatingDoublePress controller;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, AbstractRepeatingDoublePress.Direction.Down);
-        public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
+        public virtual void OnPress(ExtendedSimConnect simConnect) => controller.Press(simConnect, AbstractRepeatingDoublePress.Direction.Down);
+        public virtual void OnRelease(ExtendedSimConnect simConnect) => controller.Release(simConnect);
     }
 }
