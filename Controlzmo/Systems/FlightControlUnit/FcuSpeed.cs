@@ -118,47 +118,14 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuSpeedThing
+    public partial class FcuSpeedThing : AbstractRepeatingDoublePress
     {
         private readonly FcuSpeedDelta delta;
         private readonly FcuSpeedMachToggled toggle;
 
-        private Timer? timer;
-        private Int16 direction = 0;
-        private Boolean isFiring = false;
-
-        private void HandlerTimer(object? simConnect) {
-            isFiring = true;
-            if (direction != 0)
-                delta.SetInSim((ExtendedSimConnect) simConnect!, direction);
-        }
-
-        internal void Press(ExtendedSimConnect simConnect, ref readonly Int16 direction)
-        {
-            var isBoth = this.direction == -direction;
-            timer?.Dispose();
-            isFiring = false;
-            if (isBoth)
-            {
-                this.direction = 0;
-                if (!isFiring)
-                    toggle.SetInSim(simConnect, false);
-            }
-            else
-            {
-                this.direction = direction;
-                timer = new Timer(HandlerTimer, simConnect, 200, 100);
-            }
-        }
-
-        internal void Release(ExtendedSimConnect simConnect)
-        {
-            timer?.Dispose();
-            if (direction != 0 && !isFiring)
-                HandlerTimer(simConnect); // Didn't actually get round to running one, so do it now.
-            timer = null;
-            direction = 0;
-        }
+        protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
+        protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, false);
     }
 
     [Component]
@@ -166,9 +133,8 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class IncFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly FcuSpeedThing thing;
-        private static readonly Int16 direction = +1;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, in direction);
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, AbstractRepeatingDoublePress.Direction.Up);
         public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
     }
 
@@ -177,9 +143,8 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class DecFcuSpeed : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly FcuSpeedThing thing;
-        private static readonly Int16 direction = -1;
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, in direction);
+        public virtual void OnPress(ExtendedSimConnect simConnect) => thing.Press(simConnect, AbstractRepeatingDoublePress.Direction.Down);
         public virtual void OnRelease(ExtendedSimConnect simConnect) => thing.Release(simConnect);
     }
 }

@@ -6,15 +6,14 @@ namespace Controlzmo.GameControllers
     public abstract class AbstractButtonShortLongPress<T> : IButtonCallback<T> where T : GameController<T>
     {
         private DateTime longAfter = DateTime.MaxValue;
+        private delegate void Action(ExtendedSimConnect _);
 
         public virtual void OnPress(ExtendedSimConnect simConnect) => longAfter = DateTime.UtcNow.AddMilliseconds(350);
 
         public virtual void OnRelease(ExtendedSimConnect simConnect)
         {
-            if (DateTime.UtcNow > longAfter)
-                OnLongPress(simConnect);
-            else
-                OnShortPress(simConnect);
+            Action action = (DateTime.UtcNow > longAfter) ? this.OnLongPress : this.OnShortPress;
+            action.Invoke(simConnect);
         }
 
         public abstract int GetButton();
