@@ -30,7 +30,7 @@ namespace Controlzmo
             services.AddLogging();
             foreach (var component in Assembly.GetEntryAssembly()!.DefinedTypes.Where(IsConcreteComponent))
             {
-                Console.WriteLine($"{component}");
+                //Console.WriteLine($"{component}");
                 services.AddSingleton(component, component);
                 foreach (var also in GetInterfacesAndParentComponents(component))
                     services.AddSingleton(also, x => x.GetRequiredService(component));
