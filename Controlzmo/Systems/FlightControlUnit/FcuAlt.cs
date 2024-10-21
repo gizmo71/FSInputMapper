@@ -6,6 +6,7 @@ using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Threading;
+using WASimCommander.CLI.Structs;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
@@ -103,19 +104,29 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuAltIncrement : ISettable<uint>, IEvent
+    public partial class FcuAltIncrement : ISettable<uint>
     {
         private readonly JetBridgeSender sender;
         public string GetId() => "fcuAltIncrement";
-        public string SimEvent() => "A32NX.FCU_ALT_INCREMENT_SET";
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
-//TODO: magic value to toggle...
+            string command;
             if (simConnect.IsFenix)
-                sender.Execute(simConnect, (value == 1000 ? 1 : 0) + " (>L:S_FCU_ALTITUDE_SCALE)");
+                command = toggleOrSet("S_FCU_ALTITUDE_SCALE", value);
             else if (simConnect.IsIni320)
-                sender.Execute(simConnect, (value == 1000 ? 1 : 0) + " (>L:INI_FCU_ALTITUDE_MODE_COMMAND)");
+                command = toggleOrSet("INI_FCU_ALTITUDE_MODE_COMMAND", value);
+            else if (value == 0)
+                command = $"(>K:A32NX.FCU_ALT_INCREMENT_TOGGLE)";
             else
-                simConnect.SendEvent(this, value);
+                command = $"{value} (>K:A32NX.FCU_ALT_INCREMENT_SET)";
+            sender.Execute(simConnect, command);
+        }
+
+        private string toggleOrSet(string lvar, uint value)
+        {
+            if (value == 0)
+                    return $"1 (L:{lvar}) - (>L:{lvar})";
+            else
+                    return (value == 1000 ? 1 : 0) + $" (>L:{lvar})";
         }
     }
 
