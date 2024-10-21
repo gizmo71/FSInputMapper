@@ -1,4 +1,5 @@
-﻿using Controlzmo.Hubs;
+﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -10,11 +11,16 @@ namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuAltPulled : ISettable<bool>, IEvent
+    public partial class FcuAltPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_NEAR_DOWN;
+        public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
+
         public string SimEvent() => "A32NX.FCU_ALT_PULL";
         public string GetId() => "fcuAltPulled";
+
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
@@ -27,9 +33,13 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuAltPushed : ISettable<bool>, IEvent
+    public partial class FcuAltPushed : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_NEAR_UP;
+        public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
+
         public string SimEvent() => "A32NX.FCU_ALT_PUSH";
         public string GetId() => "fcuAltPushed";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
@@ -82,7 +92,6 @@ namespace Controlzmo.Systems.FlightControlUnit
                     if (simConnect.IsIni320)
                     {
                         var dir = value < 0 ? "DN" : "UP";
-//TODO: can we do more than one at a time? Otherwise it's going to be super slow...
                         sender.Execute(simConnect, $"1 (>L:INI_ALTITUDE_DIAL_{dir}_COMMAND)");
                     }
                     else
@@ -100,6 +109,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public string GetId() => "fcuAltIncrement";
         public string SimEvent() => "A32NX.FCU_ALT_INCREMENT_SET";
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
+//TODO: magic value to toggle...
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, (value == 1000 ? 1 : 0) + " (>L:S_FCU_ALTITUDE_SCALE)");
             else if (simConnect.IsIni320)
@@ -107,5 +117,37 @@ namespace Controlzmo.Systems.FlightControlUnit
             else
                 simConnect.SendEvent(this, value);
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class FcuAltRepeatingDoublePress : AbstractRepeatingDoublePress
+    {
+        private readonly FcuAltDelta delta;
+        private readonly FcuAltIncrement notAToggle;
+
+        protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
+        protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => notAToggle.SetInSim(simConnect!, 0);
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class IncOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR>
+    {
+        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
+        private readonly FcuAltRepeatingDoublePress _controller;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_UP;
+        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class DecOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR>
+    {
+        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
+        private readonly FcuAltRepeatingDoublePress _controller;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_DOWN;
+        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
