@@ -144,21 +144,23 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class IncOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR>
+    public partial class IncOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
-        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
+        [Property]
         private readonly FcuAltRepeatingDoublePress _controller;
-        public override int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_UP;
-        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_UP;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Up;
     }
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class DecOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR>
+    public partial class DecOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
-        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
+        [Property]
         private readonly FcuAltRepeatingDoublePress _controller;
-        public override int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_DOWN;
-        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_LEFT_DOWN;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Down;
     }
 }

@@ -17,7 +17,7 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_LEFT_BASE_FAR_LEFT_DOWN = 2;
         public static readonly int BUTTON_LEFT_BASE_FAR_RIGHT_DOWN = 3;
         public static readonly int BUTTON_LEFT_BASE_ROUND = 4;
-        public static readonly int BUTTON_LEFT_BASE_NEAR_UP_ = 5;
+        public static readonly int BUTTON_LEFT_BASE_NEAR_UP = 5;
         public static readonly int BUTTON_LEFT_BASE_NEAR_DOWN = 6;
         public static readonly int BUTTON_RIGHT_BASE_FAR_RIGHT_UP = 7;
         public static readonly int BUTTON_RIGHT_BASE_FAR_LEFT_UP = 8;

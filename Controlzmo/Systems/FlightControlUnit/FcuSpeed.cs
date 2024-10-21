@@ -131,21 +131,23 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class IncOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR>
+    public partial class IncOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>
     {
-        protected override AbstractRepeatingDoublePress Controller { get => _controller; } ////[Property]
+        [Property]
         private readonly FcuSpeedRepeatingDoublePress _controller;
-        public override int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Up;
     }
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class DecOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR>
+    public partial class DecOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>
     {
-        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
+        [Property]
         private readonly FcuSpeedRepeatingDoublePress _controller;
-        public override int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
