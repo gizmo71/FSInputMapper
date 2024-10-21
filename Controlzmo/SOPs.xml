@@ -247,11 +247,10 @@
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
-		<Text type=".*">Preparation 0-35 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Preparation 15-35 minutes, block time counts</Text>
+		<Text type=".*">Start #2 first, 5s between starts; warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
-		<Text type=".*">Must have fuel ≥ 2500kg on pushback</Text> <!-- Not universally enforced -->
-		<Text type=".*">Must have 1500kg ≤ fuel ≤ 20T on landing</Text> <!-- Actually some allow only 1200kg -->
+		<Text type=".*">Must have fuel ≥ 1200kg on landing</Text>
 		<Text type=".*">Rejected 650fpm; Invalidated 651fpm(!)</Text>
 		<!-- They also operate an A33xF with different rules. -->
 	</Airline>
