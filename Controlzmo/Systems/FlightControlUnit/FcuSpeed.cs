@@ -131,20 +131,21 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class IncOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    public partial class IncOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR>
     {
+        protected override AbstractRepeatingDoublePress Controller { get => _controller; } ////[Property]
         private readonly FcuSpeedRepeatingDoublePress _controller;
-        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
-        protected AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_UP;
+        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Up;
     }
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class DecOrToggleFcuSpeed : IButtonCallback<UrsaMinorFighterR>
+    public partial class DecOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR>
     {
-        [Property]
+        protected override AbstractRepeatingDoublePress Controller { get => _controller; } //[Property]
         private readonly FcuSpeedRepeatingDoublePress _controller;
-        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
-        protected AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_LEFT_DOWN;
+        protected override AbstractRepeatingDoublePress.Direction GetDirection() => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
