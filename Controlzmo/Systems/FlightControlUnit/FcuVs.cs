@@ -1,4 +1,5 @@
-﻿using Controlzmo.Hubs;
+﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -35,6 +36,17 @@ namespace Controlzmo.Systems.FlightControlUnit
             else
                 simConnect.SendEvent(this);
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class PushPullFcuVs : AbstractButtonShortLongPress<UrsaMinorFighterR>
+    {
+        private readonly FcuVsPulled pull;
+        private readonly FcuVsPushed push;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_ROUND;
+        public override void OnLongPress(ExtendedSimConnect simConnect) => pull.SetInSim(simConnect, true);
+        public override void OnShortPress(ExtendedSimConnect simConnect) => push.SetInSim(simConnect, true);
     }
 
     [Component]
@@ -81,5 +93,39 @@ namespace Controlzmo.Systems.FlightControlUnit
             }
 //TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class FcuVsRepeatingDoublePress : AbstractRepeatingDoublePress
+    {
+        private readonly FcuVsDelta delta;
+        private readonly FcuTrackFpaToggled toggle;
+
+        protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
+        protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, false);
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class IncOrToggleFcuVs : RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>
+    {
+        [Property]
+        private readonly FcuVsRepeatingDoublePress _controller;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_RIGHT_UP;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Up;
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class DecOrToggleFcuVs : RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>
+    {
+        [Property]
+        private readonly FcuVsRepeatingDoublePress _controller;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_FAR_RIGHT_DOWN;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
