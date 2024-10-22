@@ -60,9 +60,8 @@
 		<Text type=".*">Rejected 650fpm; Invalidated 750fpm</Text>
 	</Airline>
 	<Airline callsign="delta"> <!-- Virtual Delta -->
-		<!-- 'FWB Delta (Dirty)' -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, warm up; cool down</Text>
+		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
+		<Text type=".*">5s between starts; warm up; cool down</Text>
 		<Text type=".*">Must have fuel ≤ 20T on landing</Text>
 		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
