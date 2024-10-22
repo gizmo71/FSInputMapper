@@ -6,7 +6,6 @@ using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Threading;
-using WASimCommander.CLI.Structs;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {

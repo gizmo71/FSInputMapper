@@ -1,4 +1,5 @@
-﻿using Controlzmo.Hubs;
+﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -10,9 +11,13 @@ namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuHeadingPulled : ISettable<bool>, IEvent
+    public partial class FcuHeadingPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_NEAR_DOWN;
+        public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
+
         public string SimEvent() => "A32NX.FCU_HDG_PULL";
         public string GetId() => "fcuHeadingPulled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
@@ -25,9 +30,13 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuHeadingPushed : ISettable<bool>, IEvent
+    public partial class FcuHeadingPushed : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_NEAR_UP;
+        public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
+
         public string SimEvent() => "A32NX.FCU_HDG_PUSH";
         public string GetId() => "fcuHeadingPushed";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
@@ -81,5 +90,40 @@ namespace Controlzmo.Systems.FlightControlUnit
                 }
             }
         }
+    }
+
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class FcuHeadingRepeatingDoublePress : AbstractRepeatingDoublePress
+    {
+        private readonly FcuHeadingDelta delta;
+        private readonly FcuTrackFpaToggled toggle;
+
+        protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
+        protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, true);
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class IncOrToggleFcuHdg : RepeatingDoublePressButton<UrsaMinorFighterR, FcuHeadingRepeatingDoublePress>
+    {
+        [Property]
+        private readonly FcuHeadingRepeatingDoublePress _controller;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_RIGHT_UP;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuHeadingRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Up;
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class DecOrToggleFcuHdg : RepeatingDoublePressButton<UrsaMinorFighterR, FcuHeadingRepeatingDoublePress>
+    {
+        [Property]
+        private readonly FcuHeadingRepeatingDoublePress _controller;
+        int IButtonCallback<UrsaMinorFighterR>.GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_FAR_RIGHT_DOWN;
+        AbstractRepeatingDoublePress.Direction RepeatingDoublePressButton<UrsaMinorFighterR, FcuHeadingRepeatingDoublePress>.GetDirection()
+            => AbstractRepeatingDoublePress.Direction.Down;
     }
 }
