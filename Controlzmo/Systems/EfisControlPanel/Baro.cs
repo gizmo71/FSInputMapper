@@ -98,10 +98,23 @@ namespace Controlzmo.Systems.EfisControlPanel
     [RequiredArgsConstructor]
     public partial class BaroPush : IButtonCallback<UrsaMinorFighterR>
     {
+        private readonly JetBridgeSender sender;
         private readonly BaroKnob knob;
+        private DateTime magicIfAfter = DateTime.MaxValue;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_FORE;
-        public virtual void OnPress(ExtendedSimConnect sc) => knob.SetInSim(sc, "push");
-        public virtual void OnRelease(ExtendedSimConnect sc) => Console.WriteLine("TODO: magic set like typing B");
+
+        public virtual void OnPress(ExtendedSimConnect sc)
+        {
+            knob.SetInSim(sc, "push");
+            magicIfAfter = DateTime.UtcNow.AddMilliseconds(500);
+        }
+
+        public virtual void OnRelease(ExtendedSimConnect sc)
+        {
+            if (DateTime.UtcNow > magicIfAfter)
+                sender.Execute(sc, "(>K:BAROMETRIC)");
+            magicIfAfter = DateTime.MaxValue;
+        }
     }
 
     [Component]
@@ -135,34 +148,34 @@ namespace Controlzmo.Systems.EfisControlPanel
         private Timer? timer;
         private int direction;
 
-        internal void Set(ExtendedSimConnect sc, int direction)
+        internal void Start(int direction)
         {
             lock(this)
             {
                 if (timer == null)
                     timer = new Timer(HandleTimer);
+                this.direction = direction;
             }
-            if ((this.direction = direction) == 0)
-            {
-                timer!.Change(Timeout.Infinite, Timeout.Infinite);
-            }
-            else
-            {
-                HandleTimer(null);
-                timer.Change(200, 200); //TODO: this is as fast as the SerializedExecutor can run; we should really slurp things in FCU style, and do 100ms.
-            }
+            HandleTimer(null);
+            timer.Change(200, 100);
         }
+
+        internal void Stop() => timer!.Change(Timeout.Infinite, Timeout.Infinite);
+
+        private Int32 adjustment = 0;
 
         private void HandleTimer(object? _) {
             var sc = holder.SimConnect;
             if (sc!.IsFBW)
             {
-                //TODO see https://github.com/flybywiresim/aircraft/blob/2f15ca498c9b655b7f73de54019b6d988f86a8f7/fbw-a32nx/src/behavior/src/A32NX_Interior_FCU.xml#L26
             }
             else if (sc!.IsFenix)
             {
-                var op = direction > 0 ? "+" : "-";
-                sender.Execute(sc!, $"(L:E_FCU_EFIS1_BARO) 1 {op} (>L:E_FCU_EFIS1_BARO)");
+                Interlocked.Add(ref adjustment, direction);
+                sender.Execute(sc!, delegate() {
+                    var toSend = Interlocked.Exchange(ref adjustment, 0);
+                    return toSend == 0 ? null : $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
+                });
             }
         }
     }
@@ -172,8 +185,8 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         private readonly RepeatingBaroChange change;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_RIGHT;
-        public virtual void OnPress(ExtendedSimConnect sc) => change.Set(sc, +1);
-        public virtual void OnRelease(ExtendedSimConnect sc) => change.Set(sc, 0);
+        public virtual void OnPress(ExtendedSimConnect sc) => change.Start(+1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => change.Stop();
     }
 
     [Component, RequiredArgsConstructor]
@@ -181,7 +194,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         private readonly RepeatingBaroChange change;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_LEFT;
-        public virtual void OnPress(ExtendedSimConnect sc) => change.Set(sc, -1);
-        public virtual void OnRelease(ExtendedSimConnect sc) => change.Set(sc, 0);
+        public virtual void OnPress(ExtendedSimConnect sc) => change.Start(-1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => change.Stop();
     }
 }
