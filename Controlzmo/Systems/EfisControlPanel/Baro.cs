@@ -1,21 +1,25 @@
-﻿using Controlzmo.Hubs;
+﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.Serial;
 using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Threading;
+using WASimCommander.CLI.Structs;
+using static Controlzmo.GameControllers.AbstractRepeatingDoublePress;
 
 namespace Controlzmo.Systems.EfisControlPanel
 {
     [Component]
-    public class BaroKnob : ISettable<string>
+    [RequiredArgsConstructor]
+    public partial class BaroKnob : ISettable<string>
     {
         private readonly JetBridgeSender sender;
-
-        public BaroKnob(JetBridgeSender sender) => this.sender = sender;
 
         public string GetId() => "baroKnob";
 
@@ -88,5 +92,96 @@ namespace Controlzmo.Systems.EfisControlPanel
             }
             serial.SendLine($"baro={composite}");
         }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class BaroPush : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly BaroKnob knob;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_FORE;
+        public virtual void OnPress(ExtendedSimConnect sc) => knob.SetInSim(sc, "push");
+        public virtual void OnRelease(ExtendedSimConnect sc) => Console.WriteLine("TODO: magic set like typing B");
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class BaroPull : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly BaroKnob knob;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_AFT;
+        public virtual void OnPress(ExtendedSimConnect sc) => knob.SetInSim(sc, "pull");
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class BaroUnits : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly JetBridgeSender sender;
+
+        public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_PRESS;
+
+        public virtual void OnPress(ExtendedSimConnect sc) {
+            var lvar = sc.IsFenix ? "S_FCU_EFIS1_BARO_MODE" : "XMLVar_Baro_Selector_HPA_1";
+            sender.Execute(sc, $"1 (L:{lvar}) - (>L:{lvar})");
+        }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class RepeatingBaroChange
+    {
+        private readonly JetBridgeSender sender;
+        private readonly SimConnectHolder holder;
+        private Timer? timer;
+        private int direction;
+
+        internal void Set(ExtendedSimConnect sc, int direction)
+        {
+            lock(this)
+            {
+                if (timer == null)
+                    timer = new Timer(HandleTimer);
+            }
+            if ((this.direction = direction) == 0)
+            {
+                timer!.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+            else
+            {
+                HandleTimer(null);
+                timer.Change(200, 200); //TODO: this is as fast as the SerializedExecutor can run; we should really slurp things in FCU style, and do 100ms.
+            }
+        }
+
+        private void HandleTimer(object? _) {
+            var sc = holder.SimConnect;
+            if (sc!.IsFBW)
+            {
+                //TODO see https://github.com/flybywiresim/aircraft/blob/2f15ca498c9b655b7f73de54019b6d988f86a8f7/fbw-a32nx/src/behavior/src/A32NX_Interior_FCU.xml#L26
+            }
+            else if (sc!.IsFenix)
+            {
+                var op = direction > 0 ? "+" : "-";
+                sender.Execute(sc!, $"(L:E_FCU_EFIS1_BARO) 1 {op} (>L:E_FCU_EFIS1_BARO)");
+            }
+        }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class BaroInc : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly RepeatingBaroChange change;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_RIGHT;
+        public virtual void OnPress(ExtendedSimConnect sc) => change.Set(sc, +1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => change.Set(sc, 0);
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class BaroDec : IButtonCallback<UrsaMinorFighterR>
+    {
+        private readonly RepeatingBaroChange change;
+        public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_LEFT;
+        public virtual void OnPress(ExtendedSimConnect sc) => change.Set(sc, -1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => change.Set(sc, 0);
     }
 }
