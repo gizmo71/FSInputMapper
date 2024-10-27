@@ -98,7 +98,8 @@
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 1s-30 minutes, air time counts</Text>
-		<Text type=".*">1s between starts, warm up (1m), OETD; OETA, cool down (1m), 1s between shutdowns</Text>
+		<Text type=".*">1s between starts, warm up (1m); cool down (1m), 1s between shutdowns</Text>
+		<!-- OETA/OETD are in the scorers, but setup is wrong and cannot be achieved -->
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have 6T ≥ fuel ≥ 1T on landing</Text>
