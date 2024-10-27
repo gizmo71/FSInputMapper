@@ -186,8 +186,8 @@
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Flight time above 20%/35 minutes of scheduled or average requires review</Text>
-		<Text title=".* A320 .*">Start #2 first</Text>
+		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
+		<Text title="">30s between starts</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
