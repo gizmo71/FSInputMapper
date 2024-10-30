@@ -3,15 +3,12 @@ using Controlzmo.Hubs;
 using Controlzmo.Serial;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
-using WASimCommander.CLI.Structs;
-using static Controlzmo.GameControllers.AbstractRepeatingDoublePress;
 
 namespace Controlzmo.Systems.EfisControlPanel
 {
@@ -73,23 +70,36 @@ namespace Controlzmo.Systems.EfisControlPanel
         public Int32 baro1UnitsFenix; // 0 InHg, 1 hPa
     }
 
-    [Component]
-    public class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
+    [Component, RequiredArgsConstructor]
+    public partial class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-
-        public BaroDisplay(IServiceProvider sp) => serial = sp.GetRequiredService<SerialPico>();
+        [Property]
+        private Boolean _isStd;
+        [Property]
+        private Boolean _isInHg;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, BaroData data)
         {
-            string composite = "SStd ";
-            if (simConnect.IsFenix ? data.baro1ModeFenix == 1 : (data.baro1Mode & 2) == 0)
+            if (simConnect.IsFenix)
             {
-                var value = (simConnect.IsFenix ? data.baro1UnitsFenix : data.baro1Units) == 0 ? data.kohlsmanHg * 100 : data.kohlsmanMB;
-                composite = (!simConnect.IsFBW || (data.baro1Mode & 1) == 1 ? "N" : "F") + $"{value,4:0}";
+                data.baro1Mode = data.baro1ModeFenix == 1 ? 1 : 3;
+                data.baro1Units = data.baro1UnitsFenix;
             }
+
+            string composite = "SStd ";
+            _isInHg = data.baro1Units == 0;
+            if ((data.baro1Mode & 2) == 0)
+            {
+                var value = _isInHg ? data.kohlsmanHg * 100 : data.kohlsmanMB;
+                composite = ((data.baro1Mode & 1) == 1 ? "N" : "F") + $"{value,4:0}";
+                _isStd = false;
+            }
+            else
+                _isStd = true;
+
             serial.SendLine($"baro={composite}");
         }
     }
@@ -105,7 +115,6 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public virtual void OnPress(ExtendedSimConnect sc)
         {
-            knob.SetInSim(sc, "push");
             magicIfAfter = DateTime.UtcNow.AddMilliseconds(500);
         }
 
@@ -113,6 +122,8 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             if (DateTime.UtcNow > magicIfAfter)
                 sender.Execute(sc, "(>K:BAROMETRIC)");
+            else
+                knob.SetInSim(sc, "push");
             magicIfAfter = DateTime.MaxValue;
         }
     }
@@ -145,6 +156,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         private readonly JetBridgeSender sender;
         private readonly SimConnectHolder holder;
+        private readonly BaroDisplay display;
         private Timer? timer;
         private int direction;
 
@@ -166,12 +178,20 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void HandleTimer(object? _) {
             var sc = holder.SimConnect;
+            Interlocked.Add(ref adjustment, direction);
             if (sc!.IsFBW)
             {
+                sender.Execute(sc!, delegate() {
+                    var toSend = Interlocked.Exchange(ref adjustment, 0);
+                    // Sadly to do all this in RPN just too long - we're restricted to 127 chars. :-( So we have to track state instead.
+                    if (toSend == 0 || display.IsStd) return null;
+                    var divideFactor = display.IsInHg ? 0.3386389 : 1.0;
+                    var multiplyFactor = display.IsInHg ? 5.4182224 : 16.0;
+                    return $"1 (A:KOHLSMAN SETTING MB:1, mbars) {divideFactor} / near {toSend} + {multiplyFactor} * (>K:2:KOHLSMAN_SET)";
+                });
             }
             else if (sc!.IsFenix)
             {
-                Interlocked.Add(ref adjustment, direction);
                 sender.Execute(sc!, delegate() {
                     var toSend = Interlocked.Exchange(ref adjustment, 0);
                     return toSend == 0 ? null : $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
