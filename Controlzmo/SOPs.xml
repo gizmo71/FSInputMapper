@@ -85,23 +85,23 @@
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, air time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
-		<Text type=".*">Start #2 first; OETA</Text>
+		<Text type=".*">Start #2 first, 5s between; OETA(#2), 1m between</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
-		<Text type=".*">Review 500fpm; Invalidated 750fpm</Text>
+		<Text type=".*">Invalidated 750fpm</Text>
 	</Airline>
 	<Airline callsign="frontier[- ]flight|volaris"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">60s between engine starts; OETD(#2)</Text>
-		<!--  Cool down: vAMSYS data shows engineMinsRequired=3 in the tracker data -->
-		<Text type=".*">Must have fuel ≥ 748kg on landing</Text> <!-- "lessFuelThan"-->
+		<Text type=".*">1m between starts; OETD(#2), 60s between</Text>
+		<!-- Text type=".*">Must have fuel ≥ 748kg on landing</Text -->
 		<Text type=".*">Rejected 550fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
-		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">1s between starts, warm up, OETD; OETA, cool down, 1s between shutdowns</Text>
+		<Text type=".*">Preparation 1s-30 minutes, air time counts</Text>
+		<Text type=".*">1s between starts, warm up (1m); cool down (1m), 1s between shutdowns</Text>
+		<!-- OETA/OETD are in the scorers, but setup is wrong and cannot be achieved -->
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have fuel ≥ 1T on landing (and pushback!)</Text>
+		<Text type=".*">Must have 6T ≥ fuel ≥ 1T on landing</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
@@ -185,8 +185,8 @@
 	</Airline>
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Flight time above 20%/35 minutes of scheduled or average requires review</Text>
-		<Text title=".* A320 .*">Start #2 first</Text>
+		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
+		<Text title="">30s between starts</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
