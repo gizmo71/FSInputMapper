@@ -41,7 +41,8 @@ namespace Controlzmo.Systems.EfisControlPanel
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
             var range = UInt32.Parse(label!);
-            var code = (UInt32) Math.Clamp(BitOperations.Log2(range / 10), -1, 6);
+            var powerOfTwo = range == 5 ? -1 : BitOperations.Log2(range / 10);
+            var code = (UInt32) Math.Clamp(powerOfTwo, -1, 6);
             if (simConnect.IsA380X)
                 ++code;
             else if (code < 0 || code > 5)
