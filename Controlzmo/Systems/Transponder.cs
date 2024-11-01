@@ -101,6 +101,7 @@ namespace Controlzmo.Systems.Transponder
         public Int32 isAltRptgOn;
         [SimVar("L:S_XPDR_ALTREPORTING", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isAltRptgOnFenix;
+        //TODO: A380X?
     };
 
     [Component]
@@ -130,6 +131,9 @@ namespace Controlzmo.Systems.Transponder
     {
         [SimVar("L:A32NX_SWITCH_TCAS_Position", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 position;
+        [SimVar("L:A32NX_TCAS_Mode", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+//TODO: doesn't appear to be settable, and in fact there may be a bug with TA Only "sticking" on switch to TA/RA...
+        public Int32 a380xMode; // 0 STBY 1 TA ONLY 2 TA/RA
         [SimVar("L:S_XPDR_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 positionFenix;
     };
@@ -148,7 +152,11 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, TcasModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.positionFenix : data.position);
+            if (simConnect.IsFenix)
+                data.position = data.positionFenix;
+            else if (simConnect.IsA380X)
+                data.position = data.a380xMode;
+            hub.Clients.All.SetFromSim(GetId(), data.position);
         }
 
         public string GetId() => "tcasMode";
@@ -156,7 +164,7 @@ namespace Controlzmo.Systems.Transponder
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new TcasModeData() { position = code, positionFenix = code });
+            simConnect.SendDataOnSimObject(new TcasModeData() { position = code, a380xMode = code, positionFenix = code });
         }
     }
 
