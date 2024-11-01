@@ -12,7 +12,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 {
     public interface IEfisRangeData
     {
-        public UInt32 RangeCode { get; set; } // 2^code*10 = miles
+        public UInt32 RangeCode { get; set; } // A32NX: 2^code*10 = miles; A380X uses 0 for Zoom, so all the others are shifted up one
         public UInt32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as FBW)
     }
 
