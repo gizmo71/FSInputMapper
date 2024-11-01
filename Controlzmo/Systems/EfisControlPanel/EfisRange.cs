@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             var code = (UInt32) Math.Clamp(BitOperations.Log2(range / 10), 0, 6);
             if (simConnect.IsA380X)
                 ++code;
-            else if (code > 5)
+            else if (code < 0 || code > 5)
                 return; // There's no 640 range in the A320 family
             simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeFenix = code });
         }
