@@ -153,4 +153,6 @@ namespace Controlzmo.Systems.Spoilers
             }
         }
     }
+
+    //TODO: index finger on right side of stick head: fore/aft/click=less->arm/disarm-more/stow spoibrakes, up/down flaps
 }

@@ -91,7 +91,7 @@ Console.Error.WriteLine($"set {id} to {value}");
     }
 
     [Component]
-    public class SerialPico : KeepAliveWorker, IOnSimStarted
+    public class SerialPico : KeepAliveWorker, IOnSimStarted //TODO: don't listen for sim status, keep track of state and listen for ticks instead.
     {
         private readonly ILogger _logger;
         private readonly SerialPort _serialPort;

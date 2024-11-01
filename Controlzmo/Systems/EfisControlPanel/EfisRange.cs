@@ -32,6 +32,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
             var value = (1 << (int) (simConnect.IsFenix ? data.RangeFenix : data.RangeCode)) * 10;
+            if (simConnect.IsA380X) value /= 2;
             hub.Clients.All.SetFromSim(id, value);
         }
 
@@ -41,6 +42,10 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var range = UInt32.Parse(label!);
             var code = (UInt32) Math.Clamp(BitOperations.Log2(range / 10), 0, 5);
+            if (simConnect.IsA380X)
+                ++code;
+            else if (code > 5)
+                return; // There's no 640 range in the A320 family
             simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeFenix = code });
         }
     }
@@ -50,7 +55,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _rangeCode;
+        public UInt32 _rangeCode; // In the A380X, 1 is 10 and 7 is 640, but there is also 0 for "ZOOM" which isn't user selectable on the knob...
         [Property]
         [SimVar("L:S_FCU_EFIS1_ND_ZOOM", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _rangeFenix;
@@ -60,22 +65,5 @@ namespace Controlzmo.Systems.EfisControlPanel
     public class LeftEfisRange : EfisRange<LeftEfisRangeData>
     {
         public LeftEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "left") { }
-    }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public partial struct RightEfisRangeData : IEfisRangeData
-    {
-        [Property]
-        [SimVar("L:A32NX_EFIS_R_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _rangeCode;
-        [Property]
-        [SimVar("L:S_FCU_EFIS2_ND_ZOOM", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _rangeFenix;
-    };
-
-    //[Component]
-    public class RightEfisRange : EfisRange<RightEfisRangeData>
-    {
-        public RightEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "right") { }
     }
 }

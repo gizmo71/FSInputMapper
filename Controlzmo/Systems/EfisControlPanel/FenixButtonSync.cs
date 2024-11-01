@@ -18,6 +18,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public Int32 fd1;
         [SimVar("L:I_FCU_EFIS2_FD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fd2;
+//TODO: do we also need to sync the VV in A380X? A380X_EFIS_{side}_VV_BUTTON_IS_ON ({side} is L or R). Is this just an oversight from the EFIS sync setting?
     };
 
     [Component]
