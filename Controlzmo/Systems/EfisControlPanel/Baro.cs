@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 
+//TODO: A380 has pre-set of baro during STD.
 namespace Controlzmo.Systems.EfisControlPanel
 {
     [Component]
