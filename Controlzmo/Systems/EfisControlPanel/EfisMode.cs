@@ -67,21 +67,4 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         public EfisLeftMode(IServiceProvider sp) : base(sp, "left") { }
     }
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public partial struct RightEfisModeData : IEfisModeData
-    {
-        [Property]
-        [SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _mode;
-        [Property]
-        [SimVar("L:S_FCU_EFIS2_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _modeFenix;
-    };
-
-    //[Component]
-    public class EfisRightMode : EfisMode<RightEfisModeData>
-    {
-        public EfisRightMode(IServiceProvider sp) : base(sp, "right") { }
-    }
 }
