@@ -41,9 +41,6 @@ namespace Controlzmo.Controls
         abstract public int GetAxis();
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
-//TODO: was this just because of the trim wheel mapping? private bool isFirstTime = true;
-//if (isFirstTime) { isFirstTime = false; return; } //TODO: hmm, why does right hand TL always jump to TOGA at first?!
-            //TODO: map somet
             double normalised;
             if (sc.IsFBW || sc.IsFenix)
                 /*TODO: ought to be something like this in order to put idle at the logcial midpoint:
@@ -60,7 +57,6 @@ namespace Controlzmo.Controls
             var raw = (Int32) (16384 * normalised);
             //TODO: this based on actual number of engines, rather than specific aircraft.
             setTLs.Set(sc, raw, sc.IsA380X || sc.IsB748 ? bitmapQuad : bitmapTwin);
-
         }
     }
 
