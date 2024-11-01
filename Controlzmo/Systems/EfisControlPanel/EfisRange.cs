@@ -8,6 +8,7 @@ using System;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
+// A380 note - once in Zoom, the know spins "freely" to do the zoom. I suspect that IRL you change modes to get out of OANS.
 namespace Controlzmo.Systems.EfisControlPanel
 {
     public interface IEfisRangeData
