@@ -156,12 +156,12 @@
 		<Text type=".*">5s between starts</Text>
 		<Text type=".*">Review at 700fpm</Text>
 	</Airline>
-	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$"> <!-- LH Virtual -->
-		<!-- 'Airbus A319 CFM Lufthansa2' -->
-		<Text type=".*">Preparation 15m-24h, air time counts</Text>
-		<Text type=".*">Start #2 first, 5s between starts, warm up; cool down</Text>
+	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$">
+		<Text type=".*">Preparation 15m-2h, air time counts</Text>
+		<Text type=".*">5s between starts, warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
-		<Text type=".*">Must have fuel ≥ 1200kg on landing</Text>
+		<Text type="A380">Must have fuel ≥ 2800kg on landing</Text>
+		<Text type="A319|A320|A321|A20N|A21N">Must have fuel ≥ 1200kg on landing</Text>
 		<Text type=".*">Invalidated 500/600fpm</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
