@@ -46,7 +46,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsA380X)
                 ++code;
             else if (code < 0 || code > 5)
-                return; // There's no 640 range in the A320 family
+                return; // There's no Zoom or 640 range in the A320 family
             simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeFenix = code });
         }
     }
