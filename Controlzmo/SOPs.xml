@@ -166,9 +166,9 @@
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
-		<Text type=".*">OETD(#2), warm up; OETA, cool down</Text>
-		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
-		<Text type=".*">Review at 600fpm; Rejected 700fpm</Text>
+		<Text type=".*">OETD, 59s between; warm up; OETA, 59s between; cool down</Text>
+		<Text type=".*">Must have 1T < fuel < 7T on landing</Text>
+		<Text type=".*">Review at 601fpm; Rejected 1000fpm</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
 		<Text type=".*">Preparation 15-60 minutes</Text>
