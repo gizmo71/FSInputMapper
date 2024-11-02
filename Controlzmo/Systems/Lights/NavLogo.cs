@@ -1,10 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
