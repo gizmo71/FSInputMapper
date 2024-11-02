@@ -7,7 +7,6 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Serial
@@ -155,18 +154,8 @@ namespace Controlzmo.Serial
         [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 3.5f)]
         public Double nowSeconds;
     };
-/*TODO:
-   Bleed button states: `L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`, `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-   Fenix: 'L:I_OH_PNEUMATIC_APU_BLEED_L', 'L:I_OH_PNEUMATIC_APU_BLEED_U'
-   Toggle bleed with 0/`1 (>L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON`) Bool; also `L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT`
-   Fenix: '(L:S_OH_PNEUMATIC_APU_BLEED) ! (>L:S_OH_PNEUMATIC_APU_BLEED)' (is this genuinely a 'latched' switch? yes!)
-   Would like to detect when AVAIL comes up, bleed isn't on, and perhaps are on the ground, and start a timer.
-   Then after 1-3 minutes, turn bleed on... unless AVAIL is lost, then stop timer.
-   If AVAIL and bleed are both on, and master is not on, turn the bleed off immediately.
-   Note that if you turn master/start on and then master off before avail, when it cycles start off you get a moment of avail being on!
-*/
-    [Component]
-    [RequiredArgsConstructor]
+
+    [Component, RequiredArgsConstructor]
     public partial class ApuBleedMonitor : DataListener<ApuBleedData>, IOnSimStarted
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
@@ -196,7 +185,7 @@ namespace Controlzmo.Serial
                 else
                     apuBleedOnAfter = null;
             }
-            else if (data.isApuMasterOn == 0 && data.isApuAvail == 1 && data.isApuBleedOn == 1)
+            else if (data.isApuMasterOn == 0 && (data.isApuAvail == 1 || simConnect.IsA380X) && data.isApuBleedOn == 1)
             {
                 setBleed(simConnect, false);
             }
