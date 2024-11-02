@@ -5,16 +5,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
-// A380 note - once in Zoom, the know spins "freely" to do the zoom. I suspect that IRL you change modes to get out of OANS.
 namespace Controlzmo.Systems.EfisControlPanel
 {
     public interface IEfisRangeData
     {
-        public UInt32 RangeCode { get; set; } // A32NX: 2^code*10 = miles; A380X uses 0 for Zoom, so all the others are shifted up one
-        public UInt32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as FBW)
+        public Int32 RangeCode { get; set; } // A32NX: 2^code*10 = miles; A380X: values are A32NX+1, and 0 means use OANS range instead
+        public Int32 OansRange { get; set; } // In Zoom, this goes from 0 (most zoomed in) to 4 (least, which is just "under" range 10)
+        public Int32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as A32NX)
     }
 
     public abstract class EfisRange<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisRangeData
@@ -32,8 +31,9 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            var value = (1 << (int) (simConnect.IsFenix ? data.RangeFenix : data.RangeCode)) * 10;
-            if (simConnect.IsA380X) value /= 2;
+            int value = simConnect.IsFenix ? data.RangeFenix : data.RangeCode;
+            if (simConnect.IsA380X) { if (value == 0) value = data.OansRange - 4; }
+            else ++value;
             hub.Clients.All.SetFromSim(id, value);
         }
 
@@ -41,14 +41,12 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var range = UInt32.Parse(label!);
-            var powerOfTwo = range == 5 ? -1 : BitOperations.Log2(range / 10);
-            var code = (UInt32) Math.Clamp(powerOfTwo, -1, 6);
-            if (simConnect.IsA380X)
-                ++code;
+            var code = Math.Clamp(Int32.Parse(label!), -4, 7);
+            var oans = 4;
+            if (simConnect.IsA380X) { if (code < 0) { oans = code + 4; code = 0; } }
             else if (code < 0 || code > 5)
                 return; // There's no Zoom or 640 range in the A320 family
-            simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeFenix = code });
+            simConnect.SendDataOnSimObject(new T() { RangeCode = code, OansRange = oans, RangeFenix = code });
         }
     }
 
@@ -57,10 +55,13 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _rangeCode; // In the A380X, 1 is 10 and 7 is 640, but there is also 0 for "ZOOM" which isn't user selectable on the knob...
+        public Int32 _rangeCode;
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_OANS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 _oansRange;
         [Property]
         [SimVar("L:S_FCU_EFIS1_ND_ZOOM", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _rangeFenix;
+        public Int32 _rangeFenix;
     };
 
     [Component]
