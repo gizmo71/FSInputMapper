@@ -19,7 +19,7 @@ namespace Controlzmo.Controls
             var last = first + (is4engined ? 1 : 0);
             for (var engine = first; engine <= last; ++engine)
                 sender.Execute(sc, $"{value} (>K:ENGINE_MASTER_{engine}_SET)" // UI: SET ENGINE MASTER 1
-                    + $" {value} (>K:SET_FUEL_VALVE_ENG{engine})" // UI: SET ENGINE n FUEL VALVE
+                    + $" {engine} (>K:FUELSYSTEM_VALVE_{valve_action})" // UI: SET ENGINE n FUEL VALVE
                     + $" {value} (>K:STARTER{engine}_SET)"); // UI: SET STARTER 1
         }
     }
