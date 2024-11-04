@@ -45,8 +45,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             var oans = 4;
             if (simConnect.IsA380X) { if (code < 0) { oans = code + 4; code = 0; } }
             // There's no Zoom or 640 range in the A320 family:
-            else if (code < 0) code = 0;
-            else if (code > 5) code = 5;
+            else code = Math.Clamp(code - 1, 0, 5);
             simConnect.SendDataOnSimObject(new T() { RangeCode = code, OansRange = oans, RangeFenix = code });
         }
     }
