@@ -124,8 +124,8 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             _logging!.LogDebug("Requesting initial data");
             foreach (IRequestDataOnOpen request in typeToRequest!.Keys.OfType<IRequestDataOnOpen>())
                 RequestDataOnSimObject(request, request.GetInitialRequestPeriod());
-            foreach (var handler in onAircraftLoadedHandlers)
-                handler.OnAircraftLoaded(this);
+            RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
+            _logging!.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
         }
 
         private void Handle_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
@@ -331,7 +331,7 @@ _logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {dataLog} f
             EVENT e = (EVENT)data.uEventID;
             if (e == EVENT.SimSystemState)
                 HandleSimSystemStateEvent(simConnect, data);
-            else if (e == EVENT.AircraftLoaded) // We could get the name directly from this event, but it's hard work.
+            else if (e == EVENT.AircraftLoaded) // The name is available directly, but the event isn't sent when connecting "in flight".
                 RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
             else
             {
@@ -356,11 +356,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         private void HandleSimSystemStateEvent(SimConnect _, SIMCONNECT_RECV_EVENT data)
         {
             if ((IsSimStarted = (data.dwData == 1)) == true)
-            {
-                RequestSystemState(REQUEST.AircraftLoaded, "AircraftLoaded");
-                _logging!.LogInformation($"Requested AircraftLoaded {GetLastSentPacketID()}");
                 OnSimIsRunning();
-            }
             else
                 StopAutoRequests();
         }
