@@ -20,18 +20,16 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 1031;
 
+        public static readonly int BUTTON_LEFT_INTUITIVE_DISCONNECT = 0;
+        public static readonly int BUTTON_RIGHT_INTUITIVE_DISCONNECT = 1;
+        public static readonly int BUTTON_LEFT_ENGINE_MASTER = 2;
+        public static readonly int BUTTON_RIGHT_ENGINE_MASTER = 3;
         /* Buttons
-        0 left intuitive disconnect
-        1 right intuitive disconnect
-        2 left engine master
-        3 right engine master
         4 left fire "light"
         4 right fire "light"
         6 engine mode crank
         7 engine mode ignition/start
            Switches - are there any? */
-        public static readonly int BUTTON_LEFT_INTUITIVE_DISCONNECT = 0;
-        public static readonly int BUTTON_RIGHT_INTUITIVE_DISCONNECT = 1;
         public static readonly int AXIS_LEFT_THRUST = 0;
         public static readonly int AXIS_RIGHT_THRUST = 1;
         protected override void OnUpdate(ExtendedSimConnect simConnect)
