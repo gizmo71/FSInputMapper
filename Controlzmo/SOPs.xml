@@ -238,8 +238,8 @@
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Rejected from 1000fpm</Text>
 	</Airline>
-	<Airline callsign="redwood|velocity|virgin(?:[- ]nigeria)?|vir"> <!-- VRGN Virtual -->
-		<!-- Annoyingly, some of the skins seem to struggle to set the callsign. :-( -->
+	<Airline callsign="^redwood|velocity|v[ei]rgin(?:[- ]nigeria)?|vir$"> <!-- VRGN Virtual -->
+		<!-- "Virgin" is classed as a naughty word and can't be entered in game! -->
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
