@@ -20,7 +20,99 @@ namespace Controlzmo.Controls
         private readonly Throttle3Event set3;
         private readonly Throttle4Event set4;
 
-        internal void Set(ExtendedSimConnect sc, Int32 raw, int bitmap)
+        internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new, int bitmap)
+        {
+            // old/@new - 1 is full reverse, through to 0 at TOGA.
+            double normalised;
+            if (sc.IsFBW || sc.IsFenix)
+                normalised = AirbusSnap(1 - @new, tl);
+            else // The default is to return the non-reverse range as if the reversers were elsewhere.
+            {
+                normalised = @new < 0.71 ? 1 - 2 * @new / 0.71 : -1;
+                if (@new > 0.8) ; //TODO: activate reversers somehow
+            }
+            _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
+
+            var raw = (Int32) (16384 * normalised);
+            Set(sc, raw, bitmap);
+        }
+
+        private double AirbusSnap(double hardware, AbstractThrustLever tl)
+        {
+// Fenix appears to use defaults starting at 0, not -1.
+// https://github.com/flybywiresim/aircraft/blob/fa3414778ec26b1a2c7cbc6cdc1d38a2800aff3a/fbw-a32nx/docs/Configuration/ThrottleConfiguration.ini
+            const double OUTPUT_MAX_REVERSE = -1;
+            const double OUTPUT_IDLE_REVERSE = -0.2;
+            const double OUTPUT_IDLE = 0;
+            const double OUTPUT_CLB = 0.7;
+            const double OUTPUT_FLX_MCT = 0.85;
+            const double OUTPUT_TOGA = 1;
+
+            double inputLow = -1;
+            double inputHigh = 2;
+            double outputLow;
+            double outputHigh;
+            var position = "?";
+            if (hardware < tl.StartRevIdle())
+            {
+                inputLow = 0;
+                inputHigh = tl.StartRevIdle();
+                outputLow = OUTPUT_MAX_REVERSE;
+                outputHigh = OUTPUT_IDLE_REVERSE;
+                position = "reverse beyond idle";
+            }
+            else if (hardware < tl.StartIdle())
+            {
+                outputLow = outputHigh =  OUTPUT_IDLE_REVERSE;
+                position = "reverse idle";
+            }
+            else if (hardware < tl.EndIdle())
+            {
+                outputLow = outputHigh =  OUTPUT_IDLE;
+                position = "idle";
+            }
+            else if (hardware < tl.StartClimb())
+            {
+                inputLow = tl.EndIdle();
+                inputHigh = tl.StartClimb();
+                outputLow = OUTPUT_IDLE;
+                outputHigh = OUTPUT_CLB;
+                position = "manual thrust";
+            }
+            else if (hardware < tl.EndClimb())
+            {
+                outputLow = outputHigh =  OUTPUT_CLB;
+                position = "CLB";
+            }
+            else if (hardware < tl.StartFlex())
+            {
+                inputLow = tl.EndClimb();
+                inputHigh = tl.StartFlex();
+                outputLow = OUTPUT_CLB;
+                outputHigh = OUTPUT_FLX_MCT;
+                position = "manual between CLB and FLX";
+            }
+            else if (hardware < tl.EndFlex())
+            {
+                outputLow = outputHigh = OUTPUT_FLX_MCT;
+                position = "FLX/MCT";
+            }
+            else
+            {
+                inputLow = tl.EndFlex();
+                inputHigh = 1;
+                outputLow = OUTPUT_FLX_MCT;
+                outputHigh = OUTPUT_TOGA;
+                position = "above FLX";
+            }
+
+            var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
+            var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
+System.Console.WriteLine($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000} for {tl.LeverNumber}");
+            return mapped;
+        }
+
+        private void Set(ExtendedSimConnect sc, Int32 raw, int bitmap)
         {
             var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(raw), 0);
             if ((bitmap & 1) != 0) sc.SendEvent(set1, encoded);
@@ -37,103 +129,51 @@ namespace Controlzmo.Controls
         private readonly int bitmapTwin;
         private readonly int bitmapQuad;
 
+        internal int LeverNumber {  get => bitmapTwin; }
+
         abstract public int GetAxis();
-        public void OnChange(ExtendedSimConnect sc, double old, double @new)
+        public void OnChange(ExtendedSimConnect sc, double _, double @new)
         {
-            // old/@new - 1 is full reverse, through to 0 at TOGA.
-            double normalised;
-            if (sc.IsFBW || sc.IsFenix)
-                normalised = AirbusSnap(1 - @new);
-            else // The default is to return the non-reverse range as if the reversers were elsewhere.
-            {
-                normalised = @new < 0.71 ? 1 - 2 * @new / 0.71 : -1;
-                if (@new > 0.8) ; //TODO: activate reversers somehow
-            }
-System.Console.WriteLine($"-->>--\t\t{1 - @new} -> {normalised}");
-
-            var raw = (Int32) (16384 * normalised);
             //TODO: this based on actual number of engines, rather than specific aircraft.
-            setTLs.Set(sc, raw, sc.IsA380X || sc.IsB748 ? bitmapQuad : bitmapTwin);
+            setTLs.ConvertAndSet(sc, this, @new, sc.IsA380X || sc.IsB748 ? bitmapQuad : bitmapTwin);
         }
 
-        private double AirbusSnap(double hardware)
-        {
-// Fenix appears to use defaults starting at 0, not -1.
-// https://github.com/flybywiresim/aircraft/blob/fa3414778ec26b1a2c7cbc6cdc1d38a2800aff3a/fbw-a32nx/docs/Configuration/ThrottleConfiguration.ini
-            const double OUTPUT_MAX_REVERSE = -1;
-            const double OUTPUT_IDLE_REVERSE = -0.2;
-            const double OUTPUT_IDLE = 0;
-            const double OUTPUT_CLB = 0.7;
-            const double OUTPUT_FLX_MCT = 0.85;
-            const double OUTPUT_TOGA = 1;
-
-            double inputLow = 0.275;
-            double inputHigh = 1;
-            double outputLow = 0;
-            double outputHigh = 1;
-            if (hardware < 0.185) // 0.20 (L) 0.19 (R) idle reverse
-            {
-                inputLow = 0;
-                inputHigh = 0.185;
-                outputLow = OUTPUT_MAX_REVERSE;
-                outputHigh = OUTPUT_IDLE_REVERSE;
-            }
-            else if (hardware < 0.20) // 0.255 (L) 0.23 (R) idle
-            {
-                return OUTPUT_IDLE_REVERSE;
-            }
-            else if (hardware < 0.26)
-            {
-                return OUTPUT_IDLE;
-            }
-            else if (hardware < 0.5) // 0.607 (L) 0.55 (R) CLB
-            {
-                inputLow = 0.26;
-                inputHigh = 0.5;
-                outputLow = OUTPUT_IDLE;
-                outputHigh = OUTPUT_CLB;
-            }
-            else if (hardware < 0.65)
-            {
-                return OUTPUT_CLB;
-            }
-            else if (hardware < 0.66) // 0.782 (L) 0.704 (R) FLX/MCT
-            {
-                inputLow = 0.495;
-                inputHigh = 0.66;
-                outputLow = OUTPUT_CLB;
-                outputHigh = OUTPUT_FLX_MCT;
-            }
-            else if (hardware < 0.83)
-            {
-                return OUTPUT_FLX_MCT;
-            }
-            else
-            {
-                inputLow = 0.83;
-                inputHigh = 1;
-                outputLow = OUTPUT_FLX_MCT;
-                outputHigh = OUTPUT_TOGA;
-            }
-// Snap zone probably about 0.05 around each...
-            var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
-            return positionInRange * (outputHigh - outputLow) + outputLow;
-        }
+        internal abstract double StartRevIdle();
+        internal abstract double StartIdle();
+        internal abstract double EndIdle();
+        internal abstract double StartClimb();
+        internal abstract double EndClimb();
+        internal abstract double StartFlex();
+        internal abstract double EndFlex();
     }
 
     [Component]
     [RequiredArgsConstructor]
     public partial class LeftThrustLever : AbstractThrustLever
     {
-        public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1, 3) { }
+        public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 0b01, 0b0011) { }
         public override int GetAxis() => TcaAirbusQuadrant.AXIS_LEFT_THRUST;
+        internal override double StartRevIdle() => 0.17;
+        internal override double StartIdle() => 0.235;
+        internal override double EndIdle() => 0.305;
+        internal override double StartClimb() => 0.565;
+        internal override double EndClimb() => 0.645;
+        internal override double StartFlex() => 0.7;
+        internal override double EndFlex() => 0.83;
     }
 
     [Component]
     [RequiredArgsConstructor]
     public partial class RightThrustLever : AbstractThrustLever
     {
-        public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2, 12) { }
+        public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 0b10, 0b1100) { }
         public override int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
+        internal override double StartRevIdle() => 0.17;
+        internal override double StartIdle() => 0.215;
+        internal override double EndIdle() => 0.295;
+        internal override double StartClimb() => 0.54;
+        internal override double EndClimb() => 0.585;
+        internal override double StartFlex() => 0.66;
+        internal override double EndFlex() => 0.8;
     }
 }
