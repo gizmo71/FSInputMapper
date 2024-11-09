@@ -104,14 +104,14 @@
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
-		<Text type=".*">Preparation 20-45 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first unless OETD, 3m between</Text>
-		<Text type=".*">5s between starts; warm up (2m)</Text>
-		<Text type=".*">OETA#2, 3m between; cool down (2m)</Text>
+		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
+		<Text type=".*">Start #2 first unless OETD</Text>
+		<Text type=".*">30s between starts; warm up</Text>
+		<Text type=".*">OETA#2; cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have 1T ≤ fuel ≤ 5T on landing</Text>
-		<Text type=".*">Rejected 700fpm</Text>
+		<Text type=".*">Must have 1.5T ≤ fuel on landing</Text>
+		<Text type=".*">Rejected &gt; 700fpm; -ve points  at 1000fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
