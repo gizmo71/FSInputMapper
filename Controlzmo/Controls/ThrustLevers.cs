@@ -39,13 +39,11 @@ namespace Controlzmo.Controls
 
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
-// Fenix appears to use defaults starting at 0, not -1.
-// https://github.com/flybywiresim/aircraft/blob/fa3414778ec26b1a2c7cbc6cdc1d38a2800aff3a/fbw-a32nx/docs/Configuration/ThrottleConfiguration.ini
             const double OUTPUT_MAX_REVERSE = -1;
-            const double OUTPUT_IDLE_REVERSE = -0.2;
-            const double OUTPUT_IDLE = 0;
-            const double OUTPUT_CLB = 0.7;
-            const double OUTPUT_FLX_MCT = 0.85;
+            const double OUTPUT_IDLE_REVERSE = -0.8;
+            const double OUTPUT_IDLE = -0.5;
+            const double OUTPUT_CLB = 0;
+            const double OUTPUT_FLX_MCT = 0.5;
             const double OUTPUT_TOGA = 1;
 
             double inputLow = -1;
@@ -106,9 +104,10 @@ namespace Controlzmo.Controls
                 position = "above FLX";
             }
 
+            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not be noticable.
             var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
             var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
-System.Console.WriteLine($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000} for {tl.LeverNumber}");
+            _logger.LogInformation($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000} for {tl.LeverNumber}");
             return mapped;
         }
 
