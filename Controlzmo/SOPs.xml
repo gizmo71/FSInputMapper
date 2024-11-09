@@ -210,7 +210,7 @@
 		<Text type=".*">Must have fuel ≥ 1300kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
-	<Airline callsign="^(?:nordvind|viva|sun[- ]?express)$"> <!-- vAvion -->
+	<Airline callsign="^(?:nordvind|viva|sun[- ]?express|air[- ]baltic)$"> <!-- vAvion -->
 		<!-- Different from Titan -->
 		<Text type=".*">Flight time &gt;30%/40 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Taxi in time above expected requires review</Text>
