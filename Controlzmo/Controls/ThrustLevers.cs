@@ -104,7 +104,7 @@ namespace Controlzmo.Controls
                 position = "above FLX";
             }
 
-            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not be noticable.
+            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not znoticable.
             var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
             var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
             _logger.LogInformation($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000} for {tl.LeverNumber}");
