@@ -18,6 +18,11 @@ class ComFrequency extends HTMLInputElement {
         this.addEventListener('click', () => {
             this.select();
         });
+        this.addEventListener('input', (event) => {
+            const needsDot = event.target.value.match('^\\d{4}$');
+            if (needsDot)
+                event.target.value = event.target.value.substring(0, 3) + '.' + event.target.value.substring(3);
+        });
     }
 }
 customElements.define('com-frequency', ComFrequency, { extends: "input" });
