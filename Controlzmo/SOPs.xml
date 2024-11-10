@@ -105,8 +105,7 @@
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first unless OETD</Text>
-		<Text type=".*">30s between starts; warm up</Text>
+		<Text type=".*">30s between starts; warm up; OETD</Text>
 		<Text type=".*">OETA#2; cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
