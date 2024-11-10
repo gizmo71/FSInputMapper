@@ -23,6 +23,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 combustion4;
         [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 2.5f)]
         public Double now; // Only has second granularity, despite apparent precision; stops for pauses
+        [SimVar("NUMBER OF ENGINES", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 count;
     };
 
     [Component]
@@ -48,8 +50,7 @@ namespace Controlzmo.Systems.PilotMonitoring
 
         public override void Process(ExtendedSimConnect simConnect, EngineWarmupData data)
         {
-//TODO: support different numbers of engines... MSFS now supports up to 16...
-            int engines = simConnect.IsA380X || simConnect.IsB748 ? 4 : 2;
+            int engines = data.count;
             int running = data.combustion1 + data.combustion2 + data.combustion3 + data.combustion4;
             if (running == engines - 1 && !isArmed)
             {
