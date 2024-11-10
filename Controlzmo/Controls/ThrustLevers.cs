@@ -1,8 +1,10 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Controls
 {
@@ -11,17 +13,38 @@ namespace Controlzmo.Controls
     [Component] public class Throttle3Event : IEvent { public string SimEvent() => "THROTTLE3_AXIS_SET_EX1"; }
     [Component] public class Throttle4Event : IEvent { public string SimEvent() => "THROTTLE4_AXIS_SET_EX1"; }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct EngineData
+    {
+        [SimVar("NUMBER OF ENGINES", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 count;
+    };
+
     [Component, RequiredArgsConstructor]
-    public partial class SetThrustLevers
+    public partial class SetThrustLevers : DataListener<EngineData>, IRequestDataOnOpen
     {
         private readonly ILogger<SetThrustLevers> _logger;
         private readonly Throttle1Event set1;
         private readonly Throttle2Event set2;
         private readonly Throttle3Event set3;
         private readonly Throttle4Event set4;
+        private int _numberOfEngines;
 
-        internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new, int bitmap)
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect simConnect, EngineData data)
         {
+            _numberOfEngines = data.count;
+        }
+
+        internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
+        {
+            int bitmap = 0b1111; // If in doubt, set them all!
+            if (_numberOfEngines > 2) // Assume four, but sort of works for three too.
+                bitmap = tl.LeverNumber == 1 ? 0b0011 : 0b1100;
+            else // Assume two, which will work for one too.
+                bitmap = tl.LeverNumber == 1 ? 0b0001 : 0b0010;
+
             // old/@new - 1 is full reverse, through to 0 at TOGA.
             double normalised;
             if (sc.IsFBW || sc.IsFenix)
@@ -125,17 +148,12 @@ namespace Controlzmo.Controls
     public abstract partial class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
     {
         private readonly SetThrustLevers setTLs;
-        private readonly int bitmapTwin;
-        private readonly int bitmapQuad;
+        private readonly int thrustLeverNumber;
 
-        internal int LeverNumber {  get => bitmapTwin; }
+        internal int LeverNumber {  get => thrustLeverNumber; }
 
         abstract public int GetAxis();
-        public void OnChange(ExtendedSimConnect sc, double _, double @new)
-        {
-            //TODO: this based on actual number of engines, rather than specific aircraft.
-            setTLs.ConvertAndSet(sc, this, @new, sc.IsA380X || sc.IsB748 ? bitmapQuad : bitmapTwin);
-        }
+        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, @new);
 
         internal abstract double StartRevIdle();
         internal abstract double StartIdle();
@@ -150,7 +168,7 @@ namespace Controlzmo.Controls
     [RequiredArgsConstructor]
     public partial class LeftThrustLever : AbstractThrustLever
     {
-        public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 0b01, 0b0011) { }
+        public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => TcaAirbusQuadrant.AXIS_LEFT_THRUST;
         internal override double StartRevIdle() => 0.17;
         internal override double StartIdle() => 0.235;
@@ -165,7 +183,7 @@ namespace Controlzmo.Controls
     [RequiredArgsConstructor]
     public partial class RightThrustLever : AbstractThrustLever
     {
-        public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 0b10, 0b1100) { }
+        public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
         public override int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
         internal override double StartRevIdle() => 0.17;
         internal override double StartIdle() => 0.215;
