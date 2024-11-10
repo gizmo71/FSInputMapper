@@ -52,7 +52,7 @@ namespace Controlzmo.Controls
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
                 normalised = @new < 0.71 ? 1 - 2 * @new / 0.71 : -1;
-                if (@new > 0.8) ; //TODO: activate reversers somehow
+                if (@new > 0.8) ;
             }
             _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
