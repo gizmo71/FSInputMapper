@@ -73,6 +73,8 @@ Map vJoy:
 Other useful things?
 --------------------
 
+Fenix might have more variables to be found in `Community\fnx-aircraft-320\SimObjects\Airplanes\FNX_32X\model\FNX32X_Interior.xml` and similar.
+
 `A32NX_FWC_FLIGHT_PHASE` isn't 100% reliable; goes through 3 and 4 on the first run, but sometimes a second takeoff run goes straight from 2 to 8, especially if using FLEX.
 See src/systems/systems/src/shared/mod.rs - 3 and 4 are the relevant ones.
 
