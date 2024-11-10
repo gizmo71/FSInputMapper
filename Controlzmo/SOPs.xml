@@ -195,8 +195,11 @@
 		<Text type=".*">Review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
-		<Text type="A20N">Preparation 15-60 minutes, air time counts</Text>
-		<Text type="A20N">Start #1 first, OETD, warm up; OETA, cool down</Text>
+		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
+		<Text type=".*">Start #1 first, 30s between</Text>
+		<Text type=".*">OETD, 1m between; OETA, 1m between</Text>
+		<Text type="A2[01]N">Warm up (5m), cool down (5m)</Text>
+		<Text type="A32[01]">Warm up (3m), cool down (3m)</Text>
 		<Text type=".*">Pauses in flight &gt;60m (cumulative) require PIREP comment</Text>
 		<Text type=".*">Flight time &gt;25%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
