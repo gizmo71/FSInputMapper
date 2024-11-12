@@ -12,7 +12,7 @@
 	<Airline callsign="american">
 		<Text type=".*">Preparation 15 to 90 minutes, air time counts</Text>
 		<Text type=".*">Start #2 first, 5s between; warm up; cool down</Text>
-		<Text type=".*">Rejected >550fpm; invalidated >750fpm</Text>
+		<Text type=".*">Rejected &gt;550fpm; invalidated &gt;750fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:arabia([- ].*)?|nawras|okaab|arna)$">
 		<Text type=".*">Preparation 20 to 60 minutes, block time</Text>
