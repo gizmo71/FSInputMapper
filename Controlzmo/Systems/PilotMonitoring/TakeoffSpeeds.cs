@@ -74,6 +74,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
             //TODO: also reset in case of RTO.
             wasAbove80 = wasAboveV1 = wasAboveVR = null;
+            if (!simConnect.IsA380X) wasAboveV1 = true; // Suppress the call as the A380X does it for us.
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
@@ -93,7 +94,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
 
             _ = SetAndCallIfRequired(80, data.kias, "eighty knots", ref wasAbove80, 0);
-            if (data.vr < data.v1 + 3)
+            if (data.vr < data.v1 + 3 && wasAboveV1 == false)
             {
                 _ = SetAndCallIfRequired(data.v1, data.kias, "vee one rotate", ref wasAboveV1, 3);
                 wasAboveVR = wasAboveV1;
