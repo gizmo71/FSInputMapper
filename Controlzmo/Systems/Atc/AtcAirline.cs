@@ -54,6 +54,7 @@ namespace Controlzmo.Systems.Atc
         public void OnStarted(ExtendedSimConnect simConnect) => OnAircraftLoaded(simConnect);
 
         public void OnAircraftLoaded(ExtendedSimConnect simConnect) {
+            hub.Clients.All.SetFromSim("atcAirline", "aircraft loaded");
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.ONCE);
         }
 
