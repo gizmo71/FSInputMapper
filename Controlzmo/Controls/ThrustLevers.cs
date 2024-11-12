@@ -51,8 +51,14 @@ namespace Controlzmo.Controls
                 normalised = AirbusSnap(1 - @new, tl);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
-                normalised = @new < 0.71 ? 1 - 2 * @new / 0.71 : -1;
-                if (@new > 0.8) ;
+                normalised = @new < 0.65 ? 1 - 2 * @new / 0.65 : -1;
+                if (@new > 0.8) {
+                    var revValue = 100.0 * ((@new - 0.8) / 0.2);
+Console.WriteLine($"Rev Value {revValue}");
+                    //sc.SendEvent(wtRev1, (uint) revValue);
+                    //return;
+                }
+else Console.WriteLine($"Normalised {normalised}");
             }
             _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
