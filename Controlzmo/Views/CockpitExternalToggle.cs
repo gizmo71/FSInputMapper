@@ -21,9 +21,6 @@ namespace Controlzmo.Views
     [RequiredArgsConstructor]
     public partial class CockpitExternalToggleHotas : IButtonCallback<T16000mHotas>
     {
-        private const Int32 COCKPIT = 2;
-        private const Int32 CHASE = 3;
-
         private readonly ILogger<CockpitExternalToggleHotas> _logger;
         private readonly VirtualJoy vJoy;
         private readonly CameraState state;
@@ -31,7 +28,7 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
         {
-            if (state.Current.cameraState == COCKPIT || state.Current.cameraState == CHASE) {
+            if (state.Current.cameraState == CameraState.COCKPIT || state.Current.cameraState == CameraState.CHASE || state.Current.cameraState == CameraState.WORLD_MAP) {
                 _logger.LogTrace($"Sending 114 for {state.Current.cameraState}");
                 vJoy.getController().QuickClick(114u);
             } else
