@@ -101,16 +101,21 @@
         <table style="font-size: larger">
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
+                    <input type="radio" name="comtx" id="com1tx" class="sendRadio" value="1" />
                     <input type="checkbox" checked disabled />
                     <label>COM1</label>
                     <input id="com1active" readonly size="7" class="lcdDisplay" />
                     <input type="button" id="com1swap" value="↔" class="sendButton" />
                     <input id="com1standby" is="com-frequency" class="lcdDisplay sendText" />
                 </td>
-                <td class="tableCaption" rowspan="2">VHF</td>
+                <td class="tableCaption" rowspan="2">
+                    VHF
+                    <input type="radio" name="comtx" id="comTxNone" class="sendRadio" style="display: none;" value="0" />
+                </td>
             </tr>
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
+                    <input type="radio" name="comtx" id="com2tx" class="sendRadio" value="2" />
                     <input type="checkbox" id="com2rx" class="sendBoolean" />
                     <label>COM2</label>
                     <input id="com2active" readonly size="7" class="lcdDisplay" />
