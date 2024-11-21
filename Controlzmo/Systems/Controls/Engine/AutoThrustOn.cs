@@ -1,13 +1,13 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System.Runtime.InteropServices;
+using System;
 
-namespace Controlzmo.Systems.Autothrust
+namespace Controlzmo.Systems.Controls.Engine
 {
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AutothrottleArmedData
     {
@@ -18,17 +18,22 @@ namespace Controlzmo.Systems.Autothrust
         [SimVar("L:A32NX_AUTOTHRUST_MODE", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 a32nxAutothrustMode;
     };
-// Why does this seem to be so much more complex than it was in the WASM module?!
 
-//TODO: or A32NX.FCU_ATHR_PUSH?
     [Component] public class ToggleAutothrustArmEvent : IEvent { public string SimEvent() => "AUTO_THROTTLE_ARM"; }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>
+    [Component, RequiredArgsConstructor]
+    public partial class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>, IButtonCallback<TcaAirbusQuadrant>
     {
         private readonly ToggleAutothrustArmEvent _event;
         private readonly ILogger<AutothrottleArmedDataListener> _logger;
+
+        public int GetButton() => TcaAirbusQuadrant.BUTTON_LEFT_INTUITIVE_DISCONNECT;
+
+        public virtual void OnPress(ExtendedSimConnect simConnect)
+        {
+            _logger.LogDebug("User has asked to arm autothrust");
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+        }
 
         public override void Process(ExtendedSimConnect simConnect, AutothrottleArmedData data)
         {
