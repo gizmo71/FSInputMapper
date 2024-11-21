@@ -4,6 +4,16 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Controls
 {
+    [Component] public class SetRudderEvent : IEvent { public string SimEvent() => "AXIS_RUDDER_SET"; }
+
+    [Component, RequiredArgsConstructor]
+    public partial class Rudder : IAxisCallback<T16000mHotas>
+    {
+        private readonly SetRudderEvent _event;
+        public int GetAxis() => T16000mHotas.AXIS_RUDDER_PEDALS;
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => sc.SendEvent(_event, 16383 - (int) (32767.0 * @new));
+    }
+
     [Component]
     public class ToeBrakeSetter
     {
@@ -15,7 +25,7 @@ namespace Controlzmo.Systems.Controls
                       0 = 27%
                   +8191 = 53%
                  +16383 = 100% */
-            var mapped = 16383 - (int) (32768.0 * value);
+            var mapped = 16383 - (int) (32767.0 * value);
             sc.SendEvent(@event, mapped);
         }
     }
