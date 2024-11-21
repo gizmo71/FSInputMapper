@@ -3,7 +3,7 @@ using System;
 
 namespace Controlzmo.GameControllers
 {
-    [Component]
+    //[Component]
     public class T16000mStick : GameController<T16000mStick>
     {
         public T16000mStick(IServiceProvider sp) : base(sp, 16, 4, 1) { }
