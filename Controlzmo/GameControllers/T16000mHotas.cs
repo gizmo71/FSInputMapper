@@ -11,18 +11,25 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 1103;
         public override ushort Product() => 46727;
 
-        /* Axes
-        3 right toe brake; 0 max->1 none
-        4 left toe brake; 0 max->1 none
-        /* Switches
-        0 top coolie hat (directions reported as if looking directly at it)
-         */
-        public static readonly int AXIS_MINISTICK_HORIZONTAL = 0; // 0 left->1 right
-        public static readonly int AXIS_MINISTICK_VERTICAL = 1; // 0 up->1 down
-        public static readonly int AXIS_THROTTLE = 2; // 1 ide->0 max
-        public static readonly int AXIS_RUDDER_PADDLES = 5; // 0 left->1 right
-        public static readonly int AXIS_RUDDER_PEDDLES = 6; // 0 left->1 right
-        public static readonly int AXIS_WHEEL = 7; // ThrustMaster call it "Antenna"; 0 aft->1 back.
+        /// <summary>0 left->1 right</summary>
+        public static readonly int AXIS_MINISTICK_HORIZONTAL = 0;
+        /// <summary>0 up->1 down</summary>
+        public static readonly int AXIS_MINISTICK_VERTICAL = 1;
+        /// <summary>1 idle->0 max</summary>
+        public static readonly int AXIS_THROTTLE = 2;
+        /// <summary>0 max->1 none</summary>
+        public static readonly int AXIS_TOE_BRAKE_L = 3;
+        /// <summary>0 max->1 none</summary>
+        public static readonly int AXIS_TOE_BRAKE_R = 4;
+        /// <summary>0 left->1 right</summary>
+        public static readonly int AXIS_RUDDER_PADDLES = 5;
+        /// <summary>0 left->1 right</summary>
+        public static readonly int AXIS_RUDDER_PEDALS = 6;
+        /// <summary>ThrustMaster call it "Antenna"; 0 aft->1 back</summary>
+        public static readonly int AXIS_WHEEL = 7;
+
+        /// <summary>Directions reported as if looking directly at it</summary>
+        public static readonly int SWITCH_TOP_COOLIE_HAT = 7;
 
         public static readonly int BUTTON_SIDE_RED = 0;
         public static readonly int BUTTON_FRONT_LEFT_RED = 1;
@@ -30,10 +37,10 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_FRONT_ROCKER_UP = 3;
         public static readonly int BUTTON_FRONT_ROCKER_DOWN = 4;
         public static readonly int BUTTON_MINISTICK = 5;
-        // 6 middle big "rocker" pad up
-        // 7 middle big "rocker" pad fore
-        // 8 middle big "rocker" pad down
-        // 9 middle big "rocker" pad aft
+        public static readonly int BUTTON_MID_BIG_ROCKER_PAD_UP = 6;
+        public static readonly int BUTTON_MID_BIG_ROCKER_PAD_FORE = 7;
+        public static readonly int BUTTON_MID_BIG_ROCKER_PAD_AFT = 8;
+        public static readonly int BUTTON_MID_BIG_ROCKER_PAD_DOWN = 9;
         // Bottom hat or "castle".
         public static readonly int BUTTON_BOTTOM_HAT_UP = 10;
         public static readonly int BUTTON_BOTTOM_HAT_FORE = 11;
