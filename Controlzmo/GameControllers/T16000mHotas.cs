@@ -18,9 +18,9 @@ namespace Controlzmo.GameControllers
         /// <summary>1 idle->0 max</summary>
         public static readonly int AXIS_THROTTLE = 2;
         /// <summary>0 max->1 none</summary>
-        public static readonly int AXIS_TOE_BRAKE_L = 3;
+        public static readonly int AXIS_TOE_BRAKE_RIGHT = 3;
         /// <summary>0 max->1 none</summary>
-        public static readonly int AXIS_TOE_BRAKE_R = 4;
+        public static readonly int AXIS_TOE_BRAKE_LEFT = 4;
         /// <summary>0 left->1 right</summary>
         public static readonly int AXIS_RUDDER_PADDLES = 5;
         /// <summary>0 left->1 right</summary>
