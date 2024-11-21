@@ -5,6 +5,16 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Controls
 {
+    [Component] public class TillerEvent : IEvent { public string SimEvent() => "AXIS_STEERING_SET"; }
+
+    [Component, RequiredArgsConstructor]
+    public partial class Tiller : IAxisCallback<UrsaMinorFighterR>
+    {
+        private readonly TillerEvent _event;
+        public int GetAxis() => UrsaMinorFighterR.AXIS_TWIST;
+        public void OnChange(ExtendedSimConnect sc, double _, double @new) => sc.SendEvent(_event, 16383 - (int) (32767.0 * @new));
+    }
+
     [Component]
     [RequiredArgsConstructor]
     public partial class PedalDisconnect : IButtonCallback<UrsaMinorFighterR>
