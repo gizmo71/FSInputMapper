@@ -101,7 +101,7 @@
 		<!-- OETA/OETD are in the scorers, but setup is wrong and cannot be achieved -->
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have 6T ≥ fuel ≥ 1T on landing</Text>
+		<Text type=".*">Must have 6T ≥ fuel ≥ 1200kg on landing</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
