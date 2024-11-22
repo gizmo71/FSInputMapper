@@ -48,7 +48,7 @@
 	<Airline callsign="^(?:speed[- ]?bird|shuttle)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A319|A32[01]|A2[01]N">Start #2 first, 60s between; OETD(#2) 2m between</Text>
-		<Text>Warm up; cool down</Text>
+		<Text type=".*">Warm up; cool down</Text>
 		<Text type="A319|A32[01]|A2[01]N">OETA, 30s between</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
 		<Text type=".*">Rejected/invalidated 600fpm</Text>
