@@ -49,6 +49,14 @@ connection.on("SetFromSim", function (name, newValue) {
     jqInput.prop('disabled', newValue == null);
 });
 
+var toasts = new Map();
+connection.on('Toast', function (id, text) {
+    if (toasts.has(id))
+        toasts.get(id).update({ text: text });
+    else
+        toasts.set(id, $.toast({ text: text, beforeHide: () => toasts.delete(id) }));
+});
+
 function vjoyClick() {
     let id = Number(prompt('Send vJoy button press', 1));
     connection.invoke('SetInSim', 'vJoyClick', id).catch(errorHandler);
