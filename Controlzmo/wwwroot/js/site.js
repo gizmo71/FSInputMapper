@@ -49,6 +49,11 @@ connection.on("SetFromSim", function (name, newValue) {
     jqInput.prop('disabled', newValue == null);
 });
 
+function vjoyClick() {
+    let id = Number(prompt('Send vJoy button press', 1));
+    connection.invoke('SetInSim', 'vJoyClick', id).catch(errorHandler);
+}
+
 function speak(text) {
     // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis
     var utterance = new SpeechSynthesisUtterance(text);

@@ -204,7 +204,15 @@ F5/F6 remove/insert (before current) waypoint
     </div>
     <div id="tabs-debug">
         <label for="jetbridge"><b>JetBridge</b></label>
+            <span style="float: right;"><input type="button" value="vJoy press" onclick="vjoyClick();" /></span>
         <input id="jetbridge" size="80" maxlength="127" class="sendText" />
+        <div>
+            <textarea cols="40" rows="5" id="metar"></textarea><br/>
+            <input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
+            METAR
+            <input id="metarIcao" maxlength="4" size="4em" />
+            <input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
+            </div>
         <div style="float: right;">
             <b><label for="serialInbound">Serial Inbound</label></b>
             <input id="serialInbound" maxlength="30" class="sendText" size="20" />
@@ -215,13 +223,8 @@ F5/F6 remove/insert (before current) waypoint
         <input type="button" id="reconnect" value="Reconnect" onClick="reconnect()" />
         <input type="button" id="remcdu" value="Reset MCDU page" onClick="document.getElementById('tabs-mcdu').src = 'mcdu.html'" />
         <div id="landingRateWidgit" style="margin: 10px;">
-            Rate <input id="landingRate" />, AGL <input id="landingAgl" />
+            Rate <input id="landingRate" size="10" /> AGL <input id="landingAgl" size="10" />
         </div>
-        METAR
-            <input id="metarIcao" maxlength="4" size="4em" />
-            <input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
-            <textarea cols="40" rows="5" id="metar"></textarea>
-            <input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
     </div>
   </div>
 </div>

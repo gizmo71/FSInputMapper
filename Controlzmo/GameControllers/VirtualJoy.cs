@@ -1,4 +1,6 @@
-﻿using CoreDX.vJoy.Wrapper;
+﻿using Controlzmo.Hubs;
+using CoreDX.vJoy.Wrapper;
+using SimConnectzmo;
 using System;
 using System.Linq;
 using System.Threading;
@@ -7,24 +9,27 @@ using System.Threading.Tasks;
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class VirtualJoy : IDisposable
+    public class VirtualJoy : IDisposable, ISettable<uint>
     {
         private readonly VJoyControllerManager vJoyManager;
-        private readonly IVJoyController controller1;
+        private readonly IVJoyController _controller;
 
         public VirtualJoy()
         {
             vJoyManager = VJoyControllerManager.GetManager();
-            controller1 = vJoyManager.AcquireController(1);
+            _controller = vJoyManager.AcquireController(1);
         }
 
-        public IVJoyController getController() => controller1;
+        public IVJoyController getController() => _controller;
 
         public void Dispose()
         {
-            vJoyManager.RelinquishController(controller1);
+            vJoyManager.RelinquishController(_controller);
             vJoyManager.Dispose();
         }
+
+        public string GetId() => "vJoyClick";
+        public void SetInSim(ExtendedSimConnect simConnect, uint buttonId) => _controller.QuickClick(buttonId);
     }
 
     public static class IVJoyControllerExtensions
