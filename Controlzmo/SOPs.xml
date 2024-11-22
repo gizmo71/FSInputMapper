@@ -47,10 +47,11 @@
 	</Airline>
 	<Airline callsign="^(?:speed[- ]?bird|shuttle)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, 60s between starts; OETD(#2) 2m between; warm up</Text>
-		<Text type=".*">OETA, 30s between; cool down</Text>
+		<Text type="A319|A32[01]|A2[01]N">Start #2 first, 60s between; OETD(#2) 2m between</Text>
+		<Text>Warm up; cool down</Text>
+		<Text type="A319|A32[01]|A2[01]N">OETA, 30s between</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
-		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
+		<Text type=".*">Rejected/invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
 		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
