@@ -1,5 +1,7 @@
-﻿using Controlzmo.Serial;
+﻿using Controlzmo.Hubs;
+using Controlzmo.Serial;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -44,12 +46,12 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 iniFpaSelected;
     };
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuDisplayBottomRight : DataListener<FcuBottomRightData>, ITrkFpaListener
     {
         private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
@@ -76,6 +78,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var managed = data.isManaged == 1 ? '\x1' : ' ';
             var line2 = $"{data.fcuAlt:00000}   {managed}  {VS(data)}";
             serial.SendLine($"fcuBR={line2}");
+            hub.Clients.All.Toast("FCU", line2);
         }
 
         private string VS(FcuBottomRightData data)

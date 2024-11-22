@@ -1,5 +1,7 @@
-﻿using Controlzmo.Serial;
+﻿using Controlzmo.Hubs;
+using Controlzmo.Serial;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -37,12 +39,12 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isManagedHeadingFenix;
     };
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuDisplayBottomLeft : DataListener<FcuBottomLeftData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
         private readonly ILogger<FcuDisplayBottomLeft> logger;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
@@ -64,6 +66,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var headingDot = data.isManagedHeading == 1 ? '\x1' : ' ';
             var line2 = $"{Speed(data)} {speedDot}  {heading}   {headingDot} ";
             serial.SendLine($"fcuBL={line2}");
+            hub.Clients.All.Toast("FCU", line2);
         }
 
         private static string Speed(FcuBottomLeftData data)
