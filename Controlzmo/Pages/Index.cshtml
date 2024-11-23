@@ -204,15 +204,17 @@ F5/F6 remove/insert (before current) waypoint
     </div>
     <div id="tabs-debug">
         <label for="jetbridge"><b>JetBridge</b></label>
-            <span style="float: right;"><input type="button" value="vJoy press" onclick="vjoyClick();" /></span>
+        <span style="float: right;"><input type="button" value="vJoy press" onclick="vjoyClick();" /></span>
         <input id="jetbridge" size="80" maxlength="127" class="sendText" />
         <div>
-            <textarea cols="40" rows="5" id="metar"></textarea><br/>
-            <input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
-            METAR
-            <input id="metarIcao" maxlength="4" size="4em" />
-            <input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
-            </div>
+            <span style="float: right;">
+                METAR
+                <br /><input id="metarIcao" maxlength="4" size="4em" />
+                <br /><input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
+                <br /><input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
+            </span>
+            <textarea cols="34" rows="5" id="metar"></textarea><br />
+        </div>
         <div style="float: right;">
             <b><label for="serialInbound">Serial Inbound</label></b>
             <input id="serialInbound" maxlength="30" class="sendText" size="20" />
