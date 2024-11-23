@@ -4,25 +4,24 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Controls
 {
-    [Component] public class SetGearEvent : IEvent { public string SimEvent() => "GEAR_SET"; }
+    // We prefer "GEAR_SET", but Fenix doesn't support it. :-(
+    [Component] public class GearUpEvent : IEvent { public string SimEvent() => "GEAR_UP"; }
+    [Component] public class GearDownEvent : IEvent { public string SimEvent() => "GEAR_DOWN"; }
 
     [Component, RequiredArgsConstructor]
     public partial class LandingGearHandle : IAxisCallback<UrsaMinorFighterR>
     {
-        private readonly SetGearEvent _event;
+        private readonly GearUpEvent _up;
+        private readonly GearDownEvent _down;
 
         public int GetAxis() => UrsaMinorFighterR.AXIS_THROTTLE;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
-            uint value;
             if (@new < 0.25 && old >= 0.25)
-                value = 0; // Up
+                sc.SendEvent(_up);
             else if (@new > 0.75 && old <= 0.75)
-                value = 1; // Down
-            else
-                return;
-            sc.SendEvent(_event, value);
+                sc.SendEvent(_down);
         }
     }
 }
