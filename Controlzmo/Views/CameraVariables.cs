@@ -14,8 +14,7 @@ namespace Controlzmo.Views
         public Int32 cameraState;
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class CameraState : DataListener<CameraStateData>, IOnSimStarted
     {
         public static readonly int COCKPIT = 2;
@@ -25,12 +24,20 @@ namespace Controlzmo.Views
         public static readonly int WORLD_MAP = 12; // Yep, sometimes it gets stuck on this!
 
         private readonly ILogger<CameraState> log;
-        public CameraStateData Current = new CameraStateData();
+        private readonly SimConnectHolder holder;
+
+        private CameraStateData _current = new CameraStateData();
+
+        public int Current
+        {
+            get => _current.cameraState;
+            set => holder.SimConnect!.SendDataOnSimObject(new CameraStateData { cameraState = value });
+        }
 
         public override void Process(ExtendedSimConnect simConnect, CameraStateData data)
         {
-            Current = data;
-            log.LogTrace($"camera state {Current.cameraState}");
+            _current = data;
+            log.LogTrace($"camera state {_current.cameraState}");
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)

@@ -28,11 +28,12 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
         {
-            if (state.Current.cameraState == CameraState.COCKPIT || state.Current.cameraState == CameraState.CHASE || state.Current.cameraState == CameraState.WORLD_MAP) {
-                _logger.LogTrace($"Sending 114 for {state.Current.cameraState}");
+// In FS2024, this can go cockpit->external, but not back again. :-(
+            if (state.Current == CameraState.COCKPIT || state.Current == CameraState.CHASE || state.Current == CameraState.WORLD_MAP) {
+                _logger.LogWarning($"Sending 114 for {state.Current}");
                 vJoy.getController().QuickClick(114u);
             } else
-                _logger.LogTrace($"Wrong camera state for chase view toggle {state.Current.cameraState}");
+                _logger.LogWarning($"Wrong camera state for chase view toggle {state.Current}");
         }
     }
 }

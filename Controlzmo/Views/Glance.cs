@@ -35,7 +35,7 @@ namespace Controlzmo.Views
             }
             if (@new == current)
                 return;
-            if (cameraState.Current.cameraState == CameraState.COCKPIT)
+            if (cameraState.Current == CameraState.COCKPIT)
             {
                 switch (@new)
                 {
@@ -62,7 +62,7 @@ namespace Controlzmo.Views
                 }
 
             }
-            else if (cameraState.Current.cameraState == CameraState.CHASE)
+            else if (cameraState.Current == CameraState.CHASE)
             {
                 vJoy.getController().ReleaseButton(110u);
                 vJoy.getController().ReleaseButton(111u);
@@ -84,7 +84,7 @@ namespace Controlzmo.Views
                         break;
                 }
             }
-            else _log.LogDebug($"unhandled camera state {cameraState.Current.cameraState}");
+            else _log.LogDebug($"unhandled camera state {cameraState.Current}");
             current = @new;
         }
     }

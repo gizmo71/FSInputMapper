@@ -24,7 +24,7 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_MINISTICK;
         public void OnPress(ExtendedSimConnect simConnect) {
             simConnect.SendDataOnSimObject(new ResetCameraData() { resetAction = 1 });
-            if (cameraState.Current.cameraState == CameraState.COCKPIT)
+            if (cameraState.Current == CameraState.COCKPIT)
                 vJoy.getController().QuickClick(105u);
         }
     }
