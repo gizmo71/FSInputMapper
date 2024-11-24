@@ -2,7 +2,6 @@
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
-using System;
 
 namespace Controlzmo.Views
 {
@@ -28,10 +27,12 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
         {
-// In FS2024, this can go cockpit->external, but not back again. :-(
-            if (state.Current == CameraState.COCKPIT || state.Current == CameraState.CHASE || state.Current == CameraState.WORLD_MAP) {
-                _logger.LogWarning($"Sending 114 for {state.Current}");
-                vJoy.getController().QuickClick(114u);
+            if (state.Current == CameraState.CHASE) {
+                _logger.LogWarning($"Requesting cockpit for {state.Current}");
+                state.Current = CameraState.COCKPIT;
+            }  else if (state.Current == CameraState.COCKPIT || state.Current == CameraState.WORLD_MAP) {
+                _logger.LogWarning($"Requesting chase for {state.Current}");
+                state.Current = CameraState.CHASE;
             } else
                 _logger.LogWarning($"Wrong camera state for chase view toggle {state.Current}");
         }

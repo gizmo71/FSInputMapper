@@ -67,7 +67,7 @@ Suggested camera mappings:
 Map vJoy:
 * 100-109 to Camera->Cockpit Camera->Load Custom Camera 0-9
 * 110-113 Camera->External Camera->External Quickview Top/Rear/Left/Right
-* 114 Camera->External Camera->Toggle External View
+* 114 Camera->External Camera->Toggle External View  - not needed as it wasn't functional in MSFS2024
 
 
 Other useful things?
