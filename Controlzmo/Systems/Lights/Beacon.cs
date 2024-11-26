@@ -26,6 +26,8 @@ namespace Controlzmo.Systems.Lights
                 simConnect.SendEvent(setEvent, code);
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_BEACON)");
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, $"{code} (>L:INI_BEACON_LIGHT_SWITCH)");
         }
     }
 }

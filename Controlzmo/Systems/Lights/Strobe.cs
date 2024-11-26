@@ -34,6 +34,11 @@ namespace Controlzmo.Systems.Lights
                 var code = position switch {  "on" => 2, "auto" => 1, _ => 0 };
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_STROBE)");
             }
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            {
+                var code = position switch {  "on" => 0, "auto" => 1, _ => 2 };
+                sender.Execute(simConnect, $"{code} (>L:INI_STROBE_LIGHT_SWITCH)");
+            }
         }
     }
 }

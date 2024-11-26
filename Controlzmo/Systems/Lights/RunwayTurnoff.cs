@@ -28,9 +28,9 @@ namespace Controlzmo.Systems.Lights
                 simConnect.SendEventEx1(rtEvent, code, 3);
             }
             else if (simConnect.IsFenix)
-            {
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_RWY_TURNOFF)");
-            }
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, $"{code} (>L:INI_TURNOFF_LIGHT_SWITCH)");
         }
     }
 }
