@@ -49,6 +49,10 @@ connection.on("SetFromSim", function (name, newValue) {
     jqInput.prop('disabled', newValue == null);
 });
 
+function atc(key) {
+    connection.invoke('SetInSim', 'atcKey', key);
+}
+
 var toasts = new Map();
 connection.on('Toast', function (id, text) {
     if (toasts.has(id))
