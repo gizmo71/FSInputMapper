@@ -5,8 +5,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class SeatBeltSign : ISettable<bool?>
     {
         private readonly JetBridgeSender sender;
@@ -16,8 +15,19 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
-            sender.Execute(simConnect, simConnect.IsFenix ? $"{desiredValue} (>L:S_OH_SIGNS)" :
-                "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }");
+            string? action = null;
+            if (simConnect.IsFBW)
+                action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
+            else if (simConnect.IsFenix)
+                action = $"{desiredValue} (>L:S_OH_SIGNS)";
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            {
+                desiredValue = value == true ? 0 : 2;
+                action = $"{desiredValue} (>L:INI_SEATBELTS_SWITCH)";
+            }
+
+            if (action != null)
+                sender.Execute(simConnect, action);
         }
     }
 }
