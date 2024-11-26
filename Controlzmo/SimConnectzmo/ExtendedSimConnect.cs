@@ -101,8 +101,12 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             return this;
         }
 
+        public SIMCONNECT_RECV_OPEN OpenData;
+
         private void Handle_OnRecvOpen(SimConnect _, SIMCONNECT_RECV_OPEN data)
         {
+            OpenData = data;
+
             RegisterDataStructs();
             MapClientEvents();
             SetGroupPriorities();
@@ -255,6 +259,12 @@ wibble = serviceProvider.GetRequiredService<Wibbleator>();
             });
         }
 
+        public void SendEvent(IEvent eventToSend, int data, SIMCONNECT_EVENT_FLAG flags = 0)
+        {
+            var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(data), 0);
+            SendEvent(eventToSend, encoded, flags);
+        }
+
         public void SendEvent(IEvent eventToSend, uint data = 0u, SIMCONNECT_EVENT_FLAG flags = 0)
         {
             ActuallySendEvent(eventToSend, flags, (@event, group, flags) =>
@@ -373,7 +383,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             }
             else if (data.dwRequestID == (uint)REQUEST.AircraftLoaded)
             {
-                var regex = new Regex(@"^SimObjects\\Airplanes\\([^\\]+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
+                var regex = new Regex(@"^SimObjects\\Airplanes\\(.+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
                 var match = regex.Match(data.szString);
                 aircraftFile = match.Success ? match.Groups[1].Value.ToUpper() : data.szString;
                 foreach (var handler in onAircraftLoadedHandlers)
@@ -386,7 +396,8 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         public bool IsFBW { get => !IsFenix && !IsIni320 && !IsB748; } // For now... otherwise we have to worry about all the LVFRs, Headwind etc
         public bool IsA380X { get => aircraftFile.StartsWith("FLYBYWIRE_A380"); }
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_3"); }
-        public bool IsIni320 { get => aircraftFile.Equals("MICROSOFT-AIRCRAFT-A320NEO"); }
+        public bool IsIni320 { get => aircraftFile.Equals("MICROSOFT-AIRCRAFT-A320NEO") || aircraftFile.Equals("MICROSOFT-A320NEO\\PRESETS\\INIBUILDS\\A20N\\CONFIG"); }
+        public bool IsIni321 { get => aircraftFile.Equals("MICROSOFT-A321\\PRESETS\\INIBUILDS\\A21N\\CONFIG"); }
         public bool IsB748 { get => aircraftFile.Equals("ASOBO_B747_8I"); }
 
         private void OnSimIsRunning()
