@@ -24,6 +24,16 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
+/* From WinWing EFIS code for left side
+1 (>K:KOHLSMAN_INC)
+0 (>L:XMLVAR_Baro1_Mode)
+(L:A310_INSTRUMENTS_LINKED, Bool) if{
+   (A:KOHLSMAN SETTING MB:1, millibar) 16 * (>K:2:KOHLSMAN_SET)
+   (A:KOHLSMAN SETTING MB:1, millibar) 16 * (>K:3:KOHLSMAN_SET)
+   0 (>L:XMLVAR_Baro2_Mode)
+   0 (>L:XMLVAR_Baro3_Mode)
+}
+*/
             string command;
             if (value == "pull")
                 command = simConnect.IsFenix ? "1 (>L:S_FCU_EFIS1_BARO_STD)" : @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
