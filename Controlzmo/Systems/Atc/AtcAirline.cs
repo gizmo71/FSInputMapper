@@ -65,8 +65,10 @@ namespace Controlzmo.Systems.Atc
             var callsign = data.name.ToLower();
             var _ = data.tailNumber.ToUpper();
             var aircraftCfg = simConnect.AircraftFile.ToLower();
-            // Some of the iniBuilds ones have the wrong ICAO code. :-(
+            // Some of the iniBuilds ones have the wrong ICAO code or even no model at all. :-(
             if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
+            else if (aircraftCfg.Contains("\\inibuilds\\a330-300")) icaoCode = "A333";
+            else if (aircraftCfg.Contains("\\inibuilds\\a330-200")) icaoCode = "A332";
             var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}', file '{aircraftCfg}', title '{data.title}':";
             try
             {
