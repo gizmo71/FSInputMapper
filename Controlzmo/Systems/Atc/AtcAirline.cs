@@ -90,6 +90,9 @@ namespace Controlzmo.Systems.Atc
                 sops = e.ToString();
             }
             await hub.Clients.All.SetFromSim("atcAirline", sops);
+
+            //MSFS2020 is KittyHawk 11.0, 2024 is SunRise 12.0
+            await hub.Clients.All.SetFromSim("fuelLog", $"{simConnect.OpenData.szApplicationName} {simConnect.OpenData.dwApplicationVersionMajor}.{simConnect.OpenData.dwApplicationVersionMinor}");
         }
 
         private int Minutes(Regex regex, String sops)
