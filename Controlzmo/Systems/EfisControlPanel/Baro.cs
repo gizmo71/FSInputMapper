@@ -7,6 +7,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -109,8 +110,8 @@ namespace Controlzmo.Systems.EfisControlPanel
     [RequiredArgsConstructor]
     public partial class BaroPush : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly JetBridgeSender sender;
         private readonly BaroKnob knob;
+        private readonly SetSeaLevelPressure setMagic;
         private DateTime magicIfAfter = DateTime.MaxValue;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_FORE;
 
@@ -122,10 +123,41 @@ namespace Controlzmo.Systems.EfisControlPanel
         public virtual void OnRelease(ExtendedSimConnect sc)
         {
             if (DateTime.UtcNow > magicIfAfter)
-                sender.Execute(sc, "(>K:BAROMETRIC)");
+                setMagic.SetLocal(sc);
             else
                 knob.SetInSim(sc, "push");
             magicIfAfter = DateTime.MaxValue;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct SeaLevelData
+    {
+        [SimVar("SEA LEVEL PRESSURE", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
+        public float seaLevelPressure;
+    }
+
+    [Component]
+    public class BarometricEvent : IEvent { public string SimEvent() => "BAROMETRIC"; }
+
+    [Component, RequiredArgsConstructor]
+    public partial class SetSeaLevelPressure : DataListener<SeaLevelData>
+    {
+        private readonly JetBridgeSender sender;
+        private readonly BarometricEvent _event;
+
+        internal void SetLocal(ExtendedSimConnect simConnect)
+        {
+            if (simConnect.IsIni320 || simConnect.IsIni321)
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+            else
+                simConnect.SendEvent(_event);
+        }
+
+        public override void Process(ExtendedSimConnect simConnect, SeaLevelData data)
+        {
+            //TODO: what works properly in the ini?
+            sender.Execute(simConnect, $"{data.seaLevelPressure * 16} (>K:2:KOHLSMAN_SET)");
         }
     }
 
@@ -180,7 +212,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         private void HandleTimer(object? _) {
             var sc = holder.SimConnect;
             Interlocked.Add(ref adjustment, direction);
-            if (sc!.IsFBW)
+            if (sc!.IsFBW || sc!.IsIni320 || sc!.IsIni321)
             {
                 sender.Execute(sc!, delegate() {
                     var toSend = Interlocked.Exchange(ref adjustment, 0);

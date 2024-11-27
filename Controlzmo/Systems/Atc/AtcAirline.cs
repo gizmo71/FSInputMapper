@@ -65,6 +65,8 @@ namespace Controlzmo.Systems.Atc
             var callsign = data.name.ToLower();
             var _ = data.tailNumber.ToUpper();
             var aircraftCfg = simConnect.AircraftFile.ToLower();
+            // Some of the iniBuilds ones have the wrong ICAO code. :-(
+            if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
             var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}', file '{aircraftCfg}', title '{data.title}':";
             try
             {
