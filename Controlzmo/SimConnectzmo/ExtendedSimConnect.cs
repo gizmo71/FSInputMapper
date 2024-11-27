@@ -383,6 +383,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
             }
             else if (data.dwRequestID == (uint)REQUEST.AircraftLoaded)
             {
+//FS20204 birds need somet' else
                 var regex = new Regex(@"^SimObjects\\Airplanes\\(.+)\\aircraft.CFG$", RegexOptions.IgnoreCase);
                 var match = regex.Match(data.szString);
                 aircraftFile = match.Success ? match.Groups[1].Value.ToUpper() : data.szString;
