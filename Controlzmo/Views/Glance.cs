@@ -23,7 +23,7 @@ namespace Controlzmo.Views
 
         public void OnChange(ExtendedSimConnect simConnect, GameControllerSwitchPosition old, GameControllerSwitchPosition @new)
         {
-            _log.LogDebug($"top hat {old}/{current}->{@new}");
+            _log.LogDebug($"top hat {old}/{current}->{@new}, camera state {cameraState.Current}");
             switch (@new)
             {
                 case GameControllerSwitchPosition.UpLeft:
@@ -84,7 +84,7 @@ namespace Controlzmo.Views
                         break;
                 }
             }
-            else _log.LogDebug($"unhandled camera state {cameraState.Current}");
+            else _log.LogWarning($"unhandled camera state {cameraState.Current}");
             current = @new;
         }
     }
