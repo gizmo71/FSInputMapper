@@ -148,15 +148,14 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         internal void SetLocal(ExtendedSimConnect simConnect)
         {
-            if (simConnect.IsIni320 || simConnect.IsIni321)
+            /*if (simConnect.IsIni320 || simConnect.IsIni321)
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-            else
+            else*/
                 simConnect.SendEvent(_event);
         }
 
         public override void Process(ExtendedSimConnect simConnect, SeaLevelData data)
         {
-            //TODO: what works properly in the ini?
             sender.Execute(simConnect, $"{data.seaLevelPressure * 16} (>K:2:KOHLSMAN_SET)");
         }
     }
