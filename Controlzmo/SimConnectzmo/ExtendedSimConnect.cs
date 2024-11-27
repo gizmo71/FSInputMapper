@@ -9,13 +9,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
 using System.Text.RegularExpressions;
-using Controlzmo.GameControllers;
-using Lombok.NET;
+using Controlzmo.SimConnectzmo;
 
 namespace SimConnectzmo
 {
     // Change ENUM_DYNAMIC_START if you need more internal values.
-    internal enum REQUEST { AircraftLoaded = 1, SimSystemState }
+    internal enum REQUEST { AircraftLoaded = 1, SimSystemState, EnumerateInputEvents }
     internal enum STRUCT { }
     internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded }
     internal enum GROUP { JUST_MASKABLE = 1 }
@@ -36,6 +35,7 @@ namespace SimConnectzmo
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
         private IEnumerable<IOnAircraftLoaded> onAircraftLoadedHandlers;
 private Wibbleator wibble;
+        private InputEvents inputEventsHandler;
 
         public bool? IsSimStarted;
 
@@ -50,7 +50,8 @@ private Wibbleator wibble;
             OnRecvEventFrame += Handle_OnRecvEventFrame;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
-OnRecvControllersList += Wibble_OnRecvControllersList;
+OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSimConnect) sc, data);
+OnRecvEnumerateInputEvents += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEvents((ExtendedSimConnect) sc, data);
 
 //TODO: What's this for?
             //FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -66,6 +67,7 @@ OnRecvControllersList += Wibble_OnRecvControllersList;
             const int ENUM_DYNAMIC_START = 10; // Leave some space for explicit enum values.
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
             serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
+            inputEventsHandler = serviceProvider.GetRequiredService<InputEvents>();
 wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             typeToStruct = serviceProvider
@@ -407,58 +409,5 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
                 serializedExecutor!.Enqueue(delegate(ExtendedSimConnect sc) { handler.OnStarted(sc); return true; });
             TriggerInitialRequests();
         }
-
-        private void Wibble_OnRecvControllersList(SimConnect sender, SIMCONNECT_RECV_CONTROLLERS_LIST data)
-        {
-            wibble.OnRecvControllersList(this, data);
-        }
-    }
-
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class Wibbleator : IButtonCallback<T16000mHotas>, IEvent, IEventNotification
-    {
-        private readonly ILogger<Wibbleator> log;
-        public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
-
-        public virtual void OnPress(ExtendedSimConnect sc) {
-            //TODO: can we use this to find new events, if there are any? And perhaps avoid vJoy?
-            sc.EnumerateControllers();
-            log.LogCritical($"Asked for wibbleations 1 => {sc.GetLastSentPacketID()}");
-        }
-
-        public void OnRecvControllersList(ExtendedSimConnect sc, SIMCONNECT_RECV_CONTROLLERS_LIST data)
-        {
-try {
-            log.LogCritical($"wibbleate 1 @ {data.dwEntryNumber}! {data.rgData.Length} v {data.dwArraySize}");
-            for (var i = 0 ; i < data.dwArraySize; ++i)
-            {
-                var item = data.rgData[i] as SIMCONNECT_CONTROLLER_ITEM;
-                // Name  is whatever random text you've altered MSFS to carry for that device.
-                // DevID is just a sequential number starting from 0 and probably reflecting the order they show up in in the control options screen.
-                // ProductID is the same as the USB one. No VendorID though, making it not far off useless!
-                // CompositeID always seems to be 0.
-                log.LogCritical($"wibbleate 1 [{i}] = {item.DeviceName}@{item.DeviceId} = {item.ProductId} and {item.CompositeID}");
-                if ("TWCS Throttle" == item.DeviceName)
-                {
-                    EVENT @event = sc.eventToEnum![this];
-                    var inputDefinition = $"joystick:{item.DeviceId}:button:{T16000mHotas.BUTTON_FRONT_LEFT_RED}";
-                    sc.RemoveInputEvent(GROUP.JUST_MASKABLE, inputDefinition);
-//TODO: how do we avoid having down AND up events? Can i use 0 in one of them?
-                    sc.MapInputEventToClientEvent_EX1(GROUP.JUST_MASKABLE, inputDefinition, @event, 0, @event, 0, true);
-                    log.LogCritical($"Mapped event => {sc.GetLastSentPacketID()}");
-                }
-            }
-} catch (Exception e) { log.LogCritical(e, "Bugger"); }
-        }
-
-        public IEvent GetEvent() => this;
-
-        public void OnRecieve(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT data)
-        {
-            log.LogCritical("Got the test event!");
-        }
-
-        public string SimEvent() => "gizmo.test1";
     }
 }
