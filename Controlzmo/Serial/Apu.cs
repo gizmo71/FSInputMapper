@@ -55,14 +55,14 @@ namespace Controlzmo.Serial
     };
 
     [Component]
-    public class ApuMasterOn : DataListener<ApuMasterData>, IOnSimStarted
+    public class ApuMasterOn : DataListener<ApuMasterData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
 
         private Boolean _isOn;
         internal Boolean IsOn { get => _isOn; }
         public ApuMasterOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
-        public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
         public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) {
             if (simConnect.IsFenix) data.isApuMasterOn = data.isApuMasterOnFenix;
             if (simConnect.IsIni320 || simConnect.IsIni321) data.isApuMasterOn = data.isApuMasterOnIni;
