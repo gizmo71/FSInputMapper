@@ -160,6 +160,7 @@
 		<Text type=".*">Preparation 20 to 40 minutes, block time counts</Text>
 		<Text type=".*">Warm up; cool down</Text>
 		<Text type=".*">Must have 1T &lt; fuel &lt; 7T on landing</Text>
+		<Text type=".*">Pauses in flight reviewed</Text>
 		<Text type=".*">Review at 601fpm; Rejected 1000fpm</Text>
 	</Airline>
 	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
