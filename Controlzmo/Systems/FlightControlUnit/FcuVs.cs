@@ -1,5 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -18,6 +19,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_PULL_COMMAND)");
             else
                 simConnect.SendEvent(this);
         }
@@ -33,6 +36,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_PUSH_COMMAND)");
             else
                 simConnect.SendEvent(this);
         }
@@ -68,6 +73,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuVsInc inc;
         private readonly FcuVsDec dec;
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
 
         private Int32 fenixAdjustment = 0;
 
@@ -87,7 +93,10 @@ namespace Controlzmo.Systems.FlightControlUnit
             {
                 while (value != 0)
                 {
-                    simConnect.SendEvent(value < 0 ? dec : inc);
+                    if (simConnect.IsIni321 || simConnect.IsIni320)
+                        inputEvents.Send(simConnect, "INSTRUMENT_FCU_VS_KNOB", (double) Math.Sign(value));
+                    else
+                        simConnect.SendEvent(value < 0 ? dec : inc);
                     value -= (short)Math.Sign(value);
                 }
             }
