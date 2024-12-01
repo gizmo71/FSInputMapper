@@ -33,7 +33,7 @@ namespace Controlzmo
                 //Console.WriteLine($"{component}");
                 services.AddSingleton(component, component);
                 foreach (var also in GetInterfacesAndParentComponents(component))
-                    services.AddSingleton(also, x => x.GetRequiredService(component));
+                    services.AddSingleton(also, x => { System.Console.WriteLine($"trying to create {component}"); return x.GetRequiredService(component); });
             }
         }
 
