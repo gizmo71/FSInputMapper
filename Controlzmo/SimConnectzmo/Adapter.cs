@@ -28,8 +28,8 @@ namespace SimConnectzmo
         protected override void OnStart(object? sender, DoWorkEventArgs args)
         {
 _log.LogInformation("Adapter starting <<<--->>>");
-            holder.SimConnect = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal)
-                .AssignIds(serviceProvider);
+            holder.SimConnect = new ExtendedSimConnect("Controlzmo", WM_USER_SIMCONNECT, MessageSignal).
+                AssignIds(serviceProvider);
 _log.LogInformation("Adapter started <<<--->>>");
         }
 
