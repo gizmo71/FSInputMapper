@@ -1,26 +1,32 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
 using Controlzmo.Serial;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
-using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Threading;
 
 //TODO: A380 has pre-set of baro during STD.
 namespace Controlzmo.Systems.EfisControlPanel
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class BaroKnob : ISettable<string>
     {
         private readonly JetBridgeSender sender;
+        private readonly BaroPull baroPull;
+        private readonly BaroPush baroPush;
+        // We can't inject RepeatingBaroChange because we're something the serial code needs, so we end up in a deadly embrace.
+        private readonly IServiceProvider sp;
 
         public string GetId() => "baroKnob";
+
+        private RepeatingBaroChange baroChange {  get => sp.GetRequiredService<RepeatingBaroChange>(); }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
@@ -32,26 +38,28 @@ namespace Controlzmo.Systems.EfisControlPanel
    (A:KOHLSMAN SETTING MB:1, millibar) 16 * (>K:3:KOHLSMAN_SET)
    0 (>L:XMLVAR_Baro2_Mode)
    0 (>L:XMLVAR_Baro3_Mode)
-}
-*/
+}                                       */
             string command;
             if (value == "pull")
-                command = simConnect.IsFenix ? "1 (>L:S_FCU_EFIS1_BARO_STD)" : @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
+            {
+                baroPull.OnPress(simConnect);
+                return;
+            }
             else if (value == "push")
-                command = simConnect.IsFenix ? "0 (>L:S_FCU_EFIS1_BARO_STD)" :
-                    @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
-            else if (simConnect.IsFenix && value!.EndsWith("Dec"))
-                command = "(L:E_FCU_EFIS1_BARO) -- (>L:E_FCU_EFIS1_BARO)";
-            else if (value == "hPaDec")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) near -- 16 * (>K:2:KOHLSMAN_SET) }";
-            else if (value == "inHgDec")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) 0.3386389 / near -- 5.4182224 * (>K:2:KOHLSMAN_SET) } }";
-            else if (simConnect.IsFenix && value!.EndsWith("Inc"))
-                command = "(L:E_FCU_EFIS1_BARO) ++ (>L:E_FCU_EFIS1_BARO)";
-            else if (value == "hPaInc")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) near ++ 16 * (>K:2:KOHLSMAN_SET) }";
-            else if (value == "inHgInc")
-                command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 == if{ 1 (A:KOHLSMAN SETTING MB:1, mbars) 0.3386389 / near ++ 5.4182224 * (>K:2:KOHLSMAN_SET) } }";
+            {
+                baroPush.PressAndRelease(simConnect);
+                return;
+            }
+            else if (value!.EndsWith("Dec"))
+            {
+                baroChange.Click(-1);
+                return;
+            }
+            else if (value!.EndsWith("Inc"))
+            {
+                baroChange.Click(1);
+                return;
+            }
             else if (value == "inHg")
                 command = simConnect.IsFenix ? "0 (>L:S_FCU_EFIS1_BARO_MODE)" : "0 (>L:XMLVar_Baro_Selector_HPA_1)";
             else if (value == "hPa")
@@ -60,6 +68,7 @@ namespace Controlzmo.Systems.EfisControlPanel
                 return;
 
             command = command.Trim();
+System.Console.WriteLine($"-> {value} led to {command}");
 
             sender.Execute(simConnect, command!);
         }
@@ -120,7 +129,8 @@ namespace Controlzmo.Systems.EfisControlPanel
     [RequiredArgsConstructor]
     public partial class BaroPush : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly BaroKnob knob;
+        private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
         private readonly SetSeaLevelPressure setMagic;
         private DateTime magicIfAfter = DateTime.MaxValue;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_FORE;
@@ -135,8 +145,26 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (DateTime.UtcNow > magicIfAfter)
                 setMagic.SetLocal(sc);
             else
-                knob.SetInSim(sc, "push");
+            {
+                String command;
+                if (sc.IsFenix)
+                {
+                    inputEvents.Send(sc, "FNX320_INPUT_KNOB_PUSHPULL_E_FCU_EFIS1_BARO_PUSH", 0.0);
+                    return;
+                }
+                else if (sc.IsIni320 || sc.IsIni321)
+                    command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
+                else
+                    command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
+                sender.Execute(sc, command);
+            }
             magicIfAfter = DateTime.MaxValue;
+        }
+
+        internal void PressAndRelease(ExtendedSimConnect sc)
+        {
+            OnPress(sc);
+            OnRelease(sc);
         }
     }
 
@@ -174,9 +202,19 @@ namespace Controlzmo.Systems.EfisControlPanel
     [RequiredArgsConstructor]
     public partial class BaroPull : IButtonCallback<UrsaMinorFighterR>
     {
-        private readonly BaroKnob knob;
+        private readonly JetBridgeSender sender;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_AFT;
-        public virtual void OnPress(ExtendedSimConnect sc) => knob.SetInSim(sc, "pull");
+        public virtual void OnPress(ExtendedSimConnect simConnect)
+        {
+            String command;
+            if (simConnect.IsFenix)
+                command = @"1 (>L:S_FCU_EFIS1_BARO_STD)";
+            else if (simConnect.IsIni320 && simConnect.IsIni321)
+                command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)"; //TODO: also need _2_ and ISIS to keep them in sync :-(
+            else
+                command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
+            sender.Execute(simConnect, command);
+        }
     }
 
     [Component]
@@ -184,6 +222,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     public partial class BaroUnits : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
 
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_PRESS;
 
@@ -199,6 +238,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         private readonly JetBridgeSender sender;
         private readonly SimConnectHolder holder;
         private readonly BaroDisplay display;
+        private readonly InputEvents inputEvents;
         private Timer? timer;
         private int direction;
 
@@ -220,8 +260,19 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void HandleTimer(object? _) {
             var sc = holder.SimConnect;
+            if (sc!.IsIni330)
+            {
+                inputEvents.Send(sc!, "AIRLINER_CPT_BARO_SET", direction * 1.0);
+                return;
+            }
+            else if (sc!.IsIni320 || sc!.IsIni321)
+            {
+                inputEvents.Send(sc!, "INSTRUMENT_QNH_CPT_KNOB", direction * 1.0);
+                return;
+            }
+
             Interlocked.Add(ref adjustment, direction);
-            if (sc!.IsFBW || sc!.IsIni320 || sc!.IsIni321)
+            if (sc!.IsFBW)
             {
                 sender.Execute(sc!, delegate() {
                     var toSend = Interlocked.Exchange(ref adjustment, 0);
@@ -239,6 +290,12 @@ namespace Controlzmo.Systems.EfisControlPanel
                     return toSend == 0 ? null : $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
                 });
             }
+        }
+
+        internal void Click(int v)
+        {
+            Start(v);
+            Stop();
         }
     }
 
