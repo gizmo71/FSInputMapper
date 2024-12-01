@@ -31,9 +31,10 @@
             </div>
             <div style="float: right; clear: right; margin-top: 0.8lh; width: 3em;">
                 @{
-                    for (int i = 0; i < 10; ++i)
+                    for (int i = 0; i++ < 10; )
                     {
-                        <input type="button" value="@i" onclick="atc(@i)" />
+                        var key = i % 10;
+                        <input type="button" value="@key" onclick="atc(@key)" />
                     }
                 }
         </div>
