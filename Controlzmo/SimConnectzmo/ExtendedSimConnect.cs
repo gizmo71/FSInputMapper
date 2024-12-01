@@ -14,9 +14,9 @@ using Controlzmo.SimConnectzmo;
 namespace SimConnectzmo
 {
     // Change ENUM_DYNAMIC_START if you need more internal values.
-    internal enum REQUEST { AircraftLoaded = 1, SimSystemState, EnumerateInputEvents }
+    internal enum REQUEST { AircraftLoaded = 1, SimSystemState, EnumerateInputEvents, InputEventExperimental }
     internal enum STRUCT { }
-    internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded }
+    internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded, InputEventExperimentalEventDown, InputEventExperimentalUp }
     internal enum GROUP { JUST_MASKABLE = 1 }
 
     public class ExtendedSimConnect : SimConnect
@@ -51,7 +51,9 @@ private Wibbleator wibble;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
 OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSimConnect) sc, data);
-OnRecvEnumerateInputEvents += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEvents((ExtendedSimConnect) sc, data);
+            OnRecvEnumerateInputEvents += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEvents((ExtendedSimConnect) sc, data);
+            OnRecvGetInputEvent += (sc, data) => inputEventsHandler!.OnRecvGetInputEvent((ExtendedSimConnect) sc, data);
+            OnRecvEnumerateInputEventParams += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEventParams((ExtendedSimConnect) sc, data);
 
 //TODO: What's this for?
             //FieldInfo? fiSimConnect = typeof(SimConnect).GetField("hSimConnect", BindingFlags.NonPublic | BindingFlags.Instance);
