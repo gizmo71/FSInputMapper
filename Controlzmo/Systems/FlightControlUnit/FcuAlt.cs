@@ -1,5 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -24,7 +25,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
-            else if (simConnect.IsIni320)
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -45,7 +46,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) -- (>L:S_FCU_ALTITUDE)");
-            else if (simConnect.IsIni320)
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -71,6 +72,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuAltInc inc;
         private readonly FcultDec dec;
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
 
         private Int32 fenixAdjustment = 0;
 
@@ -94,6 +96,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                         var dir = value < 0 ? "DN" : "UP";
                         sender.Execute(simConnect, $"1 (>L:INI_ALTITUDE_DIAL_{dir}_COMMAND)");
                     }
+                    else if (simConnect.IsIni321)
+                        inputEvents.Send(simConnect, "INSTRUMENT_FCU_ALT_KNOB", (double) Math.Sign(value));
                     else
                         simConnect.SendEvent(value < 0 ? dec : inc);
                     value -= (short)Math.Sign(value);
@@ -106,13 +110,19 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class FcuAltIncrement : ISettable<uint>
     {
         private readonly JetBridgeSender sender;
+
         public string GetId() => "fcuAltIncrement";
+
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
             string command;
             if (simConnect.IsFenix)
                 command = toggleOrSet("S_FCU_ALTITUDE_SCALE", value);
-            else if (simConnect.IsIni320)
-                command = toggleOrSet("INI_FCU_ALTITUDE_MODE_COMMAND", value);
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            {
+                command = "1 (>L:INI_FCU_ALTITUDE_MODE_COMMAND)";
+                if (value != 0)
+                    command = (value / 1000) + ".0 (L:__FCU_ALT_UNITSISPRESSED) != if{ " + command + " }";
+            }
             else if (value == 0)
                 command = $"(>K:A32NX.FCU_ALT_INCREMENT_TOGGLE)";
             else
@@ -122,9 +132,9 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private string toggleOrSet(string lvar, uint value)
         {
-            if (value == 0)
+            if (value == 0) // Toggle
                     return $"1 (L:{lvar}) - (>L:{lvar})";
-            else
+            else // Set
                     return (value == 1000 ? 1 : 0) + $" (>L:{lvar})";
         }
     }
