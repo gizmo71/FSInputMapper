@@ -1,5 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -14,6 +15,8 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class FcuSpeedMachToggled : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
+
         public string SimEvent() => "A32NX.FCU_SPD_MACH_TOGGLE_PUSH";
         public string GetId() => "speedMachToggled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
@@ -23,6 +26,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 for (int i = 0; i < 2; ++i)
                     sender.Execute(simConnect, "(L:S_FCU_SPD_MACH) ++ (>L:S_FCU_SPD_MACH)");
             }
+            if (simConnect.IsIni320 || simConnect.IsIni321 || simConnect.IsIni330)
+                sender.Execute(simConnect, "1 (>L:INI_SPD_MACH_BUTTON)");
             else
                 simConnect.SendEvent(this);
         }
@@ -39,6 +44,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) ++ (>L:S_FCU_SPEED)");
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_SPEED_BUTTON)");
             else
                 simConnect.SendEvent(this);
         }
@@ -55,6 +62,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) -- (>L:S_FCU_SPEED)");
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_SPEED_BUTTON)");
             else
                 simConnect.SendEvent(this);
         }
@@ -90,6 +99,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly FcuSpeedInc inc;
         private readonly FcuSpeedDec dec;
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
 
         private Int32 fenixAdjustment = 0;
 
@@ -109,8 +119,11 @@ namespace Controlzmo.Systems.FlightControlUnit
             {
                 while (value != 0)
                 {
-                    simConnect.SendEvent(value < 0 ? dec : inc);
-                    value -= (short)Math.Sign(value);
+                    if (simConnect.IsIni320 || simConnect.IsIni321)
+                        inputEvents.Send(simConnect, "INSTRUMENT_FCU_SPD_KNOB", (double) Math.Sign(value));
+                    else
+                        simConnect.SendEvent(value < 0 ? dec : inc);
+                    value -= (short) Math.Sign(value);
                 }
             }
         }
