@@ -43,8 +43,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class FcuDisplayBottomLeft : DataListener<FcuBottomLeftData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-        private readonly ILogger<FcuDisplayBottomLeft> logger;
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly FcuToast toast;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
@@ -66,7 +65,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var headingDot = data.isManagedHeading == 1 ? '\x1' : ' ';
             var line2 = $"{Speed(data)} {speedDot}  {heading}   {headingDot} ";
             serial.SendLine($"fcuBL={line2}");
-            hub.Clients.All.Toast("FCU", line2);
+            toast.Left = line2;
         }
 
         private static string Speed(FcuBottomLeftData data)

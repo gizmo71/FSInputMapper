@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly FcuToast toast;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
 
@@ -78,7 +78,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var managed = data.isManaged == 1 ? '\x1' : ' ';
             var line2 = $"{data.fcuAlt:00000}   {managed}  {VS(data)}";
             serial.SendLine($"fcuBR={line2}");
-            hub.Clients.All.Toast("FCU", line2);
+            toast.Right = line2;
         }
 
         private string VS(FcuBottomRightData data)
