@@ -398,12 +398,13 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
-        public bool IsFBW { get => !IsFenix && !IsIni320 && !IsIni321 && !IsB748; } // For now... otherwise we have to worry about all the LVFRs, Headwind etc
+        public bool IsFBW { get => !IsFenix && !IsIniBuilds && !IsB748; } // For now... otherwise we have to worry about all the LVFRs, Headwind etc
         public bool IsA380X { get => aircraftFile.StartsWith("FLYBYWIRE_A380"); }
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_3"); }
         public bool IsIni320 { get => aircraftFile.Equals("MICROSOFT-AIRCRAFT-A320NEO") || aircraftFile.Equals("MICROSOFT-A320NEO\\PRESETS\\INIBUILDS\\A20N\\CONFIG"); }
         public bool IsIni321 { get => aircraftFile.Equals("MICROSOFT-A321\\PRESETS\\INIBUILDS\\A21N\\CONFIG"); }
         public bool IsIni330 { get => aircraftFile.StartsWith("MICROSOFT-A330\\PRESETS\\INIBUILDS\\A330-"); }
+        public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330; }
         public bool IsB748 { get => aircraftFile.Equals("ASOBO_B747_8I"); }
 
         private void OnSimIsRunning()
