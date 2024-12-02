@@ -24,7 +24,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_HEADING_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -45,7 +45,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_HEADING_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -91,7 +91,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             {
                 while (value != 0)
                 {
-                    if (simConnect.IsIni320 || simConnect.IsIni321)
+                    if (simConnect.IsIni330)
+                        inputEvents.Send(simConnect, "AIRLINER_MCU_HDG", (double) Math.Sign(value));
+                    else if (simConnect.IsIniBuilds)
                         inputEvents.Send(simConnect, "INSTRUMENT_FCU_HDG_KNOB", (double) Math.Sign(value));
                     else
                         simConnect.SendEvent(value < 0 ? dec : inc);

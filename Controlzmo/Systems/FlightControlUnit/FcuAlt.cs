@@ -25,7 +25,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -46,7 +46,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) -- (>L:S_FCU_ALTITUDE)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -91,12 +91,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             else
                 while (value != 0)
                 {
-                    if (simConnect.IsIni320)
-                    {
-                        var dir = value < 0 ? "DN" : "UP";
-                        sender.Execute(simConnect, $"1 (>L:INI_ALTITUDE_DIAL_{dir}_COMMAND)");
-                    }
-                    else if (simConnect.IsIni321)
+                    if (simConnect.IsIni330)
+                        inputEvents.Send(simConnect, "AIRLINER_MCU_ALT", (double) Math.Sign(value));
+                    else if (simConnect.IsIniBuilds)
                         inputEvents.Send(simConnect, "INSTRUMENT_FCU_ALT_KNOB", (double) Math.Sign(value));
                     else
                         simConnect.SendEvent(value < 0 ? dec : inc);
@@ -117,11 +114,14 @@ namespace Controlzmo.Systems.FlightControlUnit
             string command;
             if (simConnect.IsFenix)
                 command = toggleOrSet("S_FCU_ALTITUDE_SCALE", value);
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
             {
                 command = "1 (>L:INI_FCU_ALTITUDE_MODE_COMMAND)";
                 if (value != 0)
-                    command = (value / 1000) + ".0 (L:__FCU_ALT_UNITSISPRESSED) != if{ " + command + " }";
+                {
+                    var current = simConnect.IsIni330 ? "INI_ALTITUDE_STATE" : "__FCU_ALT_UNITSISPRESSED";
+                    command = $$"""{{value / 1000}}.0 (L:{{current}}) != if{ {{command}} }""";
+                }
             }
             else if (value == 0)
                 command = $"(>K:A32NX.FCU_ALT_INCREMENT_TOGGLE)";

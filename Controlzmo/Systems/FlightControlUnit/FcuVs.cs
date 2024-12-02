@@ -19,7 +19,9 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIni330)
+                sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_PULL_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -36,7 +38,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_PUSH_COMMAND)");
             else
                 simConnect.SendEvent(this);
@@ -93,7 +95,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             {
                 while (value != 0)
                 {
-                    if (simConnect.IsIni321 || simConnect.IsIni320)
+                    if (simConnect.IsIni330)
+                        inputEvents.Send(simConnect, "AIRLINER_MCU_VS", (double) Math.Sign(value));
+                    else if (simConnect.IsIniBuilds)
                         inputEvents.Send(simConnect, "INSTRUMENT_FCU_VS_KNOB", (double) Math.Sign(value));
                     else
                         simConnect.SendEvent(value < 0 ? dec : inc);

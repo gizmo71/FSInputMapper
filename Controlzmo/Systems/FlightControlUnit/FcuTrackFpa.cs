@@ -19,7 +19,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             if (simConnect.IsFenix)
                 for (int i = 0; i < 2; ++i)
                     sender.Execute(simConnect, "(L:S_FCU_HDGVS_TRKFPA) ++ (>L:S_FCU_HDGVS_TRKFPA)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_HDG_VS_COMMAND)");
             else
                 simConnect.SendEvent(this);

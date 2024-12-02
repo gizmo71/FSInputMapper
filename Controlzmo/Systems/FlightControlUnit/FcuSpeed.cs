@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 for (int i = 0; i < 2; ++i)
                     sender.Execute(simConnect, "(L:S_FCU_SPD_MACH) ++ (>L:S_FCU_SPD_MACH)");
             }
-            if (simConnect.IsIni320 || simConnect.IsIni321 || simConnect.IsIni330)
+            if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_SPD_MACH_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) ++ (>L:S_FCU_SPEED)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_SPEED_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -62,7 +62,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) -- (>L:S_FCU_SPEED)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_SPEED_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -119,7 +119,9 @@ namespace Controlzmo.Systems.FlightControlUnit
             {
                 while (value != 0)
                 {
-                    if (simConnect.IsIni320 || simConnect.IsIni321)
+                    if (simConnect.IsIni330)
+                        inputEvents.Send(simConnect, "AIRLINER_MCU_SPEED", (double) Math.Sign(value));
+                    else if (simConnect.IsIniBuilds)
                         inputEvents.Send(simConnect, "INSTRUMENT_FCU_SPD_KNOB", (double) Math.Sign(value));
                     else
                         simConnect.SendEvent(value < 0 ? dec : inc);
