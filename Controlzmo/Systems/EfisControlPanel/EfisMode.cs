@@ -14,6 +14,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     {
         public UInt32 Mode { get; set; }
         public UInt32 ModeFenix { get; set; }
+        public UInt32 ModeIni { get; set; }
     }
 
     public abstract class EfisMode<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisModeData
@@ -25,6 +26,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             [2u] = "Rose Nav",
             [3u] = "Arc",
             [4u] = "Plan",
+            [5u] = "Eng", // A330 only!
         };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         protected readonly string id;
@@ -39,15 +41,19 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            hub.Clients.All.SetFromSim(id, ModeMap[simConnect.IsFenix ? data.ModeFenix : data.Mode]);
+            if (simConnect.IsFenix) data.Mode = data.ModeFenix;
+            else if (simConnect.IsIniBuilds) data.Mode = data.ModeIni;
+            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
         }
 
         public string GetId() => id;
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
+            if (label == "Eng" && !simConnect.IsIni330)
+                return;
             var value = ModeMap.Inverse[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value });
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
         }
     }
 
@@ -60,6 +66,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
+        [Property]
+        [SimVar("L:INI_MAP_MODE_CAPT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeIni;
     };
 
     [Component]
