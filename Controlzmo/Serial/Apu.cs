@@ -35,7 +35,7 @@ namespace Controlzmo.Serial
                 state = data.isApuFault == 1;
             else if (simConnect.IsFenix)
                 state = data.isApuFaultFenix == 1;
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 state = data.isApuFaultIni == 1;
             else
                 return;
@@ -65,7 +65,7 @@ namespace Controlzmo.Serial
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
         public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) {
             if (simConnect.IsFenix) data.isApuMasterOn = data.isApuMasterOnFenix;
-            if (simConnect.IsIni320 || simConnect.IsIni321) data.isApuMasterOn = data.isApuMasterOnIni;
+            if (simConnect.IsIniBuilds) data.isApuMasterOn = data.isApuMasterOnIni;
             _isOn = data.isApuMasterOn == 1;
             serial.SendLine($"ApuMasterOn={_isOn}");
         }
@@ -84,7 +84,7 @@ namespace Controlzmo.Serial
                 sender.Execute(simConnect, "1 (L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON, Bool) - (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)");
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_OH_ELEC_APU_MASTER) ! (>L:S_OH_ELEC_APU_MASTER)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "(L:INI_APU_MASTER_SWITCH_CMD) ! (>L:INI_APU_MASTER_SWITCH_CMD)");
         }
     }
@@ -112,7 +112,7 @@ namespace Controlzmo.Serial
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
         public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) {
             if (simConnect.IsFenix) data.isApuAvail = data.isApuAvailFenix;
-            if (simConnect.IsIni320 || simConnect.IsIni321) data.isApuAvail = data.isApuAvailIni;
+            if (simConnect.IsIniBuilds) data.isApuAvail = data.isApuAvailIni;
             _isAvail = data.isApuAvail == 1;
             serial.SendLine($"ApuAvail={_isAvail}");
         }
@@ -140,7 +140,7 @@ namespace Controlzmo.Serial
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
         public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) {
             if (simConnect.IsFenix) data.isApuStartOn = data.isApuStartOnFenix;
-            if (simConnect.IsIni320 || simConnect.IsIni321) data.isApuStartOn = data.isApuStartOnIni * (data.apuN1 < 95 ? 1 : 0);
+            if (simConnect.IsIniBuilds) data.isApuStartOn = data.isApuStartOnIni * (data.apuN1 < 95 ? 1 : 0);
             serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1));
         }
     }
@@ -158,7 +158,7 @@ namespace Controlzmo.Serial
                 sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_OH_ELEC_APU_START) 2 + (>L:S_OH_ELEC_APU_START)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_APU_START_BUTTON_CMD)");
         }
     }
@@ -191,14 +191,14 @@ namespace Controlzmo.Serial
         public override void Process(ExtendedSimConnect simConnect, ApuBleedData data) {
             // Normalise...
             if (simConnect.IsFenix) data.isApuBleedOn = data.isApuBleedOnFenix;
-            if (simConnect.IsIni320 || simConnect.IsIni321) data.isApuBleedOn = data.isApuBleedOnIni;
+            if (simConnect.IsIniBuilds) data.isApuBleedOn = data.isApuBleedOnIni;
 
             if (master.IsOn && avail.IsAvail)
             {
                 if (data.isApuBleedOn == 0)
                 {
                     if (apuBleedOnAfter == null)
-                        apuBleedOnAfter = data.nowSeconds + 60.0;
+                        apuBleedOnAfter = data.nowSeconds + 6.0;//60.0;
                     else if (data.nowSeconds > apuBleedOnAfter)
                         setBleed(simConnect, true);
                 }
@@ -209,7 +209,7 @@ namespace Controlzmo.Serial
             {
                 setBleed(simConnect, false);
             }
-            //else hubContext.Clients.All.Speak($"A-P-U bleed {data.isApuBleedOn} master {data.isApuMasterOn} a veil {data.isApuAvail} on after {apuBleedOnAfter != null}");
+//else hubContext.Clients.All.Speak($"A-P-U bleed {data.isApuBleedOn} master {data.isApuMasterOn} a veil {data.isApuAvail} on after {apuBleedOnAfter != null}");
         }
 
         private void setBleed(ExtendedSimConnect simConnect, Boolean isDemanded)
@@ -219,7 +219,7 @@ namespace Controlzmo.Serial
                 lvar = "A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON";
             else if (simConnect.IsFenix)
                 lvar = "S_OH_PNEUMATIC_APU_BLEED";
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 lvar = "INI_APU_BLEED_BUTTON";
             if (lvar != null)
             {
