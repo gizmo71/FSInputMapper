@@ -43,7 +43,7 @@ namespace Controlzmo.Systems.Lights
                 uint code = value switch { "takeoff" => 2u, "taxi" => 1u, _ => 0u };
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_NOSE)");
             }
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
             {
                 uint code = value switch { "takeoff" => 0u, "taxi" => 1u, _ => 2u };
                 sender.Execute(simConnect, $"{code} (>L:INI_TAXI_LIGHT_SWITCH)");

@@ -31,14 +31,20 @@ namespace Controlzmo.Systems.Lights
             }
             else if (simConnect.IsFenix)
             {
-                var code = position switch {  "on" => 2, "auto" => 1, _ => 0 };
+                var code = position switch { "on" => 2, "auto" => 1, _ => 0 };
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_STROBE)");
             }
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
             {
-                var code = position switch {  "on" => 0, "auto" => 1, _ => 2 };
+                var code = position switch { "on" => 0, "auto" => 1, _ => 2 };
                 sender.Execute(simConnect, $"{code} (>L:INI_STROBE_LIGHT_SWITCH)");
             }
+            else
+            {
+                var code = position == "on" ? 1 : 0;
+                sender.Execute(simConnect, $"{code} (>K:STROBES_SET)");
+            }
+            //TODO: is there a sensible default?
         }
     }
 }

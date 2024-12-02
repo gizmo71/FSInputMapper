@@ -36,7 +36,7 @@ namespace Controlzmo.Systems.Lights
             }
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{state} (>L:S_OH_EXT_LT_NAV_LOGO)");
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, $"{2u - state} (>L:INI_LOGO_LIGHT_SWITCH)");
         }
     }

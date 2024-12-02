@@ -55,7 +55,12 @@ namespace Controlzmo.Systems.Lights
                 int code = value ? 2 : 0;
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_LANDING_L) {code} (>L:S_OH_EXT_LT_LANDING_R) {code} (>L:S_OH_EXT_LT_LANDING_BOTH) ");
             }
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIni330)
+            {
+                int code = value ? 1 : 0;
+                sender.Execute(simConnect, $"{code} (>L:INI_LANDING_LIGHT_SWITCH)");
+            }
+            else if (simConnect.IsIniBuilds)
             {
                 int code = value ? 0 : 2;
                 sender.Execute(simConnect, $"{code} (>L:A320_LANDING_LIGHT_SWITCH_LEFT) {code} (>L:A320_LANDING_LIGHT_SWITCH_RIGHT)");
