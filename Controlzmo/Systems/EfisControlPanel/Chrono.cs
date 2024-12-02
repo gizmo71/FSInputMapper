@@ -25,10 +25,10 @@ namespace Controlzmo.Systems.EfisControlPanel
                 for (var i = 1; i >= 0; --i)
                     sender.Execute(simConnect, $"{i} (>L:S_MIP_CHRONO_CAPT)");
             }
+            else if (simConnect.IsIniBuilds)
+                sender.Execute(simConnect, $"1 (>L:INI_CPT_CHRONO_BUTTON)");
             else if (simConnect.IsFBW)
-            {
                 simConnect.SendEvent(e);
-            }
         }
     }
 }
