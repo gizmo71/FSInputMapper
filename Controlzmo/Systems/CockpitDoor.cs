@@ -15,6 +15,8 @@ namespace Controlzmo.Systems
         public Int32 a32nxCockpitDoorLocked;
         [SimVar("L:B_DOORS_COCKPIT_LOCKED", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fenixCockpitDoorLocked; // Not sure this does anything...
+        [SimVar("L:INI_COCKPITDOOR", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 iniCockpitDoor; // Not sure this does anything...
     };
 
     [Component]
