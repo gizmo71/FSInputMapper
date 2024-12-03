@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.EfisControlPanel
                 modeMap = MapModeIniFenix.Inverse;
                 mode = data.ModeFenix;
             }
-            else if (simConnect.IsIni320)
+            else if (simConnect.IsIniBuilds)
             {
                 modeMap = MapModeIniFenix.Inverse;
                 mode = data.ModeIni;
@@ -63,7 +63,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var modeMap = simConnect.IsFenix || simConnect.IsIni320 ? MapModeIniFenix : ModeMap.Inverse;
+            var modeMap = simConnect.IsFenix || simConnect.IsIniBuilds ? MapModeIniFenix : ModeMap.Inverse;
             var value = modeMap[label!];
             simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
         }
