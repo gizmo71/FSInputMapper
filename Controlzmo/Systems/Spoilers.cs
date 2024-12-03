@@ -32,6 +32,10 @@ namespace Controlzmo.Systems.Spoilers
         public Int32 a32nxReady;
         [SimVar("L:A_FC_SPEEDBRAKE", "Bool", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
         public float fenix; // Fenix LVar: A_FC_SPEEDBRAKE, 0 = spoilers armed, 1 to 3 = speedbrake positions
+        [SimVar("L:INI_SPOILERS_ARMED", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 iniArmed;
+        [SimVar("L:INI_SPOILERS_HANDLE_POSITION", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.025f)]
+        public float iniPosition;
     };
 
     [Component] public class SpoilerArmOnEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_ON"; }
@@ -56,10 +60,15 @@ namespace Controlzmo.Systems.Spoilers
 
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
-            _logger.LogDebug($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX ready? {data.a32nxReady} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition}");
+            _logger.LogError($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX ready? {data.a32nxReady} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition} ini armed {data.iniArmed} ini pos {data.iniPosition}");
             if (data.a32nxReady == 1) {
                 data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
                 data.position = (int)(100 * data.a32nxPosition);
+            }
+            else if (simConnect.IsIniBuilds)
+            {
+                data.armed = data.iniArmed;
+                data.position = (int)(100 * data.iniPosition);
             }
             _logger.LogDebug("... processed data pos {} armed {}; Fenix {}", data.position, data.armed, data.fenix);
 
