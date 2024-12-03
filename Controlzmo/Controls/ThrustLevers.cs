@@ -56,7 +56,7 @@ namespace Controlzmo.Controls
                 bitmap = tl.LeverNumber == 1 ? 0b0001 : 0b0010;
 
             double normalised;
-            if (sc.IsFBW || sc.IsFenix || sc.IsIni321 || sc.IsIni320)
+            if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds)
                 normalised = AirbusSnap(@new, tl);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
