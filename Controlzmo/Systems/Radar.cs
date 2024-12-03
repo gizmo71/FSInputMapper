@@ -6,6 +6,7 @@ using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
+//TODO: ini A330
 namespace Controlzmo.Systems.Radar
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -15,6 +16,8 @@ namespace Controlzmo.Systems.Radar
         public Int32 radarSys;
         [SimVar("L:S_WR_SYS", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radarSysFenix;
+        [SimVar("L:INI_WX_SYS_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 radarSysIni;
     };
 
     [Component]
@@ -33,13 +36,15 @@ namespace Controlzmo.Systems.Radar
 
         public override void Process(ExtendedSimConnect simConnect, RadarSysData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.radarSysFenix : data.radarSys);
+            if (simConnect.IsFenix) data.radarSys = data.radarSysFenix;
+            else if (simConnect.IsIniBuilds) data.radarSys = data.radarSysIni;
+            hub.Clients.All.SetFromSim(GetId(), data.radarSys);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = code, radarSysFenix = code });
+            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = code, radarSysFenix = code, radarSysIni = code });
         }
     }
 
@@ -50,6 +55,8 @@ namespace Controlzmo.Systems.Radar
         public Int32 pwsSwitch;
         [SimVar("L:S_WR_PRED_WS", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 pwsSwitchFenix;
+        [SimVar("L:INI_WX_PWS_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 pwsSwitchIni;
     };
 
     [Component]
@@ -68,13 +75,15 @@ namespace Controlzmo.Systems.Radar
 
         public override void Process(ExtendedSimConnect simConnect, PredictiveWindshearSysData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), (simConnect.IsFenix ? data.pwsSwitchFenix : data.pwsSwitch) == 1);
+            if (simConnect.IsFenix) data.pwsSwitch = data.pwsSwitchFenix;
+            else if (simConnect.IsIniBuilds) data.pwsSwitch = 1 - data.pwsSwitchIni;
+            hub.Clients.All.SetFromSim(GetId(), data.pwsSwitch == 1);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)
         {
             Int32 value = isAuto == true ? 1 : 0;
-            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() { pwsSwitch = value, pwsSwitchFenix = value });
+            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() { pwsSwitch = value, pwsSwitchFenix = value, pwsSwitchIni = 1 - value });
         }
     }
 }
