@@ -89,6 +89,8 @@ namespace Controlzmo.Systems.Transponder
                 for (int i = 1; i >= 0; --i)
                     sender.Execute(simConnect, $"{i} (>L:S_XPDR_IDENT)");
             }
+            else if (simConnect.IsIniBuilds)
+                sender.Execute(simConnect, $"1 (>L:INI_TCAS_IDENT_COMMAND)");
             else
                 base.SetInSim(simConnect, value);
         }
@@ -101,6 +103,8 @@ namespace Controlzmo.Systems.Transponder
         public Int32 isAltRptgOn;
         [SimVar("L:S_XPDR_ALTREPORTING", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isAltRptgOnFenix;
+        [SimVar("L:INI_TCAS_ALT_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isAltRptgOnIni;
         //TODO: A380X?
     };
 
@@ -116,13 +120,15 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, AltRptgData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), (simConnect.IsFenix ? data.isAltRptgOnFenix : data.isAltRptgOn) == 1);
+            if (simConnect.IsIniBuilds) data.isAltRptgOn = data.isAltRptgOnIni;
+            else if (simConnect.IsFenix) data.isAltRptgOn = data.isAltRptgOnFenix;
+            hub.Clients.All.SetFromSim(GetId(), data.isAltRptgOn == 1);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? isOn)
         {
             var value = isOn == true ? 1 : 0;
-            simConnect.SendDataOnSimObject(new AltRptgData() { isAltRptgOn = value, isAltRptgOnFenix = value });
+            simConnect.SendDataOnSimObject(new AltRptgData() { isAltRptgOn = value, isAltRptgOnFenix = value, isAltRptgOnIni = value });
         }
     }
 
@@ -136,6 +142,8 @@ namespace Controlzmo.Systems.Transponder
         public Int32 a380xMode; // 0 STBY 1 TA ONLY 2 TA/RA
         [SimVar("L:S_XPDR_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 positionFenix;
+        [SimVar("L:INI_TCAS_MODE_PEDESTAL", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 positionIni;
     };
 
     [Component]
@@ -154,6 +162,8 @@ namespace Controlzmo.Systems.Transponder
         {
             if (simConnect.IsFenix)
                 data.position = data.positionFenix;
+            else if (simConnect.IsIniBuilds)
+                data.position = data.positionIni;
             else if (simConnect.IsA380X)
                 data.position = data.a380xMode;
             hub.Clients.All.SetFromSim(GetId(), data.position);
@@ -164,7 +174,7 @@ namespace Controlzmo.Systems.Transponder
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new TcasModeData() { position = code, a380xMode = code, positionFenix = code });
+            simConnect.SendDataOnSimObject(new TcasModeData() { position = code, a380xMode = code, positionFenix = code, positionIni = code });
         }
     }
 
@@ -175,6 +185,8 @@ namespace Controlzmo.Systems.Transponder
         public Int32 position;
         [SimVar("L:S_TCAS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 positionFenix;
+        [SimVar("L:INI_TCAS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 positionIni;
     };
 
     [Component]
@@ -191,7 +203,9 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, TcasTrafficModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.positionFenix : data.position);
+            if (simConnect.IsIniBuilds) data.position = data.positionFenix;
+            else if (simConnect.IsFenix) data.position = data.positionFenix;
+            hub.Clients.All.SetFromSim(GetId(), data.position);
         }
 
         public string GetId() => "tcasTraffic";
@@ -199,7 +213,7 @@ namespace Controlzmo.Systems.Transponder
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new TcasTrafficModeData() { position = code, positionFenix = code });
+            simConnect.SendDataOnSimObject(new TcasTrafficModeData() { position = code, positionFenix = code, positionIni = code });
         }
     }
 
@@ -210,6 +224,8 @@ namespace Controlzmo.Systems.Transponder
         public Int32 xpndrMode;
         [SimVar("L:S_XPDR_OPERATION", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 xpndrModeFenix;
+        [SimVar("L:INI_TCAS_STBY_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 xpndrModeIni;
     };
 
     [Component]
@@ -226,7 +242,9 @@ namespace Controlzmo.Systems.Transponder
 
         public override void Process(ExtendedSimConnect simConnect, TransponderModeData data)
         {
-            hub.Clients.All.SetFromSim(GetId(), simConnect.IsFenix ? data.xpndrModeFenix : data.xpndrMode);
+            if (simConnect.IsIniBuilds) data.xpndrMode = data.xpndrModeIni;
+            else if (simConnect.IsFenix) data.xpndrMode = data.xpndrModeFenix;
+            hub.Clients.All.SetFromSim(GetId(), data.xpndrMode);
         }
 
         public string GetId() => "transponderMode";
@@ -234,7 +252,7 @@ namespace Controlzmo.Systems.Transponder
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new TransponderModeData() { xpndrMode = code, xpndrModeFenix = code });
+            simConnect.SendDataOnSimObject(new TransponderModeData() { xpndrMode = code, xpndrModeFenix = code, xpndrModeIni = code });
         }
     }
 }
