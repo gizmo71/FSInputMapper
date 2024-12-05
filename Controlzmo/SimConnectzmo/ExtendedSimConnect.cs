@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
 using System.Text.RegularExpressions;
+using Controlzmo.GameControllers;
 using Controlzmo.SimConnectzmo;
 
 namespace SimConnectzmo
@@ -34,7 +35,7 @@ namespace SimConnectzmo
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
         private IEnumerable<IOnAircraftLoaded> onAircraftLoadedHandlers;
-        private Wibbleator wibble;
+private Wibbleator wibble;
         private InputEvents inputEventsHandler;
 
         public bool? IsSimStarted;
@@ -70,7 +71,10 @@ OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSi
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
             serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
             inputEventsHandler = serviceProvider.GetRequiredService<InputEvents>();
+<<<<<<< HEAD
             wibble = serviceProvider.GetRequiredService<Wibbleator>();
+=======
+>>>>>>> origin/master
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()

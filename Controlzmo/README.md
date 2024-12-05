@@ -66,6 +66,8 @@ Suggested camera mappings:
 * Cockpit quickviews: 0 cruise, 1 EFB, 2 cockpit prep, 3 check nose, 4 glance left, 5 taxi/landing, 6 glance right, 7 check sky, 8 overhead, 9 upper overhead
 
 Map vJoy:
+* 89 next instrument view*
+* 90-99 instrument view toggle 10 and 0-9*
 * 100-109 to Camera->Cockpit Camera->Load Custom Camera 0-9
 * 110-113 Camera->External Camera->External Quickview Top/Rear/Left/Right
 * 114 Camera->External Camera->Toggle External View  - not needed as it wasn't functional in MSFS2024

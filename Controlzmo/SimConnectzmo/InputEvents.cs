@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -9,19 +10,20 @@ using System.Collections.Generic;
 namespace Controlzmo.SimConnectzmo
 {
     [Component, RequiredArgsConstructor]
-    public partial class InputEvents : IOnAircraftLoaded, IButtonCallback<T16000mHotas>
+    public partial class InputEvents : IOnAircraftLoaded, ISettable<string?>
     {
         private readonly ILogger<InputEvents> log;
 
         private Dictionary<string, SIMCONNECT_INPUT_EVENT_DESCRIPTOR> all = new();
 
-        public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
-
-        public virtual void OnPress(ExtendedSimConnect simConnect) {
+        public void SetInSim(ExtendedSimConnect simConnect, string? value)
+        {
             log.LogCritical($"Listing all input events");
             foreach (var (name, rgData) in all)
                 Console.WriteLine($"\t{name}\t#{rgData.Hash}\t{rgData.eType}");
         }
+
+        public string GetId() => "listInputEvents";
 
         public void OnAircraftLoaded(ExtendedSimConnect simConnect)
         {
