@@ -222,7 +222,7 @@ F5/F6 remove/insert (before current) waypoint
         <div>
             <span style="float: right;">
                 METAR
-                <br /><input id="metarIcao" maxlength="4" size="5" />
+                <br /><input id="metarIcao" maxlength="4" size="4" />
                 <br /><input type="button" value="Fetch" onclick='connection.invoke("SetInSim", "fetchMetar", document.getElementById("metarIcao").value.toUpperCase()).catch(errorHandler);' />
                 <br /><input type="button" value="Print" onclick='connection.invoke("SetInSim", "printText", document.getElementById("metar").value).catch(errorHandler);' />
             </span>
