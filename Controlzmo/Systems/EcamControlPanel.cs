@@ -1,5 +1,4 @@
 ﻿using Controlzmo.Hubs;
-using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -12,7 +11,6 @@ namespace Controlzmo.Systems
     public partial class EcamButtonTakeOffConfig : ISettable<string?>
     {
         private readonly JetBridgeSender jetbridge;
-        private readonly InputEvents inputEvents;
 
         public string GetId() => "ecamButtonTakeOffConfig";
 
