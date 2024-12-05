@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace Controlzmo.Systems.EfisControlPanel
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct FdLsButtonSyncData
+    public struct FenixFdLsButtonSyncData
     {
         [SimVar("L:I_FCU_EFIS1_LS", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 leftLS;
@@ -16,20 +16,19 @@ namespace Controlzmo.Systems.EfisControlPanel
         public Int32 rightLS;
         [SimVar("L:I_FCU_EFIS1_FD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fd1;
-        [SimVar("L:I_FCU_EFIS2_FD", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:I_FCU_EFIS2_FD", "Bool", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 fd2;
-//TODO: do we also need to sync the VV in A380X? A380X_EFIS_{side}_VV_BUTTON_IS_ON ({side} is L or R). Is this just an oversight from the EFIS sync setting?
     };
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FenixButtonSync : DataListener<FdLsButtonSyncData>, IRequestDataOnOpen
+    public partial class FenixButtonSync : DataListener<FenixFdLsButtonSyncData>, IRequestDataOnOpen
     {
         private readonly JetBridgeSender sender;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
-        public override void Process(ExtendedSimConnect simConnect, FdLsButtonSyncData data)
+        public override void Process(ExtendedSimConnect simConnect, FenixFdLsButtonSyncData data)
         {
             if (data.leftLS != data.rightLS)
                 pushAndRelease(simConnect, "LS");
