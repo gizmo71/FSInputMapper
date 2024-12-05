@@ -49,7 +49,6 @@ namespace SimConnectzmo
             OnRecvEventFrame += Handle_OnRecvEventFrame;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
-OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSimConnect) sc, data);
             OnRecvEnumerateInputEvents += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEvents((ExtendedSimConnect) sc, data);
             OnRecvGetInputEvent += (sc, data) => inputEventsHandler!.OnRecvGetInputEvent((ExtendedSimConnect) sc, data);
             OnRecvEnumerateInputEventParams += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEventParams((ExtendedSimConnect) sc, data);
