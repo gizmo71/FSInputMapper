@@ -71,10 +71,7 @@ OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSi
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
             serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
             inputEventsHandler = serviceProvider.GetRequiredService<InputEvents>();
-<<<<<<< HEAD
-            wibble = serviceProvider.GetRequiredService<Wibbleator>();
-=======
->>>>>>> origin/master
+wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()
