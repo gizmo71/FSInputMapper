@@ -15,6 +15,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isMach;
         [SimVar("L:B_FCU_SPEED_MACH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isMachFenix;
+        [SimVar("L:INI_Airspeed_is_mach", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isMachIni;
     };
 
     [Component]
@@ -30,6 +32,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix)
                 data.isMach = data.isMachFenix;
+            else if (simConnect.IsIniBuilds)
+                data.isMach = data.isMachIni;
 
             var speedMachLabel = data.isMach == 1 ? " MACH" : "SPD  ";
             var hdgTrkLabel = trkFpaHolder.IsTrkFpa ? "  TRK" : "HDG  ";

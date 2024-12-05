@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             // Normalise to FBW.
             if (simConnect.IsFenix)
                 data.isTrkFpaMode = data.isTrkFpaModeFenix;
-            else if (simConnect.IsIni320)
+            else if (simConnect.IsIniBuilds)
                 data.isTrkFpaMode = data.isTrkFpaModeIni;
             isTrkFpa = data.isTrkFpaMode == 1;
 

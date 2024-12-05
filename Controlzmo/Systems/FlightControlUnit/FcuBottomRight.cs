@@ -34,16 +34,20 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 fenixSelected; // In FPA, this is angle in degrees multiplied by 1000
         [SimVar("L:A32NX_FCU_ALT_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isManaged;
-        [SimVar("L:N_FCU_ALTITUDE", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:N_FCU_ALTITUDE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fcuAltFenix;
         [SimVar("L:I_FCU_ALTITUDE_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isManagedFenix;
-        [SimVar("L:INI_Altitude_Dial", "feet", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:INI_Altitude_Dial", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fcuAltIni;
+        [SimVar("L:INI_FCU_ALT_DOT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isManagedIni;
         [SimVar("L:INI_vvi_dial", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 iniVsSelected;
-        [SimVar("L:INI_FPA_DIAL", "number", SIMCONNECT_DATATYPE.INT32, 0.1f)]
-        public Int32 iniFpaSelected;
+        [SimVar("L:INI_FPA_DIAL", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.05f)]
+        public float iniFpaSelected;
+        [SimVar("L:INI_FCU_VS_DASHED", "bool", SIMCONNECT_DATATYPE.INT32, 0.1f)]
+        public Int32 iniVsDashed;
     };
 
     [Component, RequiredArgsConstructor]
@@ -66,13 +70,13 @@ namespace Controlzmo.Systems.FlightControlUnit
                 data.vsSelected = data.fenixSelected;
                 data.vsState = 1 - data.fenixState;
             }
-            else if (simConnect.IsIni320)
+            else if (simConnect.IsIniBuilds)
             {
-                //TODO: data.isManaged = ?;
+                data.isManaged = data.isManagedIni;
                 data.fcuAlt = data.fcuAltIni;
                 data.fpaSelected = data.iniFpaSelected;
                 data.vsSelected = data.iniVsSelected;
-                //TODO: data.vsState = ?;
+                data.vsState = data.iniVsDashed == 1 ? 0 : 1;
             }
 
             var managed = data.isManaged == 1 ? '\x1' : ' ';
