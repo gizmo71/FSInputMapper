@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using Controlzmo;
 using System.Text.RegularExpressions;
+using Controlzmo.GameControllers;
 using Controlzmo.SimConnectzmo;
 
 namespace SimConnectzmo
@@ -34,6 +35,7 @@ namespace SimConnectzmo
         private IEnumerable<IOnSimStarted>? onSimStartedHandlers;
         private IEnumerable<IOnSimFrame>? onSimFrameHandlers;
         private IEnumerable<IOnAircraftLoaded> onAircraftLoadedHandlers;
+private Wibbleator wibble;
         private InputEvents inputEventsHandler;
 
         public bool? IsSimStarted;
@@ -49,6 +51,7 @@ namespace SimConnectzmo
             OnRecvEventFrame += Handle_OnRecvEventFrame;
             OnRecvException += Handle_Exception;
             OnRecvSystemState += Handle_OnRecvSystemState;
+OnRecvControllersList += (sc, data) => wibble!.OnRecvControllersList((ExtendedSimConnect) sc, data);
             OnRecvEnumerateInputEvents += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEvents((ExtendedSimConnect) sc, data);
             OnRecvGetInputEvent += (sc, data) => inputEventsHandler!.OnRecvGetInputEvent((ExtendedSimConnect) sc, data);
             OnRecvEnumerateInputEventParams += (sc, data) => inputEventsHandler!.OnRecvEnumerateInputEventParams((ExtendedSimConnect) sc, data);
@@ -68,6 +71,7 @@ namespace SimConnectzmo
             _logging = serviceProvider.GetRequiredService<ILogger<ExtendedSimConnect>>();
             serializedExecutor = serviceProvider.GetRequiredService<SerializedExecutor>();
             inputEventsHandler = serviceProvider.GetRequiredService<InputEvents>();
+wibble = serviceProvider.GetRequiredService<Wibbleator>();
 
             typeToStruct = serviceProvider
                 .GetServices<IData>()
