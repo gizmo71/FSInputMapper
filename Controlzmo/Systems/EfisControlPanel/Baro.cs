@@ -109,6 +109,8 @@ System.Console.WriteLine($"-> {value} led to {command}");
                 data.baro1Mode = data.baro1ModeFenix == 1 ? 1 : 3;
                 data.baro1Units = data.baro1UnitsFenix;
             }
+            else if (simConnect.IsIniBuilds)
+                data.baro1Mode |= 1;
 
             string composite = "SStd ";
             _isInHg = data.baro1Units == 0;
