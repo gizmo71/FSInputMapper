@@ -1,11 +1,10 @@
-using Controlzmo;
-using Controlzmo.GameControllers;
-using Lombok.NET;
+﻿using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
+using SimConnectzmo;
 using System;
 
-namespace SimConnectzmo
+namespace Controlzmo.GameControllers
 {
     [Component, RequiredArgsConstructor]
     public partial class Wibbleator : IButtonCallback<T16000mHotas>, IEvent, IEventNotification
