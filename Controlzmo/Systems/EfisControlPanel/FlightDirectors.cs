@@ -19,7 +19,7 @@ namespace Controlzmo.Systems.EfisControlPanel
                 for (int i = 2; i-- > 0; )
                     sender.Execute(sc, $"{i} (>L:S_FCU_EFIS1_FD)");
             else if (sc.IsIniBuilds)
-                sender.Execute(sc, $"(L:INI_FD1_ON) ! d (>L:INI_FD1_ON) (>L:INI_FD2_ON)");
+                sender.Execute(sc, $"(L:INI_FD1_ON) ! d (>L:INI_FD1_ON)");
             else
 //TODO: this is a bit odd in the A380X... there's only a single button.
                 sender.Execute(sc, "1 (>K:TOGGLE_FLIGHT_DIRECTOR)");
