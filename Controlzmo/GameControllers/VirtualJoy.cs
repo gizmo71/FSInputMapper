@@ -2,7 +2,6 @@
 using CoreDX.vJoy.Wrapper;
 using SimConnectzmo;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
