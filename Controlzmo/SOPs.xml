@@ -67,9 +67,9 @@
 		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
 	<Airline callsign="eurowings|ocean|black[- ]?pearl"> <!-- vEWG -->
-		<!-- 'Airbus A320 CFM SL EWG' (the Discover one) -->
-		<Text type=".*">Preparation 20-180 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, warm up; OETA, cool down</Text>
+		<Text type=".*">Preparation 20m-10h, air time counts</Text>
+		<Text type=".*">Start #2 first, 5s between; warm up</Text>
+		<Text type=".*">OETA(#2), 3m between, cool down</Text>
 		<Text type=".*">Rejected 450fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="^alpine|easy|top[- ]?swiss$"> <!-- vEZY -->
