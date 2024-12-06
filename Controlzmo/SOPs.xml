@@ -185,7 +185,7 @@
 	</Airline>
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
-		<Text type="A319|A2[01]N|A321|A330">5s between starts; OETD(#2), 1m between; warm up</Text>
+		<Text type="A319|A2[01]N|A321|A333">5s between starts; OETD(#2), 1m between; warm up</Text>
 		<Text type="A320">5s between starts; OETD(#2), 2m between; warm up</Text>
 		<Text type=".*">OETA, 1m between; cool down</Text>
 		<Text type=".*">Pause in flight of 15m+ requires PIREP comment</Text>
