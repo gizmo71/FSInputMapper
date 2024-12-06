@@ -37,7 +37,7 @@ namespace Controlzmo.Views
         public override void Process(ExtendedSimConnect simConnect, CameraStateData data)
         {
             _current = data;
-            log.LogTrace($"camera state {_current.cameraState}");
+            log.LogError($"camera state {_current.cameraState}");
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)
@@ -46,7 +46,6 @@ namespace Controlzmo.Views
         }
     }
 
-#if false
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct CameraViewData
     {
@@ -58,7 +57,7 @@ namespace Controlzmo.Views
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class CameraView : DataListener<CameraViewData>, IAxisCallback<T16000mHotas>
+    public partial class CameraView : DataListener<CameraViewData>, IOnSimStarted
     {
         private readonly ILogger<CameraView> log;
 
@@ -67,12 +66,9 @@ namespace Controlzmo.Views
             log.LogCritical($"camera view {data.viewType}/{data.viewIndex}");
         }
 
-        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
-
-        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
+        public void OnStarted(ExtendedSimConnect simConnect)
         {
-            simConnect.RequestDataOnSimObject(this, @new > 0 ? SIMCONNECT_CLIENT_DATA_PERIOD.VISUAL_FRAME : SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.VISUAL_FRAME);
         }
     }
-#endif
 }
