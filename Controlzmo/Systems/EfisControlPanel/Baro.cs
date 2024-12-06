@@ -154,7 +154,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
                     inputEvents.Send(sc, "FNX320_INPUT_KNOB_PUSHPULL_E_FCU_EFIS1_BARO_PUSH", 0.0);
                     return;
                 }
-                else if (sc.IsIni320 || sc.IsIni321) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
+                else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
             }
             magicIfAfter = DateTime.MaxValue;
@@ -210,7 +210,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (simConnect.IsFenix)
                 command = @"1 (>L:S_FCU_EFIS1_BARO_STD)";
-            else if (simConnect.IsIni320 || simConnect.IsIni321)
+            else if (simConnect.IsIniBuilds)
                 command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             sender.Execute(simConnect, command);
         }
