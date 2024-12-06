@@ -148,16 +148,13 @@ System.Console.WriteLine($"-> {value} led to {command}");
                 setMagic.SetLocal(sc);
             else
             {
-                String command;
+                var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
                 if (sc.IsFenix)
                 {
                     inputEvents.Send(sc, "FNX320_INPUT_KNOB_PUSHPULL_E_FCU_EFIS1_BARO_PUSH", 0.0);
                     return;
                 }
-                else if (sc.IsIni320 || sc.IsIni321)
-                    command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
-                else
-                    command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
+                else if (sc.IsIni320 || sc.IsIni321) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
             }
             magicIfAfter = DateTime.MaxValue;
@@ -188,9 +185,11 @@ System.Console.WriteLine($"-> {value} led to {command}");
 
         internal void SetLocal(ExtendedSimConnect simConnect)
         {
-            /*if (simConnect.IsIni320 || simConnect.IsIni321)
+#if false
+            if (simConnect.IsIniBuilds)
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-            else*/
+            else
+#endif
                 simConnect.SendEvent(_event);
         }
 
@@ -208,13 +207,11 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_AFT;
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
-            String command;
+            var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (simConnect.IsFenix)
                 command = @"1 (>L:S_FCU_EFIS1_BARO_STD)";
-            else if (simConnect.IsIni320 && simConnect.IsIni321)
-                command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)"; //TODO: also need _2_ and ISIS to keep them in sync :-(
-            else
-                command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
+            else if (simConnect.IsIni320 || simConnect.IsIni321)
+                command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             sender.Execute(simConnect, command);
         }
     }
