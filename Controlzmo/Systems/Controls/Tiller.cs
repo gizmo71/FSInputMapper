@@ -35,7 +35,9 @@ namespace Controlzmo.Systems.Controls
         {
             var value = disconnected ? 1 : 0;
 //TODO: A32NX doesn't appear to support an LVar, despite what the docs suggest.
-            var variable = sc.IsFenix ? "S_FC_CAPT_TILLER_PEDAL_DISCONNECT" : "notWorkingA32NX_TILLER_PEDAL_DISCONNECT";
+            var variable =  "notWorkingA32NX_TILLER_PEDAL_DISCONNECT";
+            if (sc.IsFenix) variable = "S_FC_CAPT_TILLER_PEDAL_DISCONNECT";
+            else if (sc.IsIniBuilds) variable = "INI_TILLER_DISC";
             sender.Execute(sc, $"{value} (>L:{variable})");
         }
     }
