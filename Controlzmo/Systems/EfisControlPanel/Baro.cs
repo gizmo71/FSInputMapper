@@ -132,7 +132,6 @@ System.Console.WriteLine($"-> {value} led to {command}");
     public partial class BaroPush : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
-        private readonly InputEvents inputEvents;
         private readonly SetSeaLevelPressure setMagic;
         private DateTime magicIfAfter = DateTime.MaxValue;
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_FORE;
@@ -149,11 +148,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             else
             {
                 var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
-                if (sc.IsFenix)
-                {
-                    inputEvents.Send(sc, "FNX320_INPUT_KNOB_PUSHPULL_E_FCU_EFIS1_BARO_PUSH", 0.0);
-                    return;
-                }
+                if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) -- (>L:S_FCU_EFIS1_BARO_STD)";
                 else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
             }
@@ -209,7 +204,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
         {
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (simConnect.IsFenix)
-                command = @"1 (>L:S_FCU_EFIS1_BARO_STD)";
+                command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
             else if (simConnect.IsIniBuilds)
                 command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             sender.Execute(simConnect, command);
