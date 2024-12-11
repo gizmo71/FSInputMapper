@@ -40,7 +40,7 @@ namespace Controlzmo.Views
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class LookFlyPad : IButtonCallback<T16000mHotas>
+    public partial class LookEFB : IButtonCallback<T16000mHotas>
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_RIGHT_RED;
