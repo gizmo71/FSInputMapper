@@ -1,12 +1,12 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
-//TODO: ini A330
 namespace Controlzmo.Systems.Radar
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -20,15 +20,11 @@ namespace Controlzmo.Systems.Radar
         public Int32 radarSysIni;
     };
 
-    [Component]
-    public class RadarSys : DataListener<RadarSysData>, IRequestDataOnOpen, ISettable<string?>
+    [Component, RequiredArgsConstructor]
+    public partial class RadarSys : DataListener<RadarSysData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-
-        public RadarSys(IServiceProvider serviceProvider)
-        {
-            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
+        private readonly JetBridgeSender sender;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
@@ -39,6 +35,13 @@ namespace Controlzmo.Systems.Radar
             if (simConnect.IsFenix) data.radarSys = data.radarSysFenix;
             else if (simConnect.IsIniBuilds) data.radarSys = data.radarSysIni;
             hub.Clients.All.SetFromSim(GetId(), data.radarSys);
+
+            if (simConnect.IsIni321)
+            {
+                var iniValue = data.radarSysIni == 1 ? 1 : 0;
+                sender.Execute(simConnect, $"{iniValue} (L:INI_WX_PWS_SWITCH) != if{{ {iniValue} (>L:INI_WX_PWS_SWITCH) }}");
+                return;
+            }
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
@@ -59,15 +62,11 @@ namespace Controlzmo.Systems.Radar
         public Int32 pwsSwitchIni;
     };
 
-    [Component]
-    public class PredictiveWindshearSys : DataListener<PredictiveWindshearSysData>, IRequestDataOnOpen, ISettable<bool?>
+    [Component, RequiredArgsConstructor]
+    public partial class PredictiveWindshearSys : DataListener<PredictiveWindshearSysData>, IRequestDataOnOpen, ISettable<bool?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-
-        public PredictiveWindshearSys(IServiceProvider serviceProvider)
-        {
-            hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
+        private readonly JetBridgeSender sender;
 
         public string GetId() => "predictiveWindshear";
 
@@ -83,7 +82,14 @@ namespace Controlzmo.Systems.Radar
         public void SetInSim(ExtendedSimConnect simConnect, bool? isAuto)
         {
             Int32 value = isAuto == true ? 1 : 0;
-            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() { pwsSwitch = value, pwsSwitchFenix = value, pwsSwitchIni = 1 - value });
+            Int32 iniValue = 1 - value;
+            if (simConnect.IsIni321)
+            {
+                sender.Execute(simConnect, $"{iniValue} (L:INI_WX_SYS_SWITCH) 1 == != if{{ {iniValue} (>L:INI_WX_SYS_SWITCH) }}");
+                return;
+            }
+            simConnect.SendDataOnSimObject(new PredictiveWindshearSysData() {
+                pwsSwitch = value, pwsSwitchFenix = value, pwsSwitchIni = iniValue });
         }
     }
 }
