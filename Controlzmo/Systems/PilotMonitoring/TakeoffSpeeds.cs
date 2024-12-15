@@ -74,7 +74,8 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
             //TODO: also reset in case of RTO.
             wasAbove80 = wasAboveV1 = wasAboveVR = null;
-            if (!simConnect.IsA380X) wasAboveV1 = true; // Suppress the call as the A380X does it for us.
+            // Some aircraft do this for us.
+            if (!simConnect.IsA380X && !simConnect.IsIni330 && !simConnect.IsIni337) wasAboveV1 = true;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
