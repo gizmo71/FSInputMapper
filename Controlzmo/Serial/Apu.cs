@@ -198,7 +198,7 @@ namespace Controlzmo.Serial
                 if (data.isApuBleedOn == 0)
                 {
                     if (apuBleedOnAfter == null)
-                        apuBleedOnAfter = data.nowSeconds + 6.0;//60.0;
+                        apuBleedOnAfter = data.nowSeconds + 60.0;
                     else if (data.nowSeconds > apuBleedOnAfter)
                         setBleed(simConnect, true);
                 }
