@@ -402,7 +402,8 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         public bool IsIni321 { get => aircraftFile.Equals("MICROSOFT-A321\\PRESETS\\INIBUILDS\\A21N\\CONFIG"); }
         public bool IsIni330 { get => aircraftFile.StartsWith("MICROSOFT-A330\\PRESETS\\INIBUILDS\\A330-"); }
         public bool IsIni337 { get => aircraftFile.Equals("MICROSOFT-BELUGAXL\\PRESETS\\INIBUILDS\\BELUGAXL\\CONFIG"); }
-        public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330 || IsIni337; }
+        public bool IsIni400M { get => aircraftFile.Equals("A400M\\PRESETS\\INIBUILDS\\A400M_CARGO\\CONFIG"); }
+        public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330 || IsIni337 || IsIni400M; }
         public bool IsB748 { get => aircraftFile.Equals("ASOBO_B747_8I"); }
 
         private void OnSimIsRunning()
