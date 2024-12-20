@@ -148,7 +148,7 @@
 		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">5s between starts</Text>
-		<Text type=".*">Review at 700fpm</Text>
+		<Text type=".*">Review at 700fpm (or under 5!)</Text>
 	</Airline>
 	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$">
 		<Text type=".*">Preparation 15m-2h, air time counts</Text>
