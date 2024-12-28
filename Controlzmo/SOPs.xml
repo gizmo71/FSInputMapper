@@ -42,8 +42,8 @@
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
 		<Text type=".*">Air time counts</Text>
-		<Text type=".*">Warm up; OETA, 3m between; cool down</Text>
-		<Text type=".*">Rejected 400fpm; Invalidated 600fpm</Text>
+		<Text type=".*">Warm up; OETA, 3m between; cool down (1m)</Text>
+		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:speed[- ]?bird|shuttle)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
