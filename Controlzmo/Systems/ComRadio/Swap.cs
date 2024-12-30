@@ -5,7 +5,7 @@ namespace Controlzmo.Systems.ComRadio
     [Component]
     public class Com1StandbyRadioSwapEvent : IEvent
     {
-        public string SimEvent() => "COM_STBY_RADIO_SWAP";
+        public string SimEvent() => "COM1_RADIO_SWAP";
     }
 
     [Component]
