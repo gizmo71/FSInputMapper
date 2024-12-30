@@ -7,13 +7,13 @@ namespace Controlzmo.Systems.ComRadio
     [Component]
     public class Com1StandbyRadioSetEvent : IEvent
     {
-        public string SimEvent() => "COM_STBY_RADIO_SET_HZ";
+        public string SimEvent() => "COM_STBY_RADIO_SET_HZ"; // and COM_RADIO_SET_HZ - or (BCD) COM_RADIO_SET and COM_STBY_RADIO_SET
     }
 
     [Component]
     public class Com2StandbyRadioSetEvent : IEvent
     {
-        public string SimEvent() => "COM2_STBY_RADIO_SET_HZ";
+        public string SimEvent() => "COM2_STBY_RADIO_SET_HZ"; // and COM2_RADIO_SET_HZ - or (BCD) COM2_RADIO_SET and COM2_STBY_RADIO_SET
     }
 
     public abstract class AbstractComStandby : ISettable<string?>
