@@ -67,6 +67,7 @@ namespace Controlzmo.Systems.ComRadio
     {
         internal static void SetFrequencyFromSim(this IControlzmoHub hub, string field, int bcdHz)
         {
+            // For example, 121.500 is 0x01215000.
             string asString = String.Format("{0:X03}.{1:X03}", (bcdHz >> 16) & 0xFFF, (bcdHz >> 4) & 0xFFF);
             hub.SetFromSim(field, asString);
         }
