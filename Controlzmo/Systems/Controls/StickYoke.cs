@@ -10,10 +10,9 @@ namespace Controlzmo.Systems.Controls
     public partial class Ailerons : IAxisCallback<UrsaMinorFighterR>
     {
         private readonly SetAileronsEvent _event;
-
+        private readonly AxisSetter setter;
         public int GetAxis() => UrsaMinorFighterR.AXIS_ROLL;
-
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => sc.SendEvent(_event, 16383 - (int) (32767.0 * @new));
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.505);
     }
 
     [Component] public class SetElevatorsEvent : IEvent { public string SimEvent() => "AXIS_ELEVATOR_SET"; }
@@ -22,9 +21,8 @@ namespace Controlzmo.Systems.Controls
     public partial class Elevators : IAxisCallback<UrsaMinorFighterR>
     {
         private readonly SetElevatorsEvent _event;
-
+        private readonly AxisSetter setter;
         public int GetAxis() => UrsaMinorFighterR.AXIS_PITCH;
-
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => sc.SendEvent(_event, 16383 - (int) (32767.0 * @new));
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.5);
     }
 }
