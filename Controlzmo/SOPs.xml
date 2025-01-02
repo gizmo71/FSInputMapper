@@ -89,11 +89,12 @@
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 		<Text type=".*">Invalidated 750fpm</Text>
 	</Airline>
-	<Airline callsign="frontier[- ]flight|volaris"> <!-- Frontier VA -->
-		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">1m between starts; OETD(#2), 60s between</Text>
+	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
+		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
+		<Text type=".*">10s between starts; OETD(#2), 60s between; warm up</Text>
+		<Text type=".*">OETA, 60s between; cool down</Text>
 		<!-- Text type=".*">Must have fuel ≥ 748kg on landing</Text -->
-		<Text type=".*">Rejected 550fpm; Invalidated 600fpm</Text>
+		<Text type=".*">Rejected at 600fpm; review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 1s-30 minutes, air time counts</Text>
