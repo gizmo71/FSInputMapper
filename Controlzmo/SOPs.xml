@@ -139,7 +139,7 @@
 		<Text type=".*">Rejected &gt; 500fpm; invalidated &gt; 600fpm</Text>
 	</Airline>
 	<Airline callsign="shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
-		<Text type=".*">Air time counts</Text>
+		<Text type=".*">Preparation 20-90 minutes, air time counts</Text>
 		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
 		<Text type=".*">10s between starts</Text>
 		<Text type=".*">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
