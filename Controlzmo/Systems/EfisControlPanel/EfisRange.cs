@@ -1,4 +1,6 @@
+using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,5 +76,30 @@ namespace Controlzmo.Systems.EfisControlPanel
     public class LeftEfisRange : EfisRange<LeftEfisRangeData>
     {
         public LeftEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "left") { }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class EfisStickRange : IAxisCallback<UrsaMinorFighterR>
+    {
+        private readonly JetBridgeSender sender;
+
+        public int GetAxis() => UrsaMinorFighterR.AXIS_MINI_STICK_Y;
+
+        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
+        {
+            if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
+            else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
+        }
+
+        private void Move(ExtendedSimConnect simConnect, string op)
+        {
+            var lvar = "A32NX_EFIS_L_ND_RANGE";
+            if (simConnect.IsA380X) { Console.Error.WriteLine("TODO - A380X is more complex :-("); }
+            else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
+            else if (simConnect.IsIniBuilds) lvar = "INI_MAP_RANGE_CAPT_SWITCH";
+            var min = 0;
+            var max = 5; //TODO: does the A330 support 6 like the A380X does?
+            sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
+        }
     }
 }

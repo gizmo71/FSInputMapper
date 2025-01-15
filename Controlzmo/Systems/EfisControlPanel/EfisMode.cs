@@ -1,4 +1,6 @@
+using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,5 +77,29 @@ namespace Controlzmo.Systems.EfisControlPanel
     public class EfisLeftMode : EfisMode<LeftEfisModeData>
     {
         public EfisLeftMode(IServiceProvider sp) : base(sp, "left") { }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class EfisStickMode : IAxisCallback<UrsaMinorFighterR>
+    {
+        private readonly JetBridgeSender sender;
+
+        public int GetAxis() => UrsaMinorFighterR.AXIS_MINI_STICK_X;
+
+        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
+        {
+            if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
+            else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
+        }
+
+        private void Move(ExtendedSimConnect simConnect, string op)
+        {
+            var lvar = "A32NX_EFIS_L_ND_MODE";
+            if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
+            else if (simConnect.IsIniBuilds) lvar = "INI_MAP_MODE_CAPT_SWITCH";
+            var min = 0;
+            var max = simConnect.IsIni330 ? 5 : 4;
+            sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
+        }
     }
 }
