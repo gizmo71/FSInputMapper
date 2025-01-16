@@ -12,7 +12,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_TRK_FPA_TOGGLE_PUSH";
-        public string GetId() => "trkFpaToggled";
+        public string GetId() => "DISABLEDtrkFpaToggled";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
         {

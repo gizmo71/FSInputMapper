@@ -15,7 +15,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PULL";
-        public string GetId() => "fcuVsPulled";
+        public string GetId() => "DISABLEDfcuVsPulled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
@@ -34,7 +34,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PUSH";
-        public string GetId() => "fcuVsPushed";
+        public string GetId() => "DISABLEDfcuVsPushed";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
@@ -79,7 +79,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private Int32 fenixAdjustment = 0;
 
-        public string GetId() => "fcuVsDelta";
+        public string GetId() => "DISABLEDfcuVsDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {

@@ -20,7 +20,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
 
         public string SimEvent() => "A32NX.FCU_HDG_PULL";
-        public string GetId() => "fcuHeadingPulled";
+        public string GetId() => "DISABLEDfcuHeadingPulled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
@@ -41,7 +41,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
 
         public string SimEvent() => "A32NX.FCU_HDG_PUSH";
-        public string GetId() => "fcuHeadingPushed";
+        public string GetId() => "DISABLEDfcuHeadingPushed";
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
@@ -75,7 +75,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private Int32 fenixAdjustment = 0;
 
-        public string GetId() => "fcuHeadingDelta";
+        public string GetId() => "DISABLEDfcuHeadingDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {

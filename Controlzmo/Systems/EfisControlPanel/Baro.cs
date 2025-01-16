@@ -24,7 +24,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         // We can't inject RepeatingBaroChange because we're something the serial code needs, so we end up in a deadly embrace.
         private readonly IServiceProvider sp;
 
-        public string GetId() => "baroKnob";
+        public string GetId() => "DISABLEDbaroKnob";
 
         private RepeatingBaroChange baroChange {  get => sp.GetRequiredService<RepeatingBaroChange>(); }
 
