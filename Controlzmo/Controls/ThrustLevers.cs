@@ -14,6 +14,8 @@ namespace Controlzmo.Controls
     [Component] public class Throttle4Event : IEvent { public string SimEvent() => "THROTTLE4_AXIS_SET_EX1"; }
     [Component] public class Reverse1OnEvent : IEvent { public string SimEvent() => "SET_THROTTLE1_REVERSE_THRUST_ON"; }
     [Component] public class Reverse1OffEvent : IEvent { public string SimEvent() => "SET_THROTTLE1_REVERSE_THRUST_OFF"; }
+    [Component] public class Reverse2OnEvent : IEvent { public string SimEvent() => "SET_THROTTLE2_REVERSE_THRUST_ON"; }
+    [Component] public class Reverse2OffEvent : IEvent { public string SimEvent() => "SET_THROTTLE2_REVERSE_THRUST_OFF"; }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct EngineData
@@ -34,6 +36,8 @@ namespace Controlzmo.Controls
         private readonly Throttle4Event set4;
         private readonly Reverse1OnEvent rev1on;
         private readonly Reverse1OffEvent rev1off;
+        private readonly Reverse2OnEvent rev2on;
+        private readonly Reverse2OffEvent rev2off;
         private int _numberOfEngines;
         private float _lowerLimit;
 
@@ -64,10 +68,10 @@ namespace Controlzmo.Controls
                 if (normalised < 0) {
                     normalised = normalised * _lowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
 Console.WriteLine($"Rev Value {normalised}  lower limt {_lowerLimit}");
-                    sc.SendEvent(rev1on);
+                    sc.SendEvent(tl.LeverNumber == 1 ? rev1on : rev2on);
                 }
                 else
-                    sc.SendEvent(rev1off);
+                    sc.SendEvent(tl.LeverNumber == 1 ? rev1off : rev2off);
                 normalised = normalised * 2 - 1;
 Console.WriteLine($"Normalised {normalised}");
             }
