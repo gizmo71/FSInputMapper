@@ -23,9 +23,10 @@ namespace Controlzmo.Systems.Atc
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         [SimVar("ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
         public string model;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        [SimVar("ATC ID", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
-        public string tailNumber; // SDK says up to 10 characters! May not be a default for some liveries; for some it's junk.
+        // You *can* set this using one of these objects, but it won't affect the skin except at load time (possibly by forcing a "restart").
+        //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+        //[SimVar("ATC ID", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)] // In 2024, this is randomly generated on load (discarding user input!).
+        //public string tailNumber; // SDK says up to 10 characters! May not be a default for some liveries; for some it's junk.
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         [SimVar("TITLE", null, SIMCONNECT_DATATYPE.STRING128, 0.0f)]
         public string title; // This is what vAMSYS will use.
@@ -63,7 +64,6 @@ namespace Controlzmo.Systems.Atc
             WarmupMinutes = CooldownMinutes = DEFAULT_ENGINE_WAIT_MINUTES;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM\.AC_MODEL[ _](.*)\.0\.TEXT$", @"$1");
             var callsign = data.name.ToLower();
-            var _ = data.tailNumber.ToUpper();
             var aircraftCfg = simConnect.AircraftFile.ToLower();
             // Some of the iniBuilds ones have the wrong ICAO code or even no model at all. :-(
             if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
