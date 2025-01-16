@@ -216,7 +216,6 @@ System.Console.WriteLine($"-> {value} led to {command}");
     public partial class BaroUnits : IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
-        private readonly InputEvents inputEvents;
 
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_PRESS;
 
