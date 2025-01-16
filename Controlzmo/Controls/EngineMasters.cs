@@ -14,7 +14,9 @@ namespace Controlzmo.Controls
         {
             var value = isOn ? 1 : 0;
             var valve_action = isOn ? "OPEN" : "CLOSE";
-            var is4engined = sc.IsA380X || sc.IsB748;
+/*TODO: the A400M has three positions for each switch, "off", "feather" (used during startup), and "run" (one AVAIL has been shown).
+  We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up". */
+            var is4engined = sc.IsA380X || sc.IsB748 || sc.IsIni400M;
             var first = isLeft ? 1 : (is4engined ? 3 : 2);
             var last = first + (is4engined ? 1 : 0);
             for (var engine = first; engine <= last; ++engine)
