@@ -145,7 +145,7 @@
 		<Text type=".*">Must have 1.5T ≤ fuel ≤ 10T on landing</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
 	</Airline>
-	<Airline callsign="batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi"><!-- Lion Group -->
+	<Airline callsign="^(batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi)$"><!-- Lion Group -->
 		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">5s between starts</Text>
