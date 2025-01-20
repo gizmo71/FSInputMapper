@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -6,6 +7,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
+using Windows.Devices.Geolocation;
 
 namespace Controlzmo.Systems.Spoilers
 {
@@ -36,6 +38,12 @@ namespace Controlzmo.Systems.Spoilers
         public Int32 iniArmed;
         [SimVar("L:INI_SPOILERS_HANDLE_POSITION", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.025f)]
         public float iniPosition;
+/* Asobo B38M UI code (event HANDLING_SPEED_BRAKES) is:
+   p0 100 * 0 max 100 min 0 100 (F:Clamp)
+   (>O:XMLVAR_Speedbrakes_Position, percent) (O:XMLVAR_Speedbrakes_Position, percent) sp0
+   l0 15 > (>K:SPOILERS_ARM_SET)
+   l0 30 80 0 1 (F:MapRange) 16384 * (>K:SPOILERS_SET)
+   l0 30 > if{ (E:SIMULATION TIME, second) (>L:1:XMLVAR_Speedbrakes_Activation_Time) } */
     };
 
     [Component] public class SpoilerArmOnEvent : IEvent { public string SimEvent() => "SPOILERS_ARM_ON"; }
@@ -44,15 +52,21 @@ namespace Controlzmo.Systems.Spoilers
 
     public abstract class AbstractSpoilerDataListener : DataListener<SpoilerData>, IButtonCallback<T16000mHotas>
     {
-        protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly ILogger _logger;
+        protected readonly SetSpoilerHandleEvent setEvent;
         protected readonly JetBridgeSender sender;
+        protected readonly InputEvents inputEvents;
+        protected readonly SpoilerArmOffEvent armOffEvent;
+        protected readonly SpoilerArmOnEvent armOnEvent;
 
         protected AbstractSpoilerDataListener(IServiceProvider sp)
         {
             _logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().FullName!);
             setEvent = sp.GetRequiredService<SetSpoilerHandleEvent>();
             sender = sp.GetRequiredService<JetBridgeSender>();
+            inputEvents = sp.GetRequiredService<InputEvents>();
+            armOffEvent = sp.GetRequiredService<SpoilerArmOffEvent>();
+            armOnEvent = sp.GetRequiredService<SpoilerArmOnEvent>();
         }
 
         public abstract int GetButton();
@@ -61,18 +75,31 @@ namespace Controlzmo.Systems.Spoilers
         public override void Process(ExtendedSimConnect simConnect, SpoilerData data)
         {
             _logger.LogError($"Wants spoiler; raw data pos {data.position} armed {data.armed} A32NX ready? {data.a32nxReady} A32NX armed {data.a32nxArmed} active {data.a32nxGroundSpoilersActive} handle {data.a32nxPosition} ini armed {data.iniArmed} ini pos {data.iniPosition}");
-            if (data.a32nxReady == 1) {
-                data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
-                data.position = (int)(100 * data.a32nxPosition);
-            }
-            else if (simConnect.IsIniBuilds)
+            if (simConnect.IsIniBuilds)
             {
                 data.armed = data.iniArmed;
                 data.position = (int)(100 * data.iniPosition);
             }
+            else if (simConnect.IsAsoboB38M)
+            {
+                //data.armed = data.position > 0 ? 0 : data.armed; // Yes, this is daft.
+                //data.position = (Int32) Math.Ceiling(Math.Max(0, (data.asoboB38M - 30) / 0.7));
+            }
+            else if (data.a32nxReady == 1)
+            {
+                data.armed = data.a32nxArmed == 1 || data.a32nxGroundSpoilersActive == 1 ? 1 : 0;
+                data.position = (int)(100 * data.a32nxPosition);
+            }
             _logger.LogDebug("... processed data pos {} armed {}; Fenix {}", data.position, data.armed, data.fenix);
 
             ProcessSpoilerDemand(simConnect, data);
+        }
+
+        protected void SetAsoboMaxPosition(ExtendedSimConnect simConnect, int? newPosition)
+        {
+            var demand = newPosition! * 0.005 + 0.3;
+            _logger.LogDebug("Now demand Max position {} or as event value {}", newPosition, demand);
+            inputEvents.Send(simConnect, "HANDLING_SPEED_BRAKES", demand);
         }
 
         protected abstract void ProcessSpoilerDemand(ExtendedSimConnect simConnect, SpoilerData data);
@@ -80,13 +107,8 @@ namespace Controlzmo.Systems.Spoilers
 
     [Component]
     public class MoreSpoiler : AbstractSpoilerDataListener
-{
-        private readonly SpoilerArmOffEvent armOffEvent;
-
-        public MoreSpoiler(IServiceProvider sp) : base(sp)
-        {
-            armOffEvent = sp.GetRequiredService<SpoilerArmOffEvent>();
-        }
+    {
+        public MoreSpoiler(IServiceProvider sp) : base(sp) { }
 
         public override int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_AFT;
 
@@ -101,14 +123,12 @@ namespace Controlzmo.Systems.Spoilers
 
             int? newPosition = null;
             IEvent? toSend = null;
-            if (data.armed != 0)
-            {
+            if (simConnect.IsAsoboB38M && data.armed == 0)
+                toSend = armOnEvent;
+            else if (!simConnect.IsAsoboB38M && data.armed != 0)
                 toSend = armOffEvent;
-            }
             else if (data.position < 100)
-            {
                 newPosition = Math.Min(data.position + 25, 100);
-            }
 
             if (toSend != null)
             {
@@ -118,10 +138,15 @@ namespace Controlzmo.Systems.Spoilers
 
             if (newPosition != null)
             {
-                uint eventData = (uint)newPosition * 164;
-                eventData = Math.Min(eventData, 16384u);
-                _logger.LogDebug("Now demand position {} or as U {}", newPosition, eventData);
-                simConnect.SendEvent(setEvent, eventData);
+                if (simConnect.IsAsoboB38M)
+                    SetAsoboMaxPosition(simConnect, newPosition);
+                else
+                {
+                    uint eventData = (uint)newPosition * 164;
+                    eventData = Math.Min(eventData, 16384u);
+                    _logger.LogDebug("Now demand position {} or as U {}", newPosition, eventData);
+                    simConnect.SendEvent(setEvent, eventData);
+                }
             }
         }
     }
@@ -129,12 +154,7 @@ namespace Controlzmo.Systems.Spoilers
     [Component]
     public class LessSpoiler : AbstractSpoilerDataListener
     {
-        private readonly SpoilerArmOnEvent armOnEvent;
-
-        public LessSpoiler(IServiceProvider sp) : base(sp)
-        {
-            armOnEvent = sp.GetRequiredService<SpoilerArmOnEvent>();
-        }
+        public LessSpoiler(IServiceProvider sp) : base(sp) { }
 
         public override int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_FORE;
 
@@ -150,12 +170,21 @@ namespace Controlzmo.Systems.Spoilers
             if (data.position > 0)
             {
                 int newPosition = Math.Max(data.position - 25, 0);
-                uint eventData = (uint)newPosition * 164u;
-                eventData = Math.Min(eventData, 16384u);
-                _logger.LogDebug($"Now demand position {newPosition} or as U {eventData}");
-                simConnect.SendEvent(setEvent, eventData);
+                if (simConnect.IsAsoboB38M)
+                    SetAsoboMaxPosition(simConnect, newPosition);
+                else
+                {
+                    uint eventData = (uint)newPosition * 164u;
+                    eventData = Math.Min(eventData, 16384u);
+                    _logger.LogDebug($"Now demand position {newPosition} or as U {eventData}");
+                    simConnect.SendEvent(setEvent, eventData);
+                }
             }
-            else if (data.armed == 0)
+            else if (simConnect.IsAsoboB38M &&  data.armed != 0)
+            {
+                simConnect.SendEvent(armOffEvent);
+            }
+            else if (!simConnect.IsAsoboB38M && data.armed == 0)
             {
                 _logger.LogDebug($"Now send {armOnEvent}");
                 simConnect.SendEvent(armOnEvent);
