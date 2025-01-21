@@ -10,8 +10,14 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
 
         public virtual void OnPress(ExtendedSimConnect simConnect) {
+            CameraViewData data;
             if (simConnect.IsIniBuilds)
-                simConnect.SendDataOnSimObject(new CameraViewData() { viewType = 2, viewIndex = 12 });
+                data = new CameraViewData() { viewType = 2, viewIndex = 12 };
+            else if (simConnect.IsAsoboB38M)
+                data = new CameraViewData() { viewType = 2, viewIndex = 1 };
+            else
+                 return;
+            simConnect.SendDataOnSimObject(data);
         }
     }
 }
