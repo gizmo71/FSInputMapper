@@ -5,6 +5,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System.Runtime.InteropServices;
 using System;
+using Controlzmo.SimConnectzmo;
 
 namespace Controlzmo.Systems.Controls.Engine
 {
@@ -26,13 +27,17 @@ namespace Controlzmo.Systems.Controls.Engine
     {
         private readonly ToggleAutothrustArmEvent _event;
         private readonly ILogger<AutothrottleArmedDataListener> _logger;
+        private readonly InputEvents inputEvents;
 
         public int GetButton() => TcaAirbusQuadrant.BUTTON_LEFT_INTUITIVE_DISCONNECT;
 
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
             _logger.LogDebug("User has asked to arm autothrust");
-            simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+            if (simConnect.IsAsoboB38M)
+                inputEvents.Send(simConnect, "FCC_AUTOTHROTTLE", 1.0);
+            else
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
         }
 
         public override void Process(ExtendedSimConnect simConnect, AutothrottleArmedData data)
