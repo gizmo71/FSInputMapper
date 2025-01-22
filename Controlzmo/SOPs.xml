@@ -10,9 +10,9 @@
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
 	<Airline callsign="american">
-		<Text type=".*">Preparation 15 to 90 minutes, air time counts</Text>
-		<Text type=".*">Start #2 first, 5s between; warm up; cool down</Text>
-		<Text type=".*">Rejected &gt;550fpm; invalidated &gt;750fpm</Text>
+		<Text type=".*">Preparation 10 to 90 minutes, air time counts</Text>
+		<Text type=".*">5s between; warm up; cool down</Text>
+		<Text type=".*">Review &gt;700fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:arabia([- ].*)?|nawras|okaab|arna)$">
 		<Text type=".*">Preparation 20 to 60 minutes, block time</Text>
