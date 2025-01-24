@@ -30,6 +30,13 @@ namespace Controlzmo.Systems.Atc
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         [SimVar("TITLE", null, SIMCONNECT_DATATYPE.STRING128, 0.0f)]
         public string title; // This is what vAMSYS will use.
+        // These two are MSFS2024 only.
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        [SimVar("LIVERY NAME", null, SIMCONNECT_DATATYPE.STRING128, 0.1f)]
+        public string liveryName;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        [SimVar("LIVERY FOLDER", null, SIMCONNECT_DATATYPE.STRING128, 0.1f)]
+        public string liveryFolder;
     };
 
     [Component]
@@ -96,7 +103,10 @@ namespace Controlzmo.Systems.Atc
             await hub.Clients.All.SetFromSim("atcAirline", sops);
 
             //MSFS2020 is KittyHawk 11.0, 2024 is SunRise 12.0
-            await hub.Clients.All.SetFromSim("fuelLog", $"{simConnect.OpenData.szApplicationName} {simConnect.OpenData.dwApplicationVersionMajor}.{simConnect.OpenData.dwApplicationVersionMinor}");
+            var extra = $"{simConnect.OpenData.szApplicationName} {simConnect.OpenData.dwApplicationVersionMajor}.{simConnect.OpenData.dwApplicationVersionMinor}";
+            if (simConnect.OpenData.dwApplicationVersionMajor >= 12)
+                extra += $"\nLivery name {data.liveryName}\n\tfolder {data.liveryFolder}";
+            await hub.Clients.All.SetFromSim("fuelLog", extra);
         }
 
         private int Minutes(Regex regex, String sops)
