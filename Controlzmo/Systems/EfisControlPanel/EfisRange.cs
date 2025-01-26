@@ -100,7 +100,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var lvar = "A32NX_EFIS_L_ND_RANGE";
             if (simConnect.IsA380X) { Console.Error.WriteLine("TODO - A380X is more complex :-("); }
-            if (simConnect.IsA32NX) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
+            if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
             else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
             else if (simConnect.IsIniBuilds) lvar = "INI_MAP_RANGE_CAPT_SWITCH";
             var min = 0;

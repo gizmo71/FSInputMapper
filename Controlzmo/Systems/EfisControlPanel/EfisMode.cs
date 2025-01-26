@@ -54,7 +54,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            if (label == "Eng" && !simConnect.IsIni330)
+            if (label == "Eng" && !simConnect.IsA330)
                 return;
             var value = ModeMap.Inverse[label!];
             simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
@@ -101,10 +101,10 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var lvar = "A32NX_EFIS_L_ND_MODE";
             if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
-            if (simConnect.IsA32NX) lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";
+            if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";
             else if (simConnect.IsIniBuilds) lvar = "INI_MAP_MODE_CAPT_SWITCH";
             var min = 0;
-            var max = simConnect.IsIni330 ? 5 : 4;
+            var max = simConnect.IsA330 ? 5 : 4;
             sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
         }
     }
