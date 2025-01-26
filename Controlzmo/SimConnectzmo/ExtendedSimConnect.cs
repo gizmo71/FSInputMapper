@@ -395,7 +395,10 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
-        public bool IsFBW { get => !IsFenix && !IsIniBuilds && !IsB748 && !IsAsoboB38M; } // For now... otherwise we have to worry about all the LVFRs, Headwind etc
+        /// <summary>Actually anything not specifically excluded (Fenix, Ini, B748, B38M).</summary>
+        public bool IsFBW { get => !IsFenix && !IsIniBuilds && !IsB748 && !IsAsoboB38M; }
+        /// <summary>The experimental one (A380X-compatible).</summary>
+        public bool IsA32NX { get => aircraftFile.StartsWith("FLYBYWIRE_A320_NEO"); }
         public bool IsA380X { get => aircraftFile.StartsWith("FLYBYWIRE_A380"); }
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_3"); }
         public bool IsIni320 { get => aircraftFile.Equals("MICROSOFT-AIRCRAFT-A320NEO") || aircraftFile.Equals("MICROSOFT-A320NEO\\PRESETS\\INIBUILDS\\A20N\\CONFIG"); }
