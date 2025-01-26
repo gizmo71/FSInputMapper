@@ -89,6 +89,10 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public Int32 baro1Units; // InHg if 0, otherwise hPa
         [SimVar("L:S_FCU_EFIS1_BARO_MODE", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1UnitsFenix; // 0 InHg, 1 hPa
+        // Experimental no longer does QFE - nor does it show actual setting above :-(
+        // A32NX_FCU_EFIS_L_BARO_IS_INHG 0/1
+        // A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE_MODE 2 is InHG, 1 if , 0 is Std
+        // A32NX_FCU_EFIS_L_DISPLAY_BARO_MODE 1 not Std, 0 Std
     }
 
     [Component, RequiredArgsConstructor]
@@ -149,6 +153,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
                 if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) -- (>L:S_FCU_EFIS1_BARO_STD)";
+                else if (sc.IsA32NX) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
                 else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
             }
@@ -203,10 +208,9 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
-            if (simConnect.IsFenix)
-                command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
-            else if (simConnect.IsIniBuilds)
-                command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
+            if (simConnect.IsFenix) command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
+            else if (simConnect.IsA32NX) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
+            else if (simConnect.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             sender.Execute(simConnect, command);
         }
     }
@@ -261,6 +265,15 @@ System.Console.WriteLine($"-> {value} led to {command}");
             else if (sc!.IsIni320 || sc!.IsIni321)
             {
                 inputEvents.Send(sc!, "INSTRUMENT_QNH_CPT_KNOB", direction * 1.0);
+                return;
+            }
+            else if (sc!.IsA32NX)
+            {
+                var dir = direction < 0 ? "DEC" : "INC";
+                /*TODO: use a loop
+https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Reverse_Polish_Notation.htm#string_examples
+                  to send multiple events via a delegate? */
+                sender.Execute(sc!, $"(>K:A32NX.FCU_EFIS_L_BARO_{dir})");
                 return;
             }
 
