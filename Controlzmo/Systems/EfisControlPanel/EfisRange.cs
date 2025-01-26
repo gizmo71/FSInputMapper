@@ -13,7 +13,8 @@ namespace Controlzmo.Systems.EfisControlPanel
 {
     public interface IEfisRangeData
     {
-        public Int32 RangeCode { get; set; } // A32NX: 2^code*10 = miles; A380X: values are A32NX+1, and 0 means use OANS range instead
+        public Int32 RangeCode { get; set; } // Generic/old A32NX; A380X: values are A32NX+1, and 0 means use OANS range instead
+        public Int32 RangeA32nx {  get; set; } // A32NX: 2^code*10 = miles
         public Int32 OansRange { get; set; } // In Zoom, this goes from 0 (most zoomed in) to 4 (least, which is just "under" range 10)
         public Int32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as A32NX)
         public Int32 RangeIni { get; set; } // (same as A32NX and Fenix)
@@ -35,6 +36,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
             if (simConnect.IsFenix) data.RangeCode = data.RangeFenix;
+            else if (simConnect.IsA32NX) data.RangeCode = data.RangeA32nx;
             else if (simConnect.IsIniBuilds) data.RangeCode = data.RangeIni;
             int value = data.RangeCode;
             if (simConnect.IsA380X) { if (value == 0) value = data.OansRange - 4; }
@@ -51,7 +53,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsA380X) { if (code < 0) { oans = code + 4; code = 0; } }
             // There's no Zoom or 640 range in the A320 family:
             else code = Math.Clamp(code - 1, 0, 5);
-            simConnect.SendDataOnSimObject(new T() { RangeCode = code, OansRange = oans, RangeFenix = code, RangeIni = code });
+            simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeA32nx = code, OansRange = oans, RangeFenix = code, RangeIni = code });
         }
     }
 
@@ -61,6 +63,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 _rangeCode;
+        [Property]
+        [SimVar("L:A32NX_FCU_EFIS_L_EFIS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 _rangeA32nx;
         [Property]
         [SimVar("L:A32NX_EFIS_L_OANS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 _oansRange;
@@ -95,6 +100,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var lvar = "A32NX_EFIS_L_ND_RANGE";
             if (simConnect.IsA380X) { Console.Error.WriteLine("TODO - A380X is more complex :-("); }
+            if (simConnect.IsA32NX) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
             else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
             else if (simConnect.IsIniBuilds) lvar = "INI_MAP_RANGE_CAPT_SWITCH";
             var min = 0;

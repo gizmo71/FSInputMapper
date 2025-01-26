@@ -13,6 +13,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     public interface IEfisNavAidData
     {
         public UInt32 Mode { get; set; }
+        public UInt32 ModeA32nx { get; set; }
         public UInt32 ModeFenix { get; set; }
         public UInt32 ModeIni { get; set; }
     }
@@ -51,6 +52,10 @@ namespace Controlzmo.Systems.EfisControlPanel
                 modeMap = MapModeIniFenix.Inverse;
                 mode = data.ModeFenix;
             }
+            else if (simConnect.IsA32NX)
+            {
+                mode = data.ModeA32nx;
+            }
             else if (simConnect.IsIniBuilds)
             {
                 modeMap = MapModeIniFenix.Inverse;
@@ -65,7 +70,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var modeMap = simConnect.IsFenix || simConnect.IsIniBuilds ? MapModeIniFenix : ModeMap.Inverse;
             var value = modeMap[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
         }
     }
 
@@ -75,6 +80,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:A32NX_FCU_EFIS_L_NAVAID_1_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeA32nx;
         [Property]
         [SimVar("L:S_FCU_EFIS1_NAV1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
@@ -95,6 +103,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:A32NX_FCU_EFIS_L_NAVAID_2_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeA32nx;
         [Property]
         [SimVar("L:S_FCU_EFIS1_NAV2", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;

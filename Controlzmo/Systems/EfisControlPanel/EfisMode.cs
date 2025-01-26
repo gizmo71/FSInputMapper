@@ -15,6 +15,7 @@ namespace Controlzmo.Systems.EfisControlPanel
     public interface IEfisModeData
     {
         public UInt32 Mode { get; set; }
+        public UInt32 ModeA32nx { get; set; }
         public UInt32 ModeFenix { get; set; }
         public UInt32 ModeIni { get; set; }
     }
@@ -44,6 +45,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
             if (simConnect.IsFenix) data.Mode = data.ModeFenix;
+            if (simConnect.IsA32NX) data.Mode = data.ModeA32nx;
             else if (simConnect.IsIniBuilds) data.Mode = data.ModeIni;
             hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
         }
@@ -55,7 +57,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (label == "Eng" && !simConnect.IsIni330)
                 return;
             var value = ModeMap.Inverse[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
         }
     }
 
@@ -65,6 +67,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
+        [Property]
+        [SimVar("L:A32NX_FCU_EFIS_L_EFIS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeA32nx;
         [Property]
         [SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
@@ -96,6 +101,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var lvar = "A32NX_EFIS_L_ND_MODE";
             if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
+            if (simConnect.IsA32NX) lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";
             else if (simConnect.IsIniBuilds) lvar = "INI_MAP_MODE_CAPT_SWITCH";
             var min = 0;
             var max = simConnect.IsIni330 ? 5 : 4;
