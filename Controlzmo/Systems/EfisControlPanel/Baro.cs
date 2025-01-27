@@ -224,7 +224,9 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public int GetButton() => UrsaMinorFighterR.BUTTON_MID_STICK_TRIM_PRESS;
 
         public virtual void OnPress(ExtendedSimConnect sc) {
-            var lvar = sc.IsFenix ? "S_FCU_EFIS1_BARO_MODE" : "XMLVar_Baro_Selector_HPA_1";
+            var lvar = "XMLVar_Baro_Selector_HPA_1";
+            if (sc.IsFenix) lvar = "S_FCU_EFIS1_BARO_MODE";
+            else if (sc.IsA32NX) lvar = "A32NX_FCU_EFIS_L_BARO_IS_INHG";
             sender.Execute(sc, $"1 (L:{lvar}) - (>L:{lvar})");
         }
     }
