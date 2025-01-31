@@ -250,7 +250,7 @@
 	</Airline>
 	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 15-35 minutes, block time counts</Text>
-		<Text type=".*">Start #2 first, 5s between starts; warm up; cool down</Text>
+		<Text type=".*">Start #1 first, 5s between starts; warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1200kg on landing</Text>
 		<Text type=".*">Rejected 650fpm; Invalidated 651fpm(!)</Text>
