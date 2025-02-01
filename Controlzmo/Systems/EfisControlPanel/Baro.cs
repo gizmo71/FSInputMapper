@@ -79,20 +79,20 @@ System.Console.WriteLine($"-> {value} led to {command}");
     {
         [SimVar("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
         public float kohlsmanMB;
-        [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.001f)]
         public float kohlsmanHg;
-        [SimVar("L:XMLVAR_Baro1_Mode", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [SimVar("L:XMLVAR_Baro1_Mode", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1Mode; // Bit 0: 1 QNH, 0 QFE; Bit 1: 2 standard, otherwise as bit 1
-        [SimVar("L:I_FCU_EFIS1_QNH", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [SimVar("L:I_FCU_EFIS1_QNH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1ModeFenix; // 0 Std, 1 QNH
         [SimVar("L:XMLVar_Baro_Selector_HPA_1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1Units; // InHg if 0, otherwise hPa
+        [SimVar("L:A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 baro1A32nx; // 2 is InHG, 1 if hPa, 0 is Std
+        [SimVar("L:A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
+        public float displayedA32nx;
         [SimVar("L:S_FCU_EFIS1_BARO_MODE", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1UnitsFenix; // 0 InHg, 1 hPa
-        // Experimental no longer does QFE - nor does it show actual setting above :-(
-        // A32NX_FCU_EFIS_L_BARO_IS_INHG 0/1
-        // A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE_MODE 2 is InHG, 1 if , 0 is Std
-        // A32NX_FCU_EFIS_L_DISPLAY_BARO_MODE 1 not Std, 0 Std
     }
 
     [Component, RequiredArgsConstructor]
@@ -112,6 +112,13 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 data.baro1Mode = data.baro1ModeFenix == 1 ? 1 : 3;
                 data.baro1Units = data.baro1UnitsFenix;
+            }
+            else if (simConnect.IsA32NX || simConnect.IsA339)
+            {
+                data.baro1Units = data.baro1A32nx == 2 ? 0 : 1;
+                data.baro1Mode = data.baro1A32nx == 0 ? 3 : 1;
+//TODO: at some point make "displayed" the 'default' and work the others on top of it...
+                data.kohlsmanHg = data.kohlsmanMB = data.displayedA32nx;
             }
             else if (simConnect.IsIniBuilds)
                 data.baro1Mode |= 1;
@@ -153,7 +160,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
                 if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) -- (>L:S_FCU_EFIS1_BARO_STD)";
-                else if (sc.IsA32NX) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
+                else if (sc.IsA32NX || sc!.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
                 else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
             }
@@ -209,7 +216,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
         {
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (simConnect.IsFenix) command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
-            else if (simConnect.IsA32NX) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
+            else if (simConnect.IsA32NX || simConnect.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
             else if (simConnect.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             sender.Execute(simConnect, command);
         }
@@ -226,10 +233,12 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public virtual void OnPress(ExtendedSimConnect sc) {
             var lvar = "XMLVar_Baro_Selector_HPA_1";
             if (sc.IsFenix) lvar = "S_FCU_EFIS1_BARO_MODE";
-            else if (sc.IsA32NX) lvar = "A32NX_FCU_EFIS_L_BARO_IS_INHG";
+            else if (sc.IsA32NX || sc!.IsA339) lvar = "A32NX_FCU_EFIS_L_BARO_IS_INHG";
             sender.Execute(sc, $"1 (L:{lvar}) - (>L:{lvar})");
         }
     }
+    [Component] public class A32nxBaroInc : IEvent { public string SimEvent() => "A32NX.FCU_EFIS_L_BARO_INC"; }
+    [Component] public class A32nxBaroDec : IEvent { public string SimEvent() => "A32NX.FCU_EFIS_L_BARO_DEC"; }
 
     [Component, RequiredArgsConstructor]
     public partial class RepeatingBaroChange
@@ -237,6 +246,8 @@ System.Console.WriteLine($"-> {value} led to {command}");
         private readonly JetBridgeSender sender;
         private readonly SimConnectHolder holder;
         private readonly BaroDisplay display;
+        private readonly A32nxBaroInc a32nxInc;
+        private readonly A32nxBaroDec a32nxDec;
         private readonly InputEvents inputEvents;
         private Timer? timer;
         private int direction;
@@ -269,35 +280,29 @@ System.Console.WriteLine($"-> {value} led to {command}");
                 inputEvents.Send(sc!, "INSTRUMENT_QNH_CPT_KNOB", direction * 1.0);
                 return;
             }
-            else if (sc!.IsA32NX)
-            {
-                var dir = direction < 0 ? "DEC" : "INC";
-                /*TODO: use a loop
-https://docs.flightsimulator.com/msfs2024/html/6_Programming_APIs/Reverse_Polish_Notation.htm#string_examples
-                  to send multiple events via a delegate? */
-                sender.Execute(sc!, $"(>K:A32NX.FCU_EFIS_L_BARO_{dir})");
-                return;
-            }
 
             Interlocked.Add(ref adjustment, direction);
-            if (sc!.IsFBW)
-            {
-                sender.Execute(sc!, delegate() {
-                    var toSend = Interlocked.Exchange(ref adjustment, 0);
-                    // Sadly to do all this in RPN just too long - we're restricted to 127 chars. :-( So we have to track state instead.
-                    if (toSend == 0 || display.IsStd) return null;
-                    var divideFactor = display.IsInHg ? 0.3386389 : 1.0;
-                    var multiplyFactor = display.IsInHg ? 5.4182224 : 16.0;
-                    return $"1 (A:KOHLSMAN SETTING MB:1, mbars) {divideFactor} / near {toSend} + {multiplyFactor} * (>K:2:KOHLSMAN_SET)";
-                });
-            }
-            else if (sc!.IsFenix)
-            {
-                sender.Execute(sc!, delegate() {
-                    var toSend = Interlocked.Exchange(ref adjustment, 0);
-                    return toSend == 0 ? null : $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
-                });
-            }
+            sender.Execute(sc!, delegate() {
+                var toSend = Interlocked.Exchange(ref adjustment, 0);
+                if (toSend == 0)
+                    return null;
+
+                if (sc!.IsFenix)
+                    return $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
+
+                if (sc!.IsA32NX || sc!.IsA339)
+                {
+                    for (int i = Math.Abs(toSend); i > 0; --i)
+                        sc!.SendEvent(toSend < 0 ? a32nxDec : a32nxInc);
+                    return null;
+                }
+
+                // Sadly to do all this in RPN just too long - we're restricted to 127 chars. :-( So we have to track state instead.
+                if (display.IsStd) return null;
+                var divideFactor = display.IsInHg ? 0.3386389 : 1.0;
+                var multiplyFactor = display.IsInHg ? 5.4182224 : 16.0;
+                return $"1 (A:KOHLSMAN SETTING MB:1, mbars) {divideFactor} / near {toSend} + {multiplyFactor} * (>K:2:KOHLSMAN_SET)";
+            });
         }
 
         internal void Click(int v)
