@@ -90,7 +90,7 @@
 		<Text type=".*">Invalidated 750fpm</Text>
 	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
-		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
+		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
 		<Text type=".*">10s between starts; OETD, 5s between; warm up</Text>
 		<Text type=".*">OETA, 5s between; cool down</Text>
 		<!-- Text type=".*">Must have fuel ≥ 748kg on landing</Text -->
