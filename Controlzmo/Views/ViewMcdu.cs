@@ -15,6 +15,8 @@ namespace Controlzmo.Views
                 data = new CameraViewData() { viewType = 2, viewIndex = 12 };
             else if (simConnect.IsAsoboB38M)
                 data = new CameraViewData() { viewType = 2, viewIndex = 1 };
+            else if (simConnect.IsA380X)
+                data = new CameraViewData() { viewType = 2, viewIndex = 4 };
             else
                  return;
             simConnect.SendDataOnSimObject(data);
