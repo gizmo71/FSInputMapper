@@ -31,7 +31,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             id = $"{side}EfisNdRange";
         }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
@@ -83,10 +83,23 @@ namespace Controlzmo.Systems.EfisControlPanel
         public LeftEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "left") { }
     }
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct A380xEfisRangeData
+    {
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 standard;
+        [Property]
+        [SimVar("L:A32NX_EFIS_L_OANS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0f)]
+        public Int32 oans;
+    };
+
     [Component, RequiredArgsConstructor]
-    public partial class EfisStickRange : IAxisCallback<UrsaMinorFighterR>
+    public partial class EfisStickRange : DataListener<A380xEfisRangeData>, IAxisCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
+
+        private int delta;
 
         public int GetAxis() => UrsaMinorFighterR.AXIS_MINI_STICK_Y;
 
@@ -94,6 +107,14 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
             else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
+        }
+        public override void Process(ExtendedSimConnect simConnect, A380xEfisRangeData data)
+        {
+            int old = data.standard == 0 ? data.oans : data.standard + 4;
+            int @new = Math.Max(Math.Min(old + delta, 11), 0);
+            data.standard = Math.Max(0, @new - 4);
+            data.oans = Math.Min(4, @new);
+            simConnect.SendDataOnSimObject(data);
         }
 
         private void Move(ExtendedSimConnect simConnect, string op)
@@ -103,16 +124,9 @@ namespace Controlzmo.Systems.EfisControlPanel
             var max = 5; //TODO: does the A330 support 6 like the A380X does?
             if (simConnect.IsA380X)
             {
-                Console.Error.WriteLine("TODO - A380X is more complex :-(");
-/*
-public Int32 RangeCode { get; set; } // Generic/old A32NX; A380X: values are 1 for 10 to 7 for 640, and 0 means use OANS range instead
-[SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-public Int32 OansRange { get; set; } // In Zoom, this goes from 0 (most zoomed in) to 4 (least, which is just "under" range 10)
-[SimVar("L:A32NX_EFIS_L_OANS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+                delta = op == "++" ? 1 : -1;
+                simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
                 return;
-*/
-                min = 1;
-                max = 7;
             }
             else if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
             else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
