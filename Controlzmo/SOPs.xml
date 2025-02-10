@@ -212,7 +212,8 @@
 	<Airline callsign="condor|thomas[- ]?cook|viking"> <!-- vTCX Group -->
 		<Text type=".*">Preparation 0-60 minutes, block time counts</Text>
 		<Text type=".*">5s between starts</Text>
-		<Text type=".*">OETA, 3m between; cool down</Text>
+		<Text type="A32.|A2.N">OETA, 3m between</Text>
+		<Text type=".*">Cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1300kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
