@@ -17,7 +17,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public int GetButton() => UrsaMinorFighterR.BUTTON_SMALLER_ROUND;
 
         public void OnPress(ExtendedSimConnect sc) {
-            if (sc.IsA32NX)
+            if (sc.IsA32NX || sc.IsA339)
                 sender.Execute(sc, "(L:A32NX_AUTOPILOT_1_ACTIVE) if{ (>K:A32NX.FCU_AP_2_PUSH) } els{ (>K:A32NX.FCU_AP_1_PUSH) }");
             else
                 sc.SendEvent(_event);
