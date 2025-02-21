@@ -282,27 +282,29 @@ System.Console.WriteLine($"-> {value} led to {command}");
             }
 
             Interlocked.Add(ref adjustment, direction);
-            sender.Execute(sc!, delegate() {
-                var toSend = Interlocked.Exchange(ref adjustment, 0);
-                if (toSend == 0)
-                    return null;
+            sender.Execute(sc!, Execute);
+        }
 
-                if (sc!.IsFenix)
-                    return $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
+        private String? Execute(ExtendedSimConnect sc) {
+            var toSend = Interlocked.Exchange(ref adjustment, 0);
+            if (toSend == 0)
+                return null;
 
-                if (sc!.IsA32NX || sc!.IsA339)
-                {
-                    for (int i = Math.Abs(toSend); i > 0; --i)
-                        sc!.SendEvent(toSend < 0 ? a32nxDec : a32nxInc);
-                    return null;
-                }
+            if (sc!.IsFenix)
+                return $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
 
-                // Sadly to do all this in RPN just too long - we're restricted to 127 chars. :-( So we have to track state instead.
-                if (display.IsStd) return null;
-                var divideFactor = display.IsInHg ? 0.3386389 : 1.0;
-                var multiplyFactor = display.IsInHg ? 5.4182224 : 16.0;
-                return $"1 (A:KOHLSMAN SETTING MB:1, mbars) {divideFactor} / near {toSend} + {multiplyFactor} * (>K:2:KOHLSMAN_SET)";
-            });
+            if (sc!.IsA32NX || sc!.IsA339)
+            {
+                for (int i = Math.Abs(toSend); i > 0; --i)
+                    sc!.SendEvent(toSend < 0 ? a32nxDec : a32nxInc);
+                return null;
+            }
+
+            // Sadly to do all this in RPN just too long - we're restricted to 127 chars. :-( So we have to track state instead.
+            if (display.IsStd) return null;
+            var divideFactor = display.IsInHg ? 0.3386389 : 1.0;
+            var multiplyFactor = display.IsInHg ? 5.4182224 : 16.0;
+            return $"1 (A:KOHLSMAN SETTING MB:1, mbars) {divideFactor} / near {toSend} + {multiplyFactor} * (>K:2:KOHLSMAN_SET)";
         }
 
         internal void Click(int v)

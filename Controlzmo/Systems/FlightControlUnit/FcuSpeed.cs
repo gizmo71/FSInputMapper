@@ -109,11 +109,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix) {
                 Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, delegate() {
-                    var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
-                    var op = toSend < 0 ? "-" : "+";
-                    return toSend == 0 ? null : $"(L:E_FCU_SPEED) {Math.Abs(toSend)} {op} (>L:E_FCU_SPEED)";
-                });
+                sender.Execute(simConnect, ExecuteFenix);
             }
             else
             {
@@ -128,6 +124,13 @@ namespace Controlzmo.Systems.FlightControlUnit
                     value -= (short) Math.Sign(value);
                 }
             }
+        }
+
+        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        {
+            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var op = toSend < 0 ? "-" : "+";
+            return toSend == 0 ? null : $"(L:E_FCU_SPEED) {Math.Abs(toSend)} {op} (>L:E_FCU_SPEED)";
         }
     }
 

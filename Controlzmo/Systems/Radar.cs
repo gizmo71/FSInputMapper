@@ -36,7 +36,7 @@ namespace Controlzmo.Systems.Radar
             else if (simConnect.IsIniBuilds) data.radarSys = data.radarSysIni;
             hub.Clients.All.SetFromSim(GetId(), data.radarSys);
 
-            if (simConnect.IsIni321)
+            if (simConnect.IsIni321) //TODO: and ini A320neo, at least in 2024?
             {
                 var iniValue = data.radarSysIni == 1 ? 1 : 0;
                 sender.Execute(simConnect, $"{iniValue} (L:INI_WX_PWS_SWITCH) != if{{ {iniValue} (>L:INI_WX_PWS_SWITCH) }}");

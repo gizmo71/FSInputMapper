@@ -56,7 +56,7 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         private readonly ILogger<JetBridgeSender> logger;
         private readonly SerializedExecutor serializedExecutor;
 
-        public delegate string? DynamicQueueEntry();
+        public delegate string? DynamicQueueEntry(ExtendedSimConnect simConnect);
 
         public JetBridgeSender(ILogger<JetBridgeSender> logger, SerializedExecutor serializedExecutor)
         {
@@ -68,13 +68,13 @@ System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
 
         public void Execute(ExtendedSimConnect _, string code)
         {
-            Execute(_, delegate() { return code; });
+            Execute(_, delegate(ExtendedSimConnect _) { return code; });
         }
 
         public void Execute(ExtendedSimConnect _, DynamicQueueEntry codeSource)
         {
             serializedExecutor.Enqueue(delegate (ExtendedSimConnect simConnect) {
-                var code = codeSource.Invoke();
+                var code = codeSource.Invoke(simConnect);
                 if (code == null)
                     return false;
                 var data = new JetBridgeNoUplinkData { id = random.Next(), data = $"\0{code}" };

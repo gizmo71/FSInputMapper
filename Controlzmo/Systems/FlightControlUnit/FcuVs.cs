@@ -85,11 +85,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             if (simConnect.IsFenix) {
                 Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, delegate() {
-                    var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
-                    var op = toSend < 0 ? "-" : "+";
-                    return toSend == 0 ? null : $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
-                });
+                sender.Execute(simConnect, ExecuteFenix);
             }
             else
             {
@@ -105,6 +101,13 @@ namespace Controlzmo.Systems.FlightControlUnit
                 }
             }
 //TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
+        }
+
+        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        {
+            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var op = toSend < 0 ? "-" : "+";
+            return toSend == 0 ? null : $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
         }
     }
 

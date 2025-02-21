@@ -19,6 +19,10 @@ namespace Controlzmo.Controls
             var is4engined = sc.IsA380X || sc.IsB748 || sc.IsIni400M;
             var first = isLeft ? 1 : (is4engined ? 3 : 2);
             var last = first + (is4engined ? 1 : 0);
+/*TODO: seems to have stopped working for the A380X, at least in MSFS2024 :-(
+Toggling on only toggles 1/2, as if we're not 4-engined.
+Toggling off turns both off but only sort of... :-o
+*/
             for (var engine = first; engine <= last; ++engine)
                 sender.Execute(sc, $"{value} (>K:ENGINE_MASTER_{engine}_SET)" // UI: SET ENGINE MASTER 1
                     + $" {engine} (>K:FUELSYSTEM_VALVE_{valve_action})" // UI: SET ENGINE n FUEL VALVE
