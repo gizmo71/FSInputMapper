@@ -235,11 +235,11 @@
 		<Text type=".*">Excessive taxi in time requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
-	<Airline callsign="united"> <!-- United -->
+	<!-- Airline callsign="united">
 		<Text type=".*">Preparation 0-10 minutes, block time counts</Text>
 		<Text type=".*">1m between starts</Text>
 		<Text type=".*">Rejected 650fpm</Text>
-	</Airline>
+	</Airline -->
 	<!-- Airline callsign="turkish|anatolian">
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Rejected from 1000fpm</Text>
