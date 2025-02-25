@@ -240,10 +240,10 @@
 		<Text type=".*">1m between starts</Text>
 		<Text type=".*">Rejected 650fpm</Text>
 	</Airline>
-	<Airline callsign="turkish|anatolian">
+	<!-- Airline callsign="turkish|anatolian">
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Rejected from 1000fpm</Text>
-	</Airline>
+	</Airline -->
 	<Airline callsign="^redwood|velocity|v[ei]rgin(?:[- ]nigeria)?|vir$"> <!-- VRGN Virtual -->
 		<!-- "Virgin" is classed as a naughty word and can't be entered in game! -->
 		<Text type=".*">Air time counts</Text>
