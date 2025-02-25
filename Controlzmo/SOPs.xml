@@ -165,12 +165,6 @@
 		<Text type=".*">Pauses in flight reviewed</Text>
 		<Text type=".*">Review at 601fpm; Rejected 1000fpm</Text>
 	</Airline>
-	<Airline callsign="qantas|q[ -]?(jet|link)|net[ -]?link">
-		<Text type=".*">Preparation 15-60 minutes</Text>
-		<Text type=".*">Block time counts</Text>
-		<Text type=".*">5s between starts; warm up; cool down</Text>
-		<Text type=".*">Invalidated 800fpm</Text>
-	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
 		<Text type="A3[01235].">Start #2 first, 2s between</Text>
