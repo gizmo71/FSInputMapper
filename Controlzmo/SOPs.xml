@@ -197,7 +197,7 @@
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
 	</Airline>
-	<Airline callsign="wizz.*"> <!-- WZZ Virtual -->
+	<Airline callsign="^wh?izz.*$"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 15-35 minutes, block time counts</Text>
 		<Text type=".*">Start #1 first, 5s between starts; warm up; cool down</Text>
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
