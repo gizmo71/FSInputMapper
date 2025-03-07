@@ -9,19 +9,19 @@ namespace Controlzmo.Systems.Controls
     [Component] public class GearDownEvent : IEvent { public string SimEvent() => "GEAR_DOWN"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class LandingGearHandle : IAxisCallback<UrsaMinorFighterR>
+    public partial class LandingGearHandle : IAxisCallback<T16000mHotas>
     {
         private readonly GearUpEvent _up;
         private readonly GearDownEvent _down;
 
-        public int GetAxis() => UrsaMinorFighterR.AXIS_THROTTLE;
+        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
             if (@new < 0.25 && old >= 0.25)
-                sc.SendEvent(_up);
-            else if (@new > 0.75 && old <= 0.75)
                 sc.SendEvent(_down);
+            else if (@new > 0.75 && old <= 0.75)
+                sc.SendEvent(_up);
         }
     }
 }
