@@ -42,8 +42,8 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_TRIM_DOWN = 31;
         public static readonly int BUTTON_TRIM_LEFT = 32;
         public static readonly int BUTTON_MINI_STICK_PRESS = 33;
-        public static readonly int BUTTON_FAR_TRIGGER_PULL = 34;
-        public static readonly int BUTTON_FAR_TRIGGER_PUSH = 35;
+        public static readonly int BUTTON_FAR_TRIGGER_PUSH = 34;
+        public static readonly int BUTTON_FAR_TRIGGER_PULL = 35;
         public static readonly int BUTTON_NEAR_TRIGGER_HALF = 36; // Remains on when trigger full
         public static readonly int BUTTON_NEAR_TRIGGER_FULL = 37;
         public static readonly int BUTTON_PINKY = 38;
