@@ -1,12 +1,10 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Runtime.InteropServices;
 
-namespace Controlzmo.Controls
+namespace Controlzmo.Systems.Controls.Engine
 {
     [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
@@ -17,17 +15,8 @@ namespace Controlzmo.Controls
     [Component] public class Reverse2OnEvent : IEvent { public string SimEvent() => "SET_THROTTLE2_REVERSE_THRUST_ON"; }
     [Component] public class Reverse2OffEvent : IEvent { public string SimEvent() => "SET_THROTTLE2_REVERSE_THRUST_OFF"; }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct EngineData
-    {
-        [SimVar("NUMBER OF ENGINES", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 count;
-        [SimVar("THROTTLE LOWER LIMIT", "Number", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
-        public float lowerLimit;
-    };
-
     [Component, RequiredArgsConstructor]
-    public partial class SetThrustLevers : DataListener<EngineData>, IRequestDataOnOpen
+    public partial class SetThrustLevers
     {
         private readonly ILogger<SetThrustLevers> _logger;
         private readonly Throttle1Event set1;
@@ -38,23 +27,14 @@ namespace Controlzmo.Controls
         private readonly Reverse1OffEvent rev1off;
         private readonly Reverse2OnEvent rev2on;
         private readonly Reverse2OffEvent rev2off;
-        private int _numberOfEngines;
-        private float _lowerLimit;
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
-
-        public override void Process(ExtendedSimConnect simConnect, EngineData data)
-        {
-            _numberOfEngines = data.count;
-            _lowerLimit = data.lowerLimit;
-        }
+        private readonly EngineDataListener data;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
             @new = 1 - @new; // Make -1 full reverse and 1 firewalled.
 
             int bitmap = 0b1111; // If in doubt, set them all!
-            if (_numberOfEngines > 2) // Assume four, but sort of works for three too.
+            if (data.NumberOfEngines > 2) // Assume four, but sort of works for three too.
                 bitmap = tl.LeverNumber == 1 ? 0b0011 : 0b1100;
             else // Assume two, which will work for one too.
                 bitmap = tl.LeverNumber == 1 ? 0b0001 : 0b0010;
@@ -66,8 +46,8 @@ namespace Controlzmo.Controls
             {
                 normalised = Generic(@new, tl);
                 if (normalised < 0) {
-                    normalised = normalised * _lowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
-Console.WriteLine($"Rev Value {normalised}  lower limt {_lowerLimit}");
+                    normalised = normalised * data.ThrottleLowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
+Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit}");
                     sc.SendEvent(tl.LeverNumber == 1 ? rev1on : rev2on);
                 }
                 else
