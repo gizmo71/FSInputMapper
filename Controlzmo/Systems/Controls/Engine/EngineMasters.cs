@@ -30,12 +30,16 @@ namespace Controlzmo.Systems.Controls.Engine
         public override void Process(ExtendedSimConnect simConnect, EngineControlSelectData data)
         {
             // By default MSFS sets the correct value based on number of engines.
-            hub.Clients.All.Speak($"bits {data.bitFlags}");
+            //hub.Clients.All.Speak($"bits {data.bitFlags}");
         }
     }
 
     // UI: SET ENGINE n FUEL VALVE
-    [Component] public class FuelSystemValveSetEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_SET"; }
+    //[Component] public class FuelSystemValveSetEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_SET"; }
+    [Component] public class FuelSystemValveCloseEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_CLOSE"; }
+    [Component] public class FuelSystemValveOpenEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_OPEN"; }
+    [Component] public class FuelSystemPumpOnEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_ON"; }
+    [Component] public class FuelSystemPumpOffEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_OFF"; }
 //TODO: look at ENGINE CONTROL SELECT instead of per-engine events...
 //[Component] public class EngineMaster1SetEvent : IEvent { public string SimEvent() => "ENGINE_MASTER_1_SET"; }
     // UI: SET ENGINE MASTER n
@@ -49,13 +53,25 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component, RequiredArgsConstructor]
     public partial class EnginerMasterAction
     {
-        private readonly FuelSystemValveSetEvent fuelSystemValveSet;
+        private readonly FuelSystemValveCloseEvent fuelSystemValveClose;
+        private readonly FuelSystemValveOpenEvent fuelSystemValveOpen;
+        private readonly FuelSystemPumpOnEvent fuelSystemPumpOn;
+        private readonly FuelSystemPumpOffEvent fuelSystemPumpOff;
         private readonly StarterSetEvent starterSetEvent;
         private readonly EngineMasterSetEvent engineMasterSetEvent;
+        private readonly JetBridgeSender sender;
 
         internal void perform(ExtendedSimConnect sc, Boolean isLeft, Boolean isOn)
         {
             var value = isOn ? 1u : 0u;
+
+            if (sc.IsFenix)
+            {
+                var engineId = isLeft ? 1 : 2;
+                sender.Execute(sc, $"{value} (>L:S_ENG_MASTER_{engineId})");
+                return;
+            }
+
 /*TODO: the A400M has three positions for each switch, "off", "feather" (used during startup), and "run" (one AVAIL has been shown).
   We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up". */
             var is4engined = sc.IsA380X || sc.IsB748 || sc.IsIni400M;
@@ -68,7 +84,8 @@ Toggling off turns both off but only sort of... :-o */
                 var newData = new EngineControlSelectData() { bitFlags = 1 << ((Int32) engine - 1) };
 Console.Error.WriteLine($"newData flags {newData.bitFlags} engine {engine} value {value}");
                 sc.SendDataOnSimObject(newData);
-                sc.SendEventEx1(fuelSystemValveSet, engine, value);
+                sc.SendEvent(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
+                sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
                 sc.SendEvent(engineMasterSetEvent, value);
                 sc.SendEvent(starterSetEvent, value);
             }
