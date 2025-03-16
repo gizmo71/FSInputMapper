@@ -144,19 +144,23 @@ namespace Controlzmo.Serial
             serial.SendLine("ApuStartOn=" + (data.isApuStartOn == 1));
         }
     }
+    [Component] public class ApuStarterEvent : IEvent { public string SimEvent() => "APU_STARTER"; }
 
-    [Component]
-    public class ApuStartButton : ISettable<bool?>
+    [Component, RequiredArgsConstructor]
+    public partial class ApuStartButton : ISettable<bool?>
     {
         private readonly JetBridgeSender sender;
-        public ApuStartButton(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+        private readonly ApuStarterEvent apuStarterEvent;
+
         public string GetId() => "apuStartPressed";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
-            if (simConnect.IsFBW)
+            if (simConnect.IsFBW) {
                 sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
-            else if (simConnect.IsFenix)
+                if (simConnect.IsHorizonLvfr)
+                    simConnect.SendEvent(apuStarterEvent, 1);
+            }  else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_OH_ELEC_APU_START) 2 + (>L:S_OH_ELEC_APU_START)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_APU_START_BUTTON_CMD)");
@@ -175,6 +179,8 @@ namespace Controlzmo.Serial
         [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 3.5f)]
         public Double nowSeconds;
     };
+        
+    [Component] public class ApuBleedSourceSetEvent : IEvent { public string SimEvent() => "APU_BLEED_AIR_SOURCE_SET"; }
 
     [Component, RequiredArgsConstructor]
     public partial class ApuBleedMonitor : DataListener<ApuBleedData>, IOnSimStarted
@@ -183,6 +189,7 @@ namespace Controlzmo.Serial
         private readonly JetBridgeSender sender;
         private readonly ApuMasterOn master;
         private readonly ApuAvail avail;
+        private readonly ApuBleedSourceSetEvent apuBleedSourceSet;
 
         private Double? apuBleedOnAfter = null;
 
@@ -211,13 +218,14 @@ namespace Controlzmo.Serial
             }
 //else hubContext.Clients.All.Speak($"A-P-U bleed {data.isApuBleedOn} master {data.isApuMasterOn} a veil {data.isApuAvail} on after {apuBleedOnAfter != null}");
         }
-
+        
         private void setBleed(ExtendedSimConnect simConnect, Boolean isDemanded)
         {
             String? lvar = null;
-            if (simConnect.IsFBW)
+            if (simConnect.IsFBW) {
+if (simConnect.IsHorizonLvfr) simConnect.SendEvent(apuBleedSourceSet, isDemanded ? 1 : 0);
                 lvar = "A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON";
-            else if (simConnect.IsFenix)
+            } else if (simConnect.IsFenix)
                 lvar = "S_OH_PNEUMATIC_APU_BLEED";
             else if (simConnect.IsIniBuilds)
                 lvar = "INI_APU_BLEED_BUTTON";

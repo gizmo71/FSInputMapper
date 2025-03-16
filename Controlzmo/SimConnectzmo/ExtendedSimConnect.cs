@@ -395,9 +395,10 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
 
         private string aircraftFile = "(not loaded)";
         public string AircraftFile { get => aircraftFile; }
-        /// <summary>Actually anything not specifically excluded (Fenix, Ini, B748, B38M).</summary>
-        public bool IsFBW { get => !IsFenix && !IsIniBuilds && !IsB748 && !IsAsoboB38M; }
+        /// <summary>Any of the A32NX derivatives, includung the A380X.</summary>
+        public bool IsFBW { get => IsA32NX || IsA380X || IsA339 || IsHorizonLvfr; }
         /// <summary>Any A330 or derivative</summary>
+        public bool IsHorizonLvfr {  get => aircraftFile.Equals("AIRCRAFTA321NEOPW"); } //TODO: more variants
         public bool IsA330 { get=> IsIni330 || IsIni337 | IsA339; }
         /// <summary>The experimental one (A380X-compatible).</summary>
         public bool IsA32NX { get => aircraftFile.StartsWith("FLYBYWIRE_A320_NEO"); }
