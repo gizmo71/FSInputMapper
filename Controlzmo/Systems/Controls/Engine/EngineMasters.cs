@@ -46,7 +46,7 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component] public class EngineMasterSetEvent : IEvent { public string SimEvent() => "ENGINE_MASTER_SET"; }
 [Component] public class Starter1SetEvent : IEvent { public string SimEvent() => "STARTER1_SET"; }
 [Component] public class Starter2SetEvent : IEvent { public string SimEvent() => "STARTER2_SET"; }
-// Get errors back from the generic one - may not be needed with FBW... what about Fenix?
+// Get errors back from the generic one - may not be needed with FBW...
     // UI: SET STARTER n
     [Component] public class StarterSetEvent : IEvent { public string SimEvent() => "STARTER_SET"; }
 
@@ -83,11 +83,11 @@ Toggling off turns both off but only sort of... :-o */
             for (var engine = first; engine <= last; ++engine) {
                 var newData = new EngineControlSelectData() { bitFlags = 1 << ((Int32) engine - 1) };
 Console.Error.WriteLine($"newData flags {newData.bitFlags} engine {engine} value {value}");
-                sc.SendDataOnSimObject(newData);
+                //sc.SendDataOnSimObject(newData);
                 sc.SendEvent(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
-                sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
-                sc.SendEvent(engineMasterSetEvent, value);
-                sc.SendEvent(starterSetEvent, value);
+                //sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
+                //sc.SendEvent(engineMasterSetEvent, value);
+                //sc.SendEvent(starterSetEvent, value);
             }
 //TODO: set control flags back to "all engines"?
         }
