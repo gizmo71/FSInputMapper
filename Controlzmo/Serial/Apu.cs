@@ -158,8 +158,8 @@ namespace Controlzmo.Serial
         {
             if (simConnect.IsFBW) {
                 sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
-                //TODO: LVFR-Horizon only
-                simConnect.SendEvent(apuStarterEvent, 1);
+                if (simConnect.IsHorizonLvfr)
+                    simConnect.SendEvent(apuStarterEvent, 1);
             }  else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_OH_ELEC_APU_START) 2 + (>L:S_OH_ELEC_APU_START)");
             else if (simConnect.IsIniBuilds)
@@ -223,8 +223,7 @@ namespace Controlzmo.Serial
         {
             String? lvar = null;
             if (simConnect.IsFBW) {
-//TODO: for LVFR+Horizon only? Will it help?
-simConnect.SendEvent(apuBleedSourceSet, isDemanded ? 1 : 0);
+if (simConnect.IsHorizonLvfr) simConnect.SendEvent(apuBleedSourceSet, isDemanded ? 1 : 0);
                 lvar = "A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON";
             } else if (simConnect.IsFenix)
                 lvar = "S_OH_PNEUMATIC_APU_BLEED";
