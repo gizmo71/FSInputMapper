@@ -15,6 +15,14 @@ namespace Controlzmo.Systems.Controls.Engine
     {
         [SimVar("ENGINE CONTROL SELECT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 bitFlags; // LSB engine 1 etc
+        [SimVar("FUELSYSTEM VALVE SWITCH:1", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fsvs1;
+        [SimVar("FUELSYSTEM VALVE SWITCH:2", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fsvs2;
+        [SimVar("FUELSYSTEM VALVE SWITCH:3", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fsvs3;
+        [SimVar("FUELSYSTEM VALVE SWITCH:4", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fsvs4;
     };
 
     [Component, RequiredArgsConstructor]
@@ -31,13 +39,14 @@ namespace Controlzmo.Systems.Controls.Engine
         {
             // By default MSFS sets the correct value based on number of engines.
             //hub.Clients.All.Speak($"bits {data.bitFlags}");
+            //hub.Clients.All.Speak($"Fuel system valves {data.fsvs1} {data.fsvs2} {data.fsvs3} {data.fsvs4}");
         }
     }
 
     // UI: SET ENGINE n FUEL VALVE
-    //[Component] public class FuelSystemValveSetEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_SET"; }
-    [Component] public class FuelSystemValveCloseEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_CLOSE"; }
-    [Component] public class FuelSystemValveOpenEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_OPEN"; }
+    [Component] public class FuelSystemValveSetEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_SET"; }
+    //[Component] public class FuelSystemValveCloseEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_CLOSE"; }
+    //[Component] public class FuelSystemValveOpenEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_OPEN"; }
     [Component] public class FuelSystemPumpOnEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_ON"; }
     [Component] public class FuelSystemPumpOffEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_OFF"; }
 //TODO: look at ENGINE CONTROL SELECT instead of per-engine events...
@@ -53,8 +62,7 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component, RequiredArgsConstructor]
     public partial class EnginerMasterAction
     {
-        private readonly FuelSystemValveCloseEvent fuelSystemValveClose;
-        private readonly FuelSystemValveOpenEvent fuelSystemValveOpen;
+        private readonly FuelSystemValveSetEvent fuelSystemValveSet;
         private readonly FuelSystemPumpOnEvent fuelSystemPumpOn;
         private readonly FuelSystemPumpOffEvent fuelSystemPumpOff;
         private readonly StarterSetEvent starterSetEvent;
@@ -80,16 +88,17 @@ namespace Controlzmo.Systems.Controls.Engine
 /*TODO: seems to have stopped working for the A380X, at least in MSFS2024 :-(
 Toggling on only toggles 1/2, as if we're not 4-engined.
 Toggling off turns both off but only sort of... :-o */
+            /*var newData = new EngineControlSelectData() { bitFlags = is4engined ? (isLeft ? 3 : 12) : (isLeft ? 1 : 2) };
+Console.Error.WriteLine($"newData flags {newData.bitFlags} value {value} isLeft {isLeft}");
+            sc.SendDataOnSimObject(newData);*/
             for (var engine = first; engine <= last; ++engine) {
-                var newData = new EngineControlSelectData() { bitFlags = 1 << ((Int32) engine - 1) };
-Console.Error.WriteLine($"newData flags {newData.bitFlags} engine {engine} value {value}");
-                //sc.SendDataOnSimObject(newData);
-                sc.SendEvent(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
+                sc.SendEventEx1(fuelSystemValveSet, engine, value);
                 //sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
                 //sc.SendEvent(engineMasterSetEvent, value);
                 //sc.SendEvent(starterSetEvent, value);
             }
-//TODO: set control flags back to "all engines"?
+            /*newData.bitFlags = is4engined ? 15 : 3;
+            sc.SendDataOnSimObject(newData);*/
         }
     }
 
