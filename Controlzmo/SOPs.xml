@@ -62,6 +62,13 @@
 		<Text type=".*">Fuel ≥ 1.5T on landing (contestable exceptions)</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 999fpm</Text>
 	</Airline>
+	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
+		<Text type=".*">Preparation 20-120 minutes, air time counts</Text>
+		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
+		<Text type=".*">Start #2 first, 5s between; OETA(#2), 1m between</Text>
+		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
+		<Text type=".*">Invalidated 750fpm</Text>
+	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
 		<Text type=".*">10s between starts; OETD, 5s between; warm up</Text>
