@@ -44,17 +44,14 @@ namespace Controlzmo.Systems.Controls.Engine
     }
 
     // UI: SET ENGINE n FUEL VALVE
-    [Component] public class FuelSystemValveSetEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_SET"; }
-    //[Component] public class FuelSystemValveCloseEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_CLOSE"; }
-    //[Component] public class FuelSystemValveOpenEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_OPEN"; }
-    [Component] public class FuelSystemPumpOnEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_ON"; }
-    [Component] public class FuelSystemPumpOffEvent : IEvent { public string SimEvent() => "FUELSYSTEM_PUMP_OFF"; }
+    [Component] public class FuelSystemValveCloseEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_CLOSE"; }
+    [Component] public class FuelSystemValveOpenEvent : IEvent { public string SimEvent() => "FUELSYSTEM_VALVE_OPEN"; }
 //TODO: look at ENGINE CONTROL SELECT instead of per-engine events...
 //[Component] public class EngineMaster1SetEvent : IEvent { public string SimEvent() => "ENGINE_MASTER_1_SET"; }
     // UI: SET ENGINE MASTER n
-    [Component] public class EngineMasterSetEvent : IEvent { public string SimEvent() => "ENGINE_MASTER_SET"; }
-[Component] public class Starter1SetEvent : IEvent { public string SimEvent() => "STARTER1_SET"; }
-[Component] public class Starter2SetEvent : IEvent { public string SimEvent() => "STARTER2_SET"; }
+//    [Component] public class EngineMasterSetEvent : IEvent { public string SimEvent() => "ENGINE_MASTER_SET"; }
+//[Component] public class Starter1SetEvent : IEvent { public string SimEvent() => "STARTER1_SET"; }
+//[Component] public class Starter2SetEvent : IEvent { public string SimEvent() => "STARTER2_SET"; }
 // Get errors back from the generic one - may not be needed with FBW...
     // UI: SET STARTER n
     [Component] public class StarterSetEvent : IEvent { public string SimEvent() => "STARTER_SET"; }
@@ -62,11 +59,8 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component, RequiredArgsConstructor]
     public partial class EnginerMasterAction
     {
-        private readonly FuelSystemValveSetEvent fuelSystemValveSet;
-        private readonly FuelSystemPumpOnEvent fuelSystemPumpOn;
-        private readonly FuelSystemPumpOffEvent fuelSystemPumpOff;
-        private readonly StarterSetEvent starterSetEvent;
-        private readonly EngineMasterSetEvent engineMasterSetEvent;
+        private readonly FuelSystemValveCloseEvent fuelSystemValveClose;
+        private readonly FuelSystemValveOpenEvent fuelSystemValveOpen;
         private readonly JetBridgeSender sender;
 
         internal void perform(ExtendedSimConnect sc, Boolean isLeft, Boolean isOn)
@@ -92,7 +86,7 @@ Toggling off turns both off but only sort of... :-o */
 Console.Error.WriteLine($"newData flags {newData.bitFlags} value {value} isLeft {isLeft}");
             sc.SendDataOnSimObject(newData);*/
             for (var engine = first; engine <= last; ++engine) {
-                sc.SendEventEx1(fuelSystemValveSet, engine, value);
+                sc.SendEventEx1(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
                 //sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
                 //sc.SendEvent(engineMasterSetEvent, value);
                 //sc.SendEvent(starterSetEvent, value);
