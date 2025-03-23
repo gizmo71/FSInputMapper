@@ -37,9 +37,13 @@ namespace Controlzmo.Systems.Controls.Engine
         public virtual void OnPress(ExtendedSimConnect sc) => sc.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
         public override void Process(ExtendedSimConnect simConnect, EngineControlSelectData data)
         {
+            var bits = $"bits {data.bitFlags}";
+            var fsvs = $"Fuel system valves {data.fsvs1} {data.fsvs2} {data.fsvs3} {data.fsvs4}";
             // By default MSFS sets the correct value based on number of engines.
-            //hub.Clients.All.Speak($"bits {data.bitFlags}");
-            //hub.Clients.All.Speak($"Fuel system valves {data.fsvs1} {data.fsvs2} {data.fsvs3} {data.fsvs4}");
+            //hub.Clients.All.Speak(bits);
+            Console.WriteLine(bits);
+            //hub.Clients.All.Speak(fsvs);
+            Console.WriteLine(fsvs);
         }
     }
 
@@ -87,7 +91,6 @@ Console.Error.WriteLine($"newData flags {newData.bitFlags} value {value} isLeft 
             sc.SendDataOnSimObject(newData);*/
             for (var engine = first; engine <= last; ++engine) {
                 sc.SendEventEx1(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
-                //sc.SendEvent(isOn ? fuelSystemPumpOn : fuelSystemPumpOff, engine);
                 //sc.SendEvent(engineMasterSetEvent, value);
                 //sc.SendEvent(starterSetEvent, value);
             }
