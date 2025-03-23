@@ -3,6 +3,7 @@ using Controlzmo.Serial;
 using Controlzmo.Systems.Controls.Engine;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -108,14 +109,17 @@ namespace Controlzmo.Systems.Apu
     public partial class ApuAvail : DataListener<ApuAvailData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         private readonly StartApuEvent startApu;
         private readonly StopApuEvent stopApu;
         private readonly FuelSystemPumpOnEvent fuelPumpOn;
         private readonly FuelSystemPumpOffEvent fuelPumpOff;
-        private readonly FuelSystemValveOpenEvent fuelValueOpen;
-        private readonly FuelSystemValveCloseEvent fuelValueClose;
+        private readonly FuelSystemValveOpenEvent fuelValveOpen;
+        private readonly FuelSystemValveCloseEvent fuelValveClose;
+
         [Property]
         private Boolean _isAvail;
+
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, ApuAvailData data) {
@@ -125,7 +129,8 @@ namespace Controlzmo.Systems.Apu
             serial.SendLine($"ApuAvail={_isAvail}");
 
             if (simConnect.IsHorizonLvfr) {
-                simConnect.SendEvent(_isAvail ? fuelValueOpen : fuelValueClose, 8);
+                if (_isAvail) hubContext.Clients.All.Speak("Check engine masters");
+                simConnect.SendEvent(_isAvail ? fuelValveOpen : fuelValveClose, 8);
                 simConnect.SendEvent(_isAvail ? fuelPumpOn : fuelPumpOff, 7);
                 simConnect.SendEvent(_isAvail ? startApu : stopApu, 1);
             }
@@ -145,12 +150,10 @@ namespace Controlzmo.Systems.Apu
         public Int32 apuN1;
     };
 
-    [Component]
-    public class ApuStartOn : DataListener<ApuStartOnData>, IOnSimStarted
+    [Component, RequiredArgsConstructor]
+    public partial class ApuStartOn : DataListener<ApuStartOnData>, IOnSimStarted
     {
         private readonly SerialPico serial;
-
-        public ApuStartOn(IServiceProvider serviceProvider) => serial = serviceProvider.GetRequiredService<SerialPico>();
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
         public override void Process(ExtendedSimConnect simConnect, ApuStartOnData data) {
             if (simConnect.IsFenix) data.isApuStartOn = data.isApuStartOnFenix;

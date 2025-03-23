@@ -23,6 +23,11 @@ namespace Controlzmo.Systems.Apu
         public Int32 isApuBleedOnIni;
         [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 3.5f)]
         public Double nowSeconds;
+        // For LVFR-Horizon hack...
+        [SimVar("APU SWITCH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 msfsApuSwitch;
+        [SimVar("BLEED AIR APU", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 msfsBleedAirApu;
     };
         
     [Component] public class ApuBleedSourceSetEvent : IEvent { public string SimEvent() => "APU_BLEED_AIR_SOURCE_SET"; }
@@ -63,8 +68,11 @@ namespace Controlzmo.Systems.Apu
             }
 //else hubContext.Clients.All.Speak($"A-P-U bleed {data.isApuBleedOn} master {data.isApuMasterOn} a veil {data.isApuAvail} on after {apuBleedOnAfter != null}");
 
-            if (simConnect.IsHorizonLvfr)
-                simConnect.SendEvent(apuBleedSourceSet, data.isApuBleedOn);
+            if (simConnect.IsHorizonLvfr) {
+                var desired = data.msfsApuSwitch == 1 && data.isApuBleedOn == 1 ? 1 : 0;
+                if (desired != data.msfsBleedAirApu)
+                    simConnect.SendEvent(apuBleedSourceSet, data.isApuBleedOn);
+            }
         }
         
         private void setBleed(ExtendedSimConnect simConnect, Boolean isDemanded)
