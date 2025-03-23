@@ -204,6 +204,7 @@
 		<!-- "Virgin" is classed as a naughty word and can't be entered in game! -->
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
+		<Text type=".*">Must have fuel ≥ 2T on landing</Text>
 	</Airline>
 	<Airline callsign="^wh?izz.*$"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 15-35 minutes, block time counts</Text>
