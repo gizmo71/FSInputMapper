@@ -34,7 +34,9 @@ namespace Controlzmo.Systems.FlightControlUnit
         public float selectedTrackIni;
         [SimVar("L:INI_HEADING_DIAL", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.5f)]
         public float selectedHeadingIni;
-        [SimVar("L:A32NX_FCU_HDG_MANAGED_DASHES", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:A32NX_FCU_HDG_MANAGED_DOT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isManagedHeading;
+        [SimVar("L:A32NX_FCU_SELECTED_HEADING", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public float selectedHeading; // Gets confused when flipping between TRK and HDG...
         [SimVar("L:A32NX_FCU_HDG_MANAGED_DASHES", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isHeadingDashes; // ... so we need this to definitively decide.
@@ -42,8 +44,6 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isHeadingDashesIni;
         [SimVar("L:B_FCU_HEADING_DASHED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isHeadingDashesFenix;
-        [SimVar("L:A32NX_FCU_HDG_MANAGED_DOT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 isManagedHeading;
         [SimVar("L:I_FCU_HEADING_MANAGED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isManagedHeadingFenix;
         [SimVar("L:INI_FCU_HDG_DOT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
