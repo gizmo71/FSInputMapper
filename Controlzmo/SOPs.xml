@@ -12,7 +12,7 @@
 	<Airline callsign="american">
 		<Text type=".*">Preparation 10 to 90 minutes, air time counts</Text>
 		<Text type=".*">5s between; warm up; cool down</Text>
-		<Text type=".*">Review &gt;700fpm</Text>
+		<Text type=".*">Rejected 600fpm; review 700fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:cathay|air[- ]?china|shenzhen[- ]air)$"> <!-- Virtual Air China -->
 		<Text type=".*">Perparation 3m-3h; block time counts</Text>
