@@ -214,6 +214,7 @@
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Rejected 601fpm; Invalidated 651fpm</Text>
+		<Text type=".*">Also manually reviewing taxi speeds, configuration speeds and sequence, MLW</Text>
 		<!-- They also operate an A33xF with different rules. -->
 	</Airline>
 </SOPs>
