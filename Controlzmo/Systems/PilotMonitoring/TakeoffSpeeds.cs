@@ -75,7 +75,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             //TODO: also reset in case of RTO.
             wasAbove80 = wasAboveV1 = wasAboveVR = null;
             // Some aircraft do this for us.
-            if (simConnect.IsA380X && simConnect.IsIni330 && simConnect.IsIni337 && simConnect.IsA339)
+            if (simConnect.IsA380X || simConnect.IsIni330 || simConnect.IsIni337 || simConnect.IsA339)
                 wasAboveV1 = true;
         }
 
