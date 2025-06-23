@@ -13,7 +13,9 @@
 		<Text type=".*">Preparation 10 to 90 minutes, air time counts</Text>
 		<Text type=".*">5s between; warm up; cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
-		<Text type=".*">Rejected 600fpm; review 700fpm</Text>
+		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
+		<Text type=".*">Pauses in flight of &gt;25% of flight → invalidated</Text>
+		<Text type=".*">-50 points 500fpm; Invalidated 700fpm</Text>
 	</Airline>
 	<Airline callsign="^(?:cathay|air[- ]?china|shenzhen[- ]air)$"> <!-- Virtual Air China -->
 		<Text type=".*">Perparation 3m-3h; block time counts</Text>
