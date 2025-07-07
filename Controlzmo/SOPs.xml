@@ -91,8 +91,8 @@
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
-		<Text type=".*">30s between starts; OETD#1; warm up</Text>
-		<Text type=".*">OETA#2; cool down</Text> <!-- have reported that this is now wrong! -->
+		<Text type=".*">30s between starts; OETD; warm up</Text>
+		<Text type=".*">OETA; cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have 1.5T ≤ fuel on landing</Text>
