@@ -91,8 +91,8 @@
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
-		<Text type=".*">30s between starts; OETD#2; warm up</Text>
-		<Text type=".*">OETA; cool down</Text>
+		<Text type=".*">Start #1 first, 1s between; OETD (3m); warm up</Text>
+		<Text type=".*">OETA (3m); cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have 1.5T ≤ fuel on landing</Text>
@@ -211,12 +211,11 @@
 	</Airline>
 	<Airline callsign="^wh?izz.*$"> <!-- WZZ Virtual -->
 		<Text type=".*">Preparation 15m-2h, block time counts</Text>
-		<Text type=".*">Start #1 first, 5s between; warm up (2m); OETD (45s)</Text>
+		<Text type=".*">Start #1 first, 5s between; warm up (5m); OETD (45s)</Text>
 		<Text type=".*">OETA (1m); cool down</Text>
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Rejected 601fpm; Invalidated 651fpm</Text>
 		<Text type=".*">Also manually reviewing taxi speeds, configuration speeds and sequence, MLW</Text>
-		<!-- They also operate an A33xF with different rules. -->
 	</Airline>
 </SOPs>
