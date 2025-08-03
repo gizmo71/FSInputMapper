@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -16,11 +17,18 @@ namespace Controlzmo.Systems
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            String lvar = "A32NX_BTN_TOCONFIG";
-            if (simConnect.IsFenix) lvar = "S_ECAM_TO";
-            else if (simConnect.IsIniBuilds) lvar = "PUSH_ECAM_TOCONFIG";
+            Func<int, String> varName = (_) => "L:A32NX_BTN_TOCONFIG";
+            if (simConnect.IsA32NX)
+                varName = (i) => $"B:A32NX_PED_ECP_TO_CONF_TEST_PB_{(i == 1 ? "Push" : "Release")}";
+            else if (simConnect.IsFenix)
+                varName = (_) => "L:S_ECAM_TO";
+            else if (simConnect.IsIniBuilds)
+                varName = (_) => "L:PUSH_ECAM_TOCONFIG";
+
             for (int i = 1; i >= 0; i--)
-                jetbridge.Execute(simConnect, $"{i} (>L:{lvar})");
+            {
+                jetbridge.Execute(simConnect, $"{i} (>{varName(i)})");
+            }
         }
     }
 }
