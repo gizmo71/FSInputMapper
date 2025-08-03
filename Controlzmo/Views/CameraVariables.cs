@@ -19,6 +19,7 @@ namespace Controlzmo.Views
     {
         public static readonly int COCKPIT = 2;
         public static readonly int CHASE = 3;
+        public static readonly int DRONE = 4;
         public static readonly int FIXED = 5;
         public static readonly int SHOWCASE = 9;
         public static readonly int WORLD_MAP = 12; // Yep, sometimes it gets stuck on this!
