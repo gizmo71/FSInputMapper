@@ -294,22 +294,22 @@ namespace SimConnectzmo
 _logging?.LogDebug($"event {eventToSend}/{@event} group {group} data {dataLog} flags {flags}: {GetLastSentPacketID()}");
         }
 
-        public void RequestDataOnSimObject(IDataListener data, Enum period)
+        public void RequestDataOnSimObject(IDataListener data, Enum period, Boolean evenIfUnchanged = false)
         {
-            REQUEST request = typeToRequest![data];
-            STRUCT structId = typeToStruct![data.GetStructType()];
+            var request = typeToRequest![data];
+            var structId = typeToStruct![data.GetStructType()];
             if (typeToClientDataName?.ContainsKey(data.GetStructType()) == true)
             {
-                SIMCONNECT_CLIENT_DATA_PERIOD clientPeriod = (SIMCONNECT_CLIENT_DATA_PERIOD)period;
-                SIMCONNECT_CLIENT_DATA_REQUEST_FLAG flag = clientPeriod == SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET
+                var clientPeriod = (SIMCONNECT_CLIENT_DATA_PERIOD)period;
+                var flag = clientPeriod == SIMCONNECT_CLIENT_DATA_PERIOD.ON_SET && !evenIfUnchanged
                     ? SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.CHANGED
                     : SIMCONNECT_CLIENT_DATA_REQUEST_FLAG.DEFAULT;
                 RequestClientData(structId, request, structId, clientPeriod, flag, 0, 0, 0);
             }
             else
             {
-                SIMCONNECT_PERIOD simPeriod = (SIMCONNECT_PERIOD)period;
-                SIMCONNECT_DATA_REQUEST_FLAG flag = simPeriod == SIMCONNECT_PERIOD.ONCE
+                var simPeriod = (SIMCONNECT_PERIOD)period;
+                var flag = simPeriod == SIMCONNECT_PERIOD.ONCE || evenIfUnchanged
                                 ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
                                 : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
                 RequestDataOnSimObject(request, structId, SIMCONNECT_OBJECT_ID_USER, simPeriod, flag, 0, 0, 0);
