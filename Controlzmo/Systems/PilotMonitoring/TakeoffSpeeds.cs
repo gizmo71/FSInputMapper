@@ -74,9 +74,6 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_PERIOD.SECOND : SIMCONNECT_PERIOD.NEVER);
             //TODO: also reset in case of RTO.
             wasAbove80 = wasAboveV1 = wasAboveVR = null;
-            // Some aircraft do this for us.
-            if (simConnect.IsA380X || simConnect.IsIni330 || simConnect.IsIni337 || simConnect.IsA339)
-                wasAboveV1 = true;
         }
 
         public override void Process(ExtendedSimConnect simConnect, TakeOffData data)
@@ -89,7 +86,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
 
             if (data.kias < 49) {
-                wasAbove80 = wasAboveV1 = wasAboveVR = false;
+                wasAbove80 = wasAboveVR = false;
+                // Some aircraft do this for us.
+                wasAboveV1 = simConnect.IsA380X || simConnect.IsIni330 || simConnect.IsIni337 || simConnect.IsA339;
                 hubContext.Clients.All.SetFromSim(v1Setter.GetId(), data.v1);
                 hubContext.Clients.All.SetFromSim(vrSetter.GetId(), data.vr);
                 hubContext.Clients.All.SetFromSim(v2Setter.GetId(), data.v2);
