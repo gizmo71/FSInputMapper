@@ -86,7 +86,7 @@
 		<Text type=".*">Cool down; OETA, 3m between</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have fuel ≥ 1.2T on landing</Text>
+		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
