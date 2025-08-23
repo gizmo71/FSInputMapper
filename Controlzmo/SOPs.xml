@@ -69,7 +69,7 @@
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, air time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
-		<Text type=".*">Start #2 first, 5s between; OETA(#2), 1m between</Text>
+		<Text type=".*">5s between starts; OETA(#2), 1m between</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 		<Text type=".*">Invalidated 750fpm</Text>
 	</Airline>
@@ -86,7 +86,7 @@
 		<Text type=".*">Cool down; OETA, 3m between</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have fuel ≥ 1.2T on landing</Text>
+		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
