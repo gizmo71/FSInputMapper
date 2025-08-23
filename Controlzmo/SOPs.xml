@@ -153,12 +153,14 @@
 	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
-		<Text type="A3[01235].">Start #2 first, 2s between</Text>
+		<Text type="A3[35].">Start #1 first, 2s between</Text>
+		<Text type="A3[012].">Start #2 first, 2s between</Text>
 		<Text type="A3[48].">Start #1->#4, 1s between</Text>
 		<Text type=".*">Warm up; cool down</Text>
 		<Text type="A3[48].">Must have fuel ≥ 4T on landing</Text>
 		<Text type="A3[035].|A31[0-6]">Must have fuel ≥ 3.6T on landing</Text>
-		<Text type="A32.">Must have fuel ≥ 1.8T on landing</Text>
+		<Text type="A3[12].">Must have fuel ≥ 1.8T on landing</Text>
+		<Text type="A3[48].">Must have fuel ≥ 4T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
