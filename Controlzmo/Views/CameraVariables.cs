@@ -62,9 +62,13 @@ namespace Controlzmo.Views
     {
         private readonly ILogger<CameraView> log;
 
+        [Property]
+        private CameraViewData _current;
+
         public override void Process(ExtendedSimConnect simConnect, CameraViewData data)
         {
             log.LogCritical($"camera view {data.viewType}/{data.viewIndex}");
+            _current = data;
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)
