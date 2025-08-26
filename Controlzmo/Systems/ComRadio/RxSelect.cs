@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Controlzmo.Hubs;
+using Controlzmo.SimConnectzmo;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
@@ -58,25 +60,29 @@ namespace Controlzmo.Systems.ComRadio
         public UInt32 isFoVhf2SwitchDown;
     };
 
-    [Component]
-    public class Com2Rx : IData<Com2RxLVars>, ISettable<bool>
+    [Component, RequiredArgsConstructor]
+    public partial class Com2Rx : IData<Com2RxLVars>, ISettable<bool>
     {
         private readonly Com2RxToggleEvent toggle;
-
-        public Com2Rx(IServiceProvider serviceProvider)
-        {
-            toggle = serviceProvider.GetRequiredService<Com2RxToggleEvent>();
-        }
+        private readonly InputEvents inputEvents;
 
         public string GetId() => "com2rx";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isReceiving)
         {
             UInt32 newSetting = isReceiving ? 1u : 0u;
-            simConnect.SendDataOnSimObject(new Com2RxLVars() {
-                isCaptainVhf2SwitchDown = newSetting, isFoVhf2SwitchDown = newSetting
-            });
-            simConnect.SendEvent(toggle, newSetting);
+
+            if (simConnect.IsIni330)
+            {
+                inputEvents.Send(simConnect, "AIRLINER_CPT_VHF2_VOL_BUTTON", (double) newSetting);
+            }
+            else
+            {
+                simConnect.SendDataOnSimObject(new Com2RxLVars() {
+                    isCaptainVhf2SwitchDown = newSetting, isFoVhf2SwitchDown = newSetting
+                });
+                simConnect.SendEvent(toggle, newSetting);
+            }
          }
     }
 }
