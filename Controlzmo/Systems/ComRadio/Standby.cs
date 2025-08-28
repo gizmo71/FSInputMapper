@@ -1,5 +1,8 @@
 ﻿using System;
 using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
+using Microsoft.AspNetCore.Mvc;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.ComRadio
@@ -16,20 +19,24 @@ namespace Controlzmo.Systems.ComRadio
         public string SimEvent() => "COM2_STBY_RADIO_SET_HZ"; // and COM2_RADIO_SET_HZ - or (BCD) COM2_RADIO_SET and COM2_STBY_RADIO_SET
     }
 
-    public abstract class AbstractComStandby : ISettable<string?>
+    [RequiredArgsConstructor]
+    public abstract partial class AbstractComStandby : ISettable<string?>
     {
         private readonly IEvent setEvent;
-
-        protected AbstractComStandby(IEvent setEvent)
-        {
-            this.setEvent = setEvent;
-        }
+        private readonly JetBridgeSender sender;
 
         public abstract string GetId();
 
         public void SetInSim(ExtendedSimConnect simConnect, string? newFrequencyString)
         {
             var newFrequency = Decimal.Parse(newFrequencyString!);
+            if (simConnect.IsIni321)
+            {
+                // HF doesn't really work at all!
+                var channel = GetId().Substring(0, 4).ToUpper();
+                sender.Execute(simConnect, $"{Decimal.Floor(newFrequency) * 1000} (>L:INI_{channel}_STBY_FREQUENCY_MHZ) {newFrequency % 1.0m * 1000} (>L:INI_{channel}_STBY_FREQUENCY_KHZ)");
+                // But also fall through...
+            }
             uint hz = Decimal.ToUInt32(Decimal.Multiply(newFrequency, new Decimal(1000000)));
             simConnect.SendEvent(setEvent, hz);
         }
@@ -38,14 +45,14 @@ namespace Controlzmo.Systems.ComRadio
     [Component]
     public class Com1Standby : AbstractComStandby
     {
-        public Com1Standby(Com1StandbyRadioSetEvent set) : base(set) { }
+        public Com1Standby(Com1StandbyRadioSetEvent set, JetBridgeSender sender) : base(set, sender) { }
         public override string GetId() => "com1standby";
     }
 
     [Component]
     public class Com2Standby : AbstractComStandby
     {
-        public Com2Standby(Com2StandbyRadioSetEvent set) : base(set) { }
+        public Com2Standby(Com2StandbyRadioSetEvent set, JetBridgeSender sender) : base(set, sender) { }
         public override string GetId() => "com2standby";
     }
 }
