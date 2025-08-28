@@ -5,7 +5,6 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-//TODO: "on" doesn't work for the nwe A32NX. What about the A380X?
     [Component] public class AutopilotOnEvent : IEvent { public string SimEvent() => "AUTOPILOT_ON"; }
     [Component] public class AutopilotOffEvent : IEvent { public string SimEvent() => "AUTOPILOT_OFF"; }
 
@@ -19,6 +18,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void OnPress(ExtendedSimConnect sc) {
             if (sc.IsA32NX || sc.IsA339)
                 sender.Execute(sc, "(L:A32NX_AUTOPILOT_1_ACTIVE) if{ (>K:A32NX.FCU_AP_2_PUSH) } els{ (>K:A32NX.FCU_AP_1_PUSH) }");
+            else if (sc.IsIni330)
+                sender.Execute(sc, "1 (L:INI_ap1_on) if{ (>L:INI_AP2_BUTTON) } els{ (>L:INI_AP1_BUTTON) }");
             else
                 sc.SendEvent(_event);
         }
