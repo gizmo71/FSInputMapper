@@ -77,6 +77,12 @@ namespace Controlzmo.Systems.Controls.Engine
                 sender.Execute(sc, $"{value} (>L:S_ENG_MASTER_{engineId})");
                 return;
             }
+            else if (sc.IsIni330) // Maybe also other INIs? Obviously not the A400...
+            {
+                var engineId = isLeft ? 1 : 2;
+                sender.Execute(sc, $"{value} (>L:INI_MIXTURE_RATIO{engineId}_HANDLE)");
+                return;
+            }
 
 /*TODO: the A400M has three positions for each switch, "off", "feather" (used during startup), and "run" (one AVAIL has been shown).
   We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up". */
@@ -89,6 +95,7 @@ Toggling off turns both off but only sort of... :-o */
             /*var newData = new EngineControlSelectData() { bitFlags = is4engined ? (isLeft ? 3 : 12) : (isLeft ? 1 : 2) };
 Console.Error.WriteLine($"newData flags {newData.bitFlags} value {value} isLeft {isLeft}");
             sc.SendDataOnSimObject(newData);*/
+//TODO: some VAs need time between engines in the A380, e.g. Oryx. Can we do them 2s apart or something?
             for (var engine = first; engine <= last; ++engine) {
                 sc.SendEventEx1(isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine);
                 //sc.SendEvent(engineMasterSetEvent, value);
