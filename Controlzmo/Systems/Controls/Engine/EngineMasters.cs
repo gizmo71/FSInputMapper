@@ -28,7 +28,7 @@ namespace Controlzmo.Systems.Controls.Engine
                 sender.Execute(sc, $"{value} (>L:S_ENG_MASTER_{engineId})");
                 return;
             }
-            else if (sc.IsIni330) // Maybe also other INIs? Obviously not the A400...
+            else if (sc.IsIni330 || sc.IsIni321) // Maybe also other INIs? Obviously not the A400...
             {
                 var engineId = isLeft ? 1 : 2;
                 sender.Execute(sc, $"{value} (>L:INI_MIXTURE_RATIO{engineId}_HANDLE)");
