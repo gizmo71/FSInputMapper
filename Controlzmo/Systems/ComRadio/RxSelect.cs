@@ -73,9 +73,9 @@ namespace Controlzmo.Systems.ComRadio
             UInt32 newSetting = isReceiving ? 1u : 0u;
 
             if (simConnect.IsIni330)
-            {
                 inputEvents.Send(simConnect, "AIRLINER_CPT_VHF2_VOL_BUTTON", (double) newSetting);
-            }
+            else if (simConnect.IsIni321)
+                inputEvents.Send(simConnect, "AIRLINER_ACP_CPT_VHF2_VOL_BUTTON", (double) newSetting);
             else
             {
                 simConnect.SendDataOnSimObject(new Com2RxLVars() {

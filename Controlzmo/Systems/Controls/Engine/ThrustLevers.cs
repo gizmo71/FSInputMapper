@@ -105,10 +105,11 @@ Console.WriteLine($"Normalised {normalised}");
 //TODO: merge above and below
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
+//TODO: ini 330 seems different, and reversers don't work.
             const double OUTPUT_MAX_REVERSE = -1;
             const double OUTPUT_IDLE_REVERSE = -0.8;
             const double OUTPUT_IDLE = -0.5;
-            const double OUTPUT_CLB = 0;
+            const double OUTPUT_CLB = 0.001; // Let's try it slightly off 0 to see if that helps
             const double OUTPUT_FLX_MCT = 0.5;
             const double OUTPUT_TOGA = 1;
 

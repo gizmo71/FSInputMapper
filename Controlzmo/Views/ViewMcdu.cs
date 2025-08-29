@@ -20,13 +20,12 @@ namespace Controlzmo.Views
             if (simConnect.IsFenix)
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 0 ? 1 : 0;
             else if (simConnect.IsFBW)
-                data.viewIndex = 4;
+                // There isn't a right MCDU view, 3 is the closest which is the centre screen.
+                data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 4 ? 3 : 4;
             else if (simConnect.IsIniBuilds)
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 12 ? 13 : 12;
             else if (simConnect.IsAsoboB38M)
                 data.viewIndex = 1;
-            else if (simConnect.IsA380X)
-                data.viewIndex = 4;
             else
                  return;
 

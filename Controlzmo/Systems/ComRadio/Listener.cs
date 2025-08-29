@@ -1,9 +1,9 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.ComRadio
 {
@@ -14,6 +14,8 @@ namespace Controlzmo.Systems.ComRadio
         public Int32 activeFrequency;
         [SimVar("COM STANDBY FREQUENCY:1", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standbyFrequency;
+        [SimVar("L:INI_COM1_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 iniStandby;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -23,6 +25,8 @@ namespace Controlzmo.Systems.ComRadio
         public Int32 activeFrequency;
         [SimVar("COM STANDBY FREQUENCY:2", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standbyFrequency;
+        [SimVar("L:INI_COM2_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 iniStandby;
     };
 
     [Component]
@@ -39,6 +43,8 @@ namespace Controlzmo.Systems.ComRadio
 
         public override void Process(ExtendedSimConnect simConnect, Com1Data data)
         {
+            if (simConnect.IsIni321)
+                data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
             hub.Clients.All.SetFrequencyFromSim("com1active", data.activeFrequency);
             hub.Clients.All.SetFrequencyFromSim("com1standby", data.standbyFrequency);
         }
@@ -58,6 +64,8 @@ namespace Controlzmo.Systems.ComRadio
 
         public override void Process(ExtendedSimConnect simConnect, Com2Data data)
         {
+            if (simConnect.IsIni321)
+                data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
             hub.Clients.All.SetFrequencyFromSim("com2active", data.activeFrequency);
             hub.Clients.All.SetFrequencyFromSim("com2standby", data.standbyFrequency);
         }
@@ -71,5 +79,7 @@ namespace Controlzmo.Systems.ComRadio
             string asString = String.Format("{0:X03}.{1:X03}", (bcdHz >> 16) & 0xFFF, (bcdHz >> 4) & 0xFFF);
             hub.SetFromSim(field, asString);
         }
+
+        internal static Int32 fromIni(Int32 ini) => Convert.ToInt32(String.Format("0x{0}", ini * 10), 16);
     }
 }

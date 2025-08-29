@@ -27,6 +27,13 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 vrFenix;
         [SimVar("L:N_MISC_PERF_TO_V2", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 v2Fenix;
+        /* Don't seem to work, at least not with the A330 or A321LR. :-(
+        [SimVar("L:INI_V1", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 v1Ini;
+        [SimVar("L:INI_VR", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 vrIni;
+        [SimVar("L:INI_V2", "Knots", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 v2Ini;*/
     };
 
     [Component]

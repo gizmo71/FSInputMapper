@@ -77,6 +77,9 @@ namespace Controlzmo.Systems.PilotMonitoring
                 else if (simConnect.IsFenix)
                     for (var i = 0; i < 2; ++i)
                         jetbridge.Execute(simConnect, "(L:S_OH_CALLS_ALL) ++ (>L:S_OH_CALLS_ALL)");
+                else if (simConnect.IsIni330)
+                    for (var i = 1; i >= 0; --i)
+                        jetbridge.Execute(simConnect, $"{i} (>L:INI_CALL_ALL_BUTTON)");
                 isArmed = false;
                 warmAt = null;
             }
