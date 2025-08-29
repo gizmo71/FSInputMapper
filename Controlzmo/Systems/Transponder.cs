@@ -188,6 +188,8 @@ namespace Controlzmo.Systems.Transponder
         public Int32 positionFenix;
         [SimVar("L:INI_TCAS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 positionIni;
+        [SimVar("L:INI_TCAS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 positionIni321;
     };
 
     [Component]
@@ -205,6 +207,7 @@ namespace Controlzmo.Systems.Transponder
         public override void Process(ExtendedSimConnect simConnect, TcasTrafficModeData data)
         {
             if (simConnect.IsFenix) data.position = data.positionFenix;
+            else if (simConnect.IsIni321) data.position = data.positionIni321;
             else if (simConnect.IsIniBuilds) data.position = data.positionFenix;
             hub.Clients.All.SetFromSim(GetId(), data.position);
         }
@@ -215,7 +218,7 @@ namespace Controlzmo.Systems.Transponder
         {
             var code = Int16.Parse(posString!);
             simConnect.SendDataOnSimObject(new TcasTrafficModeData() {
-                position = code, positionFenix = code, positionIni = code
+                position = code, positionFenix = code, positionIni = code, positionIni321 = code
             });
         }
     }
