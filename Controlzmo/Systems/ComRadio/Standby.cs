@@ -2,7 +2,6 @@
 using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.AspNetCore.Mvc;
 using SimConnectzmo;
 
 namespace Controlzmo.Systems.ComRadio
@@ -34,6 +33,7 @@ namespace Controlzmo.Systems.ComRadio
             {
                 // HF doesn't really work at all!
                 var channel = GetId().Substring(0, 4).ToUpper();
+//TODO: might also want to set _STBY_FREQUENCY, which is just the two bits added together.
                 sender.Execute(simConnect, $"{Decimal.Floor(newFrequency) * 1000} (>L:INI_{channel}_STBY_FREQUENCY_MHZ) {newFrequency % 1.0m * 1000} (>L:INI_{channel}_STBY_FREQUENCY_KHZ)");
                 // But also fall through...
             }
