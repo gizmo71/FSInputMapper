@@ -1,4 +1,8 @@
-﻿using SimConnectzmo;
+﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
+using SimConnectzmo;
+using System.Transactions;
 
 namespace Controlzmo.Systems.ComRadio
 {
@@ -14,30 +18,32 @@ namespace Controlzmo.Systems.ComRadio
         public string SimEvent() => "COM2_RADIO_SWAP";
     }
 
-    [Component]
-    public class Com3StandbyRadioSwapEvent : IEvent
+    [RequiredArgsConstructor]
+    public abstract partial class ComSwap : ISettable<object>
     {
-        public string SimEvent() => "COM3_RADIO_SWAP";
+        private readonly JetBridgeSender sender;
+        private readonly IEvent buttonEvent;
+        private readonly int channel;
+
+        public string GetId() => $"com{channel}swap";
+        public void SetInSim(ExtendedSimConnect simConnect, object? source) {
+            if (simConnect.IsFenix)
+                for (int i = 0; i < 2; ++i)
+                    sender.Execute(simConnect, $"(L:S_PED_RMP{channel}_XFER) ++ (>L:S_PED_RMP{channel}_XFER)");
+            else
+                simConnect.SendEvent(buttonEvent);
+        }
     }
 
     [Component]
-    public class Com1Swap : AbstractButton
+    public class Com1Swap : ComSwap
     {
-        public Com1Swap(Com1StandbyRadioSwapEvent swapEvent) : base(swapEvent) { }
-        public override string GetId() => "com1swap";
+        public Com1Swap(JetBridgeSender sender, Com1StandbyRadioSwapEvent swapEvent) : base(sender, swapEvent, 1) { }
     }
 
     [Component]
-    public class Com2Swap : AbstractButton
+    public class Com2Swap : ComSwap
     {
-        public Com2Swap(Com2StandbyRadioSwapEvent swapEvent) : base(swapEvent) { }
-        public override string GetId() => "com2swap";
-    }
-
-    [Component]
-    public class Com3Swap : AbstractButton
-    {
-        public Com3Swap(Com3StandbyRadioSwapEvent swapEvent) : base(swapEvent) { }
-        public override string GetId() => "com3swap";
+        public Com2Swap(JetBridgeSender sender, Com2StandbyRadioSwapEvent swapEvent) : base(sender, swapEvent, 2) { }
     }
 }

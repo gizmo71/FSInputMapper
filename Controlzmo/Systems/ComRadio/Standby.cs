@@ -1,8 +1,9 @@
-﻿using System;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
+using System;
+using System.Threading.Channels;
 
 namespace Controlzmo.Systems.ComRadio
 {
@@ -29,7 +30,12 @@ namespace Controlzmo.Systems.ComRadio
         public void SetInSim(ExtendedSimConnect simConnect, string? newFrequencyString)
         {
             var newFrequency = Decimal.Parse(newFrequencyString!);
-            if (simConnect.IsIni321)
+            if (simConnect.IsFenix)
+            {
+                var channel = GetId().Substring(3, 1).ToUpper();
+                sender.Execute(simConnect, $"{newFrequency * 1000} (>L:N_PED_RMP{channel}_STDBY)");
+            }
+            else if (simConnect.IsIni321)
             {
                 // HF doesn't really work at all!
                 var channel = GetId().Substring(0, 4).ToUpper();

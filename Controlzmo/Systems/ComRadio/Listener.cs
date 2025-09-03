@@ -16,6 +16,8 @@ namespace Controlzmo.Systems.ComRadio
         public Int32 standbyFrequency;
         [SimVar("L:INI_COM1_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 iniStandby;
+        [SimVar("L:N_PED_RMP1_STDBY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenixStandby;
     };
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -27,6 +29,8 @@ namespace Controlzmo.Systems.ComRadio
         public Int32 standbyFrequency;
         [SimVar("L:INI_COM2_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 iniStandby;
+        [SimVar("L:N_PED_RMP2_STDBY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenixStandby;
     };
 
     [Component]
@@ -43,7 +47,9 @@ namespace Controlzmo.Systems.ComRadio
 
         public override void Process(ExtendedSimConnect simConnect, Com1Data data)
         {
-            if (simConnect.IsIni321)
+            if (simConnect.IsFenix)
+                data.standbyFrequency = FrequencyExtensions.fromIni(data.fenixStandby);
+            else if (simConnect.IsIni321)
                 data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
             hub.Clients.All.SetFrequencyFromSim("com1active", data.activeFrequency);
             hub.Clients.All.SetFrequencyFromSim("com1standby", data.standbyFrequency);
@@ -64,7 +70,9 @@ namespace Controlzmo.Systems.ComRadio
 
         public override void Process(ExtendedSimConnect simConnect, Com2Data data)
         {
-            if (simConnect.IsIni321)
+            if (simConnect.IsFenix)
+                data.standbyFrequency = FrequencyExtensions.fromIni(data.fenixStandby);
+            else if (simConnect.IsIni321)
                 data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
             hub.Clients.All.SetFrequencyFromSim("com2active", data.activeFrequency);
             hub.Clients.All.SetFrequencyFromSim("com2standby", data.standbyFrequency);
