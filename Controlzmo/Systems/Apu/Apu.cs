@@ -71,11 +71,11 @@ namespace Controlzmo.Systems.Apu
         }
     }
 
-    [Component]
-    public class ApuMasterButton : ISettable<bool?>
+    [Component, RequiredArgsConstructor]
+    public partial class ApuMasterButton : ISettable<bool?>
     {
         private readonly JetBridgeSender sender;
-        public ApuMasterButton(IServiceProvider sp) => sender = sp.GetRequiredService<JetBridgeSender>();
+
         public string GetId() => "apuMasterPressed";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
@@ -128,6 +128,7 @@ namespace Controlzmo.Systems.Apu
             _isAvail = data.isApuAvail == 1;
             serial.SendLine($"ApuAvail={_isAvail}");
 
+//TODO: might not need this hack post-SU3
             if (simConnect.IsHorizonLvfr) {
                 if (_isAvail) hubContext.Clients.All.Speak("Check engine masters");
                 simConnect.SendEvent(_isAvail ? fuelValveOpen : fuelValveClose, 8);

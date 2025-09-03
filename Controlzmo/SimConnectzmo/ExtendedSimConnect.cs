@@ -16,7 +16,7 @@ namespace SimConnectzmo
     // Change ENUM_DYNAMIC_START if you need more internal values.
     internal enum REQUEST { AircraftLoaded = 1, SimSystemState, EnumerateInputEvents, InputEventExperimental }
     internal enum STRUCT { }
-    internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded, InputEventExperimentalEventDown, InputEventExperimentalUp }
+    internal enum EVENT { SimSystemState = 1, Frame, AircraftLoaded, ExperimentalEvent }
     internal enum GROUP { JUST_MASKABLE = 1 }
 
     public class ExtendedSimConnect : SimConnect
