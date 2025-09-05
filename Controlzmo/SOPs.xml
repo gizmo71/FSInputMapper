@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
 	<Airline callsign="alpaca|new[- ]?sky"> <!-- All the Newsky together -->
@@ -89,13 +89,14 @@
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
-		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
+		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
+		<Text type=".*">Points for departure/arrival time ±10m</Text>
 		<Text type=".*">Start #1 first, 1s between; OETD (3m); warm up</Text>
 		<Text type=".*">OETA (3m); cool down</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have 1.5T ≤ fuel on landing</Text>
-		<Text type=".*">Rejected &gt; 700fpm; -ve points  at 1000fpm</Text>
+		<Text type=".*">Must have 1T ≤ fuel on landing</Text>
+		<Text type=".*">Rejected &gt; 700fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
 		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
