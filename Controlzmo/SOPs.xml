@@ -90,9 +90,9 @@
 	</Airline>
 	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
-		<Text type=".*">Points for departure/arrival time ±10m</Text>
-		<Text type=".*">Start #1 first, 1s between; OETD (3m); warm up</Text>
+		<Text type=".*">Start #1 first, 30s between; OETD (3m); warm up</Text>
 		<Text type=".*">OETA (3m); cool down</Text>
+		<Text type=".*">Points for departure/arrival time ±10m</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have 1T ≤ fuel on landing</Text>
