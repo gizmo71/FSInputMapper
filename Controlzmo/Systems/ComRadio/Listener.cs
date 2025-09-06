@@ -88,6 +88,16 @@ namespace Controlzmo.Systems.ComRadio
             hub.SetFromSim(field, asString);
         }
 
-        internal static Int32 fromIni(Int32 ini) => Convert.ToInt32(String.Format("0x{0}", ini * 10), 16);
+        internal static Int32 fromIni(Int32 ini) {
+            try
+            {
+                return Convert.ToInt32(String.Format("0x{0}", ini * 10), 16);
+            }
+            catch (Exception t)
+            {
+                Console.Error.WriteLine(t);
+                return 0x6666660;
+            }
+        }
     }
 }
