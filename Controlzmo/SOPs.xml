@@ -174,6 +174,7 @@
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 10-120 minutes, block time counts</Text>
 		<Text type=".*">5s between starts; OETD, 1m between; warm up</Text>
+<!-- OET 30s between for A330, A321ceo, A350, 1m for A319/A320/A20N/A21N -->
 		<Text type=".*">OETA, 1m between; cool down</Text>
 		<Text type="A3[35].|A21N|A321">Must have fuel ≥ 2200kg on landing</Text>
 		<Text type="A319|A20N|A320">Must have fuel ≥ 1200kg on landing</Text>
