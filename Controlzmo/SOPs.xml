@@ -11,7 +11,8 @@
 	</Airline>
 	<Airline callsign="american">
 		<Text type=".*">Preparation 10 to 90 minutes, air time counts</Text>
-		<Text type=".*">5s between; warm up; cool down</Text>
+		<Text type=".*">Departure within 15m of ETD rewarded</Text>
+		<Text type=".*">30s between; warm up; cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
 		<Text type=".*">Pauses in flight of &gt;25% of flight → invalidated</Text>
