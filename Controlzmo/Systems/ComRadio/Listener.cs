@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -7,97 +8,94 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.ComRadio
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct Com1Data
+    public interface IComRadioData
     {
-        [SimVar("COM ACTIVE FREQUENCY:1", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 activeFrequency;
-        [SimVar("COM STANDBY FREQUENCY:1", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 standbyFrequency;
-        [SimVar("L:INI_COM1_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 iniStandby;
-        [SimVar("L:N_PED_RMP1_STDBY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 fenixStandby;
-    };
+        public UInt32 ActiveHz { get; }
+        public UInt32 StandbyHz { get; }
+    }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct Com2Data
+    public interface IComRadio
     {
-        [SimVar("COM ACTIVE FREQUENCY:2", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 activeFrequency;
-        [SimVar("COM STANDBY FREQUENCY:2", "Frequency BCD32", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 standbyFrequency;
-        [SimVar("L:INI_COM2_STBY_FREQUENCY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 iniStandby;
-        [SimVar("L:N_PED_RMP2_STDBY", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 fenixStandby;
-    };
+        public void Swap(ExtendedSimConnect simConnect);
+        public int Channel { get; }
+    }
 
-    [Component]
-    public class Com1RadioListener : DataListener<Com1Data>, IRequestDataOnOpen
+    [RequiredArgsConstructor]
+    public abstract partial class ComRadioManager<T> : DataListener<T>, IComRadio, IRequestDataOnOpen where T : struct, IComRadioData
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
-
-        public Com1RadioListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
-        {
-            this.hub = hub;
-        }
+        private readonly IEvent setActive;
+        private readonly IEvent setStandby;
+        [Property]
+        private readonly int _channel;
+        private IComRadioData current;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
-        public override void Process(ExtendedSimConnect simConnect, Com1Data data)
+        public override void Process(ExtendedSimConnect simConnect, T data)
         {
-            if (simConnect.IsFenix)
-                data.standbyFrequency = FrequencyExtensions.fromIni(data.fenixStandby);
-            else if (simConnect.IsIni321)
-                data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
-            hub.Clients.All.SetFrequencyFromSim("com1active", data.activeFrequency);
-            hub.Clients.All.SetFrequencyFromSim("com1standby", data.standbyFrequency);
+            current = data;
+            hub.Clients.All.SetFrequencyFromSim($"com{Channel}active", data.ActiveHz);
+            hub.Clients.All.SetFrequencyFromSim($"com{Channel}standby", data.StandbyHz);
+        }
+
+        public void Swap(ExtendedSimConnect sc)
+        {
+Console.Error.WriteLine($"swapping {current.ActiveHz} and {current.StandbyHz}");
+            var _new = current;
+//TODO: this just doesn't work in the Fenix - probably we can't genuinely bypass whatever its doing to steal the values. :-(
+            sc.SendEvent(setActive, _new.StandbyHz, 0, SimConnect.SIMCONNECT_GROUP_PRIORITY_DEFAULT);
+            sc.SendEvent(setStandby, _new.ActiveHz, 0, SimConnect.SIMCONNECT_GROUP_PRIORITY_DEFAULT);
         }
     }
 
     [Component]
-    public class Com2RadioListener : DataListener<Com2Data>, IRequestDataOnOpen
+    public class Com1ActiveSetEvent : IEvent { public string SimEvent() => "COM_RADIO_SET_HZ"; }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct Com1Data : IComRadioData
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        [Property]
+        [SimVar("COM ACTIVE FREQUENCY:1", "Hertz", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 _activeHz;
+        [Property]
+        [SimVar("COM STANDBY FREQUENCY:1", "Hertz", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 _standbyHz;
+    };
 
-        public Com2RadioListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
-        {
-            this.hub = hub;
-        }
+    [Component]
+    public class Com1RadioListener : ComRadioManager<Com1Data>
+    {
+        public Com1RadioListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, Com1ActiveSetEvent a, Com1StandbyRadioSetEvent s) : base(hub, a, s, 1) { }
+    }
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+    [Component]
+    public class Com2ActiveSetEvent : IEvent { public string SimEvent() => "COM2_RADIO_SET_HZ"; }
 
-        public override void Process(ExtendedSimConnect simConnect, Com2Data data)
-        {
-            if (simConnect.IsFenix)
-                data.standbyFrequency = FrequencyExtensions.fromIni(data.fenixStandby);
-            else if (simConnect.IsIni321)
-                data.standbyFrequency = FrequencyExtensions.fromIni(data.iniStandby);
-            hub.Clients.All.SetFrequencyFromSim("com2active", data.activeFrequency);
-            hub.Clients.All.SetFrequencyFromSim("com2standby", data.standbyFrequency);
-        }
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public partial struct Com2Data : IComRadioData
+    {
+        [Property]
+        [SimVar("COM ACTIVE FREQUENCY:2", "Hertz", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 _activeHz;
+        [Property]
+        [SimVar("COM STANDBY FREQUENCY:2", "Hertz", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 _standbyHz;
+    };
+
+    [Component]
+    public class Com2RadioListener : ComRadioManager<Com2Data>
+    {
+        public Com2RadioListener(IHubContext<ControlzmoHub, IControlzmoHub> hub, Com2ActiveSetEvent a, Com2StandbyRadioSetEvent s) : base(hub, a, s, 2) { }
     }
 
     internal static class FrequencyExtensions
     {
-        internal static void SetFrequencyFromSim(this IControlzmoHub hub, string field, int bcdHz)
+        internal static void SetFrequencyFromSim(this IControlzmoHub hub, string field, uint hertz)
         {
-            // For example, 121.500 is 0x01215000.
-            string asString = String.Format("{0:X03}.{1:X03}", (bcdHz >> 16) & 0xFFF, (bcdHz >> 4) & 0xFFF);
+            var mhz = Decimal.Divide(hertz, 1_000_000);
+            string asString = String.Format("{0:000.000}", mhz);
             hub.SetFromSim(field, asString);
-        }
-
-        internal static Int32 fromIni(Int32 ini) {
-            try
-            {
-                return Convert.ToInt32(String.Format("0x{0}", ini * 10), 16);
-            }
-            catch (Exception t)
-            {
-                Console.Error.WriteLine(t);
-                return 0x6666660;
-            }
         }
     }
 }

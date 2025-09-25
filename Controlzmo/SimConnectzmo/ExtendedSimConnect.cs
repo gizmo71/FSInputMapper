@@ -251,31 +251,33 @@ namespace SimConnectzmo
 
         private delegate string EventSender(EVENT @event, GROUP group, SIMCONNECT_EVENT_FLAG flags);
 
-        public void SendEventEx1(IEvent eventToSend, uint data0 = 0u, uint data1 = 0u, uint data2 = 0u, uint data3 = 0u, uint data4 = 0u, SIMCONNECT_EVENT_FLAG flags = 0)
+        public void SendEventEx1(IEvent eventToSend,
+            uint data0 = 0u, uint data1 = 0u, uint data2 = 0u, uint data3 = 0u, uint data4 = 0u,
+            SIMCONNECT_EVENT_FLAG flags = 0, uint? priority = null)
         {
             ActuallySendEvent(eventToSend, flags, (@event, group, flags) =>
             {
                 TransmitClientEvent_EX1(SIMCONNECT_OBJECT_ID_USER, @event, group, flags, data0, data1, data2, data3, data4);
                 return $"{data0},{data1}";
-            });
+            }, priority);
         }
 
-        public void SendEvent(IEvent eventToSend, int data, SIMCONNECT_EVENT_FLAG flags = 0)
+        public void SendEvent(IEvent eventToSend, int data, SIMCONNECT_EVENT_FLAG flags = 0, uint? priority = null)
         {
             var encoded = BitConverter.ToUInt32(BitConverter.GetBytes(data), 0);
-            SendEvent(eventToSend, encoded, flags);
+            SendEvent(eventToSend, encoded, flags, priority);
         }
 
-        public void SendEvent(IEvent eventToSend, uint data = 0u, SIMCONNECT_EVENT_FLAG flags = 0)
+        public void SendEvent(IEvent eventToSend, uint data = 0u, SIMCONNECT_EVENT_FLAG flags = 0, uint? priority = null)
         {
             ActuallySendEvent(eventToSend, flags, (@event, group, flags) =>
             {
                 TransmitClientEvent(SIMCONNECT_OBJECT_ID_USER, @event, data, group, flags);
                 return $"{data}";
-            });
+            }, priority);
         }
 
-        private void ActuallySendEvent(IEvent eventToSend, SIMCONNECT_EVENT_FLAG flags, EventSender sender)
+        private void ActuallySendEvent(IEvent eventToSend, SIMCONNECT_EVENT_FLAG flags, EventSender sender, uint? priority = null)
         {
             EVENT @event = eventToEnum![eventToSend];
             GROUP? group = notificationsToEvent!
@@ -287,7 +289,7 @@ namespace SimConnectzmo
                 .Single();
             if (group == null)
             {
-                group = (GROUP)SIMCONNECT_GROUP_PRIORITY_HIGHEST;
+                group = (GROUP)(priority != null ? priority : SIMCONNECT_GROUP_PRIORITY_HIGHEST);
                 flags |= SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY;
             }
             string dataLog = sender.Invoke(@event, (GROUP)group, flags);
