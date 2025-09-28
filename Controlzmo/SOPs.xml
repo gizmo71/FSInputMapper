@@ -12,7 +12,7 @@
 	<Airline callsign="american">
 		<Text type=".*">Preparation 10m to 24H, air time counts</Text>
 		<Text type=".*">Being within 15m of ETD/ETA rewarded</Text>
-		<Text type=".*">30s between; warm up; cool down</Text>
+		<Text type=".*">30s between; warm up; cool down	</Text>
 		<Text type=".*">Points for step climb</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
@@ -145,6 +145,7 @@
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
 		<Text type="A388">Must have fuel ≥ 2800kg on landing</Text>
 		<Text type="A319|A320|A321|A20N|A21N">Must have fuel ≥ 1200kg on landing</Text>
+		<Text type="A33[23]">Must have fuel ≥ 2300kg on landing</Text>
 		<Text type=".*">Invalidated 500/600fpm</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
