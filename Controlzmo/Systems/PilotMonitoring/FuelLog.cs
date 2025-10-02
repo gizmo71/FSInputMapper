@@ -1,58 +1,42 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.Atc;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Device.Location;
+using System.Linq;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct FuelLogData
     {
-        [SimVar("L:A32NX_EFIS_L_TO_WPT_IDENT_0", "number", SIMCONNECT_DATATYPE.INT64, 1f)]
-        public Int64 ident0;
-        [SimVar("L:A32NX_EFIS_L_TO_WPT_IDENT_1", "number", SIMCONNECT_DATATYPE.INT64, 1f)]
-        public Int64 ident1;
-        [SimVar("L:A32NX_FUEL_USED:1", "number", SIMCONNECT_DATATYPE.FLOAT64, 50f)]
-        public Double kgUsed1;
-        [SimVar("L:A32NX_FUEL_USED:2", "number", SIMCONNECT_DATATYPE.FLOAT64, 50f)]
-        public Double kgUsed2;
         [SimVar("FUEL TOTAL QUANTITY WEIGHT", "kg", SIMCONNECT_DATATYPE.FLOAT64, 50.0f)]
         public Double kgOnBoard;
     };
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FuelLogListener : DataListener<FuelLogData>, IOnGroundHandler
+    public partial class FuelLogListener : DataListener<FuelLogData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
-        {
-            simConnect.RequestDataOnSimObject(this, isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
-            nextWaypoint = "";
-        }
-
-        private String nextWaypoint = "";
+        [Property]
+        private OfpWaypoint? _waypoint = null;
         private String[] log = new string[] { "", "", "", "", "" };
 
         public override void Process(ExtendedSimConnect simConnect, FuelLogData data)
         {
-            String ident = unpack(new Int64[] { data.ident0, data.ident1 });
-            if (ident == nextWaypoint)
-                return;
-            var lastWaypoint = nextWaypoint;
-            nextWaypoint = ident;
-            if (lastWaypoint != "") {
+            if (_waypoint != null) {
                 log[0] = log[1];
                 log[1] = log[2];
                 log[2] = log[3];
                 log[3] = log[4];
-                log[4] = $"At {lastWaypoint}: remaining {tons(data.kgOnBoard)}, used {tons(data.kgUsed1 + data.kgUsed2)}";
+                log[4] = $"At {_waypoint.Id}: FOB {tons(data.kgOnBoard)} (a), {tons(_waypoint.planFOB)} (p) {tons(_waypoint.minFOB)} (m); FU {tons(_waypoint.fuelUsed)} (p)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
@@ -61,21 +45,71 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             return $"{kg / 1000.0:F1}"; //:9.9
         }
+    };
 
-        // https://github.com/flybywiresim/a32nx/blob/37e1e98029c0379493abb06da45d8de4378497b6/fbw-a32nx/src/systems/shared/src/simvar.ts#L8
-        private String unpack(Int64[] values)
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct PositionData
+    {
+        [SimVar("PLANE LATITUDE", "degrees latitude", SIMCONNECT_DATATYPE.FLOAT32, 0.0f)]
+        public float latitude;
+        [SimVar("PLANE LONGITUDE", "degrees longitude", SIMCONNECT_DATATYPE.FLOAT32, 0.0f)]
+        public float longitude;
+    };
+
+    internal class Progress
+    {
+        public double distance = 0.0;
+        public Boolean isClosing = false;
+        public override string ToString() => $"{distance}{(isClosing ? "--" : "++")}";
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class PositionListener : DataListener<PositionData>, IOnGroundHandler
+    {
+        private readonly OperationalFlightPlan ofp;
+        private readonly FuelLogListener logListener;
+        private Dictionary<OfpWaypoint, Progress>? waypointProgress;
+
+        public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
-            String ret = "";
-            for (int i = 0; i < values.Length * 8; ++i)
-            {
-                var word = i / 8; // In TypeScript: Math.floor(i / 8)
-                var chr = i % 8;
-                var code = values[word] >> (chr * 6) & 0x3f;
-                if (code > 0)
-                    ret += (char) (code + 31);
-            }
-            return ret;
+            logListener.Waypoint = null;
+            if (isOnGround) waypointProgress = null;
+            simConnect.RequestDataOnSimObject(
+                this,
+                isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
         }
 
+        public override void Process(ExtendedSimConnect simConnect, PositionData data)
+        {
+            if (waypointProgress == null)
+                if (ofp.IsValid)
+                    waypointProgress = ofp.GetFixes().ToDictionary(w => w, w => new Progress());
+                else
+                    return;
+            var current = new GeoCoordinate(data.latitude, data.longitude);
+Console.Error.WriteLine($"**---** current {current}");
+            var firstPassed = (OfpWaypoint?)null;
+            foreach (var entry in waypointProgress)
+            {
+                var distance = current.GetDistanceTo(entry.Key.position) / 1852;
+                var isClosing = distance < entry.Value.distance;
+Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
+                if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 2.0)
+                    firstPassed = entry.Key;
+                entry.Value.isClosing = isClosing;
+                entry.Value.distance = distance;
+            }
+            if (firstPassed != null) {
+                logListener.Waypoint = firstPassed;
+                simConnect.RequestDataOnSimObject(logListener, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
+                var keys = new List<OfpWaypoint>(waypointProgress.Keys);
+                foreach (var key in keys)
+                {
+                    waypointProgress.Remove(key);
+                    if (key == firstPassed) break;
+                }
+            }
+        }
     }
 }
