@@ -36,14 +36,14 @@ namespace Controlzmo.Systems.PilotMonitoring
                 log[1] = log[2];
                 log[2] = log[3];
                 log[3] = log[4];
-                log[4] = $"At {_waypoint.Id}: FOB {tons(data.kgOnBoard)} (a), {tons(_waypoint.planFOB)} (p) {tons(_waypoint.minFOB)} (m); FU {tons(_waypoint.fuelUsed)} (p)";
+                log[4] = $"At {_waypoint.Id}: FOB {Tons(data.kgOnBoard)} (a), {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m); FU {Tons(_waypoint.fuelUsed)} (p)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
 
-        private String tons(Double kg)
+        private static String Tons(Double kg)
         {
-            return $"{kg / 1000.0:F1}"; //:9.9
+            return $"{kg / 1000.0:F2}"; //:0.00
         }
     };
 
