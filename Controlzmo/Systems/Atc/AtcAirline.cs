@@ -106,7 +106,7 @@ namespace Controlzmo.Systems.Atc
             var extra = $"{simConnect.OpenData.szApplicationName} {simConnect.OpenData.dwApplicationVersionMajor}.{simConnect.OpenData.dwApplicationVersionMinor}";
             if (simConnect.OpenData.dwApplicationVersionMajor >= 12)
                 extra += $"\nLivery name {data.liveryName}\n\tfolder {data.liveryFolder}";
-            await hub.Clients.All.SetFromSim("fuelLog", extra);
+            await hub.Clients.All.SetFromSim("simInfo", extra);
         }
 
         private int Minutes(Regex regex, String sops)

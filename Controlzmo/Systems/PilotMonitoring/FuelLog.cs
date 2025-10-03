@@ -36,7 +36,8 @@ namespace Controlzmo.Systems.PilotMonitoring
                 log[1] = log[2];
                 log[2] = log[3];
                 log[3] = log[4];
-                log[4] = $"At {_waypoint.Id}: FOB {Tons(data.kgOnBoard)} (a), {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m); FU {Tons(_waypoint.fuelUsed)} (p)";
+                var diff = (data.kgOnBoard - _waypoint.planFOB) / 1000.0;
+                log[4] = $"{_waypoint.Id}: FOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m); FU {Tons(_waypoint.fuelUsed)} (p)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
