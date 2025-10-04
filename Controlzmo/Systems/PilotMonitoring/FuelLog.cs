@@ -27,17 +27,15 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         [Property]
         private OfpWaypoint? _waypoint = null;
-        private String[] log = new string[] { "", "", "", "", "" };
+        private String[] log = Enumerable.Repeat("", 11).ToArray();
 
         public override void Process(ExtendedSimConnect simConnect, FuelLogData data)
         {
             if (_waypoint != null) {
-                log[0] = log[1];
-                log[1] = log[2];
-                log[2] = log[3];
-                log[3] = log[4];
+                for (var i = 1; i < log.Length; ++i)
+                    log[i - 1] = log[i];
                 var diff = (data.kgOnBoard - _waypoint.planFOB) / 1000.0;
-                log[4] = $"{_waypoint.Id}: FOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m); FU {Tons(_waypoint.fuelUsed)} (p)";
+                log[log.Length - 1] = $"{_waypoint.Id}: FU {Tons(_waypoint.fuelUsed)} (p)\n\tFOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
