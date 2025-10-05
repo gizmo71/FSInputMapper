@@ -10,7 +10,8 @@ namespace Controlzmo.Systems.Atc
 {
     public class OfpWaypoint
     {
-        public readonly string Id;
+        public readonly string Name;
+        public readonly string Ident;
         public readonly GeoCoordinate position;
         public readonly Double fuelUsed;
         public readonly Double minFOB;
@@ -18,7 +19,8 @@ namespace Controlzmo.Systems.Atc
 
         public OfpWaypoint(XmlElement node)
         {
-            Id = node.SelectSingleNode("./name")?.InnerText ?? "?";
+            Name = node.SelectSingleNode("./name")?.InnerText ?? "?";
+            Ident = node.SelectSingleNode("./ident")?.InnerText ?? "?";
             var latitude = NodeToNumber(node, "pos_lat");
             var longitude = NodeToNumber(node, "pos_long");
             position = new GeoCoordinate(latitude, longitude);
@@ -34,7 +36,7 @@ namespace Controlzmo.Systems.Atc
             return Double.Parse(asText!);
         }
 
-        public override string ToString() => $"{Id}@{position}";
+        public override string ToString() => $"{Ident}@{position}";
     }
 
     [Component]

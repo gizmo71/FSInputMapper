@@ -35,7 +35,10 @@ namespace Controlzmo.Systems.PilotMonitoring
                 for (var i = 1; i < log.Length; ++i)
                     log[i - 1] = log[i];
                 var diff = (data.kgOnBoard - _waypoint.planFOB) / 1000.0;
-                log[log.Length - 1] = $"{_waypoint.Id}: FU {Tons(_waypoint.fuelUsed)} (p)\n\tFOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m)";
+                var where = _waypoint.Name;
+                if (!where.Equals(_waypoint.Ident))
+                    where = $"where ($_waypoint.Ident)";
+                log[log.Length - 1] = $"{where}: FU {Tons(_waypoint.fuelUsed)} (p)\n\tFOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
@@ -94,7 +97,7 @@ Console.Error.WriteLine($"**---** current {current}");
                 var distance = current.GetDistanceTo(entry.Key.position) / 1852;
                 var isClosing = distance < entry.Value.distance;
 Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
-                if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 2.0)
+                if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 3.5)
                     firstPassed = entry.Key;
                 entry.Value.isClosing = isClosing;
                 entry.Value.distance = distance;
