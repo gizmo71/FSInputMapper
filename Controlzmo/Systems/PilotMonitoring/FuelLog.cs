@@ -37,7 +37,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 var diff = (data.kgOnBoard - _waypoint.planFOB) / 1000.0;
                 var where = _waypoint.Name;
                 if (!where.Equals(_waypoint.Ident))
-                    where = $"where ($_waypoint.Ident)";
+                    where = $"{where} {_waypoint.Ident}";
                 log[log.Length - 1] = $"{where}: FU {Tons(_waypoint.fuelUsed)} (p)\n\tFOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m)";
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
