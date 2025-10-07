@@ -27,7 +27,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
         [Property]
         private OfpWaypoint? _waypoint = null;
-        private String[] log = Enumerable.Repeat("", 11).ToArray();
+        private String[] log = Enumerable.Repeat("\n", 11).ToArray();
 
         public override void Process(ExtendedSimConnect simConnect, FuelLogData data)
         {
