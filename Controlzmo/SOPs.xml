@@ -150,10 +150,11 @@
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 20 to 30 minutes, block time counts</Text>
+		<Text type=".*">Departure/Arrival within 15 minutes of scheduled</Text>
 		<Text type=".*">Warm up, 1m between; cool down</Text>
 		<Text type=".*">Departure/arrival time ±15/16m</Text>
 		<Text type=".*">Must have 1.2T &lt; fuel &lt; 5T on landing</Text>
-		<Text type=".*">Pauses over 4h in flight reviewed</Text>
+		<Text type=".*">Pauses over 4h/25% in flight reviewed/rejected</Text>
 		<Text type=".*">Review at 800fpm; Rejected 1000fpm</Text>
 	</Airline>
 	<Airline callsign="qatari"> <!-- a.k.a. Oryx -->
