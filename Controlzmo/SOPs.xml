@@ -212,7 +212,7 @@
 		<Text type=".*">Excessive taxi in time requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
-	<Airline callsign="^redwood|velocity|(v[ei]rg|verge[- ])|in(?:[- ]nigeria)?|vir$"> <!-- VRGN Virtual -->
+	<Airline callsign="^redwood|velocity|(v[ei]rg|verge[- ])in(?:[- ]nigeria)?|vir$"> <!-- VRGN Virtual -->
 		<!-- "Virgin" and various misspellings are classed as a naughty word and can't be entered in game! -->
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Review at 600fpm; Invalidated 800fpm</Text>
