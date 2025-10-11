@@ -51,12 +51,11 @@
 		<Text type=".*">5s between starts; warm up; cool down</Text>
 		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
-	<Airline callsign="eurowings|ocean|black[- ]?pearl"> <!-- vEWG -->
+	<Airline callsign="^eurowings|ocean|black[- ]?pearl$"> <!-- vEWG -->
 		<Text type="A2.N|A3[12].">Preparation 20m-10h, air time counts</Text>
 		<Text type="A33[23]">Preparation 35m-2h, air time counts</Text>
 		<Text type=".*">Start #1 first, 5s between; warm up</Text>
-<!-- Was supposed to have changed to #1 but wasn't set up like that at the time of writing -->
-		<Text type=".*">OETA(#2), 3m between, cool down</Text>
+		<Text type=".*">OETA, 3m between, cool down</Text>
 		<Text type=".*">Rejected 450fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="^alpine|easy|top[- ]?swiss$"> <!-- vEZY -->
