@@ -224,7 +224,7 @@
 		<Text type=".*">OETA (1m); cool down</Text>
 		<Text type=".*">Flight time &gt;5%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
-		<Text type=".*">Rejected 601fpm; Invalidated 651fpm</Text>
+		<Text type=".*">Rejected 2.6G/601fpm; Invalidated 2.86G/651fpm</Text>
 		<Text type=".*">Also manually reviewing taxi speeds, configuration speeds and sequence, MLW</Text>
 	</Airline>
 </SOPs>
