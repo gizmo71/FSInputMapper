@@ -9,29 +9,6 @@ using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct OnRunwayStateData
-    {
-        // Literally on the runway; goes on during line up.
-        // Comes off a couple of seconds after lift off - is it because we drifted off the runway after lift off?
-        [SimVar("ON ANY RUNWAY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 onAnyRunway;
-    };
-
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class OnRunwayStateListener : DataListener<OnRunwayStateData>, IRequestDataOnOpen
-    {
-        //private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
-
-        public override void Process(ExtendedSimConnect simConnect, OnRunwayStateData data)
-        {
-            //hubContext.Clients.All.Speak((data.onAnyRunway == 1 ? "" : "not ") + "on any runway");
-        }
-    }
-
     public interface IOnGroundHandler
     {
         void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround);

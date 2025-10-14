@@ -23,6 +23,8 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 kias;
         [SimVar("GPS GROUND SPEED", "Knots", SIMCONNECT_DATATYPE.INT32, 2.5f)]
         public Int32 groundSpeed;
+        [SimVar("ON ANY RUNWAY", "Bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 onAnyRunway;
         [SimVar("L:A32NX_REVERSER_1_DEPLOYED", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 rev1deployed;
         [SimVar("L:A32NX_FADEC_POWERED_ENG1", "bool", SIMCONNECT_DATATYPE.INT32, 0.4f)]
@@ -94,7 +96,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 wasBelowTaxi = false;
             }
-            else if (wasBelowTaxi == false && data.groundSpeed < 30)
+            else if (wasBelowTaxi == false && data.onAnyRunway == 1 && data.groundSpeed < 30)
             {
                 cooldown.StartTimer(simConnect);
                 wasBelowTaxi = true;
