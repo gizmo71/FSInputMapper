@@ -172,7 +172,7 @@
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
-		<Text type=".*">30s between starts; warm up; cool down</Text>
+		<Text type=".*">1m between starts; warm up; cool down</Text>
 		<Text type=".*">Must have 1T ≤ fuel ≤ 5T on landing</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
