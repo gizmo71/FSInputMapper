@@ -52,10 +52,11 @@
 		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
 	<Airline callsign="^eurowings|ocean|black[- ]?pearl$"> <!-- vEWG -->
-		<Text type="A2.N|A3[12].">Preparation 20m-10h, air time counts</Text>
-		<Text type="A33[23]">Preparation 35m-2h, air time counts</Text>
+		<Text type=".*">Preparation 15m-10h, air time counts</Text>
 		<Text type=".*">Start #1 first, 5s between; warm up</Text>
-		<Text type=".*">OETA, 3m between, cool down</Text>
+		<Text type=".*">Departure/Arrival within 15 minutes of scheduled</Text>
+		<Text type="A319|A32[01]|A2[01]N">OETA, 3m between, cool down</Text>
+		<Text type="A33[23]">OETA(#2), 3m between, cool down</Text>
 		<Text type=".*">Rejected 450fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="^alpine|easy|top[- ]?swiss$"> <!-- vEZY -->
@@ -172,7 +173,7 @@
 	<Airline callsign="ryan[- ]?air"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
-		<Text type=".*">30s between starts; warm up; cool down</Text>
+		<Text type=".*">1m between starts; warm up; cool down</Text>
 		<Text type=".*">Must have 1T ≤ fuel ≤ 5T on landing</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
