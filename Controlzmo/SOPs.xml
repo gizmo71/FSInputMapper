@@ -146,7 +146,8 @@
 		<Text type="A388">Must have fuel ≥ 2800kg on landing</Text>
 		<Text type="A319|A320|A321|A20N|A21N">Must have fuel ≥ 1200kg on landing</Text>
 		<Text type="A33[23]">Must have fuel ≥ 2300kg on landing</Text>
-		<Text type=".*">Invalidated 500/600fpm</Text>
+		<Text type=".*">Fully stablised at 1000ft AGL</Text>
+		<Text type=".*">Invalidated 500/600fpm or 2.33/2.6G</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 20 to 30 minutes, block time counts</Text>
