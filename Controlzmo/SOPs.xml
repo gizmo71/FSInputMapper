@@ -79,7 +79,7 @@
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
 		<Text type=".*">10s between starts; OETD, 5s between; warm up</Text>
-		<Text type=".*">OETA, 5s between; cool down</Text>
+		<Text type=".*">Cool down; OETA, 5s between</Text>
 		<!-- Text type=".*">Must have fuel ≥ 748kg on landing</Text -->
 		<Text type=".*">Rejected at 600fpm; review at 700fpm</Text>
 	</Airline>
