@@ -76,7 +76,7 @@ namespace Controlzmo.Serial
 
             var id = match.Groups[1].ToString();
             var value = match.Groups[2].ToString();
-Console.Error.WriteLine($"set {id} to {value}");
+_logger.LogDebug($"set {id} to {value}");
 
             ISettable? rawSettable;
             if (settables.TryGetValue(id, out rawSettable))
