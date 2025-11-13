@@ -153,7 +153,7 @@
 		<Text type=".*">Invalidated 500/600fpm or 2.33/2.6G</Text>
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
-		<Text type=".*">Preparation 20 to 30 minutes, block time counts</Text>
+		<Text type=".*">Preparation 25m to 2h; block time counts</Text>
 		<Text type=".*">Departure/Arrival within 15/16 minutes of scheduled</Text>
 		<Text type=".*">Warm up, 1m between; cool down</Text>
 		<Text type=".*">Departure/arrival time ±15/16m</Text>
