@@ -154,9 +154,10 @@
 	</Airline>
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 25m to 2h; block time counts</Text>
-		<Text type=".*">Departure/Arrival within 15/16 minutes of scheduled</Text>
-		<Text type=".*">Warm up, 1m between; cool down</Text>
-		<Text type=".*">Departure/arrival time ±15/16m</Text>
+		<Text type=".*">Departure/Arrival ±15/16 minutes of scheduled</Text>
+		<Text type=".*">Warm up, 1m between</Text>
+		<Text type=".*">Departure pitch between 8 and 17 degrees</Text>
+		<Text type=".*">Cool down</Text>
 		<Text type=".*">Must have 1.2T &lt; fuel &lt; 5T on landing</Text>
 		<Text type=".*">Pauses over 4h/25% in flight reviewed/rejected</Text>
 		<Text type=".*">Review at 800fpm; Rejected 1000fpm</Text>
