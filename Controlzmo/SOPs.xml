@@ -95,14 +95,15 @@
 		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
-	<Airline callsign="i-fly"><!-- IndiGo Virtual -->
-		<Text type=".*">Preparation 15-40 minutes, block time counts</Text>
-		<Text type=".*">Start #1 first, 30s between; OETD (3m); warm up</Text>
+	<Airline callsign="i[- ]fly"><!-- IndiGo Virtual -->
+		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
+		<Text type=".*">Start #1 first, 45s between; OETD (3m); warm up</Text>
+		<Text type=".*">Points for departure/arrival time ±15m</Text>
 		<Text type=".*">OETA (3m); cool down</Text>
-		<Text type=".*">Points for departure/arrival time ±10m</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have 1T ≤ fuel on landing</Text>
+		<Text type=".*">Must have SimBrief final reserve fuel on landing</Text>
+		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected &gt; 700fpm</Text>
 	</Airline>
 	<Airline callsign="jbu|jet[- ]?blue"> <!-- vJBU -->
