@@ -150,10 +150,13 @@ namespace Controlzmo.Systems.PilotMonitoring
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
         }
 
+        // Until/unless we discover a better to detect/predict Pegasus v2's behaviour
+        private const int SLACK = 30;
+
         public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
         {
             if (coolAt == null)
-                coolAt = data.now + atcAirline.CooldownMinutes * 60.0;
+                coolAt = data.now + atcAirline.CooldownMinutes * 60.0 + SLACK;
             else if (data.now >= coolAt)
             {
                 chronoButton.SetInSim(simConnect, null);
