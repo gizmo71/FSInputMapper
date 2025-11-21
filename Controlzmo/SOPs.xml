@@ -77,7 +77,7 @@
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">5s between starts; OETA(#2), 1m between</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
-		<Text type=".*">Invalidated 750fpm</Text>
+		<Text type=".*">Review 2.5G; rejected 3.5G</Text>
 	</Airline>
 	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
 		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
