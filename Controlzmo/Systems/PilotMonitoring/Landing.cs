@@ -96,7 +96,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 wasBelowTaxi = false;
             }
-            else if (wasBelowTaxi == false && data.onAnyRunway == 1 && data.groundSpeed < 30)
+            else if (wasBelowTaxi == false && data.onAnyRunway == 0 && data.groundSpeed < 30)
             {
                 cooldown.StartTimer(simConnect);
                 wasBelowTaxi = true;
