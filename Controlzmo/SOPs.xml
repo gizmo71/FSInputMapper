@@ -11,8 +11,8 @@
 	</Airline>
 	<Airline callsign="american">
 		<Text type=".*">Preparation 10m to 24H, air time counts</Text>
-		<Text type=".*">Being within 15m of ETD/ETA rewarded</Text>
-		<Text type=".*">30s between; warm up; cool down	</Text>
+		<Text type=".*">Departure/arrival within ±15m of estimate rewarded</Text>
+		<Text type=".*">30s between; warm up; cool down; OETA(#2, 5s)</Text>
 		<Text type=".*">Points for step climb</Text>
 		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
