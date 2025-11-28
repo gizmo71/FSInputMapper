@@ -12,6 +12,8 @@ namespace Controlzmo.Views
     {
         [SimVar("CAMERA STATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 cameraState;
+        [SimVar("CAMERA SUBSTATE", "enum", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 subState;
     }
 
     [Component, RequiredArgsConstructor]
@@ -38,7 +40,7 @@ namespace Controlzmo.Views
         public override void Process(ExtendedSimConnect simConnect, CameraStateData data)
         {
             _current = data;
-            log.LogError($"camera state {_current.cameraState}");
+            log.LogError($"camera state {_current.cameraState} substate {_current.subState}");
         }
 
         public void OnStarted(ExtendedSimConnect simConnect)
