@@ -19,10 +19,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
-            else if (simConnect.IsIni330)
-                sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
             else if (simConnect.IsIniBuilds)
-                sender.Execute(simConnect, "1 (>L:INI_FCU_PULL_COMMAND)");
+                sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
             else
                 simConnect.SendEvent(this);
         }
