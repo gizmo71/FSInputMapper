@@ -213,7 +213,7 @@
 	<Airline callsign="^(?:ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap)$"> <!-- Titan Virtual -->
 		<Text type=".*">Preparation 20-60 minutes, block time counts</Text>
 		<Text type=".*">Start #2 first, 5s between; warm up; cool down</Text>
-		<Text type="A320|A2[01]N">Must have fuel ≥ 2T on landing</Text>
+		<Text type="A32[01]|A2[01]N">Must have fuel ≥ 2T on landing</Text>
 		<Text type="A333">Must have at fuel ≥ 2.5T on landing</Text>
 		<Text type=".*">Flight time &gt;30%/40m of scheduled or average requires review</Text>
 		<Text type=".*">Excessive taxi in time requires review</Text>
