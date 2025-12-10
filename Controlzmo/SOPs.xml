@@ -87,12 +87,15 @@
 		<Text type=".*">Rejected at 600fpm; review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
-		<Text type=".*">Preparation 15-30 minutes, block time counts</Text>
-		<Text type=".*">1s between starts, warm up; OETD, 3m between</Text>
+		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
+		<Text type=".*">45s between starts; OETD, 3m between</Text>
+		<Text type=".*">Points for departure/arrival time ±15m</Text>
+		<Text type=".*">Points lost above MTOW/MLW</Text>
 		<Text type=".*">Cool down; OETA, 3m between</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Must have fuel ≥ 1.5T on landing</Text>
+		<Text type=".*">Must have fuel above SimBrief final reserve on landing</Text>
+		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="i[- ]fly"><!-- IndiGo Virtual -->
