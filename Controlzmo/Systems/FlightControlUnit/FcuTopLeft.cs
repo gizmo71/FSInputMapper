@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SIM_FRAME;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopLeftData data)
         {
