@@ -58,10 +58,12 @@
 	<Airline callsign="^eurowings|ocean|black[- ]?pearl$"> <!-- vEWG -->
 		<Text type=".*">Preparation 15m-10h, air time counts</Text>
 		<Text type=".*">Start #1 first, 5s between; warm up</Text>
-		<Text type=".*">Departure/Arrival within 15 minutes of scheduled</Text>
-		<Text type="A319|A32[01]|A2[01]N">OETA, 3m between, cool down</Text>
-		<Text type="A33[23]">OETA(#2), 3m between, cool down</Text>
-		<Text type=".*">Rejected 450fpm; Invalidated 600fpm</Text>
+		<Text type="A.[^3].">Points for departure/arrival within 30 minutes of scheduled</Text>
+		<Text type="A.3.">Points for departure/arrival within 15m of scheduled</Text>
+		<Text type="A.[^3].">OETA, 10s between</Text>
+		<Text type="A.3.">OETA(#2), 3m between</Text>
+		<Text type=".*">Cool down</Text>
+		<Text type=".*">Negative points at 1.7G</Text>
 	</Airline>
 	<Airline callsign="^alpine|easy|top[- ]?swiss$"> <!-- vEZY -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
