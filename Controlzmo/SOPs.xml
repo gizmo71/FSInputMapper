@@ -63,7 +63,7 @@
 		<Text type="A.[^3].">OETA, 10s between</Text>
 		<Text type="A.3.">OETA(#2), 3m between</Text>
 		<Text type=".*">Cool down</Text>
-		<Text type=".*">Negative points at 1.7G</Text>
+		<Text type=".*">Negative points at 1.7	G</Text>
 	</Airline>
 	<Airline callsign="^alpine|easy|top[- ]?swiss$"> <!-- vEZY -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
@@ -197,7 +197,7 @@
 		<Text type=".*">Points for step climb</Text>
 		<Text type=".*">1000 feet stabilistation check</Text>
 		<Text type=".*">Review at 700fpm</Text>
-		<Text type=".*">Pause in flight of 15m+ requires PIREP comment</Text>
+		<Text type=".*">Pauses over 15% of flight requires PIREP comment</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
