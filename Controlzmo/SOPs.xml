@@ -121,10 +121,10 @@
 	</Airline>
 	<Airline callsign="jet[ -]?star(?:-asia)?|orange[ -]?liner">
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Departure/Arrival within 15 minutes of scheduled</Text>
+		<Text type=".*">Departure within 15 minutes of scheduled</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">Start #1 first, 1m between; OETD(#2), 1m between; warm up</Text>
+		<Text type=".*">Start #1 first, 1m between; OETD, 1m between; warm up</Text>
 		<Text type=".*">OETA(#1), 1m between; cool down</Text>
 		<Text type=".*">Must have fuel ≥ 1500kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
