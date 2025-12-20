@@ -11,11 +11,11 @@
     },
     {
       "provider": "unpkg",
-      "library": "@microsoft/signalr@latest",
+      "library": "@microsoft/signalr@10.0.0",
       "destination": "wwwroot/js/signalr/",
       "files": [
-        "dist/browser/signalr.js",
-        "dist/browser/signalr.js.map"
+        "dist/browser/signalr.min.js",
+        "dist/browser/signalr.min.js.map"
       ]
     },
     {
