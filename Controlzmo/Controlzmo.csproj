@@ -49,14 +49,6 @@
       <HintPath>$(MSFS_SDK)\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="WASimCommander.WASimClient, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(ProjectDir)\..\..\WASimCommander_SDK-v1.0.0.7-beta3\lib\MSVS-2019\managed\WASimCommander.WASimClient.dll</HintPath>
-      <Private>true</Private>
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="$(ProjectDir)\..\..\WASimCommander_SDK-v1.0.0.7-beta3\lib\MSVS-2019\managed\\Ijwhost.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
