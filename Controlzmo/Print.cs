@@ -16,33 +16,44 @@ namespace Controlzmo
     [RequiredArgsConstructor]
     public partial class Print : ISettable<string>
     {
-        private static readonly Font MM58_FONT = new Font("Consolas", 9.7f);
-        private static readonly int COLS = 24;
-
         private readonly ILogger<Print> _log;
+        private readonly Printer printer;
 
         public string GetId() => "printText";
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
-            _log.LogInformation("Print {}", value);
-            if (value == null || value.Trim() == "") return;
-            value = String.Join("\n", WordWrap(value));
+            printer.Print(value ?? "", 32); // from Fenix
+        }
+    }
+
+    [Component]
+    [RequiredArgsConstructor]
+    public partial class Printer
+    {
+        private readonly ILogger<Printer> _log;
+
+        public void Print(string value, int columns)
+        {
+            if (value.Trim() == "") return;
+            value = String.Join("\n", WordWrap(value, columns));
 
             var doc = new PrintDocument();
             doc.PrinterSettings.PrinterName = "POS58 Printer"; // or "Microsoft Print to PDF"
-            doc.PrintPage += (sender, e) => {
-                e.Graphics?.DrawString(value, MM58_FONT, Brushes.Black, 0, 0);
+            doc.PrintPage += (sender, printEvent) => {
+                var mmCharWidth = 48f / columns;
+                var font = new Font("Arial", mmCharWidth * 2f, GraphicsUnit.Millimeter);
+                    printEvent.Graphics?.DrawString(value, font, Brushes.Black, 0, 0);
             };
             doc.Print();
         }
 
-        private static IEnumerable<String> WordWrap(string source)
+        private static IEnumerable<String> WordWrap(string source, int columns)
         {
             // Based on https://stackoverflow.com/a/41287371
             return new Regex(
-                @"(?:[^\r\n]{1,$LL$}(?=\s|$)|[^\r\n]{$LL$}|(?<=\n)\r?\n)"
-                    .Replace("$LL$", COLS.ToString()))
+                @"(?:[^\r\n]{1,$LL$}(?!\xA0)(?=\s|$)|[^\r\n]{$LL$}|(?<=\n)\r?\n)"
+                    .Replace("$LL$", columns.ToString()))
                 .Matches(source)
                 .Cast<Match>()
                 .Select(m => m.Value.Trim());

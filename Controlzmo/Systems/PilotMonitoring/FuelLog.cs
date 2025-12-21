@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Device.Location;
 using System.Linq;
+using System.Xml;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -25,6 +26,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public partial class FuelLogListener : DataListener<FuelLogData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Printer printer;
         [Property]
         private OfpWaypoint? _waypoint = null;
         private String[] log = Enumerable.Repeat("\n", 11).ToArray();
@@ -38,14 +40,16 @@ namespace Controlzmo.Systems.PilotMonitoring
                 var where = _waypoint.Name;
                 if (!where.Equals(_waypoint.Ident))
                     where = $"{where}/{_waypoint.Ident}";
-                log[log.Length - 1] = $"{where}: FU {Tons(_waypoint.fuelUsed)} (p)\n\tFOB {Tons(data.kgOnBoard)} (a) [{diff:+#.0#;-#.0#;=}] {Tons(_waypoint.planFOB)} (p) {Tons(_waypoint.minFOB)} (m)";
+                var newLine = $"{where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.0;-#.0;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
+                printer.Print(newLine, 35);
+                log[log.Length - 1] = newLine;
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
         }
 
         private static String Tons(Double kg)
         {
-            return $"{kg / 1000.0:F2}"; //:0.00
+            return $"{kg / 1000.0:F1}"; //:0.0
         }
     };
 
@@ -90,13 +94,13 @@ namespace Controlzmo.Systems.PilotMonitoring
                 else
                     return;
             var current = new GeoCoordinate(data.latitude, data.longitude);
-Console.Error.WriteLine($"**---** current {current}");
+//Console.Error.WriteLine($"**---** current {current}");
             var firstPassed = (OfpWaypoint?)null;
             foreach (var entry in waypointProgress)
             {
                 var distance = current.GetDistanceTo(entry.Key.position) / 1852;
                 var isClosing = distance < entry.Value.distance;
-Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
+//Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
                 if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 3.5)
                     firstPassed = entry.Key;
                 entry.Value.isClosing = isClosing;
