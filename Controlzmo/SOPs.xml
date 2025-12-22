@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
+	<!-- Useful character entities:
+	  gt ge lt le
+	  pm ddagger
+	  uarr udarr varr darr
+	  check cross
+	-->
 	<Airline callsign="alpaca|new[- ]?sky"> <!-- All the Newsky together -->
-		<Text type=".*">Departure within ±15 minutes of booked</Text>
+		<Text type=".*">Departure within &pm;15 minutes of booked</Text>
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Positive v/s at touchdown treated as crash!</Text>
 		<Text type=".*">Maximum speed 50kts when vacating</Text>
@@ -11,10 +17,11 @@
 	</Airline>
 	<Airline callsign="american">
 		<Text type=".*">Preparation 10m to 24H, air time counts</Text>
-		<Text type=".*">Departure/arrival within ±15m of estimate rewarded</Text>
-		<Text type=".*">30s between; warm up; cool down; OETA(#2, 5s)</Text>
+		<Text type=".*">&uarr;Departure/arrival within ±15m of estimate</Text>
+		<Text type=".*">30s between; warm up</Text>
+		<Text type=".*">Cool down; OETA(#2), 5s between</Text>
 		<Text type=".*">Points for step climb</Text>
-		<Text type=".*">Must have fuel ≥ 1T on landing</Text>
+		<Text type=".*">Must have fuel &ge;1T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
 		<Text type=".*">Pauses in flight of &gt;25% of flight → invalidated</Text>
 		<Text type=".*">-50 points 500fpm; Invalidated 700fpm</Text>
@@ -22,7 +29,7 @@
 	<Airline callsign="^(?:cathay|air[- ]?china|shenzhen[- ]air)$"> <!-- Virtual Air China -->
 		<Text type=".*">Perparation 3m-3h; block time counts</Text>
 		<Text type=".*">30s between starts</Text>
-		<Text type=".*">Must have fuel ≥ 800kg on landing</Text>
+		<Text type=".*">Must have fuel &ge;800kg on landing</Text>
 		<Text type=".*">Rejected 500fpm</Text>
 	</Airline>
 	<Airline callsign="all[- ]nippon|air[ -]peach"> <!-- vANA -->
@@ -38,9 +45,9 @@
 		<Text type=".*">OETD, 4m between; MTOW checked</Text>
 		<Text type=".*">Stabilised approach, MLW checked</Text>
 		<Text type=".*">Cool down; OETA, 1m between</Text>
-		<Text type=".*">Points for step climb</Text>
+		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
-		<Text type=".*">Pushback fuel -500 to +1500kg of planned</Text>
+		<Text type=".*">Pushback fuel -500/+1500kg of planned</Text>
 		<Text type=".*">Rejected &gt;1.8G</Text>
 	</Airline>
 	<Airline callsign="air[- ]?berlin|fly[- ]?niki|jet[- ]?set|meridiana|sabena"> <!-- Dan Air Virtual -->
