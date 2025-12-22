@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE test [
+	<!ENTITY pm "&#177;">
+	<!ENTITY uarr "&#8593;">
+	<!ENTITY udarr "&#8645;">
+	<!ENTITY darr "&#8595;">
+	<!ENTITY ge "&#x2265;">
+	<!ENTITY le "&#x2264;">
+]>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
 	<!-- Useful character entities:
@@ -6,6 +14,7 @@
 	  pm ddagger
 	  uarr udarr varr darr
 	  check cross
+	  See https://en.wikipedia.org/wiki/List_of_XML_and_HTML_character_entity_references
 	-->
 	<Airline callsign="alpaca|new[- ]?sky"> <!-- All the Newsky together -->
 		<Text type=".*">Departure within &pm;15 minutes of booked</Text>
