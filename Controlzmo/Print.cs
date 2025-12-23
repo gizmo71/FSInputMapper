@@ -16,7 +16,6 @@ namespace Controlzmo
     [RequiredArgsConstructor]
     public partial class Print : ISettable<string>
     {
-        private readonly ILogger<Print> _log;
         private readonly Printer printer;
 
         public string GetId() => "printText";
@@ -31,7 +30,7 @@ namespace Controlzmo
     [RequiredArgsConstructor]
     public partial class Printer
     {
-        private readonly ILogger<Printer> _log;
+        //private readonly ILogger<Printer> _log;
 
         public void Print(string value, int columns)
         {
@@ -42,7 +41,7 @@ namespace Controlzmo
             doc.PrinterSettings.PrinterName = "POS58 Printer"; // or "Microsoft Print to PDF"
             doc.PrintPage += (sender, printEvent) => {
                 var mmCharWidth = 48f / columns;
-                var font = new Font("Arial", mmCharWidth * 2f, GraphicsUnit.Millimeter);
+                var font = new Font("Arial", mmCharWidth * 1.7f, GraphicsUnit.Millimeter);
                     printEvent.Graphics?.DrawString(value, font, Brushes.Black, 0, 0);
             };
             doc.Print();
