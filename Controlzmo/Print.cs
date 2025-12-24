@@ -1,6 +1,5 @@
 ﻿using Controlzmo.Hubs;
 using Lombok.NET;
-using Microsoft.Extensions.Logging;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
