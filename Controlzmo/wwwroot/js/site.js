@@ -66,16 +66,6 @@ function vjoyClick() {
     connection.invoke('SetInSim', 'vJoyClick', id).catch(errorHandler);
 }
 
-function speak(text) {
-    // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis
-    var utterance = new SpeechSynthesisUtterance(text);
-    //utterance.pitch = 1; // 0 to 2, with 1 as default
-    utterance.rate = 1.25; // 0.1 to 10, with 1 as default
-    window.speechSynthesis.speak(utterance);
-}
-
-connection.on("Speak", speak);
-
 function linkSendStyles() {
     $(".sendBoolean").on("change", function (event) {
         connection.invoke("SetInSim", event.target.id, event.target.checked).catch(errorHandler);
@@ -112,13 +102,6 @@ function reconnect() {
 }
 
 startSignalR();
-
-function testCallout() {
-    new NoSleep().enable();
-    connection.invoke("SetInSim", 'resetMcdu', true);
-    //recognition.start();
-    speak('Monitoring');
-}
 
 connection.on("UpdateLandingRate", function (fpm, agl, colour) {
     $("#landingRate").prop('value', fpm == null ? 'n/a' : fpm);
