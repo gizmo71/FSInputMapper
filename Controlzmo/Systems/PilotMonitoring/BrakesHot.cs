@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -15,22 +13,17 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 areBrakesHot;
     };
 
-    [Component]
-    public class BrakesHot : DataListener<BrakesHotData>, IOnSimStarted
+    [Component, RequiredArgsConstructor]
+    public partial class BrakesHot : DataListener<BrakesHotData>, IOnSimStarted
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public BrakesHot(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
+        private readonly Speech speech;
 
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
         public override void Process(ExtendedSimConnect simConnect, BrakesHotData data)
         {
             if (data.areBrakesHot == 1)
-                hubContext.Clients.All.Speak("Brakes hot");
+                speech.Say("Brakes hot");
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿using Controlzmo.Hubs;
-using Controlzmo.Systems.Atc;
+﻿using Controlzmo.Systems.Atc;
 using Controlzmo.Systems.EfisControlPanel;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -47,7 +45,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     [RequiredArgsConstructor]
     public partial class LandingListener : DataListener<LandingData>, IOnGroundHandler
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
         private readonly EngineCooldownListener cooldown;
 
         private bool? wasDecel = null;
@@ -77,7 +75,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 bool isDecel = (data.autobrakesLevel == 0 || data.decelLight != 0) && data.accelerationZ <= -1.5;
                 if (isDecel)
                 {
-                    hubContext.Clients.All.Speak("Decell!");
+                    speech.Say("Decell!");
                     wasDecel = true;
                 }
             }
@@ -88,7 +86,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (wasBelow70 == false && data.kias < 70)
             {
-                hubContext.Clients.All.Speak("seventy knots");
+                speech.Say("seventy knots");
                 wasBelow70 = true;
             }
 
@@ -107,7 +105,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 bool isSpoilers = data.spoilersLeft > MIN_SPOILER_DEPLOYMENT && data.spoilersRight > MIN_SPOILER_DEPLOYMENT;
                 if (isSpoilers)
                 {
-                    hubContext.Clients.All.Speak("Spoilers!");
+                    speech.Say("Spoilers!");
                     wasSpoilers = true;
                 }
             }
@@ -122,7 +120,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (wasRevGreen == null && data.kias >= 50) wasRevGreen = false;
             if (wasRevGreen == false && data.rev1deployed == 1 && data.fadec1power == 1 && data.rev2deployed == 1 && data.fadec2power == 1)
             {
-                hubContext.Clients.All.Speak("Rev Green");
+                speech.Say("Rev Green");
                 wasRevGreen = true;
             }
         }

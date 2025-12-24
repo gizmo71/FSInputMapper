@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -40,21 +37,16 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 feetPerMinute;
     };
 
-    [Component]
-    public class PositiveClimbListener : DataListener<ClimbRateData>
+    [Component, RequiredArgsConstructor]
+    public partial class PositiveClimbListener : DataListener<ClimbRateData>
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-
-        public PositiveClimbListener(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
+        private readonly Speech speech;
 
         public override void Process(ExtendedSimConnect simConnect, ClimbRateData data)
         {
-            if (data.feetPerMinute > 500)
+            if (data.feetPerMinute > 450)
             {
-                hubContext.Clients.All.Speak("positive climb");
+                speech.Say("positive climb");
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             }
         }

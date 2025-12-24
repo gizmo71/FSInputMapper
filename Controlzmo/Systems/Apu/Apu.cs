@@ -2,8 +2,8 @@
 using Controlzmo.Serial;
 using Controlzmo.Systems.Controls.Engine;
 using Controlzmo.Systems.JetBridge;
+using Controlzmo.Systems.PilotMonitoring;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -109,7 +109,7 @@ namespace Controlzmo.Systems.Apu
     public partial class ApuAvail : DataListener<ApuAvailData>, IRequestDataOnOpen
     {
         private readonly SerialPico serial;
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
         private readonly StartApuEvent startApu;
         private readonly StopApuEvent stopApu;
         private readonly FuelSystemPumpOnEvent fuelPumpOn;
@@ -130,7 +130,7 @@ namespace Controlzmo.Systems.Apu
 
 //TODO: might not need this hack post-SU3
             if (simConnect.IsHorizonLvfr) {
-                if (_isAvail) hubContext.Clients.All.Speak("Check engine masters");
+                if (_isAvail) speech.Say("Check engine masters");
                 simConnect.SendEvent(_isAvail ? fuelValveOpen : fuelValveClose, 8);
                 simConnect.SendEvent(_isAvail ? fuelPumpOn : fuelPumpOff, 7);
                 simConnect.SendEvent(_isAvail ? startApu : stopApu, 1);

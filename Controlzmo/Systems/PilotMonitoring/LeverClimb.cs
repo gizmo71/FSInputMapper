@@ -1,6 +1,4 @@
-﻿using Controlzmo.Hubs;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -25,17 +23,11 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Double accZ; // Or L:A32NX_FAC_1_SPEED_TREND in knots?
     };
 
-    [Component]
-    public class LeverClimb : DataListener<AutothrustModeMessageData>, IOnSimStarted
+    [Component, RequiredArgsConstructor]
+    public partial class LeverClimb : DataListener<AutothrustModeMessageData>, IOnSimStarted
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
-        private readonly ILogger logging;
-
-        public LeverClimb(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            logging = serviceProvider.GetRequiredService<ILogger<LeverClimb>>();
-        }
+        private readonly Speech speech;
+        private readonly ILogger<LeverClimb> logging;
 
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.SECOND);
 
@@ -54,7 +46,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 else if (data.now > callAfter && (!wantPositiveSpeedTrend || data.accZ > 1))
                 {
                     callAfter = Double.PositiveInfinity;
-                    hubContext.Clients.All.Speak("Lever climb?");
+                    speech.Say("Lever climb?");
                 }
             }
             else

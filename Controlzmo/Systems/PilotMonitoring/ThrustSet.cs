@@ -1,7 +1,4 @@
-﻿using Controlzmo.Hubs;
-using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -25,11 +22,10 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 autothrustMode;
     };
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class ThrustSetListener : DataListener<ThrustSetData>, IOnGroundHandler
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
 
         public void OnGroundHandler(ExtendedSimConnect simConnect, bool isOnGround)
         {
@@ -44,7 +40,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             {
                 if (!isCalled && IsSet(data.engine1N1, data.tla1) && IsSet(data.engine2N1, data.tla2))
                 {
-                    hubContext.Clients.All.Speak($"thrust set");
+                    speech.Say($"thrust set");
                     isCalled = true;
                 }
             }

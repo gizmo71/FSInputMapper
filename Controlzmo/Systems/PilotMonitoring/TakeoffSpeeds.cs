@@ -68,6 +68,7 @@ namespace Controlzmo.Systems.PilotMonitoring
     public partial class TakeOffListener : DataListener<TakeOffData>, IOnGroundHandler
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
         private readonly ToSpeedV1 v1Setter;
         private readonly ToSpeedVr vrSetter;
         private readonly ToSpeedV2 v2Setter;
@@ -118,7 +119,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (wasAbove == false && calledSpeed > 0 && actualSpeed >= (calledSpeed - offset))
             {
-                hubContext.Clients.All.Speak(call);
+                speech.Say(call);
                 wasAbove = true;
                 return true;
             }

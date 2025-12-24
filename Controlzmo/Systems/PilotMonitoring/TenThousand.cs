@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 
@@ -16,17 +14,12 @@ namespace Controlzmo.Systems.PilotMonitoring
         public Int32 feetIndicated;
     };
 
-    [Component]
-    public class TenThousand : DataListener<TenThousandData>, IRequestDataOnOpen
+    [Component, RequiredArgsConstructor]
+    public partial class TenThousand : DataListener<TenThousandData>, IRequestDataOnOpen
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
 
         Int32? previous = null;
-
-        public TenThousand(IServiceProvider serviceProvider)
-        {
-            hubContext = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-        }
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
@@ -37,7 +30,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 bool isAbove = data.feetIndicated > 10000;
                 bool wasAbove = previous > 10000;
                 if (isAbove != wasAbove)
-                    hubContext.Clients.All.Speak("ten thousand");
+                    speech.Say("ten thousand");
             }
             previous = data.feetIndicated;
         }

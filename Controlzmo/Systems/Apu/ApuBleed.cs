@@ -1,7 +1,6 @@
-﻿using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
+﻿using Controlzmo.Systems.JetBridge;
+using Controlzmo.Systems.PilotMonitoring;
 using Lombok.NET;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -34,7 +33,7 @@ namespace Controlzmo.Systems.Apu
     [Component, RequiredArgsConstructor]
     public partial class ApuBleedMonitor : DataListener<ApuBleedData>, IOnSimStarted
     {
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hubContext;
+        private readonly Speech speech;
         private readonly JetBridgeSender sender;
         private readonly ApuMasterOn master;
         private readonly ApuAvail avail;
@@ -86,7 +85,7 @@ if (simConnect.IsHorizonLvfr) simConnect.SendEvent(apuBleedSourceSet, isDemanded
                 lvar = "INI_APU_BLEED_BUTTON";
             if (lvar != null)
             {
-                hubContext.Clients.All.Speak("A-P-U bleed coming " + (isDemanded ? "on" : "off"));
+                speech.Say("A-P-U bleed coming " + (isDemanded ? "on" : "off"));
                 var value = isDemanded ? 1 : 0;
                 sender.Execute(simConnect, $"{value} (>L:{lvar})");
             }
