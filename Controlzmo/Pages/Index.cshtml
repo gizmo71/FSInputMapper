@@ -6,10 +6,6 @@
 <div id="tabs">
     <ul class="tab-menu">
         <li><a href="#tabs-efis-radar-atc-radio">EFIS, Radar, Radio</a></li>
-<!--
-        <li>&mdash;</li>
-        <li><a href="#tabs-mcdu">MCDU</a></li>
--->
         <li>&mdash;</li>
         <li><a href="#tabs-sops">SOP/Log</a></li>
         <li>&mdash;</li>
@@ -194,7 +190,6 @@
             </tr>
         </table>
     </div>
-    <!-- iframe id="tabs-mcdu" src="mcdu.html" style="width: 100%; height: 525px;">MCDU</iframe -->
     <div id="tabs-sops">
         <div style="float: right;" class="tableCaption">
             <span onclick="$('#gsxPushback').hide(); $('#fuelLog').hide(); $('#sops').show();">SOPs</span>
@@ -243,7 +238,6 @@ F5/F6 remove/insert (before current) waypoint
         </div>
         <input type="button" id="doNotSleep" value="Do Not Sleep" onClick="new NoSleep().enable()" />
         <input type="button" id="reconnect" value="Reconnect" onClick="reconnect()" />
-        <!-- input type="button" id="remcdu" value="Reset MCDU page" onClick="document.getElementById('tabs-mcdu').src = 'mcdu.html'" / -->
         <div id="landingRateWidgit" style="margin: 10px;">
             Rate <input id="landingRate" size="10" /> AGL <input id="landingAgl" size="10" />
         </div>
