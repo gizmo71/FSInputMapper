@@ -24,27 +24,6 @@
       "files": [
         "NoSleep.js"
       ]
-    },
-    {
-      "library": "react@19.1.1",
-      "destination": "wwwroot/js/",
-      "files": [
-        "cjs/react.development.js"
-      ]
-    },
-    {
-      "library": "react-dom@19.1.1",
-      "destination": "wwwroot/js/",
-      "files": [
-        "cjs/react-dom.development.js"
-      ]
-    },
-    {
-      "library": "babel-standalone@7.28.4",
-      "destination": "wwwroot/js/",
-      "files": [
-        "babel.min.js"
-      ]
     }
   ]
 }
