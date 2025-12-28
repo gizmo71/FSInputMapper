@@ -1,0 +1,25 @@
+﻿@page "/overhead"
+@{
+    ViewData["Title"] = "Overhead";
+}
+
+<div id="root"></div>
+
+<script src="~/js/cjs/react.development.js"></script>
+<script src="~/js/cjs/react-dom.development.js"></script>
+<script src="~/js/babel.min.js"></script>
+
+<script type="text/babel">
+    console.log('da start');
+    class Hello extends React.Component{
+      render() {
+        return <p>Hello {this.props.name}</p>;
+      };
+    }
+    console.log('da middle');
+    ReactDOM.render(
+      <Hello name='Overhead World'/>,
+      document.getElementById('root'),
+    );
+    console.log('da end');
+</script>
