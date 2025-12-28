@@ -52,12 +52,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ContentWithTargetPath Include="$(ProjectDir)\..\..\WASimCommander_SDK-v1.0.0.7-beta3\lib\MSVS-2019\managed\\Ijwhost.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Ijwhost.dll</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-  <ItemGroup>
     <None Update="client_conf.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
