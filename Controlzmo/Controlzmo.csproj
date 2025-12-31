@@ -31,6 +31,10 @@
     <NoWarn>1701;1702;CA1416</NoWarn>
   </PropertyGroup>
 
+  <Target Name="PreBuild" AfterTargets="PreBuildEvent">
+    <Exec WorkingDirectory="$(ProjectDir)react" Command="npm run build" />
+  </Target>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)..\SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y" />
   </Target>
