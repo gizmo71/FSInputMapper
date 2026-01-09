@@ -60,19 +60,19 @@ namespace Controlzmo.Systems.Controls.Engine
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class LeftEngineMaster : IButtonCallback<TcaAirbusQuadrant>
+    public partial class LeftEngineMaster : IButtonCallback<UrsaMinorThrottle>
     {
         private readonly EnginerMasterAction action;
-        public int GetButton() => TcaAirbusQuadrant.BUTTON_LEFT_ENGINE_MASTER;
+        public int GetButton() => UrsaMinorThrottle.BUTTON_ENG_MASTER_LEFT_ON;
         public void OnPress(ExtendedSimConnect sc) => action.perform(sc, true, true);
         public void OnRelease(ExtendedSimConnect sc) => action.perform(sc, true, false);
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class RightEngineMaster : IButtonCallback<TcaAirbusQuadrant>
+    public partial class RightEngineMaster : IButtonCallback<UrsaMinorThrottle>
     {
         private readonly EnginerMasterAction action;
-        public int GetButton() => TcaAirbusQuadrant.BUTTON_RIGHT_ENGINE_MASTER;
+        public int GetButton() => UrsaMinorThrottle.BUTTON_ENG_MASTER_RIGHT_ON;
         public void OnPress(ExtendedSimConnect sc) => action.perform(sc, false, true);
         public void OnRelease(ExtendedSimConnect sc) => action.perform(sc, false, false);
     }

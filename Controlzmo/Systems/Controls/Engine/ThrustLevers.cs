@@ -188,7 +188,7 @@ Console.WriteLine($"Normalised {normalised}");
     }
 
     [RequiredArgsConstructor]
-    public abstract partial class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
+    public abstract partial class AbstractThrustLever : IAxisCallback<UrsaMinorThrottle>
     {
         private readonly SetThrustLevers setTLs;
         private readonly int thrustLeverNumber;
@@ -196,42 +196,28 @@ Console.WriteLine($"Normalised {normalised}");
         internal int LeverNumber {  get => thrustLeverNumber; }
 
         abstract public int GetAxis();
-        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, @new);
+        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, 1 - @new);
 
-        internal abstract double StartRevIdle();
-        internal abstract double StartIdle();
-        internal abstract double EndIdle();
-        internal abstract double StartClimb();
-        internal abstract double EndClimb();
-        internal abstract double StartFlex();
-        internal abstract double EndFlex();
+        internal virtual double StartRevIdle() => 0.185;
+        internal virtual double StartIdle() => 0.285;
+        internal virtual double EndIdle() => 0.310;
+        internal virtual double StartClimb() => 0.68;
+        internal virtual double EndClimb() => 0.71;
+        internal virtual double StartFlex() => 0.84;
+        internal virtual double EndFlex() => 0.865;
     }
 
     [Component, RequiredArgsConstructor]
     public partial class LeftThrustLever : AbstractThrustLever
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
-        public override int GetAxis() => TcaAirbusQuadrant.AXIS_LEFT_THRUST;
-        internal override double StartRevIdle() => 0.17;
-        internal override double StartIdle() => 0.235;
-        internal override double EndIdle() => 0.305;
-        internal override double StartClimb() => 0.565;
-        internal override double EndClimb() => 0.645;
-        internal override double StartFlex() => 0.7;
-        internal override double EndFlex() => 0.83;
+        public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
     }
 
     [Component, RequiredArgsConstructor]
     public partial class RightThrustLever : AbstractThrustLever
     {
         public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
-        public override int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
-        internal override double StartRevIdle() => 0.17;
-        internal override double StartIdle() => 0.215;
-        internal override double EndIdle() => 0.295;
-        internal override double StartClimb() => 0.54;
-        internal override double EndClimb() => 0.585;
-        internal override double StartFlex() => 0.66;
-        internal override double EndFlex() => 0.8;
+        public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
     }
 }

@@ -34,7 +34,8 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_THRUST_IDLE_RIGHT = 20;
         public static readonly int BUTTON_THRUST_REV_IDLE_RIGHT = 21;
         public static readonly int BUTTON_THRUST_REV_MAX_RIGHT = 22;
-        // 23?
+        /// <summary>Yep, you can press the mode selector for a hidden button!</summary>
+        public static readonly int BUTTON_MODE_PRESS = 23;
         public static readonly int BUTTON_RUDDER_TRIM_RESET = 24;
         public static readonly int BUTTON_RUDDER_TRIM_LEFT = 25;
         public static readonly int BUTTON_RUDDER_TRIM_CENTRE = 26;
@@ -59,9 +60,9 @@ namespace Controlzmo.GameControllers
         public static readonly int BUTTON_THRUST_REV_RANGE_RIGHT = 40;
 
         /// <summary>0 is max reverse, 1 is TOGA</summary>
-        public static readonly int AXIS_THRUST_1 = 3;
+        public static readonly int AXIS_THRUST_LEFT = 3;
         /// <summary>Same range as <see cref="AXIS_THRUST_1"/></summary>
-        public static readonly int AXIS_THURST_2 = 4;
+        public static readonly int AXIS_THRUST_RIGHT = 4;
         /// <summary>0 is retracted, 1 is full</summary>
         public static readonly int AXIS_SPEEDBRAKES = 6;
         /// <summary>0 is retracted, ~0.3 is 1, 0.5 is 2, 0.75 is 3, 1 is full</summary>
@@ -69,7 +70,7 @@ namespace Controlzmo.GameControllers
 
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-            for (int i = 0; i < axesOld.Length; ++i)
+            /*for (int i = 0; i < axesOld.Length; ++i)
                 if (axesOld[i] != axesNew[i])
                     Console.Error.WriteLine($"UMT: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
             for (int i = 0; i < this.buttonsOld.Length; ++i)
@@ -77,7 +78,7 @@ namespace Controlzmo.GameControllers
                     Console.Error.WriteLine($"UMT: button {i} now {buttonsNew[i]}");
             for (int i = 0; i < this.switchesOld.Length; ++i)
                 if (switchesOld[i] != switchesNew[i])
-                    Console.Error.WriteLine($"UMT: switch {i} now {switchesNew[i]}");
+                    Console.Error.WriteLine($"UMT: switch {i} now {switchesNew[i]}");*/
         }
     }
 }
