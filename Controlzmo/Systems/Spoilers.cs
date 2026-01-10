@@ -51,7 +51,7 @@ namespace Controlzmo.Systems.Spoilers
 
         internal void SetSpoilerHandleEvent(ExtendedSimConnect simConnect, double position)
         {
-            this.position = 1 + 2 * position;
+            Interlocked.Exchange(ref this.position, 1 + 2 * position);
             sender.Execute(simConnect, Execute);
         }
 
