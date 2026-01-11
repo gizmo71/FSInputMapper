@@ -200,8 +200,8 @@ Console.WriteLine($"Normalised {normalised}");
 
         internal virtual double StartRevIdle() => 0.185;
         internal virtual double StartIdle() => 0.285;
-        internal virtual double EndIdle() => 0.310;
-        internal virtual double StartClimb() => 0.68;
+        internal abstract double EndIdle();
+        internal virtual double StartClimb() => 0.67;
         internal virtual double EndClimb() => 0.71;
         internal virtual double StartFlex() => 0.84;
         internal virtual double EndFlex() => 0.865;
@@ -212,6 +212,8 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
+
+        internal override double EndIdle() => 0.33;
     }
 
     [Component, RequiredArgsConstructor]
@@ -219,5 +221,7 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
+
+        internal override double EndIdle() => 0.31;
     }
 }
