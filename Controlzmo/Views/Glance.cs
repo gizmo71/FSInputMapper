@@ -35,7 +35,7 @@ namespace Controlzmo.Views
             }
             if (@new == current)
                 return;
-            if (cameraState.Current == CameraState.COCKPIT)
+            if (cameraState.Current == CameraState.COCKPIT || cameraState.Current == CameraState.UNKNOWN)
             {
                 switch (@new)
                 {
