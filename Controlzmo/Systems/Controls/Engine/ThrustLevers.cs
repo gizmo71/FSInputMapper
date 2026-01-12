@@ -118,13 +118,18 @@ Console.WriteLine($"Normalised {normalised}");
             double outputLow;
             double outputHigh;
             var position = "?";
-            if (hardware < tl.StartRevIdle())
+            if (hardware < tl.EndRevFull())
             {
-                inputLow = 0;
+                outputLow = outputHigh =  OUTPUT_MAX_REVERSE;
+                position = "reverse max";
+            }
+            else if (hardware < tl.StartRevIdle())
+            {
+                inputLow = tl.EndRevFull();
                 inputHigh = tl.StartRevIdle();
                 outputLow = OUTPUT_MAX_REVERSE;
                 outputHigh = OUTPUT_IDLE_REVERSE;
-                position = "reverse beyond idle";
+                position = "manual reverse";
             }
             else if (hardware < tl.StartIdle())
             {
@@ -197,9 +202,10 @@ Console.WriteLine($"Normalised {normalised}");
 
         abstract public int GetAxis();
         public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, 1 - @new);
-
+// Right hand lever appears to not start to come out of full reverse until left lever is at about 0.05
+        internal abstract double EndRevFull();
         internal virtual double StartRevIdle() => 0.185;
-        internal virtual double StartIdle() => 0.285;
+        internal abstract double StartIdle();
         internal abstract double EndIdle();
         internal virtual double StartClimb() => 0.67;
         internal virtual double EndClimb() => 0.71;
@@ -212,8 +218,9 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
-
-        internal override double EndIdle() => 0.33;
+        internal override double EndRevFull() => 0.05;
+        internal override double StartIdle() => 0.285;
+        internal override double EndIdle() => 0.325;
     }
 
     [Component, RequiredArgsConstructor]
@@ -221,7 +228,8 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
-
+        internal override double EndRevFull() => 0.001;
+        internal override double StartIdle() => 0.275;
         internal override double EndIdle() => 0.31;
     }
 }
