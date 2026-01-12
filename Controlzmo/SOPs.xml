@@ -28,7 +28,7 @@
 		<Text type=".*">Preparation 10m to 24H, air time counts</Text>
 		<Text type=".*">&uarr;Departure/arrival within ±15m of estimate</Text>
 		<Text type=".*">30s between; warm up</Text>
-		<Text type=".*">Cool down; OETA(#2, 5s)</Text>
+		<Text type=".*">Cool down; OETA (#2, 5s)</Text>
 		<Text type=".*">Points for step climb</Text>
 		<Text type=".*">Must have fuel &ge;1T on landing</Text>
 		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
@@ -74,8 +74,8 @@
 	<Airline callsign="^eurowings|ocean|black[- ]?pearl$"> <!-- vEWG -->
 		<Text type=".*">Preparation 15m-10h, air time counts</Text>
 		<Text type=".*">Start #1 first, 5s between; warm up</Text>
-		<Text type="A.[^3].">&uarr;Departure/arrival within &pm;30m of scheduled</Text>
-		<Text type="A.3.">&uarr;Departure/arrival within &pm;15m of scheduled</Text>
+		<Text type="A.[^3].">&uarr;Departure/arrival within &pm;30m</Text>
+		<Text type="A.3.">&uarr;Departure/arrival within &pm;15m</Text>
 		<Text type="A.[^3].">OETA (10s)</Text>
 		<Text type="A.3.">OETA(#2, 3m)</Text>
 		<Text type=".*">Cool down</Text>
@@ -94,7 +94,7 @@
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
-		<Text type=".*">5s between starts; OETA(#2, 1m)</Text>
+		<Text type=".*">5s between starts; OETA (#2, 1m)</Text>
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">Review 2.5G; rejected 3.5G</Text>
 	</Airline>
@@ -108,7 +108,7 @@
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
 		<Text type=".*">45s between starts; OETD (3m)</Text>
-		<Text type=".*">&uarr;Departure/arrival time ±15m</Text>
+		<Text type=".*">&uarr;Departure/arrival time &pm;15m</Text>
 		<Text type=".*">&darr;Above MTOW/MLW</Text>
 		<Text type=".*">Cool down; OETA (3m)</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
@@ -141,7 +141,7 @@
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Start #1 first, 1m between; OETD (1m); warm up</Text>
-		<Text type=".*">OETA(#1, 1m); cool down</Text>
+		<Text type=".*">OETA (#1, 1m); cool down</Text>
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
@@ -154,8 +154,12 @@
 	</Airline>
 	<Airline callsign="shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type=".*">Preparation 20-90 minutes, air time counts</Text>
-		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
+		<Text type="A32[01]|A21N">&uarr; Departure &pm;15m</Text>
 		<Text type=".*">10s between starts</Text>
+		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
+		<Text type="A32[01]|A21N">1000'/500' stability gates; MLW, FINRES</Text>
+		<Text type="A32[01]|A21N">&darr; Arrival &pm;15m</Text>
+		<Text type="A32[01]|A21N">OETA (#2, 3m)</Text>
 		<Text type=".*">Must have 1.5T&le;fuel&le;10T on landing</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
 	</Airline>
