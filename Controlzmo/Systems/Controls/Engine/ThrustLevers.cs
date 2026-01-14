@@ -106,6 +106,7 @@ Console.WriteLine($"Normalised {normalised}");
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
 //TODO: ini 330 seems different, and reversers don't work.
+//TODO: the Fenix needs different calibration by default, how did we not realise this?! Need to redo it...
             const double OUTPUT_MAX_REVERSE = -1;
             const double OUTPUT_IDLE_REVERSE = -0.8;
             const double OUTPUT_IDLE = -0.5;
@@ -204,7 +205,7 @@ Console.WriteLine($"Normalised {normalised}");
         public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, 1 - @new);
 // Right hand lever appears to not start to come out of full reverse until left lever is at about 0.05
         internal abstract double EndRevFull();
-        internal virtual double StartRevIdle() => 0.185;
+        internal abstract double StartRevIdle();
         internal abstract double StartIdle();
         internal abstract double EndIdle();
         internal virtual double StartClimb() => 0.67;
@@ -218,7 +219,8 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
-        internal override double EndRevFull() => 0.05;
+        internal override double EndRevFull() => 0.06;
+        internal override double StartRevIdle() => 0.179;
         internal override double StartIdle() => 0.285;
         internal override double EndIdle() => 0.325;
     }
@@ -229,6 +231,7 @@ Console.WriteLine($"Normalised {normalised}");
         public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
         internal override double EndRevFull() => 0.001;
+        internal override double StartRevIdle() => 0.130;
         internal override double StartIdle() => 0.275;
         internal override double EndIdle() => 0.31;
     }
