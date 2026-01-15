@@ -105,8 +105,8 @@ Console.WriteLine($"Normalised {normalised}");
 //TODO: merge above and below
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
-//TODO: ini 330 seems different, and reversers don't work.
-//TODO: the Fenix needs different calibration by default, how did we not realise this?! Need to redo it...
+            // Note that the Fenix doesn't do reverse on axis without calibration.
+            // If we want to support that, we need a more hybrid approach.
             const double OUTPUT_MAX_REVERSE = -1;
             const double OUTPUT_IDLE_REVERSE = -0.8;
             const double OUTPUT_IDLE = -0.5;
