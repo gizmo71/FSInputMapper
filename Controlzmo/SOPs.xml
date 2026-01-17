@@ -226,6 +226,7 @@
 		<Text type="A2[01]N">Warm up (5m), cool down (5m)</Text>
 		<Text type="A3(19|20|21)">Warm up, cool down</Text>
 		<Text type=".*">Pauses in flight &gt;60m (cumulative) require PIREP comment</Text>
+		<Text type=".*">2000'/1000' stability gates</Text>
 		<Text type=".*">Flight time &gt;25%/30 minutes of scheduled or average requires review</Text>
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
