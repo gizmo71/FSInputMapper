@@ -105,7 +105,8 @@ Console.WriteLine($"Normalised {normalised}");
 //TODO: merge above and below
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
-//TODO: ini 330 seems different, and reversers don't work.
+            // Note that the Fenix doesn't do reverse on axis without calibration.
+            // If we want to support that, we need a more hybrid approach.
             const double OUTPUT_MAX_REVERSE = -1;
             const double OUTPUT_IDLE_REVERSE = -0.8;
             const double OUTPUT_IDLE = -0.5;
@@ -118,13 +119,18 @@ Console.WriteLine($"Normalised {normalised}");
             double outputLow;
             double outputHigh;
             var position = "?";
-            if (hardware < tl.StartRevIdle())
+            if (hardware < tl.EndRevFull())
             {
-                inputLow = 0;
+                outputLow = outputHigh =  OUTPUT_MAX_REVERSE;
+                position = "reverse max";
+            }
+            else if (hardware < tl.StartRevIdle())
+            {
+                inputLow = tl.EndRevFull();
                 inputHigh = tl.StartRevIdle();
                 outputLow = OUTPUT_MAX_REVERSE;
                 outputHigh = OUTPUT_IDLE_REVERSE;
-                position = "reverse beyond idle";
+                position = "manual reverse";
             }
             else if (hardware < tl.StartIdle())
             {
@@ -188,7 +194,7 @@ Console.WriteLine($"Normalised {normalised}");
     }
 
     [RequiredArgsConstructor]
-    public abstract partial class AbstractThrustLever : IAxisCallback<TcaAirbusQuadrant>
+    public abstract partial class AbstractThrustLever : IAxisCallback<UrsaMinorThrottle>
     {
         private readonly SetThrustLevers setTLs;
         private readonly int thrustLeverNumber;
@@ -196,42 +202,37 @@ Console.WriteLine($"Normalised {normalised}");
         internal int LeverNumber {  get => thrustLeverNumber; }
 
         abstract public int GetAxis();
-        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, @new);
-
+        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, 1 - @new);
+// Right hand lever appears to not start to come out of full reverse until left lever is at about 0.05
+        internal abstract double EndRevFull();
         internal abstract double StartRevIdle();
         internal abstract double StartIdle();
         internal abstract double EndIdle();
-        internal abstract double StartClimb();
-        internal abstract double EndClimb();
-        internal abstract double StartFlex();
-        internal abstract double EndFlex();
+        internal virtual double StartClimb() => 0.67;
+        internal virtual double EndClimb() => 0.71;
+        internal virtual double StartFlex() => 0.84;
+        internal virtual double EndFlex() => 0.865;
     }
 
     [Component, RequiredArgsConstructor]
     public partial class LeftThrustLever : AbstractThrustLever
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
-        public override int GetAxis() => TcaAirbusQuadrant.AXIS_LEFT_THRUST;
-        internal override double StartRevIdle() => 0.17;
-        internal override double StartIdle() => 0.235;
-        internal override double EndIdle() => 0.305;
-        internal override double StartClimb() => 0.565;
-        internal override double EndClimb() => 0.645;
-        internal override double StartFlex() => 0.7;
-        internal override double EndFlex() => 0.83;
+        public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
+        internal override double EndRevFull() => 0.06;
+        internal override double StartRevIdle() => 0.179;
+        internal override double StartIdle() => 0.285;
+        internal override double EndIdle() => 0.325;
     }
 
     [Component, RequiredArgsConstructor]
     public partial class RightThrustLever : AbstractThrustLever
     {
         public RightThrustLever(SetThrustLevers setTLs) : base(setTLs, 2) { }
-        public override int GetAxis() => TcaAirbusQuadrant.AXIS_RIGHT_THRUST;
-        internal override double StartRevIdle() => 0.17;
-        internal override double StartIdle() => 0.215;
-        internal override double EndIdle() => 0.295;
-        internal override double StartClimb() => 0.54;
-        internal override double EndClimb() => 0.585;
-        internal override double StartFlex() => 0.66;
-        internal override double EndFlex() => 0.8;
+        public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
+        internal override double EndRevFull() => 0.001;
+        internal override double StartRevIdle() => 0.130;
+        internal override double StartIdle() => 0.275;
+        internal override double EndIdle() => 0.31;
     }
 }

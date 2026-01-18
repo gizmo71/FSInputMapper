@@ -1,26 +1,38 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
+using System;
+using System.Threading;
 
 namespace Controlzmo.Systems.Controls
 {
-    [Component] public class MoreFlapEvent : IEvent { public string SimEvent() => "FLAPS_INCR"; }
+    [Component] public class FlapsSetEvent : IEvent { public string SimEvent() => "AXIS_FLAPS_SET"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class MoreFlap : IButtonCallback<T16000mHotas>
+    public partial class MoreFlap : IAxisCallback<UrsaMinorThrottle>
     {
-        private readonly MoreFlapEvent _event;
-        public int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_DOWN;
-        public void OnPress(ExtendedSimConnect sc) => sc.SendEvent(_event);
-    }
+        private readonly FlapsSetEvent _event;
+        private readonly JetBridgeSender sender;
+        public int GetAxis() => UrsaMinorThrottle.AXIS_FLAPS;
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) {
+            if (sc.IsFenix)
+            {
+                Interlocked.Exchange(ref fenixPosition, @new);
+                sender.Execute(sc, Fenix);
+            }
+            else
+                sc.SendEvent(_event, (int)(@new * 32767 - 16383));
+        }
 
-    [Component] public class LessFlapEvent : IEvent { public string SimEvent() => "FLAPS_DECR"; }
-
-    [Component, RequiredArgsConstructor]
-    public partial class LessFlap : IButtonCallback<T16000mHotas>
-    {
-        private readonly LessFlapEvent _event;
-        public int GetButton() => T16000mHotas.BUTTON_BOTTOM_HAT_UP;
-        public void OnPress(ExtendedSimConnect sc) => sc.SendEvent(_event);
+        private const double NO_POSITION = -1;
+        private double fenixPosition = NO_POSITION;
+        private String? Fenix(ExtendedSimConnect _)
+        {
+            double required = Interlocked.Exchange(ref fenixPosition, NO_POSITION);
+            if (required == NO_POSITION) return null;
+            int raw = (int)((required + 0.1) * 4);
+            return $"{raw} (>L:S_FC_FLAPS)";
+        }
     }
 }

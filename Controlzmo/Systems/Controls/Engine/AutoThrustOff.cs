@@ -7,11 +7,11 @@ namespace Controlzmo.Systems.Autothrust
     [Component] public class AutoThrottleDisconnectEvent : IEvent { public string SimEvent() => "AUTO_THROTTLE_DISCONNECT"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class AutothrottleDisconnect : IButtonCallback<TcaAirbusQuadrant>
+    public partial class AutothrottleDisconnect : IButtonCallback<UrsaMinorThrottle>
     {
         private readonly AutoThrottleDisconnectEvent _event;
 
-        public int GetButton() => TcaAirbusQuadrant.BUTTON_RIGHT_INTUITIVE_DISCONNECT;
+        public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_RIGHT;
 
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {

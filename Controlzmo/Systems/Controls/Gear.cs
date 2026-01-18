@@ -14,13 +14,13 @@ namespace Controlzmo.Systems.Controls
         private readonly GearUpEvent _up;
         private readonly GearDownEvent _down;
 
-        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
+        public int GetAxis() => T16000mHotas.AXIS_THROTTLE;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new)
         {
-            if (@new < 0.25 && old >= 0.25)
+            if (@new > 0.75 && old <= 0.75)
                 sc.SendEvent(_down);
-            else if (@new > 0.75 && old <= 0.75)
+            else if (@new < 0.25 && old >= 0.25)
                 sc.SendEvent(_up);
         }
     }

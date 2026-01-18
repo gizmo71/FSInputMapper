@@ -27,13 +27,13 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component] public class ToggleAutothrustArmEvent : IEvent { public string SimEvent() => "AUTO_THROTTLE_ARM"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>, IButtonCallback<TcaAirbusQuadrant>
+    public partial class AutothrottleArmedDataListener : DataListener<AutothrottleArmedData>, IButtonCallback<UrsaMinorThrottle>
     {
         private readonly ToggleAutothrustArmEvent _event;
         private readonly ILogger<AutothrottleArmedDataListener> _logger;
         private readonly InputEvents inputEvents;
 
-        public int GetButton() => TcaAirbusQuadrant.BUTTON_LEFT_INTUITIVE_DISCONNECT;
+        public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_LEFT;
 
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
