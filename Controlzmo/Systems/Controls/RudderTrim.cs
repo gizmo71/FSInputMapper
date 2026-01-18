@@ -1,5 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.SimConnectzmo;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -36,7 +37,9 @@ namespace Controlzmo.Systems.Controls
                     timer = new Timer(HandleTimer);
                 this._event = newEvent;
             }
-            timer.Change(100, 100);
+//TODO: Even 35 is NOT fast enough in the Fenix, but going faster than 40ms can crash SimConnect. :-(
+            var delay = holder.SimConnect?.IsFenix == true ? 40 : 100;
+            timer.Change(delay, delay);
         }
 
         private void HandleTimer(object? _) {
@@ -49,27 +52,53 @@ namespace Controlzmo.Systems.Controls
 
     [Component]
     public class RudderTrimLeftEvent : IEvent { public string SimEvent() => "RUDDER_TRIM_LEFT"; }
+    [Component]
+    public class RudderTrimRightEvent : IEvent { public string SimEvent() => "RUDDER_TRIM_RIGHT"; }
+
+    [Component, RequiredArgsConstructor]
+    public partial class RudderTrimKnob
+    {
+        private readonly JetBridgeSender _sender;
+        private readonly RepeatingRudderTrimEvent repeat;
+
+        internal void Set(ExtendedSimConnect sc, IEvent? _event)
+        {
+            var value = _event switch {
+                RudderTrimLeftEvent left => 0,
+                RudderTrimRightEvent right => 2,
+                _ => 1
+            };
+            if (sc.IsIniBuilds)
+                _sender.Execute(sc, $"{value} (>L:XMLVAR_RUDDERTRIM_SWITCH_1)");
+            else if (sc.IsFenix && false)
+// Fenix
+//TODO: S_FC_RUDDER_TRIM doesn't work - still needs repeated setting :-(
+// RUDDER_TRIM_SET (and _EX1) don't seem to work either. :-(
+// L:N_FC_RUDDER_TRIM_DECIMAL can't be meaningfully set.
+                _sender.Execute(sc, $"{value} (>L:S_FC_RUDDER_TRIM)");
+            else
+                repeat.Send(_event);
+        }
+    }
 
     [Component, RequiredArgsConstructor]
     public partial class RudderTrimLeft : IButtonCallback<UrsaMinorThrottle>
     {
         private readonly RudderTrimLeftEvent _event;
-        private readonly RepeatingRudderTrimEvent repeat;
+        private readonly RudderTrimKnob knob;
         public int GetButton() => UrsaMinorThrottle.BUTTON_RUDDER_TRIM_LEFT;
-        public virtual void OnPress(ExtendedSimConnect _) => repeat.Send(_event);
-        public virtual void OnRelease(ExtendedSimConnect _) => repeat.Send(null);
+        public virtual void OnPress(ExtendedSimConnect sc) => knob.Set(sc, _event);
+        public virtual void OnRelease(ExtendedSimConnect sc) => knob.Set(sc, null);
     }
 
-    [Component]
-    public class RudderTrimRightEvent : IEvent { public string SimEvent() => "RUDDER_TRIM_RIGHT"; }
 
     [Component, RequiredArgsConstructor]
     public partial class RudderTrimRight : IButtonCallback<UrsaMinorThrottle>
     {
         private readonly RudderTrimRightEvent _event;
-        private readonly RepeatingRudderTrimEvent repeat;
+        private readonly RudderTrimKnob knob;
         public int GetButton() => UrsaMinorThrottle.BUTTON_RUDDER_TRIM_RIGHT;
-        public virtual void OnPress(ExtendedSimConnect _) => repeat.Send(_event);
-        public virtual void OnRelease(ExtendedSimConnect _) => repeat.Send(null);
+        public virtual void OnPress(ExtendedSimConnect sc) => knob.Set(sc, _event);
+        public virtual void OnRelease(ExtendedSimConnect sc) => knob.Set(sc, null);
     }
 }
