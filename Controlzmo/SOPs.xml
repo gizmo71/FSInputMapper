@@ -182,7 +182,7 @@
 	<Airline callsign="new[ -]?zealand">
 		<Text type=".*">Preparation 25m to 2h; block time counts</Text>
 		<Text type=".*">&udarr; Departure/Arrival &pm;15/&pm;16 minutes of scheduled</Text>
-		<Text type=".*">Warm up, 1m between</Text>
+		<Text type=".*">1m between starts; warm up</Text>
 		<Text type=".*">Departure pitch 6/7-15/16°; MTOW checked</Text>
 		<Text type=".*">Cool down</Text>
 		<Text type=".*">Must have 1.2T&lt;fuel&lt;5T on landing</Text>
