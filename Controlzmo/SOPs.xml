@@ -211,7 +211,7 @@
 	</Airline>
 	<Airline callsign="scandinavian|spinnaker|discover"> <!-- vSAS -->
 		<Text type=".*">Preparation 20-90 minutes, block time counts</Text>
-		<Text type=".*">Must depart/arrive within 15m of scheduled</Text>
+		<Text type=".*">&udarr; Departure/arrival &pm;15m of scheduled</Text>
 		<Text type=".*">30s between starts; OETD (30s); warm up</Text>
 		<Text type=".*">OETA (30s); cool down</Text>
 		<Text type=".*">Points for step climb</Text>
