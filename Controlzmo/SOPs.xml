@@ -217,7 +217,7 @@
 		<Text type=".*">Points for step climb</Text>
 		<Text type=".*">1000 feet stabilistation check</Text>
 		<Text type=".*">Review at 700fpm</Text>
-		<Text type=".*">Pauses over 15% of flight requires PIREP comment</Text>
+		<Text type=".*">Pauses over 15% of flight require PIREP comment</Text>
 	</Airline>
 	<Airline callsign="spirit[ -]?wings"> <!-- vSpirit -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
