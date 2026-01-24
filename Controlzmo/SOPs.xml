@@ -94,7 +94,8 @@
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
-		<Text type=".*">5s between starts; OETA (#2, 1m)</Text>
+		<Text type=".*">5s between starts; warm up</Text>
+		<Text type=".*">Cool down; OETA (#2, 1m)</Text>
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">Review 2.5G; rejected 3.5G</Text>
 	</Airline>
