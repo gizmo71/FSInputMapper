@@ -149,7 +149,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
 
         // Until/unless we discover a better to detect/predict Pegasus v2's behaviour
-        private const int SLACK = 30;
+        private const int SLACK = 5;
 
         public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
         {
