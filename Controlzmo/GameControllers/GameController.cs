@@ -54,7 +54,10 @@ namespace Controlzmo.GameControllers
             }
             raw = candidate;
             _log.LogDebug($"{GetHashCode()} claimed {raw} {buttonsOld.Length} = {raw.ButtonCount}?");
+            OnConnected();
         }
+
+        protected virtual void OnConnected() { }
 
         public void OnFrame(ExtendedSimConnect simConnect, SIMCONNECT_RECV_EVENT_FRAME data)
         {

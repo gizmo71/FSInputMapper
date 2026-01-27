@@ -1,12 +1,50 @@
-﻿using SimConnectzmo;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MobiFlightWwFcu;
+using SimConnectzmo;
 using System;
+using WebSocketSharp.Server;
 
 namespace Controlzmo.GameControllers
 {
     [Component]
+    public class WinWingMagic
+    {
+//https://github.com/MobiFlight/MobiFlight-Connector/blob/7441862b7680618f1a06d02cfc852ddf9935ba4a/MobiFlight/Joysticks/JoystickManager.cs#L220
+        private WebSocketServer wsServer = new WebSocketServer(System.Net.IPAddress.Loopback, 8666);
+
+        internal WinwingDisplayControl CreateDisplayControl(ushort productId)
+        {
+https://github.com/MobiFlight/MobiFlight-Connector/blob/7441862b7680618f1a06d02cfc852ddf9935ba4a/MobiFlight/Joysticks/Winwing/WinwingBaseController.cs#L23
+            return new WinwingDisplayControl(productId, wsServer);
+        }
+    }
+
+    [Component]
     public class UrsaMinorThrottle : GameController<UrsaMinorThrottle>
     {
-        public UrsaMinorThrottle(IServiceProvider sp) : base(sp, 41, 8, 0) { }
+        private readonly WinWingMagic magic;
+
+        public UrsaMinorThrottle(IServiceProvider sp) : base(sp, 41, 8, 0)
+        {
+            magic = sp.GetRequiredService<WinWingMagic>();
+        }
+
+        protected override void OnConnected()
+        {
+            Console.Error.WriteLine("***************** WinWing *************");
+try { if (false) {
+            var displayControl = magic.CreateDisplayControl(Product());
+            Console.Error.WriteLine("***************** displays");
+            foreach (var name in displayControl.GetDisplayNames())
+                Console.Error.WriteLine($"\t{name}");
+            Console.Error.WriteLine("***************** LEDs");
+            foreach (var name in displayControl.GetLedNames())
+                Console.Error.WriteLine($"\t{name}");
+}  } catch (Exception ex) {
+    Console.Error.WriteLine("Failed", ex);
+}
+            Console.Error.WriteLine("***************** The End *************");
+        }
 
         public override ushort Vendor() => 0x4098;
         public override ushort Product() => 0xB920;
