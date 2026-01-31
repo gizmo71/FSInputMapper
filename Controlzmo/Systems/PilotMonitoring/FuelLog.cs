@@ -10,7 +10,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Device.Location;
 using System.Linq;
-using System.Xml;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
