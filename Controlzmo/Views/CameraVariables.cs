@@ -26,6 +26,7 @@ namespace Controlzmo.Views
         public static readonly int FIXED = 5;
         public static readonly int SHOWCASE = 9;
         public static readonly int WORLD_MAP = 12; // Yep, sometimes it gets stuck on this!
+        public static readonly int DEVELOPER = 18;
 
         private readonly ILogger<CameraState> log;
         private readonly SimConnectHolder holder;
