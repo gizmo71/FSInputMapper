@@ -1,16 +1,35 @@
 ﻿using Controlzmo.GameControllers;
-using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
-using static Controlzmo.GameControllers.AbstractRepeatingDoublePress;
 
 namespace Controlzmo.Systems.Controls
 {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct RudderTrimData
+    {
+        [SimVar("RUDDER TRIM PCT", "Percent", SIMCONNECT_DATATYPE.INT32, 0.1f)]
+        public Int32 trimPercent;
+        [SimVar("L:N_FC_RUDDER_TRIM_DECIMAL", "number", SIMCONNECT_DATATYPE.INT32, 0.05f)]
+        public Int32 fenixDecaUnits;
+    };
+
+    [Component, RequiredArgsConstructor]
+    public partial class RudderTrimDisplay : DataListener<RudderTrimData>, IRequestDataOnOpen
+    {
+        private readonly UrsaMinorOutputs output;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+
+        public override void Process(ExtendedSimConnect simConnect, RudderTrimData data)
+        {
+            output.SetTrimDisplay(data.fenixDecaUnits);
+        }
+
+    }
 
     [Component]
     public class RudderTrimResetEvent : IEvent { public string SimEvent() => "RUDDER_TRIM_RESET"; }
@@ -24,13 +43,13 @@ namespace Controlzmo.Systems.Controls
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class RepeatingRudderTrimEvent : CreateOnStartup
+    public partial class RepeatingRudderTrimEvent
     {
         private readonly SimConnectHolder holder;
         private Timer? timer;
 
         private IEvent? _event;
-        internal void Send (IEvent? newEvent) {
+        internal void Send(IEvent? newEvent) {
             lock(this)
             {
                 if (timer == null)
