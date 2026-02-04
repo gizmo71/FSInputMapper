@@ -17,16 +17,9 @@ namespace Controlzmo.Systems.Atc
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct AtcAirlineData
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 64)]
-        [SimVar("ATC AIRLINE", null, SIMCONNECT_DATATYPE.STRING64, 0.0f)]
-        public string name;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
         [SimVar("ATC MODEL", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)]
         public string model;
-        // You *can* set this using one of these objects, but it won't affect the skin except at load time (possibly by forcing a "restart").
-        //[MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-        //[SimVar("ATC ID", null, SIMCONNECT_DATATYPE.STRING32, 0.0f)] // In 2024, this is randomly generated on load (discarding user input!).
-        //public string tailNumber; // SDK says up to 10 characters! May not be a default for some liveries; for some it's junk.
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         [SimVar("TITLE", null, SIMCONNECT_DATATYPE.STRING128, 0.0f)]
         public string title; // This is what vAMSYS will use.
@@ -52,6 +45,8 @@ namespace Controlzmo.Systems.Atc
         private int _warmupMinutes;
         [Property]
         private int _cooldownMinutes;
+        [Property]
+        private string _callsign;
 
         public AtcAirlineListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
@@ -70,18 +65,17 @@ namespace Controlzmo.Systems.Atc
         {
             WarmupMinutes = CooldownMinutes = DEFAULT_ENGINE_WAIT_MINUTES;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM\.AC_MODEL[ _](.*)\.0\.TEXT$", @"$1");
-            var callsign = data.name.ToLower();
             var aircraftCfg = simConnect.AircraftFile.ToLower();
             // Some of the iniBuilds ones have the wrong ICAO code or even no model at all. :-(
             if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-300")) icaoCode = "A333";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-200")) icaoCode = "A332";
-            var sops = $"SOPs for '{icaoCode}' with callsign '{callsign}', file '{aircraftCfg}', title '{data.title}':";
+            var sops = $"SOPs for '{icaoCode}', file '{aircraftCfg}', title '{data.title}':";
             try
             {
                 var doc = await loadXml();
                 var context = new CustomContext {
-                    { "callsign", callsign },
+                    { "callsign", _callsign },
                     { "icaoType", icaoCode },
                     { "aircraft", aircraftCfg },
                     { "title", data.title },
@@ -100,7 +94,7 @@ namespace Controlzmo.Systems.Atc
             {
                 sops = e.ToString();
             }
-            await hub.Clients.All.SetFromSim("atcAirline", sops);
+            await hub.Clients.All.SetFromSim("airlineSops", sops);
 
             //MSFS2020 is KittyHawk 11.0, 2024 is SunRise 12.0
             var extra = $"{simConnect.OpenData.szApplicationName} {simConnect.OpenData.dwApplicationVersionMajor}.{simConnect.OpenData.dwApplicationVersionMinor}";

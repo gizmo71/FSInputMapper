@@ -195,8 +195,13 @@
             <span onclick="$('#sops').hide(); $('#gsxPushback').hide(); $('#fuelLog').show();">Fuel Log</span>
         </div>
         <span id="sops">
-            <textarea id="atcAirline" rows="17" cols="40"></textarea>
-            <textarea id="simInfo" rows="5" cols="40"></textarea>
+            <input id="airlineName" size="35" maxlength="50" class="sendText" />
+            <input id="flightNo" size="5" maxlength="6" class="sendText" />
+            <input type="checkbox" id="isheavy" class="sendBoolean" />
+            <label for="isheavy">Heavy</label>
+            <input id="tailNumber" size="7" maxlength="10" class="sendText" />
+            <textarea id="airlineSops" rows="17" cols="40"></textarea>
+            <textarea id="simInfo" rows="4" cols="40"></textarea>
         </span>
         <textarea id="gsxPushback" rows="22" cols="40" style="display: none;">
 QuickEdit controls
