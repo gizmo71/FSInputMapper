@@ -12,9 +12,11 @@ namespace Controlzmo.Systems.Controls
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct RudderTrimData
     {
-        [SimVar("RUDDER TRIM PCT", "Percent", SIMCONNECT_DATATYPE.INT32, 0.1f)]
-        public Int32 trimPercent;
-        [SimVar("L:N_FC_RUDDER_TRIM_DECIMAL", "number", SIMCONNECT_DATATYPE.INT32, 0.05f)]
+        [SimVar("RUDDER TRIM PCT", "Percent over 100", SIMCONNECT_DATATYPE.FLOAT32, 0.00005f)]
+        public float trim;
+        [SimVar("L:A32NX_HYD_RUDDER_TRIM_FEEDBACK_ANGLE", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.005f)]
+        public float fbwTrim;
+        [SimVar("L:N_FC_RUDDER_TRIM_DECIMAL", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fenixDecaUnits;
     };
 
@@ -26,6 +28,10 @@ namespace Controlzmo.Systems.Controls
 
         public override void Process(ExtendedSimConnect simConnect, RudderTrimData data)
         {
+            if (simConnect.IsFBW)
+                data.fenixDecaUnits = (Int32) (Math.Round(data.fbwTrim * 10.0, MidpointRounding.AwayFromZero));
+            else if (!simConnect.IsFenix)
+                data.fenixDecaUnits = (Int32) (data.trim * 200.0);
             output.SetTrimDisplay(data.fenixDecaUnits);
         }
 
@@ -82,6 +88,7 @@ namespace Controlzmo.Systems.Controls
 
         internal void Set(ExtendedSimConnect sc, IEvent? _event)
         {
+return; //TODO: is it easier to just map it in game? :-(
             var value = _event switch {
                 RudderTrimLeftEvent left => 0,
                 RudderTrimRightEvent right => 2,
