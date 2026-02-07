@@ -61,6 +61,9 @@ Console.Error.WriteLine($"Set LED {_led} to {args.Data}");
     {
         private string _name;
         protected override void OnOpen() => _name = Context.QueryString["name"];
-        protected override void OnMessage(MessageEventArgs args) => Program.displayControl.SetDisplay(_name, args.Data);
+        protected override void OnMessage(MessageEventArgs args) {
+Console.Error.WriteLine($"Set display {_name} to {args.Data}");
+            Program.displayControl.SetDisplay(_name, args.Data);
+        }
     }
 }
