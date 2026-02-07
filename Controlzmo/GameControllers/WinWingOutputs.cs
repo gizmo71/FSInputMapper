@@ -11,9 +11,6 @@ namespace Controlzmo.GameControllers
     {
         private IDictionary<string, WebSocket> clients = new Dictionary<string, WebSocket>();
 
-// Other displays: "Trim Dashes On/Off", "LCD Test On/Off"
-// Other LEDs: "Vibration 1 Percentage", "Vibration 2 Percentage", "Backlight Percentage", "LED Percentage", "LCD Percentage"
-
         private void SendTo(string pathAndQueryString, string request)
         {
             WebSocket? webSocket;
