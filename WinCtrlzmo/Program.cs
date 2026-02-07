@@ -1,5 +1,6 @@
 ﻿using MobiFlightWwFcu;
 using System;
+using System.Xml.Linq;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -21,8 +22,6 @@ Console.Error.WriteLine("***************** displays");
                 foreach (var name in displayControl.GetDisplayNames())
                     Console.Error.WriteLine($"\t{name}");
 Console.Error.WriteLine("***************** LEDs");
-// "Trim Value", "Trim Dashes On/Off", "LCD Test On/Off"
-// "FAULT_1", "FIRE_1", "FAULT_2", "FIRE_2", "Vibration 1 Percentage", "Vibration 2 Percentage", "Backlight Percentage", "LED Percentage", "LCD Percentage"
                 foreach (var name in displayControl.GetLedNames())
                     Console.Error.WriteLine($"\t{name}");
 Console.Error.WriteLine("***************** Services");
@@ -30,13 +29,13 @@ Console.Error.WriteLine("***************** Services");
                     Console.Error.WriteLine($"\t{path}"); // Shows nothing registered for this device
 Console.Error.WriteLine("***************** Attempting to set stuff");
                 displayControl.Connect();
-                /*displayControl.SetDisplay("Trim Value", "+12.3");
-                displayControl.SetLed("FAULT_1", 0);
-                displayControl.SetLed("FAULT_2", 0);
-                displayControl.SetLed("FIRE_1", 0);
-                displayControl.SetLed("FIRE_2", 0);
-                displayControl.SetLed("LED Percentage", 100);
-                displayControl.SetLed("LCD Percentage", 100);*/
+/*displayControl.SetDisplay("Trim Value", "+12.3");
+displayControl.SetLed("FAULT_1", 0);
+displayControl.SetLed("FAULT_2", 0);
+displayControl.SetLed("FIRE_1", 0);
+displayControl.SetLed("FIRE_2", 0);
+displayControl.SetLed("LED Percentage", 100);
+displayControl.SetLed("LCD Percentage", 100);*/
                 displayControl.SetLed("Backlight Percentage", 100);
             }
             finally
@@ -49,18 +48,19 @@ Console.Error.WriteLine("***************** Attempting to set stuff");
 
     internal class SetLed : WebSocketBehavior
     {
+        private string _led;
+        protected override void OnOpen() => _led = Context.QueryString["led"];
         protected override void OnMessage(MessageEventArgs args)
         {
-            Console.Error.WriteLine($"Do LED {args.Data}");
-            //Program.displayControl.SetLed("FIRE_1", 0);
+Console.Error.WriteLine($"Set LED {_led} to {args.Data}");
+            Program.displayControl.SetLed(_led, Byte.Parse(args.Data));
         }
     }
 
     internal class SetDisplay : WebSocketBehavior
     {
-        protected override void OnMessage(MessageEventArgs args)
-        {
-            Program.displayControl.SetDisplay("Trim Value", args.Data);
-        }
+        private string _name;
+        protected override void OnOpen() => _name = Context.QueryString["name"];
+        protected override void OnMessage(MessageEventArgs args) => Program.displayControl.SetDisplay(_name, args.Data);
     }
 }

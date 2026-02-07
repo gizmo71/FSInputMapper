@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using WebSocketSharp;
@@ -6,36 +7,45 @@ using WebSocketSharp;
 namespace Controlzmo.GameControllers
 {
     [Component]
-    public class UrsaMinorOutputs : KeepAliveWorker
+    public class UrsaMinorOutputs
     {
-        private WebSocket? client;
+        private IDictionary<string, WebSocket> clients = new Dictionary<string, WebSocket>();
 
-        public UrsaMinorOutputs(IServiceProvider sp) : base(sp) { }
+// Other displays: "Trim Dashes On/Off", "LCD Test On/Off"
+// Other LEDs: "Vibration 1 Percentage", "Vibration 2 Percentage", "Backlight Percentage", "LED Percentage", "LCD Percentage"
 
-        protected override void OnStart(object? sender, DoWorkEventArgs args)
+        private void SendTo(string pathAndQueryString, string request)
         {
-            client = new WebSocket("ws://localhost:8666/Display/Set");
-        }
-
-        protected override void OnLoop(object? sender, DoWorkEventArgs args)
-        {
-            if (!client!.IsAlive)
-                client.Connect();
-        }
-
-        protected override void OnStop(object? sender, DoWorkEventArgs args)
-        {
-            client?.Close();
+            WebSocket? webSocket;
+            lock (clients)
+            {
+                if (!clients.TryGetValue(pathAndQueryString, out webSocket)) {
+                    webSocket = new WebSocket($"ws://localhost:8666{pathAndQueryString}");
+                    clients.Add(pathAndQueryString, webSocket);
+                }
+            }
+            Task.Run(() =>
+            {
+                if (!webSocket!.IsAlive)
+                    webSocket.Connect();
+                webSocket.Send(request);
+            });
         }
 
         public void SetTrimDisplay(int decaUnits)
         {
             try {
                 var encoded = $"{decaUnits / 10.0:+00.0;-00.0}";
-                Task.Run(() => client?.Send(encoded));
+                SendTo("/Display/Set?name=Trim%20Value", encoded);
             } catch (Exception ex) {
                 Console.Error.WriteLine("Failed to send trim display: {0}", ex);
             }
+        }
+
+        public void SetEngineWarning(int engine, bool isFire, bool isOn)
+        {
+            var prefix = isFire ? "FIRE" : "FAULT";
+            SendTo($"/Led/Set?led={prefix}_{engine}", isOn ? "1" : "0");
         }
     }
 }
