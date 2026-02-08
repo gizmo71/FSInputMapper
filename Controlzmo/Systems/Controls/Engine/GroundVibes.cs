@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Controls.Engine
 
         public override void Process(ExtendedSimConnect simConnect, GroundVibeData data)
         {
-            int percent = Math.Min(200, data.groundSpeed);
+            int percent = Math.Min(200, data.groundSpeed) / 2;
             if (data.onAnyRunway != 0) percent /= 2; // Runways are smoother!
             output.SetVibrations((byte) percent);
         }
