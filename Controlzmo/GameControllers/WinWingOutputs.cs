@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Lombok.NET;
+using SimConnectzmo;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using WebSocketSharp;
 
@@ -10,6 +13,7 @@ namespace Controlzmo.GameControllers
     public class UrsaMinorOutputs
     {
         private IDictionary<string, WebSocket> clients = new Dictionary<string, WebSocket>();
+        private readonly UrlEncoder urlEscaper = UrlEncoder.Default;
 
         private void SendTo(string pathAndQueryString, string request)
         {
@@ -29,20 +33,43 @@ namespace Controlzmo.GameControllers
             });
         }
 
-        public void SetTrimDisplay(int decaUnits)
+        private void Send(string path, string name, string value, string body)
         {
             try {
-                var encoded = $"{decaUnits / 10.0:+00.0;-00.0}";
-                SendTo("/Display/Set?name=Trim%20Value", encoded);
+                var escapedValue = urlEscaper.Encode(value);
+                SendTo($"/{path}/Set?{name}={escapedValue}", body);
             } catch (Exception ex) {
-                Console.Error.WriteLine("Failed to send trim display: {0}", ex);
+                Console.Error.WriteLine("Failed to send {1} to {2}: {0}", ex, name, path);
             }
         }
 
-        public void SetEngineWarning(int engine, bool isFire, bool isOn)
+        internal void SendDisplay(string name, string value) => Send("Display", "name", name, value);
+        internal void SendLed(string name, string value) => Send("Led", "led", name, value);
+
+        public void SetTrimDisplay(int decaUnits) => SendDisplay("Trim Value", $"{decaUnits / 10.0:+00.0;-00.0}");
+// "Trim Dashes On/Off" (setting this to >0 produces three dashes; can't unset directly)
+// "LCD Test On/Off" (setting to >0 produces all the segments lit; again, unset by sending a different name)
+
+        public void SetEngineWarning(int engine, bool isFire, bool isOn) => SendLed($"{(isFire ? "FIRE" : "FAULT")}_{engine}", isOn ? "1" : "0");
+
+        internal void SetVibrations(byte percent)
         {
-            var prefix = isFire ? "FIRE" : "FAULT";
-            SendTo($"/Led/Set?led={prefix}_{engine}", isOn ? "1" : "0");
+            for (int i = 1; i <= 2; ++i)
+                SendLed($"Vibration {i} Percentage", percent.ToString());
         }
+//TODO: Other LEDs: "Backlight Percentage", "LED Percentage" (no idea what it does!), "LCD Percentage"
     }
+
+    /*[Component, RequiredArgsConstructor]
+    public partial class TestDaOutputs : IAxisCallback<T16000mHotas>
+    {
+        private readonly UrsaMinorOutputs output;
+
+        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
+
+        public void OnChange(ExtendedSimConnect _, double old, double @new)
+        {
+            output.SendDisplay("LCD Test On/Off", @new > 0.5 ? "1" : "");
+        }
+    }*/
 }
