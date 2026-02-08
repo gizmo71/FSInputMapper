@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using SimConnectzmo;
+﻿using SimConnectzmo;
 using System;
 
 namespace Controlzmo.GameControllers
@@ -10,7 +9,9 @@ namespace Controlzmo.GameControllers
         public UrsaMinorFighterR(IServiceProvider sp) : base(sp, 52, 10, 10) { }
 
         public override ushort Vendor() => 16536;
-        public override ushort Product() => 48170;
+        public override ushort Product() => PRODUCT_ID;
+
+        public static readonly ushort PRODUCT_ID = 48170;
 
         public static readonly int BUTTON_LEFT_BASE_FAR_LEFT_UP = 0;
         public static readonly int BUTTON_LEFT_BASE_FAR_RIGHT_UP = 1;
