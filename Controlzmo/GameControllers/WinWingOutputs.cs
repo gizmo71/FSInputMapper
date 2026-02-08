@@ -46,7 +46,7 @@ namespace Controlzmo.GameControllers
         internal void SendDisplay(string name, string value) => Send("Display", "name", name, value);
         internal void SendLed(string name, string value) => Send("Led", "led", name, value);
 
-        public void SetTrimDisplay(int decaUnits) => SendDisplay("Trim Value", $"{decaUnits / 10.0:+00.0;-00.0}");
+        public void SetTrimDisplay(int decaUnits) {
 // "Trim Dashes On/Off" (setting this to >0 produces three dashes; can't unset directly)
 // "LCD Test On/Off" (setting to >0 produces all the segments lit; again, unset by sending a different name)
 
