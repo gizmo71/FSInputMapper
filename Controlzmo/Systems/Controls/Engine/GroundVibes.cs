@@ -5,7 +5,7 @@ using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
-// Consider moving the ground vibes to the stick and using the throttle for speedbrakes in air instead
+// Consider moving the ground vibes to the stick and using the throttle for speedbrakes in air instead -- especially as we take our hand off at V1!
 namespace Controlzmo.Systems.Controls.Engine
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -28,10 +28,11 @@ namespace Controlzmo.Systems.Controls.Engine
 
         public override void Process(ExtendedSimConnect simConnect, VibeData data)
         {
-            double knots = Math.Min(200, data.groundSpeed);
-            double percent = knots > 0 && data.onGround != 0 ? Double.Clamp(Math.Pow(knots / 20.0, 2), 1.0, 100.0) : 0;
+            double knots = Math.Clamp(data.groundSpeed, 0, 200);
+//TODO: something in here isn't right... it doesn't seem to kick in until nearly 50 knots... think we need to clamp what's in Pow higher...
+            double percent = knots >= 20 && data.onGround != 0 ? Double.Clamp(Math.Pow((knots - 20) / 18.0, 2), 1.0, 100.0) : 0;
             if (data.onAnyRunway != 0) percent /= 2.0; // Runways are smoother!
-            output.SetVibrations((byte) percent);
+            output.SetThrottleVibrations((byte) percent);
         }
     }
 }
