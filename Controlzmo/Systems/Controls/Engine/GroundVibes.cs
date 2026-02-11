@@ -29,9 +29,10 @@ namespace Controlzmo.Systems.Controls.Engine
         public override void Process(ExtendedSimConnect simConnect, VibeData data)
         {
             double knots = Math.Clamp(data.groundSpeed, 0, 200);
-//TODO: something in here isn't right... it doesn't seem to kick in until nearly 50 knots... think we need to clamp what's in Pow higher...
-            double percent = knots >= 20 && data.onGround != 0 ? Double.Clamp(Math.Pow((knots - 20) / 18.0, 2), 1.0, 100.0) : 0;
-            if (data.onAnyRunway != 0) percent /= 2.0; // Runways are smoother!
+            double min = 20.0;
+            double max = data.onAnyRunway != 0 ? 200.0 : 70.0; // Runways are smoother, and taxiways should be slower!
+            double decirange = (max - min) / 10.0;
+            double percent = knots >= min && data.onGround != 0 ? Double.Clamp(Math.Pow((knots - min) / decirange, 2), 1.0, 100.0) : 0;
             output.SetThrottleVibrations((byte) percent);
         }
     }
