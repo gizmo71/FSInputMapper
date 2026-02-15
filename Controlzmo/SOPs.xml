@@ -149,9 +149,11 @@
 	</Airline>
 	<Airline callsign="^aerolane|lan[- ].*|paraguaya|tam$"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, air time counts</Text>
-		<Text type=".*">Start #1 first</Text>
-		<Text type="A3..">Warm up; cool down</Text>
-		<Text type="A2.N">Warm up (5m); cool down (5m)</Text>
+		<Text type=".*">Start #1 first; OETD (5m)</Text>
+		<Text type="A3..">Warm up</Text>
+		<Text type="A2.N">Warm up (5m)</Text>
+		<Text type=".*">Cool down; OETA (5m)</Text>
+		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Rejected 501fpm; Rejected 601fpm</Text>
 	</Airline>
 	<Airline callsign="shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
