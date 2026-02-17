@@ -24,18 +24,6 @@
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
-	<Airline callsign="american">
-		<Text type=".*">Preparation 10m to 24H, air time counts</Text>
-		<Text type=".*">&uarr;Departure/arrival within ±15m of estimate</Text>
-		<Text type=".*">30s between; warm up</Text>
-		<Text type=".*">Cool down; OETA (#2, 5m)</Text>
-		<Text type=".*">Points for step climb</Text>
-		<Text type=".*">Must have fuel &ge;1T on landing</Text>
-		<Text type=".*">Flight time &gt;20%/1 hour of scheduled → review</Text>
-		<Text type=".*">Pauses in flight of &gt;25% of flight → invalidated</Text>
-		<Text type=".*">2.5G review; 3.5G rejected</Text>
-		<!-- Bonus points for multiple flights in one day -->
-	</Airline>
 	<Airline callsign="^(?:cathay|air[- ]?china|shenzhen[- ]air)$"> <!-- Virtual Air China -->
 		<Text type=".*">Perparation 3m-3h; block time counts</Text>
 		<Text type=".*">30s between starts</Text>
@@ -99,13 +87,6 @@
 		<Text type=".*">Cool down; OETA (#2, 1m)</Text>
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">Review 2.5G; rejected 3.5G</Text>
-	</Airline>
-	<Airline callsign="frontier[- ]flight"> <!-- Frontier VA -->
-		<Text type=".*">Preparation 10-60 minutes, block time counts</Text>
-		<Text type=".*">10s between starts; OETD (5s); warm up</Text>
-		<Text type=".*">Cool down; OETA (5s)</Text>
-		<!-- Text type=".*">Must have fuel ≥ 748kg on landing</Text -->
-		<Text type=".*">Rejected at 600fpm; review at 700fpm</Text>
 	</Airline>
 	<Airline callsign="air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied"> <!-- Air India -->
 		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
