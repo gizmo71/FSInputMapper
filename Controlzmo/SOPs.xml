@@ -152,7 +152,7 @@
 		<!-- Text type=".*">Preparation 15-60 minutes, block time counts</Text -->
 		<Text type=".*">Taxi overspeeds above 5s penalised</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
-		<Text type=".*">1m between starts</Text>
+		<Text type=".*">1m between starts; warm up</Text>
 		<Text type=".*">Multiple flight bonus</Text>
 		<Text type=".*">Landing rates have a mistake...</Text>
 	</Airline>
