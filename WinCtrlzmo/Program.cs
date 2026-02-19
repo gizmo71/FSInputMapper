@@ -19,7 +19,7 @@ namespace WinCtrlzmo
                     try {
                         displayControl = new WinwingDisplayControl(productId, wsServer);
                         displayControls.Add(productId, displayControl);
-Console.Error.WriteLine($"***************** looked up {productId}, found {displayControl.GetControllerName()}");
+Console.Error.WriteLine($"***************** looked up {productId:X4}, found {displayControl.GetControllerName()}");
 Console.Error.WriteLine("***************** displays");
                         foreach (var name in displayControl.GetDisplayNames())
                             Console.Error.WriteLine($"\t{name}");

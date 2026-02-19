@@ -77,6 +77,7 @@ namespace Controlzmo.GameControllers
             //output.SendDisplay("LCD Test On/Off", @new > 0.5 ? "1" : "");
             //output.SetVibrations((byte) percent);
 //TODO: does the stick really not have vibration or backlight supported?
+// Ah, they only support the Airbus stick, not the Fighter one. :-(
             output.Send(UrsaMinorFighterR.PRODUCT_ID, "Led", "led", "bar", "body");
         }
     }

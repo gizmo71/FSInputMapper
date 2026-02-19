@@ -11,7 +11,7 @@ namespace Controlzmo.GameControllers
         public override ushort Vendor() => 16536;
         public override ushort Product() => PRODUCT_ID;
 
-        public static readonly ushort PRODUCT_ID = 48170;
+        public static readonly ushort PRODUCT_ID = 0xBC2A;
 
         public static readonly int BUTTON_LEFT_BASE_FAR_LEFT_UP = 0;
         public static readonly int BUTTON_LEFT_BASE_FAR_RIGHT_UP = 1;

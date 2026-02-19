@@ -28,10 +28,12 @@ namespace Controlzmo.Systems.Controls
 
         public override void Process(ExtendedSimConnect simConnect, RudderTrimData data)
         {
+Console.Error.WriteLine($"trim percent {data.fenixDecaUnits} FBW {data.fbwTrim} generic {data.trim}");
             if (simConnect.IsFBW)
                 data.fenixDecaUnits = (Int32) (Math.Round(data.fbwTrim * 10.0, MidpointRounding.AwayFromZero));
             else if (!simConnect.IsFenix)
                 data.fenixDecaUnits = (Int32) (data.trim * 200.0);
+Console.Error.WriteLine($"             -> {data.fenixDecaUnits}");
             output.SetTrimDisplay(data.fenixDecaUnits);
         }
 

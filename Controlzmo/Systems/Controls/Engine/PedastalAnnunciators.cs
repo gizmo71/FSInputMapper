@@ -5,6 +5,7 @@ using SimConnectzmo;
 using System;
 using System.Runtime.InteropServices;
 
+//TODO: support more than just the Fenix...
 namespace Controlzmo.Systems.Controls.Engine
 {
     public interface IEngineFireFaultLightData
