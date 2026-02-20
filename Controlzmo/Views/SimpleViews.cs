@@ -17,7 +17,7 @@ namespace Controlzmo.Views
         }
 
         public void OnRelease(ExtendedSimConnect _) {
-            vJoy.getController().QuickClick(sticker.IsStuck(500) ? 109u: 108u);
+            vJoy.getController().QuickClick(sticker.IsStuck(500) ? VJoyButton.LOAD_CUSTOM_CAMERA_9: VJoyButton.LOAD_CUSTOM_CAMERA_8);
         }
     }
 
@@ -34,7 +34,7 @@ namespace Controlzmo.Views
         }
 
         public void OnRelease(ExtendedSimConnect _) {
-            vJoy.getController().QuickClick(sticker.IsStuck(500) ? 102u: 100u);
+            vJoy.getController().QuickClick(sticker.IsStuck(500) ? VJoyButton.LOAD_CUSTOM_CAMERA_2: VJoyButton.LOAD_CUSTOM_CAMERA_0);
         }
     }
 
@@ -44,6 +44,6 @@ namespace Controlzmo.Views
     {
         private readonly VirtualJoy vJoy;
         public int GetButton() => T16000mHotas.BUTTON_FRONT_RIGHT_RED;
-        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(101u);
+        public void OnPress(ExtendedSimConnect _) => vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_1);
     }
 }

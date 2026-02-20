@@ -2,7 +2,6 @@
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
-using System;
 using Windows.Gaming.Input;
 
 namespace Controlzmo.Views
@@ -19,7 +18,7 @@ namespace Controlzmo.Views
         public int GetSwitch() => UrsaMinorFighterR.SWITCH_SQUARE_HAT;
 
         private GameControllerSwitchPosition current = GameControllerSwitchPosition.Center;
-        private UInt32 unstuckView = 105u;
+        private VJoyButton unstuckView = VJoyButton.LOAD_CUSTOM_CAMERA_5;
 
         public void OnChange(ExtendedSimConnect simConnect, GameControllerSwitchPosition old, GameControllerSwitchPosition @new)
         {
@@ -41,46 +40,46 @@ namespace Controlzmo.Views
                 {
                     case GameControllerSwitchPosition.Up:
                         sticker.TriggerStart();
-                        vJoy.getController().QuickClick(103u);
-                        unstuckView = 100u;
+                        vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_3);
+                        unstuckView = VJoyButton.LOAD_CUSTOM_CAMERA_0;
                         break;
                     case GameControllerSwitchPosition.Down:
                         sticker.TriggerStart();
-                        unstuckView = 108u;
-                        vJoy.getController().QuickClick(107u);
+                        unstuckView = VJoyButton.LOAD_CUSTOM_CAMERA_8;
+                        vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_7);
                         break;
                     case GameControllerSwitchPosition.Left:
-                        vJoy.getController().QuickClick(104u);
+                        vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_4);
                         break;
                     case GameControllerSwitchPosition.Right:
-                        vJoy.getController().QuickClick(106u);
+                        vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_6);
                         break;
                     case GameControllerSwitchPosition.Center:
-                        vJoy.getController().QuickClick(sticker.IsStuck(350) ? 105u : unstuckView);
-                        unstuckView = 105u;
+                        vJoy.getController().QuickClick(sticker.IsStuck(350) ? VJoyButton.LOAD_CUSTOM_CAMERA_5 : unstuckView);
+                        unstuckView = VJoyButton.LOAD_CUSTOM_CAMERA_5;
                         break;
                 }
 
             }
             else if (cameraState.Current == CameraState.CHASE)
             {
-                vJoy.getController().ReleaseButton(110u);
-                vJoy.getController().ReleaseButton(111u);
-                vJoy.getController().ReleaseButton(112u);
-                vJoy.getController().ReleaseButton(113u);
+                vJoy.getController().ReleaseButton(VJoyButton.EXTERNAL_QUICKVIEW_TOP);
+                vJoy.getController().ReleaseButton(VJoyButton.EXTERNAL_QUICKVIEW_REAR);
+                vJoy.getController().ReleaseButton(VJoyButton.EXTERNAL_QUICKVIEW_LEFT);
+                vJoy.getController().ReleaseButton(VJoyButton.EXTERNAL_QUICKVIEW_RIGHT);
                 switch (@new)
                 {
                     case GameControllerSwitchPosition.Up:
-                        vJoy.getController().PressButton(110u);
+                        vJoy.getController().PressButton(VJoyButton.EXTERNAL_QUICKVIEW_TOP);
                         break;
                     case GameControllerSwitchPosition.Down:
-                        vJoy.getController().PressButton(111u);
+                        vJoy.getController().PressButton(VJoyButton.EXTERNAL_QUICKVIEW_REAR);
                         break;
                     case GameControllerSwitchPosition.Left:
-                        vJoy.getController().PressButton(113u);
+                        vJoy.getController().PressButton(VJoyButton.EXTERNAL_QUICKVIEW_RIGHT);
                         break;
                     case GameControllerSwitchPosition.Right:
-                        vJoy.getController().PressButton(112u);
+                        vJoy.getController().PressButton(VJoyButton.EXTERNAL_QUICKVIEW_LEFT);
                         break;
                 }
             }
