@@ -151,8 +151,8 @@
 	<Airline callsign="^(batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi)$"><!-- Lion Group -->
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">Taxi overspeeds above 5s penalised</Text>
+		<Text type=".*">1m between starts; warm up</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
-		<Text type=".*">Start #2 first, 1m between; warm up</Text>
 		<Text type=".*">Multiple flight bonus</Text>
 		<!-- Text type=".*">Landing rates have a mistake...</Text -->
 	</Airline>
