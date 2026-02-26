@@ -151,10 +151,10 @@
 	<Airline callsign="^(batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi)$"><!-- Lion Group -->
 		<Text type=".*">Air time counts</Text>
 		<Text type=".*">&udarr;Taxi speed limit (5s grace)</Text>
-		<Text type="A339">1m between starts</Text>
-		<Text type="A320|A20N">5s between starts</Text>
-		<Text type=".*">Warm up</Text>
+		<Text type=".*">5s between starts</Text>
+		<Text type=".*">Warm up (1m)</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
+		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Multiple flight bonus</Text>
 	</Airline>
 	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$">
