@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Controls
 
         public override void Process(ExtendedSimConnect simConnect, RudderTrimData data)
         {
-Console.Error.WriteLine($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim} ini {data.iniBuilds} generic {data.trim}");
+Console.Write($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim} ini {data.iniBuilds} generic/pct {data.trim/data.trimPct}");
             if (simConnect.IsA380X)
                 data.fenixDecaUnits = (Int32) (Math.Round(data.a380xTrim * -10.0, MidpointRounding.AwayFromZero));
             else if (simConnect.IsA32NX)
@@ -41,7 +41,7 @@ Console.Error.WriteLine($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim
                 data.fenixDecaUnits = (Int32) (Math.Round(data.iniBuilds * 10.0, MidpointRounding.ToZero));
             else if (!simConnect.IsFenix)
                 data.fenixDecaUnits = (Int32) (data.trim * 2.0);
-Console.Error.WriteLine($"             -> {data.fenixDecaUnits}");
+Console.WriteLine($" -> {data.fenixDecaUnits}");
             output.SetTrimDisplay(data.fenixDecaUnits);
         }
     }

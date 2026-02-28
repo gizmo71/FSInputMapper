@@ -93,13 +93,13 @@ namespace Controlzmo.Systems.PilotMonitoring
                 else
                     return;
             var current = new GeoCoordinate(data.latitude, data.longitude);
-//Console.Error.WriteLine($"**---** current {current}");
+//Console.WriteLine($"**---** current {current}");
             var firstPassed = (OfpWaypoint?)null;
             foreach (var entry in waypointProgress)
             {
                 var distance = current.GetDistanceTo(entry.Key.position) / 1852;
                 var isClosing = distance < entry.Value.distance;
-//Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
+//Console.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
                 if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 3.5)
                     firstPassed = entry.Key;
                 entry.Value.isClosing = isClosing;

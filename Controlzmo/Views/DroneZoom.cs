@@ -34,7 +34,7 @@ namespace Controlzmo.Views
             Int32 newValue = Math.Max(Math.Min(data.fovPercentage + delta, 100), 0);
 
             if (cameraState.Current != CameraState.DRONE || delta == 0 || newValue == data.fovPercentage) {
-//Console.Error.WriteLine($"Nowt, because: {cameraState.Current} !CS= {CameraState.DRONE}, or !{delta}, or {newValue} == {data.fovPercentage}");
+//Console.WriteLine($"Nowt, because: {cameraState.Current} !CS= {CameraState.DRONE}, or !{delta}, or {newValue} == {data.fovPercentage}");
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             }
             else if (DateTime.Now >= stoppedUntil)
@@ -48,7 +48,7 @@ namespace Controlzmo.Views
                     newValue = 30; // Some wierd problem going up only to 29...
                 else if (newValue == 58 && data.fovPercentage < 58)
                     newValue = 59; // ... and 59 in 2024!
-//Console.Error.WriteLine($"Setting drone zoom from {data.fovPercentage} to {newValue} with delta {delta}");
+//Console.WriteLine($"Setting drone zoom from {data.fovPercentage} to {newValue} with delta {delta}");
                 data.fovPercentage = newValue;
                 simConnect.SendDataOnSimObject(data);
             }
@@ -67,7 +67,7 @@ namespace Controlzmo.Views
             var delta = 0;
             if (@new < 0.49) delta = -(int)Math.Ceiling((0.49 - @new) / 0.49 * 5);
             else if (@new > 0.51) delta = (int)Math.Ceiling((@new - 0.51) / 0.51 * 5);
-//Console.Error.WriteLine($"new drone zoom raw {@new}");
+//Console.WriteLine($"new drone zoom raw {@new}");
             droneZoom.Change(sc, delta);
         }
     }
