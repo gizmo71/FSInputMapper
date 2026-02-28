@@ -219,10 +219,10 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
-        internal override double EndRevFull() => 0.06;
+        internal override double EndRevFull() => 0.060;
         internal override double StartRevIdle() => 0.179;
         internal override double StartIdle() => 0.285;
-        internal override double EndIdle() => 0.325;
+        internal override double EndIdle() => 0.310;
     }
 
     [Component, RequiredArgsConstructor]
@@ -232,7 +232,7 @@ Console.WriteLine($"Normalised {normalised}");
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_RIGHT;
         internal override double EndRevFull() => 0.001;
         internal override double StartRevIdle() => 0.130;
-        internal override double StartIdle() => 0.275;
-        internal override double EndIdle() => 0.31;
+        internal override double StartIdle() => 0.260;
+        internal override double EndIdle() => 0.285;
     }
 }
