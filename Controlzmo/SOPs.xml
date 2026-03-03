@@ -142,11 +142,14 @@
 		<Text type="A32[01]|A21N">&uarr; Departure &pm;15m</Text>
 		<Text type=".*">10s between starts</Text>
 		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
-		<Text type="A32[01]|A21N">1000'/500' stability gates; MLW, FINRES</Text>
-		<Text type="A32[01]|A21N">&darr; Arrival &pm;15m</Text>
-		<Text type="A32[01]|A21N">OETA (#2, 3m)</Text>
-		<Text type=".*">Must have 1.5T&le;fuel&le;10T on landing</Text>
+		<Text type=".*">Points for step climb</Text>
+		<Text type="A32[01]|A21N">MLW, FINRES</Text>
+		<Text type="A32[01]|A21N">&udarr; Arrival &pm;15m</Text>
+		<Text type="A32[01]|A21N">OETD (3m)</Text>
+		<Text type="A33[23]">Must have 1.5T&le;fuel&le;12T on landing</Text>
+		<Text type="A32[01]|A21N">Must have 1.5T&le;fuel&le;10T on landing</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
+		<Text type=".*">Multiple flight bonus</Text>
 	</Airline>
 	<Airline callsign="^(batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi)$"><!-- Lion Group -->
 		<Text type=".*">Air time counts</Text>
