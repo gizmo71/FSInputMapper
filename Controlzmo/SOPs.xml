@@ -60,7 +60,7 @@
 		<Text type=".*">5s between starts; warm up; cool down</Text>
 		<Text type=".*">Invalidated 700fpm</Text>
 	</Airline>
-	<Airline callsign="^eurowings|ocean|black[- ]?pearl$"> <!-- vEWG -->
+	<Airline callsign="^eurowings|black[- ]?pearl$"> <!-- vEWG -->
 		<Text type=".*">Preparation 15m-10h, air time counts</Text>
 		<Text type=".*">Start #1 first, 5s between; warm up</Text>
 		<Text type="A.[^3].">&uarr;Departure/arrival within &pm;30m</Text>
