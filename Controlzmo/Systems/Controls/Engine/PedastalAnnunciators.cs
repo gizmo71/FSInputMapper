@@ -6,6 +6,7 @@ using System;
 using System.Runtime.InteropServices;
 
 //TODO: support more than just the Fenix...
+// iniBuilds A330s don't appear to actually model this - they only illuminate for the fire *test*
 namespace Controlzmo.Systems.Controls.Engine
 {
     public interface IEngineFireFaultLightData
