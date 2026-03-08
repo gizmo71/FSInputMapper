@@ -36,7 +36,7 @@
 		<Text type=".*">OETA (3m); cool down (1m)</Text>
 		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
-	<Airline callsign="^(?:speed[- ]?bird|shuttle)$"> <!-- vBAW -->
+	<Airline callsign="^(?:speed[- ]?bird|shuttle|griffin)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">&uarr;Departure within &pm;10m</Text>
 		<Text type=".*">Start #1 first, 1m between, warm up (after 90m)</Text>
