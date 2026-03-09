@@ -148,6 +148,7 @@
 		<Text type="A32[01]|A21N">OETD (3m)</Text>
 		<Text type="A33[23]">Must have 1.5T&le;fuel&le;12T on landing</Text>
 		<Text type="A32[01]|A21N">Must have 1.5T&le;fuel&le;10T on landing</Text>
+		<Text type=".*">Stop #2 first</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
 		<Text type=".*">Multiple flight bonus</Text>
 	</Airline>
