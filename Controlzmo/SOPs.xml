@@ -133,9 +133,9 @@
 		<Text type=".*">Start #1 first; OETD (5m)</Text>
 		<Text type="A3..">Warm up</Text>
 		<Text type="A2.N">Warm up (5m)</Text>
-		<Text type=".*">Cool down; OETA (5m)</Text>
+		<Text type=".*">Cool down</Text> <!-- rules wrong OETA (5m) -->
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
-		<Text type=".*">Rejected 501fpm; Rejected 601fpm</Text>
+		<Text type=".*">Rejected &gt;500fpm; Rejected &gt;600fpm</Text>
 	</Airline>
 	<Airline callsign="shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight"> <!-- ALVA -->
 		<Text type=".*">Preparation 20-90 minutes, air time counts</Text>
