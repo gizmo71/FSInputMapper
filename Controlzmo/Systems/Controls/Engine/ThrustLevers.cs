@@ -40,7 +40,7 @@ namespace Controlzmo.Systems.Controls.Engine
                 bitmap = tl.LeverNumber == 1 ? 0b0001 : 0b0010;
 
             double normalised;
-            if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds)
+            if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr7x)
                 normalised = AirbusSnap(@new, tl);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
@@ -96,7 +96,7 @@ Console.WriteLine($"Normalised {normalised}");
                 position = "above idle";
             }
 
-            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not znoticable.
+            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not noticable.
             var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
             var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
             _logger.LogWarning($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000;-0.000; 0.000} for {tl.LeverNumber}");
