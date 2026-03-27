@@ -32,13 +32,16 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly ToggleAutothrustArmEvent _event;
         private readonly ILogger<AutothrottleArmedDataListener> _logger;
         private readonly InputEvents inputEvents;
+        private readonly AtrPowerMode atrPowerMode;
 
         public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_LEFT;
 
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
             _logger.LogDebug("User has asked to arm autothrust");
-            if (simConnect.IsAsoboB38M)
+            if (simConnect.IsAtr7x)
+                atrPowerMode.Manipulate(simConnect, -1);
+            else if (simConnect.IsAsoboB38M)
                 inputEvents.Send(simConnect, "FCC_AUTOTHROTTLE", 1.0);
             else
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);

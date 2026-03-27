@@ -40,6 +40,7 @@ namespace Controlzmo.Systems.Controls.Engine
                 bitmap = tl.LeverNumber == 1 ? 0b0001 : 0b0010;
 
             double normalised;
+            // Note that the ATR needs calibrating in any case.
             if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr7x)
                 normalised = AirbusSnap(@new, tl);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
@@ -102,7 +103,7 @@ Console.WriteLine($"Normalised {normalised}");
             _logger.LogWarning($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000;-0.000; 0.000} for {tl.LeverNumber}");
             return mapped;
         }
-//TODO: merge above and below
+//TODO: merge above and below - perhaps always do the Airbus bit, then massage it
         private double AirbusSnap(double hardware, AbstractThrustLever tl)
         {
             // Note that the Fenix doesn't do reverse on axis without calibration.
