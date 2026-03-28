@@ -26,6 +26,8 @@ namespace Controlzmo.Views
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 10 ? 11 : 10;
             else if (simConnect.IsIniBuilds)
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 12 ? 13 : 12;
+            else if (simConnect.IsAtr7x)
+                data.viewIndex = 3;
             else if (simConnect.IsAsoboB38M)
                 data.viewIndex = 1;
             else
