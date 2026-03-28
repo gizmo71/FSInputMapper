@@ -6,16 +6,10 @@ using SimConnectzmo;
 namespace Controlzmo.Systems.Lights
 {
     [Component]
-    public class SetNavLightsEvent : IEvent
-    {
-        public string SimEvent() => "NAV_LIGHTS_SET";
-    }
+    public class SetNavLightsEvent : IEvent { public string SimEvent() => "NAV_LIGHTS_SET"; }
 
     [Component]
-    public class SetLogoLightsEvent : IEvent
-    {
-        public string SimEvent() => "LOGO_LIGHTS_SET";
-    }
+    public class SetLogoLightsEvent : IEvent { public string SimEvent() => "LOGO_LIGHTS_SET"; }
 
     [Component]
     [RequiredArgsConstructor]
@@ -30,14 +24,17 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             uint state = value ? 1u : 0u;
-            if (simConnect.IsFBW) {
-                simConnect.SendEvent(setLogoLightsEvent, state);
-                simConnect.SendEvent(setNavLightsEvent, state);
-            }
-            else if (simConnect.IsFenix)
+            if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{state} (>L:S_OH_EXT_LT_NAV_LOGO)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, $"{2u - state} (>L:INI_LOGO_LIGHT_SWITCH)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, $"{state} (>L:MSATR_ELTS_NAV) {state} (>L:MSATR_ELTS_LOGO)");
+            else
+            {
+                simConnect.SendEvent(setLogoLightsEvent, state);
+                simConnect.SendEvent(setNavLightsEvent, state);
+            }
         }
     }
 }
