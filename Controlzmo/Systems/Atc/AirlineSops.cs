@@ -39,6 +39,7 @@ namespace Controlzmo.Systems.Atc
         private readonly bool isLocalSops;
         private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
         private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00$", RegexOptions.IgnoreCase);
         private readonly static int DEFAULT_ENGINE_WAIT_MINUTES = 3;
 
         [Property]
@@ -66,10 +67,11 @@ namespace Controlzmo.Systems.Atc
             WarmupMinutes = CooldownMinutes = DEFAULT_ENGINE_WAIT_MINUTES;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM\.AC_MODEL[ _](.*)\.0\.TEXT$", @"$1");
             var aircraftCfg = simConnect.AircraftFile.ToLower();
-            // Some of the iniBuilds ones have the wrong ICAO code or even no model at all. :-(
+            // Some of them have the wrong ICAO code or even no model at all. :-(
             if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-300")) icaoCode = "A333";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-200")) icaoCode = "A332";
+            else if (atrRegex.Match(icaoCode) is Match m && m.Success) icaoCode = $"AT{m.Groups[1].Value}{m.Groups[2].Value}";
             var sops = $"SOPs for '{icaoCode}', file '{aircraftCfg}', title '{data.title}':";
             try
             {
