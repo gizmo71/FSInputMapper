@@ -39,12 +39,13 @@ namespace Controlzmo.Systems.Lights
                 var code = position switch { "on" => 0, "auto" => 1, _ => 2 };
                 sender.Execute(simConnect, $"{code} (>L:INI_STROBE_LIGHT_SWITCH)");
             }
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, $"{(position == "on" ? 1 : 0)} (>L:MSATR_ELTS_STROBE)");
             else
             {
                 var code = position == "on" ? 1 : 0;
                 sender.Execute(simConnect, $"{code} (>K:STROBES_SET)");
             }
-            //TODO: is there a sensible default?
         }
     }
 }
