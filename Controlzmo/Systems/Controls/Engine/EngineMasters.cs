@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -17,6 +18,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly FuelSystemValveCloseEvent fuelSystemValveClose;
         private readonly FuelSystemValveOpenEvent fuelSystemValveOpen;
         private readonly JetBridgeSender sender;
+        private readonly InputEvents inputEvents;
 
         internal void perform(ExtendedSimConnect sc, Boolean isLeft, Boolean isOn)
         {
@@ -34,9 +36,16 @@ namespace Controlzmo.Systems.Controls.Engine
                 sender.Execute(sc, $"{value} (>L:INI_MIXTURE_RATIO{engineId}_HANDLE)");
                 return;
             }
+            else if (sc.IsAtr7x)
+            {
+                var engineId = isLeft ? 1 : 2;
+                inputEvents.Send(sc, $"ENGINE_FUEL_LEVER_MIXTURE_{engineId}", value * 2.0);
+                return;
+            }
 
 /*TODO: the A400M has three positions for each switch, "off", "feather" (used during startup), and "run" (one AVAIL has been shown).
-  We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up". */
+  We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up".
+ Consider also whatever we end up doing for the ATR... */
             var is4engined = sc.IsA380X || sc.IsB748 || sc.IsIni400M;
             var first = isLeft ? 1u : (is4engined ? 3u : 2u);
             var last = first + (is4engined ? 1u : 0u);
