@@ -12,8 +12,8 @@ namespace Controlzmo.Systems.Controls
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct RudderTrimData
     {
-        [SimVar("RUDDER TRIM", "Degrees", SIMCONNECT_DATATYPE.FLOAT32, 0.00005f)]
-        public float trim;
+        [SimVar("RUDDER TRIM PCT", "percent", SIMCONNECT_DATATYPE.FLOAT32, 0.00005f)]
+        public float trimPct;
         [SimVar("L:RUDDER_TRIM_TARGET_ANGLE", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.00005f)]
         public float iniBuilds;
         [SimVar("L:A32NX_RUDDER_TRIM_ACTUAL_POSITION", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.005f)]
@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Controls
 
         public override void Process(ExtendedSimConnect simConnect, RudderTrimData data)
         {
-Console.Write($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim} ini {data.iniBuilds} generic/pct {data.trim/data.trimPct}");
+//Console.Write($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim} ini {data.iniBuilds} pct {data.trimPct}");
             if (simConnect.IsA380X)
                 data.fenixDecaUnits = (Int32) (Math.Round(data.a380xTrim * -10.0, MidpointRounding.AwayFromZero));
             else if (simConnect.IsA32NX)
@@ -40,8 +40,8 @@ Console.Write($"trim percent {data.fenixDecaUnits} FBW {data.a32nxTrim} ini {dat
             else if (simConnect.IsIniBuilds)
                 data.fenixDecaUnits = (Int32) (Math.Round(data.iniBuilds * 10.0, MidpointRounding.ToZero));
             else if (!simConnect.IsFenix)
-                data.fenixDecaUnits = (Int32) (data.trim * 2.0);
-Console.WriteLine($" -> {data.fenixDecaUnits}");
+                data.fenixDecaUnits = (Int32) (data.trimPct * 10);
+//Console.WriteLine($" -> {data.fenixDecaUnits}");
             output.SetTrimDisplay(data.fenixDecaUnits);
         }
     }
