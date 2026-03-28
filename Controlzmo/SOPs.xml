@@ -157,6 +157,7 @@
 		<Text type=".*">&udarr;Taxi speed limit (5s grace)</Text>
 		<Text type=".*">5s between starts</Text>
 		<Text type=".*">Warm up (1m)</Text>
+		<Text type=".*">&uarr;Departure/arrival time ±15m</Text>
 		<Text type=".*">Pauses in flight sent for review</Text>
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Multiple flight bonus</Text>
