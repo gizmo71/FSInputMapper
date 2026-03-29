@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.Controls.Engine
             else if (sc.IsAtr7x)
             {
                 var engineId = isLeft ? 1 : 2;
-                inputEvents.Send(sc, $"ENGINE_FUEL_LEVER_MIXTURE_{engineId}", value * 2.0);
+                inputEvents.Send(sc, $"ENGINE_FUEL_LEVER_MIXTURE_{engineId}", value * 1.0);
                 return;
             }
 
