@@ -22,12 +22,14 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value) {
             var code = value == true ? 1u : 0u;
-            if (simConnect.IsFBW)
-                simConnect.SendEvent(setEvent, code);
-            else if (simConnect.IsFenix)
+            if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_BEACON)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, $"{code} (>L:INI_BEACON_LIGHT_SWITCH)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, $"{code} (>L:MSATR_ELTS_BEACON)");
+            else
+                simConnect.SendEvent(setEvent, code);
         }
     }
 }
