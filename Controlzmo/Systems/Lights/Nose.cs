@@ -48,6 +48,8 @@ namespace Controlzmo.Systems.Lights
                 uint code = value switch { "takeoff" => 0u, "taxi" => 1u, _ => 2u };
                 sender.Execute(simConnect, $"{code} (>L:INI_TAXI_LIGHT_SWITCH)");
             }
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, $"{(value == "off" ? 0 : 1)} (>L:MSATR_ELTS_TAXI_TO)");
         }
     }
 }
