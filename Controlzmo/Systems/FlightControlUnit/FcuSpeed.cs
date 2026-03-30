@@ -15,8 +15,6 @@ namespace Controlzmo.Systems.FlightControlUnit
     public partial class FcuSpeedMachToggled : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
-        private readonly InputEvents inputEvents;
-
         public string SimEvent() => "A32NX.FCU_SPD_MACH_TOGGLE_PUSH";
         public string GetId() => "DISABLEDspeedMachToggled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
@@ -26,7 +24,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 for (int i = 0; i < 2; ++i)
                     sender.Execute(simConnect, "(L:S_FCU_SPD_MACH) ++ (>L:S_FCU_SPD_MACH)");
             }
-            if (simConnect.IsIniBuilds)
+            else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_SPD_MACH_BUTTON)");
             else
                 simConnect.SendEvent(this);
@@ -46,6 +44,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) ++ (>L:S_FCU_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_SPEED_BUTTON)");
+            else if (simConnect.IsAtr7x)
+                /*TODO: find out what it's for... sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL_LONG)")*/;
             else
                 simConnect.SendEvent(this);
         }
@@ -64,6 +64,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) -- (>L:S_FCU_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_SPEED_BUTTON)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL)");
             else
                 simConnect.SendEvent(this);
         }
@@ -81,16 +83,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuSpeedInc : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_SPD_INC";
-    }
+    public class FcuSpeedInc : IEvent { public string SimEvent() => "A32NX.FCU_SPD_INC"; }
 
     [Component]
-    public class FcuSpeedDec : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_SPD_DEC";
-    }
+    public class FcuSpeedDec : IEvent { public string SimEvent() => "A32NX.FCU_SPD_DEC"; }
 
     [Component]
     [RequiredArgsConstructor]
@@ -101,15 +97,15 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
 
-        private Int32 fenixAdjustment = 0;
+        private Int32 lvarAdjustment = 0;
 
         public string GetId() => "DISABLEDfcuSpeedDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
-                Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, ExecuteFenix);
+            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+                Interlocked.Add(ref lvarAdjustment, value);
+                sender.Execute(simConnect, ExecuteLvar);
             }
             else
             {
@@ -126,11 +122,12 @@ namespace Controlzmo.Systems.FlightControlUnit
             }
         }
 
-        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var lvar = simConnect.IsAtr7x ? "MSATR_FGCP_TGT_DELTA" : "E_FCU_SPEED";
+            var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:E_FCU_SPEED) {Math.Abs(toSend)} {op} (>L:E_FCU_SPEED)";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
         }
     }
 

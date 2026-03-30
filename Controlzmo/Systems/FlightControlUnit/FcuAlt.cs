@@ -74,15 +74,15 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
 
-        private Int32 fenixAdjustment = 0;
+        private Int32 lvarAdjustment = 0;
 
         public string GetId() => "DISABLEDfcuAltDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
-                Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, ExecuteFenix);
+            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+                Interlocked.Add(ref lvarAdjustment, value);
+                sender.Execute(simConnect, ExecuteLvar);
             }
             else
                 while (value != 0)
@@ -97,11 +97,12 @@ namespace Controlzmo.Systems.FlightControlUnit
                 }
         }
 
-        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var lvar = simConnect.IsAtr7x ? "MSATR_FGCP_ALTSEL_DELTA" : "E_FCU_ALTITUDE";
+            var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:E_FCU_ALTITUDE) {Math.Abs(toSend)} {op} (>L:E_FCU_ALTITUDE)";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
         }
     }
 
