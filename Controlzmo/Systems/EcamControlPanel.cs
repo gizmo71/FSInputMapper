@@ -16,7 +16,6 @@ namespace Controlzmo.Systems
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isPressed)
         {
-Console.Error.WriteLine($"-->> it be da TOConfig with {isPressed} type");
             var varName = "L:A32NX_BTN_TOCONFIG";
             if (simConnect.IsA32NX)
                 varName = $"B:A32NX_PED_ECP_TO_CONF_TEST_PB_{(isPressed ? "Push" : "Release")}";
