@@ -83,10 +83,17 @@ function linkSendStyles() {
         $(event.target).trigger('blur');
         window.scrollTo(0, 0);
     });
-    $(".sendButton").on("click", function (event) {
-        connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
+    $(".holdButton").on("pointerdown pointerup pointerleave", function (event) {
+        const newState = event.type == "pointerdown";
+        const oldState = event.target.currentState;
+        if (oldState != newState) {
+            event.target.currentState = newState;
+            connection.invoke("SetInSim", event.target.id, newState).catch(errorHandler);
+        }
         event.preventDefault();
-    });
+        e.stopPropagation();
+    }).on("contextmenu", (event) => event.preventDefault());
+
     linkSendStyles = function () { }; // Don't do it again, even if reconnected.
 }
 

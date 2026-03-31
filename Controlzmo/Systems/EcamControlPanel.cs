@@ -8,26 +8,26 @@ using System.ComponentModel;
 namespace Controlzmo.Systems
 {
     [Component, RequiredArgsConstructor]
-    public partial class EcamButtonTakeOffConfig : ISettable<string?>
+    public partial class EcamButtonTakeOffConfig : ISettable<bool>
     {
         private readonly JetBridgeSender jetbridge;
 
         public string GetId() => "ecamButtonTakeOffConfig";
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? value)
+        public void SetInSim(ExtendedSimConnect simConnect, bool isPressed)
         {
-            Func<int, String> varName = (_) => "L:A32NX_BTN_TOCONFIG";
+Console.Error.WriteLine($"-->> it be da TOConfig with {isPressed} type");
+            var varName = "L:A32NX_BTN_TOCONFIG";
             if (simConnect.IsA32NX)
-                varName = (i) => $"B:A32NX_PED_ECP_TO_CONF_TEST_PB_{(i == 1 ? "Push" : "Release")}";
+                varName = $"B:A32NX_PED_ECP_TO_CONF_TEST_PB_{(isPressed ? "Push" : "Release")}";
             else if (simConnect.IsFenix)
-                varName = (_) => "L:S_ECAM_TO";
+                varName = "L:S_ECAM_TO";
             else if (simConnect.IsIniBuilds)
-                varName = (_) => "L:PUSH_ECAM_TOCONFIG";
+                varName = "L:PUSH_ECAM_TOCONFIG";
+            else if (simConnect.IsAtr7x)
+                varName = "L:MSATR_ENG_TO_CONFIG";
 
-            for (int i = 1; i >= 0; i--)
-            {
-                jetbridge.Execute(simConnect, $"{i} (>{varName(i)})");
-            }
+            jetbridge.Execute(simConnect, $"{(isPressed ? 1 : 0)} (>{varName})");
         }
     }
 }
