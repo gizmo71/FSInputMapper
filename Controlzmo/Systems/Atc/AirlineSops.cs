@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.Atc
         private readonly bool isLocalSops;
         private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
         private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
-        private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00$", RegexOptions.IgnoreCase);
+        private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00[FS]?$", RegexOptions.IgnoreCase);
         private readonly static int DEFAULT_ENGINE_WAIT_MINUTES = 3;
 
         [Property]
