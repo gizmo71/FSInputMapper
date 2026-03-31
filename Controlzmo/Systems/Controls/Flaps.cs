@@ -20,25 +20,25 @@ namespace Controlzmo.Systems.Controls
         public int GetAxis() => UrsaMinorThrottle.AXIS_FLAPS;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new) {
-            if (sc.IsFenix)
+            if (sc.IsFenix || sc.IsAtr7x)
             {
-                Interlocked.Exchange(ref fenixPosition, @new);
-                sender.Execute(sc, Fenix);
+                Interlocked.Exchange(ref discretePosition, @new);
+                sender.Execute(sc, Discrete);
             }
-            else if (sc.IsAtr7x)
-                inputEvents.Send(sc, "HANDLING_FLAPS", @new * 32768);
+            /*else if (sc.IsAtr7x)
+                inputEvents.Send(sc, "HANDLING_FLAPS", @new * 32768);*/
             else
                 sc.SendEvent(_event, (int)(@new * 32767 - 16383));
         }
 
         private const double NO_POSITION = -1;
-        private double fenixPosition = NO_POSITION;
-        private String? Fenix(ExtendedSimConnect _)
+        private double discretePosition = NO_POSITION;
+        private String? Discrete(ExtendedSimConnect sc)
         {
-            double required = Interlocked.Exchange(ref fenixPosition, NO_POSITION);
+            double required = Interlocked.Exchange(ref discretePosition, NO_POSITION);
             if (required == NO_POSITION) return null;
             int raw = (int)((required + 0.1) * 4);
-            return $"{raw} (>L:S_FC_FLAPS)";
+            return sc.IsAtr7x ? $"(>K:FLAPS_{(raw == 0 ? "UP" : raw)})" : $"{raw} (>L:S_FC_FLAPS)";
         }
     }
 }
