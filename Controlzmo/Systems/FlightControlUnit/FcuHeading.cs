@@ -6,6 +6,7 @@ using Lombok.NET;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
@@ -26,6 +27,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_HEADING_BUTTON)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_HDG)");
             else
                 simConnect.SendEvent(this);
         }
@@ -47,6 +50,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_HEADING_BUTTON)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_NAV)");
             else
                 simConnect.SendEvent(this);
         }
@@ -73,15 +78,15 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
 
-        private Int32 fenixAdjustment = 0;
+        private Int32 lvarAdjustment = 0;
 
         public string GetId() => "DISABLEDfcuHeadingDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
-                Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, ExecuteFenix);
+            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+                Interlocked.Add(ref lvarAdjustment, value);
+                sender.Execute(simConnect, ExecuteLvar);
             }
             else
             {
@@ -98,11 +103,19 @@ namespace Controlzmo.Systems.FlightControlUnit
             }
         }
 
-        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            string lvar = "E_FCU_HEADING";
+            string extra = "";
+            if (simConnect.IsAtr7x)
+            {
+                lvar = "MSATR_SEL_HDG";
+                extra = " 1 (>L:MSATR_SEL_HDG_CHANGED)";
+            }
+
+                var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:E_FCU_HEADING) {Math.Abs(toSend)} {op} (>L:E_FCU_HEADING)";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} dnor {op} (>L:{lvar}){extra}";
         }
     }
 
@@ -113,10 +126,16 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly FcuHeadingDelta delta;
         private readonly FcuTrackFpaToggled toggle;
+        private readonly JetBridgeSender sender;
 
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
-        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, true);
+        protected override void BothAction(ExtendedSimConnect? simConnect) {
+            if (simConnect?.IsAtr7x == true)
+                sender.Execute(simConnect, "1 (>L:MSATR_SEL_HDG_SYNC)");
+            else
+                toggle.SetInSim(simConnect!, true);
+        }
     }
 
     [Component]
