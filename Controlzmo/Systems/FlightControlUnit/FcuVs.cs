@@ -105,10 +105,18 @@ namespace Controlzmo.Systems.FlightControlUnit
     {
         private readonly FcuVsDelta delta;
         private readonly FcuTrackFpaToggled toggle;
+        private readonly JetBridgeSender sender;
 
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
-        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, false);
+
+        protected override void BothAction(ExtendedSimConnect? simConnect)
+        {
+            if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_IAS)");
+            else
+                toggle.SetInSim(simConnect!, false);
+        }
     }
 
     [Component, RequiredArgsConstructor]
