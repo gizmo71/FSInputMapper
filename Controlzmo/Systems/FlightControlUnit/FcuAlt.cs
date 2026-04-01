@@ -10,8 +10,7 @@ using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
@@ -32,8 +31,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltPushed : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
@@ -65,8 +63,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public string SimEvent() => "A32NX.FCU_ALT_DEC";
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltDelta : ISettable<Int16>
     {
         private readonly FcuAltInc inc;
@@ -106,9 +103,8 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuAltIncrement : ISettable<uint>
+    [Component, RequiredArgsConstructor]
+    public partial class FcuAltIncrememnt : ISettable<uint>
     {
         private readonly JetBridgeSender sender;
 
@@ -143,20 +139,18 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltRepeatingDoublePress : AbstractRepeatingDoublePress
     {
         private readonly FcuAltDelta delta;
-        private readonly FcuAltIncrement notAToggle;
+        private readonly FcuAltIncrememnt bothPressed;
 
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
-        protected override void BothAction(ExtendedSimConnect? simConnect) => notAToggle.SetInSim(simConnect!, 0);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => bothPressed.SetInSim(simConnect!, 0);
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class IncOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
         [Property]
@@ -166,8 +160,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             => AbstractRepeatingDoublePress.Direction.Up;
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class DecOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
         [Property]
