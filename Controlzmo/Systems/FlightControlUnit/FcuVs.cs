@@ -20,6 +20,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)");
             else
                 simConnect.SendEvent(this);
         }
@@ -36,6 +38,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_PUSH_COMMAND)");
+            else if (simConnect.IsAtr7x)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)"); //TODO: also 50 (>L:MSATR_FCGP_PITCH_WHEEL) to level off?
             else
                 simConnect.SendEvent(this);
         }
