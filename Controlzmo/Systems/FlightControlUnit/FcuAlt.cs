@@ -114,6 +114,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public string GetId() => "DISABLEDfcuAltIncrement";
 
+//TODO: can we use one of these LVars to track our increment for the ATR?
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
             string command;
             if (simConnect.IsFenix)
