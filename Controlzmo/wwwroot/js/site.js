@@ -83,6 +83,10 @@ function linkSendStyles() {
         $(event.target).trigger('blur');
         window.scrollTo(0, 0);
     });
+    $(".sendButton").on("click", function (event) {
+        connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
+        event.preventDefault();
+    });
     $(".holdButton").on("pointerdown pointerup pointerleave", function (event) {
         const newState = event.type == "pointerdown";
         const oldState = event.target.currentState;
