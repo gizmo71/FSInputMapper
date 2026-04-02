@@ -115,7 +115,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
                 var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} dnor {op} (>L:{lvar}){extra}";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} dnor (>L:{lvar}){extra}";
         }
     }
 
