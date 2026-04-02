@@ -18,6 +18,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public Int32 OansRange { get; set; } // In Zoom, this goes from 0 (most zoomed in) to 4 (least, which is just "under" range 10)
         public Int32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as A32NX)
         public Int32 RangeIni { get; set; } // (same as A32NX and Fenix)
+        public Int32 RangeAtr { get; set; } // 5, 10, 20... 160, 320
     }
 
     public abstract class EfisRange<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisRangeData
@@ -38,6 +39,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsFenix) data.RangeCode = data.RangeFenix;
             else if (simConnect.IsA32NX) data.RangeCode = data.RangeA32nx;
             else if (simConnect.IsIniBuilds) data.RangeCode = data.RangeIni;
+            else if (simConnect.IsAtr7x) data.RangeCode = (Int32) (Math.Log2(data.RangeAtr / 10.0));
             int value = data.RangeCode;
             if (simConnect.IsA380X) { if (value == 0) value = data.OansRange - 4; }
             else ++value;
@@ -53,7 +55,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsA380X) { if (code < 0) { oans = code + 4; code = 0; } }
             // There's no Zoom or 640 range in the A320 family:
             else code = Math.Clamp(code - 1, 0, 5);
-            simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeA32nx = code, OansRange = oans, RangeFenix = code, RangeIni = code });
+            simConnect.SendDataOnSimObject(new T() { RangeCode = code, RangeA32nx = code, OansRange = oans, RangeFenix = code, RangeIni = code, RangeAtr = code });
         }
     }
 
@@ -75,6 +77,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:INI_MAP_RANGE_CAPT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 _rangeIni;
+        [Property]
+        [SimVar("L:MSATR_EFIS_STAT_RNG_1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 _rangeAtr;
     };
 
     [Component]
@@ -119,6 +124,12 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
+            if (simConnect.IsAtr7x)
+            {
+                sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)");
+                return;
+            }
+
             var lvar = "A32NX_EFIS_L_ND_RANGE";
             var min = 0;
             var max = 5; //TODO: does the A330 support 6 like the A380X does?
