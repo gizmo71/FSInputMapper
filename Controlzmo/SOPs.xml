@@ -102,9 +102,12 @@
 	</Airline>
 	<Airline callsign="^i[- ]fly$"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
-		<Text type=".*">Start #1 first, 45s between; OETD (3m); warm up</Text>
+		<Text type="AT76">Start #2 first</Text>
+		<Text type=".*">45s between starts; OETD (3m)</Text>
 		<Text type=".*">&uarr;Departure/arrival time ±15m</Text>
-		<Text type=".*">OETA (3m); cool down</Text>
+		<Text type=".*">OETA (3m)</Text>
+		<Text type="A32[01]|A2[01]N">Cool down</Text>
+		<Text type="AT76">Cool down (1m)</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
 		<Text type=".*">Must have SimBrief final reserve fuel on landing</Text>
