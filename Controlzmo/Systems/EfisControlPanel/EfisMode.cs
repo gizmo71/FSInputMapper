@@ -8,6 +8,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
+using System.DirectoryServices;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -99,6 +100,11 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
+            if (simConnect.IsAtr7x)
+            {
+                sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_ND_1) 1 {(op.Substring(0, 1))} (>L:MSATR_EFIS_FORMAT_1_DELTA)");
+                return;
+            }
             var lvar = "A32NX_EFIS_L_ND_MODE";
             if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
             if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";

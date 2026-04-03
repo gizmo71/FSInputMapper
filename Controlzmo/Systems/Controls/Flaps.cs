@@ -1,5 +1,4 @@
 ﻿using Controlzmo.GameControllers;
-using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -15,7 +14,6 @@ namespace Controlzmo.Systems.Controls
     {
         private readonly FlapsSetEvent _event;
         private readonly JetBridgeSender sender;
-        private readonly InputEvents inputEvents;
 
         public int GetAxis() => UrsaMinorThrottle.AXIS_FLAPS;
 
@@ -25,8 +23,6 @@ namespace Controlzmo.Systems.Controls
                 Interlocked.Exchange(ref discretePosition, @new);
                 sender.Execute(sc, Discrete);
             }
-            /*else if (sc.IsAtr7x)
-                inputEvents.Send(sc, "HANDLING_FLAPS", @new * 32768);*/
             else
                 sc.SendEvent(_event, (int)(@new * 32767 - 16383));
         }
