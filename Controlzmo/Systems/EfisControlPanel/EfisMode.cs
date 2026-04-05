@@ -18,6 +18,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public UInt32 ModeA32nx { get; set; }
         public UInt32 ModeFenix { get; set; }
         public UInt32 ModeIni { get; set; }
+        public UInt32 ModeAtr { get; set; }
     }
 
     public abstract class EfisMode<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisModeData
@@ -30,6 +31,12 @@ namespace Controlzmo.Systems.EfisControlPanel
             [3u] = "Arc",
             [4u] = "Plan",
             [5u] = "Eng", // A330 only!
+        };
+        private readonly BidirectionalDictionary<UInt32, string> ModeMapAtr = new()
+        {
+            [0u] = "Arc",
+            [1u] = "Rose Nav",
+            [2u] = "Plan",
         };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         protected readonly string id;
@@ -44,10 +51,12 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public override void Process(ExtendedSimConnect simConnect, T data)
         {
+            var map = ModeMap;
             if (simConnect.IsFenix) data.Mode = data.ModeFenix;
             if (simConnect.IsA32NX) data.Mode = data.ModeA32nx;
             else if (simConnect.IsIniBuilds) data.Mode = data.ModeIni;
-            hub.Clients.All.SetFromSim(id, ModeMap[data.Mode]);
+            else if (simConnect.IsAtr7x) { data.Mode = data.ModeAtr; map = ModeMapAtr; }
+            hub.Clients.All.SetFromSim(id, map[data.Mode]);
         }
 
         public string GetId() => id;
@@ -64,18 +73,16 @@ namespace Controlzmo.Systems.EfisControlPanel
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public partial struct LeftEfisModeData : IEfisModeData
     {
-        [Property]
-        [SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [Property, SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _mode;
-        [Property]
-        [SimVar("L:A32NX_FCU_EFIS_L_EFIS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [Property, SimVar("L:A32NX_FCU_EFIS_L_EFIS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeA32nx;
-        [Property]
-        [SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [Property, SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
-        [Property]
-        [SimVar("L:INI_MAP_MODE_CAPT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        [Property, SimVar("L:INI_MAP_MODE_CAPT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeIni;
+        [Property, SimVar("L:MSATR_EFIS_STAT_FMT_1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeAtr;
     };
 
     [Component]

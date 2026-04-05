@@ -1,4 +1,5 @@
 ﻿using Controlzmo.Hubs;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace Controlzmo.Systems.EfisControlPanel
         public UInt32 ModeA32nx { get; set; }
         public UInt32 ModeFenix { get; set; }
         public UInt32 ModeIni { get; set; }
+        public UInt32 ModeAtr { get; set; }
     }
 
     public abstract class EfisNavAid<T> : DataListener<T>, ISettable<string>, IRequestDataOnOpen where T : struct, IEfisNavAidData
@@ -32,12 +34,20 @@ namespace Controlzmo.Systems.EfisControlPanel
             ["Off"] = 1u,
             ["VOR"] = 2u,
         };
+        private readonly BidirectionalDictionary<string, UInt32> MapModeAtr = new()
+        {
+            ["Off"] = 0u,
+            ["VOR"] = 1u,
+            ["ADF"] = 2u,
+        };
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly JetBridgeSender sender;
         protected readonly string id;
 
         protected EfisNavAid(IServiceProvider serviceProvider, string side, int number)
         {
             hub = serviceProvider.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
+            sender = serviceProvider.GetRequiredService<JetBridgeSender>();
             id = $"{side}EfisNavAid{number}";
         }
 
@@ -61,6 +71,11 @@ namespace Controlzmo.Systems.EfisControlPanel
                 modeMap = MapModeIniFenix.Inverse;
                 mode = data.ModeIni;
             }
+            else if (simConnect.IsAtr7x)
+            {
+                modeMap = MapModeAtr.Inverse;
+                mode = data.ModeAtr;
+            }
             hub.Clients.All.SetFromSim(id, modeMap[mode]);
         }
 
@@ -68,9 +83,20 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         public void SetInSim(ExtendedSimConnect simConnect, string? label)
         {
-            var modeMap = simConnect.IsFenix || simConnect.IsIniBuilds ? MapModeIniFenix : ModeMap.Inverse;
+            var modeMap = ModeMap.Inverse;
+            if (simConnect.IsFenix || simConnect.IsIniBuilds)
+                modeMap = MapModeIniFenix;
+            else if (simConnect.IsAtr7x)
+                modeMap = MapModeAtr;
             var value = modeMap[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
+            if (simConnect.IsAtr7x)
+            {
+                var num = id.Substring(id.Length - 1);
+                //TODO: can only ever move to the "next" one. Ideally we would track the desired state and press it again if wrong.
+                sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_BRG{num}_1)");
+            }
+            else
+                simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
         }
     }
 
@@ -89,6 +115,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:INI_VOR_ADF1_CAPT_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeIni;
+        [Property]
+        [SimVar("L:MSATR_EFIS_STAT_BRG_1_1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeAtr;
     };
 
     [Component]
@@ -112,6 +141,9 @@ namespace Controlzmo.Systems.EfisControlPanel
         [Property]
         [SimVar("L:INI_VOR_ADF2_CAPT_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeIni;
+        [Property]
+        [SimVar("L:MSATR_EFIS_STAT_BRG_2_1", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public UInt32 _modeAtr;
     };
 
     [Component]
