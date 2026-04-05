@@ -8,7 +8,6 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
