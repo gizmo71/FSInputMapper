@@ -8,7 +8,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 using System.Collections.Generic;
-using System.DirectoryServices;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.EfisControlPanel
@@ -102,7 +102,8 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             if (simConnect.IsAtr7x)
             {
-                sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_ND_1) 1 {(op.Substring(0, 1))} (>L:MSATR_EFIS_FORMAT_1_DELTA)");
+                op = op.Substring(0, 1);
+                sender.Execute(simConnect, $"(L:MSATR_EFIS_STAT_PAGE_1) 0 == if{{ 1 {op} (>L:MSATR_EFIS_FORMAT_1_DELTA) }} els{{ 1 (>L:MSATR_EFIS_ND_1) }}");
                 return;
             }
             var lvar = "A32NX_EFIS_L_ND_MODE";
@@ -113,5 +114,14 @@ namespace Controlzmo.Systems.EfisControlPanel
             var max = simConnect.IsA330 ? 5 : 4;
             sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
         }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class EfisStickPress : AbstractButtonShortLongPress<UrsaMinorFighterR>
+    {
+        private readonly JetBridgeSender sender;
+        public override int GetButton() => UrsaMinorFighterR.BUTTON_MINI_STICK_PRESS;
+        public override void OnLongPress(ExtendedSimConnect simConnect) => sender.Execute(simConnect, "1 (>L:MSATR_EFIS_PERF_1)");
+        public override void OnShortPress(ExtendedSimConnect simConnect) => sender.Execute(simConnect, "1 (>L:MSATR_EFIS_SYS_1)");
     }
 }
