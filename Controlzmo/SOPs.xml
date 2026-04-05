@@ -141,19 +141,22 @@
 		<Text type=".*">Rejected &gt;500fpm; Rejected &gt;600fpm</Text>
 	</Airline>
 	<Airline callsign="^(shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight)$"> <!-- ALVA -->
-		<Text type=".*">Preparation 20-90 minutes, air time counts</Text>
-		<Text type="A32[01]|A21N">&uarr; Departure &pm;15m</Text>
+		<Text type=".*">Air time counts</Text>
+		<Text type="A[23]..">Preparation 20-90 minutes</Text>
+		<Text type="AT7.">Preparation 15-60 minutes</Text>
+		<Text type="A32[01]|A21N">&uarr; Departure &pm;60m</Text>
 		<Text type=".*">10s between starts</Text>
 		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
-		<Text type=".*">Points for step climb</Text>
+		<Text type="A[23]..">Points for step climb</Text>
 		<Text type="A32[01]|A21N">MLW, FINRES</Text>
-		<Text type="A32[01]|A21N">&udarr; Arrival &pm;15m</Text>
+		<Text type="A32[01]|A21N">&udarr; Arrival &pm;60m</Text>
 		<Text type="A32[01]|A21N">OETD (3m)</Text>
 		<Text type="A33[23]">Must have 1.5T&le;fuel&le;12T on landing</Text>
 		<Text type="A32[01]|A21N">Must have 1.5T&le;fuel&le;10T on landing</Text>
+		<Text type="AT7.">Must have 550kg&le;fuel&le;10T on landing</Text>
 		<Text type=".*">Stop #2 first</Text>
 		<Text type=".*">Invalidated 800fpm</Text>
-		<Text type=".*">Multiple flight bonus</Text>
+		<Text type="A[23]..">Multiple flight bonus</Text>
 	</Airline>
 	<Airline callsign="^(batik|lion[- ]inter|malindo|mentari|prosper|wings[- ]abadi)$"><!-- Lion Group -->
 		<Text type=".*">Air time counts</Text>
