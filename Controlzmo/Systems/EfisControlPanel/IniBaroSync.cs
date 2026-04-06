@@ -1,5 +1,5 @@
-﻿using Lombok.NET;
-using Controlzmo.Systems.JetBridge;
+﻿using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -21,6 +21,10 @@ namespace Controlzmo.Systems.EfisControlPanel
         public Int32 leftUnits;
         [SimVar("L:XMLVar_Baro_Selector_HPA_2", "number", SIMCONNECT_DATATYPE.INT32, 0.1f)]
         public Int32 rightUnits;
+        [SimVar("KOHLSMAN SETTING MB:1", "millibars scaler 16", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 mb16left;
+        [SimVar("KOHLSMAN SETTING MB:2", "millibars scaler 16", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public UInt32 mb16right;
     };
 
     [Component, RequiredArgsConstructor]
@@ -38,6 +42,10 @@ namespace Controlzmo.Systems.EfisControlPanel
                 data.isisMode = data.rightMode = data.leftMode;
                 data.rightUnits = data.leftUnits;
                 simConnect.SendDataOnSimObject(data);
+            }
+Console.WriteLine($"maybe sync MB {data.mb16right} to {data.mb16left}");
+            if (data.mb16left != data.mb16right) {
+                sender.Execute(simConnect, $"{data.mb16left} (>K:2:KOHLSMAN_SET)");
             }
         }
     }
