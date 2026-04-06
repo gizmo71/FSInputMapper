@@ -27,6 +27,22 @@ class ComFrequency extends HTMLInputElement {
 }
 customElements.define('com-frequency', ComFrequency, { extends: "input" });
 
+
+class VSpeed extends HTMLInputElement {
+    constructor() {
+        super();
+        this.setAttribute('type', 'number');
+        this.setAttribute('size', '3');
+        this.setAttribute('min', '0');
+        this.setAttribute('max', '999');
+        this.setAttribute('step', '1');
+        this.addEventListener('click', () => {
+            this.select();
+        });
+    }
+}
+customElements.define('v-speed', VSpeed, { extends: "input" });
+
 function errorHandler(err) {
     return console.error(err.toString());
 }
