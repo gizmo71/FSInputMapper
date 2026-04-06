@@ -43,7 +43,6 @@ namespace Controlzmo.Systems.EfisControlPanel
                 data.rightUnits = data.leftUnits;
                 simConnect.SendDataOnSimObject(data);
             }
-Console.WriteLine($"maybe sync MB {data.mb16right} to {data.mb16left}");
             if (data.mb16left != data.mb16right) {
                 sender.Execute(simConnect, $"{data.mb16left} (>K:2:KOHLSMAN_SET)");
             }
