@@ -39,7 +39,8 @@ namespace Controlzmo.Systems.PilotMonitoring
                 var where = _waypoint.Name;
                 if (!where.Equals(_waypoint.Ident))
                     where = $"{where}/{_waypoint.Ident}";
-                var newLine = $"{where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.0;-#.0;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
+                var now = DateTime.UtcNow.ToString("HHmm");
+                var newLine = $"{now} {where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.0;-#.0;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
                 printer.Print(newLine, 35);
                 log[log.Length - 1] = newLine;
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
