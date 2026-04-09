@@ -42,7 +42,7 @@
 		<Text type=".*">Start #1 first, 1m between, warm up (after 90m)</Text>
 		<Text type=".*">OETD (4m); MTOW checked</Text>
 		<Text type=".*">Stabilised approach, MLW checked</Text>
-		<Text type=".*">Cool down; OETA, 1m between</Text>
+		<Text type=".*">Cool down; OETA (1m)</Text>
 		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
 		<Text type=".*">Pushback fuel -500/+1500kg of planned</Text>
