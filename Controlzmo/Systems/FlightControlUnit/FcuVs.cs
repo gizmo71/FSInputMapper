@@ -75,7 +75,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
+            if (simConnect.IsFenix || simConnect.IsAtr7x) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -116,10 +116,12 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         protected override void BothAction(ExtendedSimConnect? simConnect)
         {
-            if (simConnect.IsAtr7x)
+            if (simConnect == null)
+                ;
+            else if (simConnect.IsAtr7x)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_IAS)");
             else
-                toggle.SetInSim(simConnect!, false);
+                toggle.SetInSim(simConnect, false);
         }
     }
 
