@@ -83,7 +83,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isOnGround) waypointProgress = null;
             simConnect.RequestDataOnSimObject(
                 this,
-                isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
+                isOnGround || simConnect.IsFenix
+                ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER
+                : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
         }
 
         public override void Process(ExtendedSimConnect simConnect, PositionData data)
