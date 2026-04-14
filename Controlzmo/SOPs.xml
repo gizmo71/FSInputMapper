@@ -114,7 +114,7 @@
 		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected 700fpm</Text>
 	</Airline>
-	<Airline callsign="$(jbu|jet[- ]?blue)"> <!-- vJBU -->
+	<Airline callsign="^(jbu|jet[- ]?blue)$"> <!-- vJBU -->
 		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
 		<Text type=".*">30s between starts; OETD; OETA</Text>
