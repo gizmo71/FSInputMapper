@@ -147,7 +147,7 @@
 		<Text type="A32[01]|A21N">&uarr; Departure &pm;60m</Text>
 		<Text type=".*">10s between starts</Text>
 		<Text type=".*">Flight time &gt;20%/45m of scheduled → review</Text>
-		<Text type="A[23]..">Points for step climb</Text>
+		<Text type="A[23]..">&uarr;Step climb</Text>
 		<Text type="A32[01]|A21N">MLW, FINRES</Text>
 		<Text type="A32[01]|A21N">&udarr; Arrival &pm;60m</Text>
 		<Text type="A32[01]|A21N">OETD (3m)</Text>
@@ -213,7 +213,7 @@
 		<Text type=".*">&udarr; Departure/arrival &pm;15m of scheduled</Text>
 		<Text type=".*">30s between starts; OETD (30s); warm up</Text>
 		<Text type=".*">OETA (30s); cool down</Text>
-		<Text type=".*">Points for step climb</Text>
+		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">1000 feet stabilistation check</Text>
 		<Text type=".*">Review at 700fpm</Text>
 		<Text type=".*">Pauses over 15% of flight require PIREP comment</Text>
@@ -233,6 +233,7 @@
 		<Text type=".*">Preparation 0-60 minutes, block time counts</Text>
 		<Text type=".*">5s between starts</Text>
 		<Text type=".*">&darr;Taxi speed limit (5s grace)</Text>
+		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">Cool down</Text>
 		<Text type=".*">Must have fuel &ge;1300kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
