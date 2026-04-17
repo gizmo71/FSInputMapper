@@ -179,12 +179,16 @@
 		<Text type=".*">Invalidated 500/600fpm or 2.33/2.6G</Text>
 	</Airline>
 	<Airline callsign="^new[ -]?zealand$">
-		<Text type=".*">Preparation 25m to 2h; block time counts</Text>
+		<Text type=".*">Block time counts</Text>
+		<Text type="A320|A21N">Preparation 25m to 2h</Text>
+		<Text type="AT76">Preparation 15m to 45m</Text>
 		<Text type=".*">&udarr; Departure/Arrival &pm;15/&pm;16 minutes of scheduled</Text>
 		<Text type=".*">1m between starts; warm up</Text>
-		<Text type=".*">Departure pitch 6/7-15/16°; MTOW checked</Text>
+		<Text type="AT76">Start #2 first</Text>
+		<Text type="A320|A21N">Departure pitch 6/7-15/16°; MTOW checked</Text>
 		<Text type=".*">Cool down</Text>
-		<Text type=".*">Must have 1.2T&lt;fuel&lt;5T on landing</Text>
+		<Text type="A320|A21N">Must have 1.2T&lt;fuel&lt;5T on landing</Text>
+		<Text type="AT76">Must have 700kg&lt;fuel&lt;3T on landing</Text>
 		<Text type=".*">Pauses over 4h/25% in flight reviewed/rejected</Text>
 		<Text type=".*">Review at 800fpm; Rejected 1000fpm</Text>
 	</Airline>
