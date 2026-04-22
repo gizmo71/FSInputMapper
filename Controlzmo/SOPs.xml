@@ -67,7 +67,7 @@
 		<Text type="A.3.">&uarr;Departure/arrival within &pm;15m</Text>
 		<Text type="A.[^3].">OETA (10s)</Text>
 		<Text type="A.3.">OETA(#2, 3m)</Text>
-		<Text type=".*">Cool down</Text>
+		<Text type=".*">Cool down (2m)</Text>
 		<Text type=".*">Negative points at 1.7G</Text>
 	</Airline>
 	<Airline callsign="^(alpine|easy|top[- ]?swiss)$"> <!-- vEZY -->
