@@ -43,6 +43,21 @@ class VSpeed extends HTMLInputElement {
 }
 customElements.define('v-speed', VSpeed, { extends: "input" });
 
+class Squawk extends HTMLInputElement {
+    constructor() {
+        super();
+        this.setAttribute('type', 'number');
+        this.setAttribute('size', '4');
+        this.setAttribute('min', '0');
+        this.setAttribute('max', '7777');
+        this.setAttribute('step', '1');
+        this.addEventListener('click', () => {
+            this.select();
+        });
+    }
+}
+customElements.define('squawk-code', Squawk, { extends: "input" });
+
 function errorHandler(err) {
     return console.error(err.toString());
 }
