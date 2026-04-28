@@ -17,8 +17,8 @@ namespace Controlzmo.Systems
         public void SetInSim(ExtendedSimConnect simConnect, bool isPressed)
         {
             var varName = "L:A32NX_BTN_TOCONFIG";
-            if (simConnect.IsA32NX)
-                varName = $"B:A32NX_PED_ECP_TO_CONF_TEST_PB_{(isPressed ? "Push" : "Release")}";
+            if (simConnect.IsFBW && !simConnect.IsA380X)
+                varName = $"H:A32NX_ECP_TO_CONF_TEST_{(isPressed ? "PRESSED" : "RELEASED")}";
             else if (simConnect.IsFenix)
                 varName = "L:S_ECAM_TO";
             else if (simConnect.IsIniBuilds)
