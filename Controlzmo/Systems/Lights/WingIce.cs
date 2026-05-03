@@ -5,8 +5,7 @@ using SimConnectzmo;
 
 namespace Controlzmo.Systems.Lights
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class WingIceLight : ISettable<bool?>
     {
         private readonly JetBridgeSender sender;
