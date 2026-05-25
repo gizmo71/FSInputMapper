@@ -42,7 +42,7 @@ namespace Controlzmo.Systems.Controls.Engine
             double normalised;
             // Note that the ATR needs calibrating in any case.
             if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr7x)
-                normalised = AirbusSnap(@new, tl);
+                normalised = AirbusSnap(@new, tl, sc.IsIniBuilds);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
                 normalised = Generic(@new, tl);
@@ -104,12 +104,13 @@ Console.WriteLine($"Normalised {normalised}");
             return mapped;
         }
 //TODO: merge above and below - perhaps always do the Airbus bit, then massage it
-        private double AirbusSnap(double hardware, AbstractThrustLever tl)
+        private double AirbusSnap(double hardware, AbstractThrustLever tl, bool isIniBuilds)
         {
             // Note that the Fenix doesn't do reverse on axis without calibration.
             // If we want to support that, we need a more hybrid approach.
             const double OUTPUT_MAX_REVERSE = -1;
-            const double OUTPUT_IDLE_REVERSE = -0.8;
+            // The iniBuilds A330s and A321LR show reverse selected visually on the levers but the ECAM tells us we need more.
+            double OUTPUT_IDLE_REVERSE = isIniBuilds ? -0.89 : -0.8;
             const double OUTPUT_IDLE = -0.5;
             const double OUTPUT_CLB = 0.001; // Let's try it slightly off 0 to see if that helps
             const double OUTPUT_FLX_MCT = 0.5;
@@ -220,7 +221,7 @@ Console.WriteLine($"Normalised {normalised}");
     {
         public LeftThrustLever(SetThrustLevers setTLs) : base(setTLs, 1) { }
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
-        internal override double EndRevFull() => 0.060;
+        internal override double EndRevFull() => 0.060; // This one doesn't report it's whole travel :-(
         internal override double StartRevIdle() => 0.179;
         internal override double StartIdle() => 0.285;
         internal override double EndIdle() => 0.310;
