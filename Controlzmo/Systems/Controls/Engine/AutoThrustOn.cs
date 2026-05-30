@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.Controls.Engine
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
             _logger.LogDebug("User has asked to arm autothrust");
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
                 atrPowerMode.Manipulate(simConnect, -1);
             else if (simConnect.IsAsoboB38M)
                 inputEvents.Send(simConnect, "FCC_AUTOTHROTTLE", 1.0);

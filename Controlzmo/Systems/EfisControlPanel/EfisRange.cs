@@ -39,7 +39,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsFenix) data.RangeCode = data.RangeFenix;
             else if (simConnect.IsA32NX) data.RangeCode = data.RangeA32nx;
             else if (simConnect.IsIniBuilds) data.RangeCode = data.RangeIni;
-            else if (simConnect.IsAtr7x) data.RangeCode = (Int32) (Math.Log2(data.RangeAtr / 10.0));
+            else if (simConnect.IsAtr) data.RangeCode = (Int32) (Math.Log2(data.RangeAtr / 10.0));
             int value = data.RangeCode;
             if (simConnect.IsA380X) { if (value == 0) value = data.OansRange - 4; }
             else ++value;
@@ -124,7 +124,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)");
                 return;

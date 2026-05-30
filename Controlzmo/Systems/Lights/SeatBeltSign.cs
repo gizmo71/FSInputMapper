@@ -20,7 +20,7 @@ namespace Controlzmo.Systems.Lights
                 action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
             else if (simConnect.IsFenix)
                 action = $"{desiredValue} (>L:S_OH_SIGNS)";
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 action = $"{desiredValue} (>L:MSATR_CABS_SEAT_BELTS)";
             else if (simConnect.IsIniBuilds)
             {

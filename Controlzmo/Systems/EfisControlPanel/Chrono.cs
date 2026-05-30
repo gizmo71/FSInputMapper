@@ -29,7 +29,7 @@ namespace Controlzmo.Systems.EfisControlPanel
                 sender.Execute(simConnect, $"{(isPressed ? 1 : 0)} (>L:S_MIP_CHRONO_CAPT)");
             else if (simConnect.IsIniBuilds && isPressed)
                 sender.Execute(simConnect, $"1 (>L:INI_CPT_CHRONO_BUTTON)");
-            else if (simConnect.IsAtr7x && isPressed)
+            else if (simConnect.IsAtr && isPressed)
                 sender.Execute(simConnect, $"1 (>L:MSATR_CLCK_CHRONO_1)");
             else if (simConnect.IsFBW && isPressed)
                 simConnect.SendEvent(e);

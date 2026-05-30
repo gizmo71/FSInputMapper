@@ -65,7 +65,7 @@ namespace Controlzmo.Systems.Lights
                 int code = value ? 0 : 2;
                 sender.Execute(simConnect, $"{code} (>L:A320_LANDING_LIGHT_SWITCH_LEFT) {code} (>L:A320_LANDING_LIGHT_SWITCH_RIGHT)");
             }
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
             {
                 int code = value ? 1 : 0;
                 sender.Execute(simConnect, $"{code} (>L:MSATR_ELTS_LDG_LEFT) {code} (>L:MSATR_ELTS_LDG_RIGHT)");

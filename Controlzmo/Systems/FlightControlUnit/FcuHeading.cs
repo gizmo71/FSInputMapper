@@ -27,7 +27,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_HEADING_BUTTON)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_HDG)");
             else
                 simConnect.SendEvent(this);
@@ -50,7 +50,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_HEADING_BUTTON)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_NAV)");
             else
                 simConnect.SendEvent(this);
@@ -84,7 +84,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+            if (simConnect.IsFenix || simConnect.IsAtr) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -107,7 +107,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         {
             string lvar = "E_FCU_HEADING";
             string extra = "";
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 lvar = "MSATR_SEL_HDG";
                 extra = " 1 (>L:MSATR_SEL_HDG_CHANGED)";
@@ -131,7 +131,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
         protected override void BothAction(ExtendedSimConnect? simConnect) {
-            if (simConnect?.IsAtr7x == true)
+            if (simConnect?.IsAtr == true)
                 sender.Execute(simConnect, "1 (>L:MSATR_SEL_HDG_SYNC)");
             else
                 toggle.SetInSim(simConnect!, true);

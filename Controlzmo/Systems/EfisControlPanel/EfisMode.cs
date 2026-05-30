@@ -55,7 +55,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (simConnect.IsFenix) data.Mode = data.ModeFenix;
             if (simConnect.IsA32NX) data.Mode = data.ModeA32nx;
             else if (simConnect.IsIniBuilds) data.Mode = data.ModeIni;
-            else if (simConnect.IsAtr7x) { data.Mode = data.ModeAtr; map = ModeMapAtr; }
+            else if (simConnect.IsAtr) { data.Mode = data.ModeAtr; map = ModeMapAtr; }
             hub.Clients.All.SetFromSim(id, map[data.Mode]);
         }
 
@@ -106,7 +106,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 op = op.Substring(0, 1);
                 sender.Execute(simConnect, $"(L:MSATR_EFIS_STAT_PAGE_1) 0 == if{{ 1 {op} (>L:MSATR_EFIS_FORMAT_1_DELTA) }} els{{ 1 (>L:MSATR_EFIS_ND_1) }}");

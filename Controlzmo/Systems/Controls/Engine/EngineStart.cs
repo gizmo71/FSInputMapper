@@ -12,7 +12,7 @@ namespace Controlzmo.Systems.Controls.Engine
         internal void Press(ExtendedSimConnect sc, int engine) => Action(sc, engine, 1);
         internal void Release(ExtendedSimConnect sc, int engine) => Action(sc, engine, 0);
         private void Action(ExtendedSimConnect sc, int engine, int value) {
-            if (sc.IsAtr7x)
+            if (sc.IsAtr)
                 sender.Execute(sc, $"{value} (>L:MSATR_ENGS_START{engine})");
         }
     }

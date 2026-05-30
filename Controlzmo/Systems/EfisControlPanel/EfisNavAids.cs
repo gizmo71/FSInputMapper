@@ -71,7 +71,7 @@ namespace Controlzmo.Systems.EfisControlPanel
                 modeMap = MapModeIniFenix.Inverse;
                 mode = data.ModeIni;
             }
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
             {
                 modeMap = MapModeAtr.Inverse;
                 mode = data.ModeAtr;
@@ -86,10 +86,10 @@ namespace Controlzmo.Systems.EfisControlPanel
             var modeMap = ModeMap.Inverse;
             if (simConnect.IsFenix || simConnect.IsIniBuilds)
                 modeMap = MapModeIniFenix;
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 modeMap = MapModeAtr;
             var value = modeMap[label!];
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 var num = id.Substring(id.Length - 1);
                 //TODO: can only ever move to the "next" one. Ideally we would track the desired state and press it again if wrong.

@@ -18,7 +18,7 @@ namespace Controlzmo.Systems.Controls
         public int GetAxis() => UrsaMinorThrottle.AXIS_FLAPS;
 
         public void OnChange(ExtendedSimConnect sc, double old, double @new) {
-            if (sc.IsFenix || sc.IsAtr7x)
+            if (sc.IsFenix || sc.IsAtr)
             {
                 Interlocked.Exchange(ref discretePosition, @new);
                 sender.Execute(sc, Discrete);
@@ -34,7 +34,7 @@ namespace Controlzmo.Systems.Controls
             double required = Interlocked.Exchange(ref discretePosition, NO_POSITION);
             if (required == NO_POSITION) return null;
             int raw = (int)((required + 0.1) * 4);
-            return sc.IsAtr7x ? $"(>K:FLAPS_{(raw == 0 ? "UP" : raw)})" : $"{raw} (>L:S_FC_FLAPS)";
+            return sc.IsAtr ? $"(>K:FLAPS_{(raw == 0 ? "UP" : raw)})" : $"{raw} (>L:S_FC_FLAPS)";
         }
     }
 }

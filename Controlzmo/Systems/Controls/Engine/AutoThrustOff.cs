@@ -17,7 +17,7 @@ namespace Controlzmo.Systems.Autothrust
 
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
                 atrPowerMode.Manipulate(simConnect, 1);
             else
                 simConnect.SendEvent(_event, 0u);

@@ -150,7 +150,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public virtual void OnPress(ExtendedSimConnect sc)
         {
             var delay = 500;
-            if (sc.IsAtr7x)
+            if (sc.IsAtr)
             {
                 delay = 0;
                 sender.Execute(sc, "1 (>L:MSATR_BARO_1_DELTA)");
@@ -224,7 +224,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             if (simConnect.IsFenix) command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
             else if (simConnect.IsA32NX || simConnect.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
             else if (simConnect.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
-            else if (simConnect.IsAtr7x) command = @"1 (>L:MSATR_BARO_STD_1)";
+            else if (simConnect.IsAtr) command = @"1 (>L:MSATR_BARO_STD_1)";
             sender.Execute(simConnect, command);
         }
     }
@@ -299,7 +299,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
 
             if (sc!.IsFenix)
                 return $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
-            if (sc!.IsAtr7x)
+            if (sc!.IsAtr)
                 return $"(L:MSATR_BARO_1_DELTA) {toSend} + (>L:MSATR_BARO_1_DELTA)";
 
             if (sc!.IsA32NX || sc!.IsA339)

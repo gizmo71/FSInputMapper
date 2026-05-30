@@ -44,7 +44,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) ++ (>L:S_FCU_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_SPEED_BUTTON)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 /*TODO: find out what it's for... sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL_LONG)")*/;
             else
                 simConnect.SendEvent(this);
@@ -64,7 +64,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_SPEED) -- (>L:S_FCU_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_SPEED_BUTTON)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL)");
             else
                 simConnect.SendEvent(this);
@@ -103,7 +103,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+            if (simConnect.IsFenix || simConnect.IsAtr) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -124,7 +124,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var lvar = simConnect.IsAtr7x ? "MSATR_FGCP_TGT_DELTA" : "E_FCU_SPEED";
+            var lvar = simConnect.IsAtr ? "MSATR_FGCP_TGT_DELTA" : "E_FCU_SPEED";
             var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
             return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";

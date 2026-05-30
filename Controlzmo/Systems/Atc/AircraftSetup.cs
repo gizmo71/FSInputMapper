@@ -18,7 +18,7 @@ namespace Controlzmo.Systems.Atc
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
             simConnect.SendEvent(volume, 100);
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 sender.Execute(simConnect, "1 (>L:MSATR_MICROPHONE_LEFT_HIDDEN) 1 (>L:MSATR_MICROPHONE_RIGHT_HIDDEN)");
                 sender.Execute(simConnect, "1 (>L:XMLVAR_YOKEHIDDEN1) 1 (>L:XMLVAR_YOKEHIDDEN2)");

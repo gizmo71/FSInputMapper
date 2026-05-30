@@ -23,7 +23,7 @@ namespace Controlzmo.Systems
                 varName = "L:S_ECAM_TO";
             else if (simConnect.IsIniBuilds)
                 varName = "L:PUSH_ECAM_TOCONFIG";
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 varName = "L:MSATR_ENG_TO_CONFIG";
 
             jetbridge.Execute(simConnect, $"{(isPressed ? 1 : 0)} (>{varName})");

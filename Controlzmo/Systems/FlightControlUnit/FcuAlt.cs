@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_ALT)");
             else
                 simConnect.SendEvent(this);
@@ -48,7 +48,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) -- (>L:S_FCU_ALTITUDE)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VNAV)");
             else
                 simConnect.SendEvent(this);
@@ -81,7 +81,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr7x) {
+            if (simConnect.IsFenix || simConnect.IsAtr) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -100,7 +100,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var lvar = simConnect.IsAtr7x ? "MSATR_FGCP_ALTSEL_DELTA" : "E_FCU_ALTITUDE";
+            var lvar = simConnect.IsAtr ? "MSATR_FGCP_ALTSEL_DELTA" : "E_FCU_ALTITUDE";
             var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
             return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";

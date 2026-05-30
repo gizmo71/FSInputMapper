@@ -36,7 +36,7 @@ namespace Controlzmo.Systems.Controls.Engine
                 sender.Execute(sc, $"{value} (>L:INI_MIXTURE_RATIO{engineId}_HANDLE)");
                 return;
             }
-            else if (sc.IsAtr7x)
+            else if (sc.IsAtr)
             {
                 var engineId = isLeft ? 1 : 2;
                 inputEvents.Send(sc, $"ENGINE_FUEL_LEVER_MIXTURE_{engineId}", value * 1.0);

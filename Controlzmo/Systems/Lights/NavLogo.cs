@@ -28,7 +28,7 @@ namespace Controlzmo.Systems.Lights
                 sender.Execute(simConnect, $"{state} (>L:S_OH_EXT_LT_NAV_LOGO)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, $"{2u - state} (>L:INI_LOGO_LIGHT_SWITCH)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, $"{state} (>L:MSATR_ELTS_NAV) {state} (>L:MSATR_ELTS_LOGO)");
             else
             {

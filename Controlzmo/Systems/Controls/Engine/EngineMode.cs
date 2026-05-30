@@ -18,7 +18,7 @@ namespace Controlzmo.Systems.Controls.Engine
 
         internal void Send(ExtendedSimConnect simConnect, IEvent? standard)
         {
-            if (simConnect.IsAtr7x)
+            if (simConnect.IsAtr)
             {
                 double value = 0;
                 if (standard is EngineModeCrankEvent)

@@ -16,7 +16,7 @@ namespace Controlzmo.Systems.Controls
 
         internal void SetParkingBrake(ExtendedSimConnect sc, Boolean? isSet)
         {
-            if (sc.IsAtr7x)
+            if (sc.IsAtr)
             {
                 // The ATR doesn't respect the default events and also has a middle "emergency" position.
                 // Luckily, the WinCntl PAC32 recognises this intermediate position, though you have to hold the control there.

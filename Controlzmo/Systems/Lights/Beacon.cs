@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.Lights
                 sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_BEACON)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, $"{code} (>L:INI_BEACON_LIGHT_SWITCH)");
-            else if (simConnect.IsAtr7x)
+            else if (simConnect.IsAtr)
                 sender.Execute(simConnect, $"{code} (>L:MSATR_ELTS_BEACON)");
             else
                 simConnect.SendEvent(setEvent, code);

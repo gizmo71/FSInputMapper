@@ -41,7 +41,7 @@ namespace Controlzmo.Systems.Controls.Engine
 
             double normalised;
             // Note that the ATR needs calibrating in any case.
-            if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr7x)
+            if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr)
                 normalised = AirbusSnap(@new, tl, sc.IsIniBuilds);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
