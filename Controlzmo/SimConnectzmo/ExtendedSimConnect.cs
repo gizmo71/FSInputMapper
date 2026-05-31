@@ -406,15 +406,19 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         /// <summary>Headwind A339, post new cockpit.</summary>
         public bool IsA339 { get => aircraftFile.StartsWith("HEADWIND_A330NEO"); }
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_3"); }
+        public bool IsIni310 { get => aircraftFile.StartsWith("A310-300\\PRESETS\\INIBUILDS"); }
         public bool IsIni320 { get => aircraftFile.Equals("MICROSOFT-AIRCRAFT-A320NEO") || aircraftFile.Equals("MICROSOFT-A320NEO\\PRESETS\\INIBUILDS\\A20N\\CONFIG"); }
         public bool IsIni321 { get => aircraftFile.Equals("MICROSOFT-A321\\PRESETS\\INIBUILDS\\A21N\\CONFIG"); }
         public bool IsIni330 { get => aircraftFile.StartsWith("MICROSOFT-A330\\PRESETS\\INIBUILDS\\A330-"); }
         public bool IsIni337 { get => aircraftFile.Equals("MICROSOFT-BELUGAXL\\PRESETS\\INIBUILDS\\BELUGAXL\\CONFIG"); }
         public bool IsIni400M { get => aircraftFile.Equals("A400M\\PRESETS\\INIBUILDS\\A400M_CARGO\\CONFIG"); }
-        public bool IsAtr42 { get => aircraftFile.StartsWith("MICROSOFT_ATR_42_") || aircraftFile.StartsWith("MICROSOFT_ATR\\PRESETS\\MICROSOFT\\42600"); }
-        public bool IsAtr72 { get => aircraftFile.StartsWith("MICROSOFT_ATR_72_") || aircraftFile.StartsWith("MICROSOFT_ATR\\PRESETS\\MICROSOFT\\72600"); }
+        public bool Is2020Atr42 { get => aircraftFile.StartsWith("MICROSOFT_ATR_42_"); }
+        public bool Is2020Atr72 { get => aircraftFile.StartsWith("MICROSOFT_ATR_72_"); }
+        public bool IsAtr42 { get => Is2020Atr42 || aircraftFile.StartsWith("MICROSOFT_ATR\\PRESETS\\MICROSOFT\\42600"); }
+        public bool IsAtr72 { get => Is2020Atr72 || aircraftFile.StartsWith("MICROSOFT_ATR\\PRESETS\\MICROSOFT\\72600"); }
+        public bool Is2020Atr { get => Is2020Atr42 || Is2020Atr72; }
         public bool IsAtr { get => IsAtr42 || IsAtr72; }
-        public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330 || IsIni337 || IsIni400M; }
+        public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330 || IsIni337 || IsIni400M || IsIni310; }
         public bool IsAsoboB38M { get => aircraftFile.StartsWith("ASOBO_B737MAX\\PRESETS\\ASOBO\\B737MAX8_"); }
         public bool IsB748 { get => aircraftFile.Equals("ASOBO_B747_8I") || aircraftFile.StartsWith("ASOBO_B747_8I\\PRESETS\\MICROSOFT\\B_B747_8_"); }
 
