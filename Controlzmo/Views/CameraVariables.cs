@@ -24,7 +24,8 @@ namespace Controlzmo.Views
         public static readonly int CHASE = 3;
         public static readonly int DRONE = 4;
         public static readonly int FIXED = 5;
-        public static readonly int SHOWCASE = 9;
+        public static readonly int SHOWCASE = 7;
+        public static readonly int SHOWCASE_LAST = 9;
         public static readonly int WORLD_MAP = 12; // Yep, sometimes it gets stuck on this!
         public static readonly int DEVELOPER = 18;
 
@@ -71,7 +72,7 @@ namespace Controlzmo.Views
 
         public override void Process(ExtendedSimConnect simConnect, CameraViewData data)
         {
-            log.LogCritical($"camera view {data.viewType}/{data.viewIndex}");
+            log.LogCritical($"camera view type/index {data.viewType}/{data.viewIndex}");
             _current = data;
         }
 
