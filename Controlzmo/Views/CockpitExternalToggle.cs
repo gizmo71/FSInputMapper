@@ -1,5 +1,7 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -31,7 +33,7 @@ namespace Controlzmo.Views
             if (state.Current == CameraState.CHASE) {
                 _logger.LogWarning($"Requesting cockpit for {state.Current}");
                 state.Current = CameraState.COCKPIT;
-            }  else if (state.Current == CameraState.COCKPIT || state.Current == CameraState.WORLD_MAP) {
+            }  else if (state.Current == CameraState.COCKPIT || state.Current == CameraState.WORLD_MAP || state.Current == CameraState.SHOWCASE) {
                 _logger.LogWarning($"Requesting chase for {state.Current}");
                 state.Current = CameraState.CHASE;
             } else
@@ -45,8 +47,10 @@ namespace Controlzmo.Views
         {
             if (!isCallbackDefined)
             {
-                simConnect.OnRecvCameraDefinitionList += ReceiveCameraDefinitions;
+                //simConnect.OnRecvCameraDefinitionList += ReceiveCameraDefinitions;
                 simConnect.OnRecvCameraStatus += ReceiveCameraStatus;
+                simConnect.OnRecvCameraData += ReceiveCameraData;
+                simConnect.SubscribeToCameraStatusUpdate();
                 isCallbackDefined = true;
             }
             if (true && state.Current == CameraState.CHASE) {
@@ -54,12 +58,20 @@ namespace Controlzmo.Views
             }
         }
 
-        private void ReceiveCameraStatus(SimConnect sender, SIMCONNECT_RECV_CAMERA_STATUS data)
+        private void ReceiveCameraStatus(SimConnect simConnect, SIMCONNECT_RECV_CAMERA_STATUS data)
         {
             //... buuuuutttt... which camera?!
             // Do we have to (attempt to) acquire it first?
             Console.Error.WriteLine($"Camera API Status: acqSt {data.acquiredState} gameCont? {data.bGameControlled} dwId {data.dwID}");
+            if (data.acquiredState == 1)
+                simConnect.CameraGet((uint) SIMCONNECT_POSITION_REFERENTIAL.EYEPOINT);
         }
+        private void ReceiveCameraData(SimConnect sender, SIMCONNECT_RECV_CAMERA_DATA data)
+        {
+            hub.Clients.All.SetFromSim("camera", $"x={data.CameraData.Position.x}\ny={data.CameraData.Position.y}\nz={data.CameraData.Position.z}");
+        }
+
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
 /*What do we do with camera defintions? 1 of 2, size 40988 with 159
         [0/0] Pilot

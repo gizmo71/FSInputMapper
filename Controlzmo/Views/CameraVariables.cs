@@ -20,6 +20,7 @@ namespace Controlzmo.Views
     public partial class CameraState : DataListener<CameraStateData>, IOnSimStarted
     {
         public static readonly int UNKNOWN = 0;
+        public static readonly int FORCED_CUSTOM = 1;
         public static readonly int COCKPIT = 2;
         public static readonly int CHASE = 3;
         public static readonly int DRONE = 4;

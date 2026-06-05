@@ -47,7 +47,7 @@ Console.WriteLine($"**--** @new {@new - 0.5}");
                 Position = new SIMCONNECT_DATA_XYZ { x = 0.0, y = 0.0, z = 15.0 * (@new - 0.5) },
             };
             SIMCONNECT_CAMERA_DATA_MASK mask = SIMCONNECT_CAMERA_DATA_MASK.POSITION;
-            simConnect.CameraSet(data, (uint)mask);
+            //simConnect.CameraSet(data, (uint)mask);
         }
     }
 }
