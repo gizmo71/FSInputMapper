@@ -6,6 +6,11 @@ using System;
 
 namespace Controlzmo.Systems.Controls.Engine
 {
+    internal interface TlMapper
+    {
+        double Map(double input, AbstractThrustLever tl);
+    }
+
     [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
     [Component] public class Throttle3Event : IEvent { public string SimEvent() => "THROTTLE3_AXIS_SET_EX1"; }
@@ -28,6 +33,8 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly Reverse2OnEvent rev2on;
         private readonly Reverse2OffEvent rev2off;
         private readonly EngineDataListener data;
+        private readonly TlAirbus airbusMapper;
+        private readonly TlGeneric genericMapper;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
@@ -42,10 +49,10 @@ namespace Controlzmo.Systems.Controls.Engine
             double normalised;
             // Note that the ATR needs calibrating in any case.
             if (sc.IsFBW || sc.IsFenix || sc.IsIniBuilds || sc.IsAtr)
-                normalised = AirbusSnap(@new, tl, sc.IsIniBuilds);
+                normalised = airbusMapper.Map(@new, tl/*, sc.IsIniBuilds*/);
             else // The default is to return the non-reverse range as if the reversers were elsewhere.
             {
-                normalised = Generic(@new, tl);
+                normalised = genericMapper.Map(@new, tl);
                 if (normalised < 0) {
                     normalised = normalised * data.ThrottleLowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
 Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit}");
@@ -60,130 +67,6 @@ Console.WriteLine($"Normalised {normalised}");
 
             var raw = (Int32) (16384 * normalised);
             Set(sc, raw, bitmap);
-        }
-
-        private double Generic(double hardware, AbstractThrustLever tl)
-        {
-            double inputLow = -1;
-            double inputHigh = 2;
-            double outputLow;
-            double outputHigh;
-
-            var position = "?";
-            if (hardware < tl.StartRevIdle())
-            {
-                inputLow = 0.0;
-                inputHigh = tl.StartRevIdle();
-                outputLow = -1;
-                outputHigh = -0.1;
-                position = "reverse beyond idle";
-            }
-            else if (hardware < tl.StartIdle())
-            {
-                outputLow = outputHigh =  -0.1;
-                position = "reverse idle";
-            }
-            else if (hardware < tl.EndIdle())
-            {
-                outputLow = outputHigh =  0.0;
-                position = "idle";
-            }
-            else
-            {
-                inputLow = tl.EndIdle();
-                inputHigh = 1;
-                outputLow = 0.0;
-                outputHigh = 1.0;
-                position = "above idle";
-            }
-
-            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not noticable.
-            var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
-            var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
-            _logger.LogWarning($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000;-0.000; 0.000} for {tl.LeverNumber}");
-            return mapped;
-        }
-//TODO: merge above and below - perhaps always do the Airbus bit, then massage it
-        private double AirbusSnap(double hardware, AbstractThrustLever tl, bool isIniBuilds)
-        {
-            // Note that the Fenix doesn't do reverse on axis without calibration.
-            // If we want to support that, we need a more hybrid approach.
-            const double OUTPUT_MAX_REVERSE = -1;
-            // The iniBuilds A330s and A321LR show reverse selected visually on the levers but the ECAM tells us we need more.
-            double OUTPUT_IDLE_REVERSE = isIniBuilds ? -0.89 : -0.8;
-            const double OUTPUT_IDLE = -0.5;
-            const double OUTPUT_CLB = 0.001; // Let's try it slightly off 0 to see if that helps
-            const double OUTPUT_FLX_MCT = 0.5;
-            const double OUTPUT_TOGA = 1;
-
-            double inputLow = -1;
-            double inputHigh = 2;
-            double outputLow;
-            double outputHigh;
-            var position = "?";
-            if (hardware < tl.EndRevFull())
-            {
-                outputLow = outputHigh =  OUTPUT_MAX_REVERSE;
-                position = "reverse max";
-            }
-            else if (hardware < tl.StartRevIdle())
-            {
-                inputLow = tl.EndRevFull();
-                inputHigh = tl.StartRevIdle();
-                outputLow = OUTPUT_MAX_REVERSE;
-                outputHigh = OUTPUT_IDLE_REVERSE;
-                position = "manual reverse";
-            }
-            else if (hardware < tl.StartIdle())
-            {
-                outputLow = outputHigh =  OUTPUT_IDLE_REVERSE;
-                position = "reverse idle";
-            }
-            else if (hardware < tl.EndIdle())
-            {
-                outputLow = outputHigh =  OUTPUT_IDLE;
-                position = "idle";
-            }
-            else if (hardware < tl.StartClimb())
-            {
-                inputLow = tl.EndIdle();
-                inputHigh = tl.StartClimb();
-                outputLow = OUTPUT_IDLE;
-                outputHigh = OUTPUT_CLB;
-                position = "manual thrust";
-            }
-            else if (hardware < tl.EndClimb())
-            {
-                outputLow = outputHigh =  OUTPUT_CLB;
-                position = "CLB";
-            }
-            else if (hardware < tl.StartFlex())
-            {
-                inputLow = tl.EndClimb();
-                inputHigh = tl.StartFlex();
-                outputLow = OUTPUT_CLB;
-                outputHigh = OUTPUT_FLX_MCT;
-                position = "manual between CLB and FLX";
-            }
-            else if (hardware < tl.EndFlex())
-            {
-                outputLow = outputHigh = OUTPUT_FLX_MCT;
-                position = "FLX/MCT";
-            }
-            else
-            {
-                inputLow = tl.EndFlex();
-                inputHigh = 1;
-                outputLow = OUTPUT_FLX_MCT;
-                outputHigh = OUTPUT_TOGA;
-                position = "above FLX";
-            }
-
-            // We could put a 1% margin either side so that it doesn't "jump" out of detents and into ranges, but it's probably not znoticable.
-            var positionInRange = (hardware - inputLow) / (inputHigh - inputLow);
-            var mapped = positionInRange * (outputHigh - outputLow) + outputLow;
-            _logger.LogInformation($"-->>--\t\t{@hardware:0.000} {position} {mapped:+0.000;-0.000; 0.000} for {tl.LeverNumber}");
-            return mapped;
         }
 
         private void Set(ExtendedSimConnect sc, Int32 raw, int bitmap)
