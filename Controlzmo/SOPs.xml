@@ -24,7 +24,7 @@
 		<Text type="A(?:319|320|20N|321|21N)">Wind limits (knots): tail 15, cross 38</Text>
 		<Text type="A339">Wind limits (knots): tail 10, cross 32</Text>
 	</Airline>
-	<Airline callsign="^(?:cathay|air[- ]?china|shenzhen[- ]air)$"> <!-- Virtual Air China -->
+	<Airline callsign="^(?:cathay|air[- ]?(?:china|macau)|shenzhen[- ]air|tibet)$"> <!-- Virtual Air China -->
 		<Text type=".*">Perparation 3m-3h; block time counts</Text>
 		<Text type=".*">30s between starts</Text>
 		<Text type=".*">Must have fuel &ge;800kg on landing</Text>
@@ -98,6 +98,7 @@
 		<Text type=".*">Cool down; OETA (3m)</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
+		<Text type=".*">&uarr;Flap 3 landing</Text>
 		<Text type=".*">Must have fuel above SimBrief final reserve on landing</Text>
 		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
