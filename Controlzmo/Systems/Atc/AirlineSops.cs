@@ -71,6 +71,7 @@ namespace Controlzmo.Systems.Atc
             if (aircraftCfg.Contains("\\a21n\\")) icaoCode = "A21N";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-300")) icaoCode = "A333";
             else if (aircraftCfg.Contains("\\inibuilds\\a330-200")) icaoCode = "A332";
+            else if (icaoCode == "380") icaoCode = "A332"; // Bloody Hues!
             else if (atrRegex.Match(icaoCode) is Match m && m.Success) icaoCode = $"AT{m.Groups[1].Value}{m.Groups[2].Value}";
             var sops = $"SOPs for '{icaoCode}', file '{aircraftCfg}', title '{data.title}':";
             try
