@@ -143,7 +143,7 @@
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Rejected &gt;500fpm; Rejected &gt;600fpm</Text>
 	</Airline>
-	<Airline callsign="^(shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight)$"> <!-- ALVA -->
+	<Airline callsign="^(shamrock|gem[- ]?stone|green[ -]?stone|green[ -]?flight|emerald city)$"> <!-- ALVA -->
 		<Text type=".*">Air time counts</Text>
 		<Text type="A[23]..">Preparation 20-90 minutes</Text>
 		<Text type="AT7.">Preparation 15-60 minutes</Text>
