@@ -105,7 +105,7 @@
 	</Airline>
 	<Airline callsign="^i[- ]fly$"><!-- IndiGo Virtual -->
 		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
-		<Text type="AT76">Start #2 first</Text>
+		<Text type="AT76">Start #2 first (hotel mode?)</Text>
 		<Text type=".*">45s between starts; OETD (3m)</Text>
 		<Text type=".*">&uarr;Departure/arrival time ±15m</Text>
 		<Text type=".*">OETA (3m)</Text>
