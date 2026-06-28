@@ -402,7 +402,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         public bool IsA330 { get=> IsIni330 || IsIni337 | IsA339; }
         /// <summary>The experimental one (A380X-compatible).</summary>
         public bool IsA32NX { get => aircraftFile.StartsWith("FLYBYWIRE_A320_NEO"); }
-        public bool IsA380X { get => aircraftFile.StartsWith("FLYBYWIRE_A380"); }
+        public bool IsA380X { get => aircraftFile.Contains("FLYBYWIRE_A380"); }
         /// <summary>Headwind A339, post new cockpit.</summary>
         public bool IsA339 { get => aircraftFile.StartsWith("HEADWIND_A330NEO"); }
         public bool IsFenix { get => aircraftFile.StartsWith("FNX_3"); }
