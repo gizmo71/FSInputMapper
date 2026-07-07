@@ -30,7 +30,7 @@ namespace Controlzmo.Systems.JetBridge
 
         public override void Process(ExtendedSimConnect simConnect, JetBridgeDownlinkData data)
         {
-System.Console.Error.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
+Console.WriteLine($"JetBridge reply ID {data.id} = '{data.data}'");
         }
     }
 

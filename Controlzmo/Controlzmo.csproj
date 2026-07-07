@@ -36,7 +36,7 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)..\SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y" />
+    <Exec Command="xcopy &quot;$(ProjectDir)..\SimConnect.cfg&quot; &quot;$(OutDir)&quot; /Y&#xD;&#xA;xcopy &quot;$(MSFS2024_SDK)\SimConnect SDK\lib\SimConnect.dll&quot; &quot;$(OutDir)&quot; /Y" />
   </Target>
 
   <ItemGroup>
@@ -48,11 +48,12 @@
     <PackageReference Include="System.Device.Location.Portable" Version="1.0.0" />
     <PackageReference Include="System.IO.Ports" Version="10.0.1" />
     <PackageReference Include="System.Text.Json" Version="10.0.1" />
+    <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>$(MSFS_SDK)\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>$(MSFS2024_SDK)\SimConnect SDK\lib\managed\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

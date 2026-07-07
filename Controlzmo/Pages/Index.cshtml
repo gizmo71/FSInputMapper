@@ -14,14 +14,14 @@
     <div class="gridContainer">
         <div id="tabs-efis-radar-atc-radio">
             <div style="float: right;">
-                <input id="toSpeedV1" placeholder="V1" class="sendText vspeed" />
+                <input id="toSpeedV1" is="v-speed" placeholder="V1" class="sendText vspeed" />
                 <br />
-                <input id="toSpeedVr" placeholder="Vr" class="sendText vspeed" />
+                <input id="toSpeedVr" is="v-speed" placeholder="Vr" class="sendText vspeed" />
                 <br />
-                <input id="toSpeedV2" placeholder="V2" class="sendText vspeed" />
+                <input id="toSpeedV2" is="v-speed" placeholder="V2" class="sendText vspeed" />
             </div>
             <div style="float: right; clear: right; margin-top: 0.8lh;">
-                <input type="button" id="ecamButtonTakeOffConfig" value="T.O.&#x00A;Config" class="sendButton" style="-webkit-transform: rotate(0deg);" />
+                <button id="ecamButtonTakeOffConfig" class="holdButton" style="-webkit-transform: rotate(0deg);">T.O.<br />Config</button>
             </div>
             <div style="float: right; clear: right; margin-top: 0.8lh; line-height: 2; width: 3em;">
                 @{
@@ -51,7 +51,7 @@
                         <option value="-3">Zoom 4</option>
                         <option value="-2">Zoom 3</option>
                         <option value="-1">Zoom 2</option>
-                        <option value="0">Zoom 1</option>
+                        <option value="0">Zoom 1</option> <!-- In the ATR, this is range 5 -->
                         <option value="1">10</option>
                         <option value="2">20</option>
                         <option value="3">40</option>
@@ -81,7 +81,7 @@
                     </select>
                     <label for="leftEfisNavAid2">2</label>
                 </th>
-                <td><input type="button" id="chrono1press" value="Chrono" class="sendButton" /></td>
+                <td><button id="chrono1press" class="holdButton">Chrono</button></td>
             </tr>
         </table>
         <table style="font-size: larger">
@@ -182,7 +182,7 @@
             </tr>
             <tr style="font-size: smaller; line-height: 1;">
                 <th colspan="2"><label for="xpndrCode">Transponder Code</label></th>
-                <td><input id="xpndrCode" size="4" maxlength="4" class="sendText" /></td>
+                <td><input id="xpndrCode" is="squawk-code" size="4" maxlength="4" class="sendText" onclick="this.select()" /></td>
             </tr>
         </table>
     </div>
@@ -195,8 +195,13 @@
             <span onclick="$('#sops').hide(); $('#gsxPushback').hide(); $('#fuelLog').show();">Fuel Log</span>
         </div>
         <span id="sops">
-            <textarea id="atcAirline" rows="17" cols="40"></textarea>
-            <textarea id="simInfo" rows="5" cols="40"></textarea>
+            <input id="airlineName" size="35" maxlength="50" class="sendText" />
+            <input id="flightNo" size="5" maxlength="6" class="sendText" />
+            <input type="checkbox" id="isheavy" class="sendBoolean" />
+            <label for="isheavy">Heavy</label>
+            <input id="tailNumber" size="7" maxlength="10" class="sendText" />
+            <textarea id="airlineSops" rows="17" cols="40"></textarea>
+            <textarea id="simInfo" rows="4" cols="40"></textarea>
         </span>
         <textarea id="gsxPushback" rows="22" cols="40" style="display: none;">
 QuickEdit controls
@@ -234,6 +239,7 @@ F5/F6 remove/insert (before current) waypoint
         </div>
         <input type="button" id="doNotSleep" value="Do Not Sleep" onClick="new NoSleep().enable()" />
         <input type="button" id="reconnect" value="Reconnect" onClick="reconnect()" />
+        <input type="button" class="sendButton" style="float: right;" id="initAircraftState" value="Set initial state" />
         <div id="landingRateWidgit" style="margin: 10px;">
             Rate <input id="landingRate" size="10" /> AGL <input id="landingAgl" size="10" />
         </div>

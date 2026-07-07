@@ -27,6 +27,37 @@ class ComFrequency extends HTMLInputElement {
 }
 customElements.define('com-frequency', ComFrequency, { extends: "input" });
 
+
+class VSpeed extends HTMLInputElement {
+    constructor() {
+        super();
+        this.setAttribute('type', 'number');
+        this.setAttribute('size', '3');
+        this.setAttribute('min', '0');
+        this.setAttribute('max', '999');
+        this.setAttribute('step', '1');
+        this.addEventListener('click', () => {
+            this.select();
+        });
+    }
+}
+customElements.define('v-speed', VSpeed, { extends: "input" });
+
+class Squawk extends HTMLInputElement {
+    constructor() {
+        super();
+        this.setAttribute('type', 'number');
+        this.setAttribute('size', '4');
+        this.setAttribute('min', '0');
+        this.setAttribute('max', '7777');
+        this.setAttribute('step', '1');
+        this.addEventListener('click', () => {
+            this.select();
+        });
+    }
+}
+customElements.define('squawk-code', Squawk, { extends: "input" });
+
 function errorHandler(err) {
     return console.error(err.toString());
 }
@@ -87,6 +118,17 @@ function linkSendStyles() {
         connection.invoke("SetInSim", event.target.id, event.target.value).catch(errorHandler);
         event.preventDefault();
     });
+    $(".holdButton").on("pointerdown pointerup pointerleave", function (event) {
+        const newState = event.type == "pointerdown";
+        const oldState = event.target.currentState;
+        if (oldState != newState) {
+            event.target.currentState = newState;
+            connection.invoke("SetInSim", event.target.id, newState).catch(errorHandler);
+        }
+        event.preventDefault();
+        e.stopPropagation();
+    }).on("contextmenu", (event) => event.preventDefault());
+
     linkSendStyles = function () { }; // Don't do it again, even if reconnected.
 }
 

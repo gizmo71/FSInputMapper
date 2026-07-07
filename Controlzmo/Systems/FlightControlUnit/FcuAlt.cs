@@ -10,8 +10,7 @@ using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
@@ -27,13 +26,14 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) ++ (>L:S_FCU_ALTITUDE)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PULL_COMMAND)");
+            else if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_ALT)");
             else
                 simConnect.SendEvent(this);
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltPushed : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
@@ -48,6 +48,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_ALTITUDE) -- (>L:S_FCU_ALTITUDE)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_ALTITUDE_PUSH_COMMAND)");
+            else if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VNAV)");
             else
                 simConnect.SendEvent(this);
         }
@@ -65,8 +67,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public string SimEvent() => "A32NX.FCU_ALT_DEC";
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltDelta : ISettable<Int16>
     {
         private readonly FcuAltInc inc;
@@ -74,15 +75,15 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
 
-        private Int32 fenixAdjustment = 0;
+        private Int32 lvarAdjustment = 0;
 
         public string GetId() => "DISABLEDfcuAltDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
-                Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, ExecuteFenix);
+            if (simConnect.IsFenix || simConnect.IsAtr) {
+                Interlocked.Add(ref lvarAdjustment, value);
+                sender.Execute(simConnect, ExecuteLvar);
             }
             else
                 while (value != 0)
@@ -97,22 +98,23 @@ namespace Controlzmo.Systems.FlightControlUnit
                 }
         }
 
-        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var lvar = simConnect.IsAtr ? "MSATR_FGCP_ALTSEL_DELTA" : "E_FCU_ALTITUDE";
+            var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:E_FCU_ALTITUDE) {Math.Abs(toSend)} {op} (>L:E_FCU_ALTITUDE)";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuAltIncrement : ISettable<uint>
+    [Component, RequiredArgsConstructor]
+    public partial class FcuAltIncrememnt : ISettable<uint>
     {
         private readonly JetBridgeSender sender;
 
         public string GetId() => "DISABLEDfcuAltIncrement";
 
+//TODO: can we use one of these LVars to track our increment for the ATR?
         public void SetInSim(ExtendedSimConnect simConnect, uint value) {
             string command;
             if (simConnect.IsFenix)
@@ -142,20 +144,18 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuAltRepeatingDoublePress : AbstractRepeatingDoublePress
     {
         private readonly FcuAltDelta delta;
-        private readonly FcuAltIncrement notAToggle;
+        private readonly FcuAltIncrememnt bothPressed;
 
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
-        protected override void BothAction(ExtendedSimConnect? simConnect) => notAToggle.SetInSim(simConnect!, 0);
+        protected override void BothAction(ExtendedSimConnect? simConnect) => bothPressed.SetInSim(simConnect!, 0);
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class IncOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
         [Property]
@@ -165,8 +165,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             => AbstractRepeatingDoublePress.Direction.Up;
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class DecOrToggleFcuAlt : RepeatingDoublePressButton<UrsaMinorFighterR, FcuAltRepeatingDoublePress>
     {
         [Property]

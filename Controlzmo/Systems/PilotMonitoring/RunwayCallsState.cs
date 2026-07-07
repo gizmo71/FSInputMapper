@@ -1,5 +1,4 @@
-﻿using Lombok.NET;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;

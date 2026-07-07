@@ -25,7 +25,7 @@ namespace Controlzmo.Views
         public void OnPress(ExtendedSimConnect simConnect) {
             simConnect.SendDataOnSimObject(new ResetCameraData() { resetAction = 1 });
             if (cameraState.Current == CameraState.COCKPIT)
-                vJoy.getController().QuickClick(105u);
+                vJoy.getController().QuickClick(VJoyButton.LOAD_CUSTOM_CAMERA_5);
         }
     }
 }

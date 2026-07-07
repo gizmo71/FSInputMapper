@@ -9,8 +9,9 @@ namespace Controlzmo.GameControllers
         public UrsaMinorThrottle(IServiceProvider sp) : base(sp, 41, 8, 0) { }
 
         public override ushort Vendor() => 0x4098;
-        public override ushort Product() => 0xB920;
+        public override ushort Product() => PRODUCT_ID;
 
+        public static readonly ushort PRODUCT_ID = 0xB920;
         public static readonly int BUTTON_ENG_MASTER_LEFT_ON = 0;
         public static readonly int BUTTON_ENG_MASTER_LEFT_OFF = 1;
         public static readonly int BUTTON_ENG_MASTER_RIGHT_ON = 2;

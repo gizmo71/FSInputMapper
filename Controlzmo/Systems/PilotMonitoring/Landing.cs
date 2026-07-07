@@ -149,7 +149,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         }
 
         // Until/unless we discover a better to detect/predict Pegasus v2's behaviour
-        private const int SLACK = 30;
+        private const int SLACK = 5;
 
         public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
         {
@@ -157,14 +157,14 @@ namespace Controlzmo.Systems.PilotMonitoring
                 coolAt = data.now + atcAirline.CooldownMinutes * 60.0 + SLACK;
             else if (data.now >= coolAt)
             {
-                chronoButton.SetInSim(simConnect, null);
+                chronoButton.PressAndRelease(simConnect);
                 coolAt = null;
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);
 //TODO: is there anything we could trigger after three minutes ABSOLUTE TIME to signal the end of this? APU Bleed?
             }
             else
                 return;
-            chronoButton.SetInSim(simConnect, null);
+            chronoButton.PressAndRelease(simConnect);
         }
     }
 }

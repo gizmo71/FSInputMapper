@@ -149,7 +149,13 @@ System.Console.WriteLine($"-> {value} led to {command}");
 
         public virtual void OnPress(ExtendedSimConnect sc)
         {
-            magicIfAfter = DateTime.UtcNow.AddMilliseconds(500);
+            var delay = 500;
+            if (sc.IsAtr)
+            {
+                delay = 0;
+                sender.Execute(sc, "1 (>L:MSATR_BARO_1_DELTA)");
+            }
+            magicIfAfter = DateTime.UtcNow.AddMilliseconds(delay);
         }
 
         public virtual void OnRelease(ExtendedSimConnect sc)
@@ -160,6 +166,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
                 if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) -- (>L:S_FCU_EFIS1_BARO_STD)";
+                else if (sc.IsA380X) command = "(>H:A380X_EFIS_CP_BARO_PULL_1)"; // Yes, Pull
                 else if (sc.IsA32NX || sc!.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
                 else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 sender.Execute(sc, command);
@@ -216,8 +223,10 @@ System.Console.WriteLine($"-> {value} led to {command}");
         {
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (simConnect.IsFenix) command = @"(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
+            else if (simConnect.IsA380X) command = "(>H:A380X_EFIS_CP_BARO_PUSH_1)"; // Yes, Push!
             else if (simConnect.IsA32NX || simConnect.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
             else if (simConnect.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
+            else if (simConnect.IsAtr) command = @"1 (>L:MSATR_BARO_STD_1)";
             sender.Execute(simConnect, command);
         }
     }
@@ -292,6 +301,8 @@ System.Console.WriteLine($"-> {value} led to {command}");
 
             if (sc!.IsFenix)
                 return $"(L:E_FCU_EFIS1_BARO) {toSend} + (>L:E_FCU_EFIS1_BARO)";
+            if (sc!.IsAtr)
+                return $"(L:MSATR_BARO_1_DELTA) {toSend} + (>L:MSATR_BARO_1_DELTA)";
 
             if (sc!.IsA32NX || sc!.IsA339)
             {

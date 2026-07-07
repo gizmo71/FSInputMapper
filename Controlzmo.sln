@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controlzmo", "Controlzmo\Controlzmo.csproj", "{5153340A-17C4-471A-983C-C990617151EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinCtrlzmo", "WinCtrlzmo\WinCtrlzmo.csproj", "{C51B8256-99FC-447B-A354-983D9F03E404}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,22 @@ Global
 		{5153340A-17C4-471A-983C-C990617151EA}.Release-DLL|Any CPU.Build.0 = Release|Any CPU
 		{5153340A-17C4-471A-983C-C990617151EA}.Release-DLL|x64.ActiveCfg = Release|x64
 		{5153340A-17C4-471A-983C-C990617151EA}.Release-DLL|x64.Build.0 = Release|x64
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug|x64.Build.0 = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug-DLL|Any CPU.ActiveCfg = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug-DLL|Any CPU.Build.0 = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug-DLL|x64.ActiveCfg = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Debug-DLL|x64.Build.0 = Debug|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release|x64.ActiveCfg = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release|x64.Build.0 = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release-DLL|Any CPU.ActiveCfg = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release-DLL|Any CPU.Build.0 = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release-DLL|x64.ActiveCfg = Release|Any CPU
+		{C51B8256-99FC-447B-A354-983D9F03E404}.Release-DLL|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -60,7 +60,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             else if (running == engines && isArmed)
             {
                 warmAt = data.now + atcAirline.WarmupMinutes * 60.0;
-                chronoButton.SetInSim(simConnect, null);
+                chronoButton.PressAndRelease(simConnect);
                 isArmed = false;
             }
             else if (running < engines - 1)
@@ -70,8 +70,8 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (engines == running && warmAt != null && data.now >= warmAt) // We are not armed at this point.
             {
-                chronoButton.SetInSim(simConnect, null);
-                chronoButton.SetInSim(simConnect, null);
+                chronoButton.PressAndRelease(simConnect);
+                chronoButton.PressAndRelease(simConnect);
                 if (simConnect.IsFBW)
                     jetbridge.Execute(simConnect, "1 (>L:A32NX_CABIN_READY)");
                 else if (simConnect.IsFenix)

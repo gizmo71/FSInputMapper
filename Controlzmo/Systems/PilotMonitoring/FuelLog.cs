@@ -10,7 +10,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Device.Location;
 using System.Linq;
-using System.Xml;
 
 namespace Controlzmo.Systems.PilotMonitoring
 {
@@ -40,7 +39,8 @@ namespace Controlzmo.Systems.PilotMonitoring
                 var where = _waypoint.Name;
                 if (!where.Equals(_waypoint.Ident))
                     where = $"{where}/{_waypoint.Ident}";
-                var newLine = $"{where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.0;-#.0;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
+                var now = DateTime.UtcNow.ToString("HHmm");
+                var newLine = $"{now} {where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.0;-#.0;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
                 printer.Print(newLine, 35);
                 log[log.Length - 1] = newLine;
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
@@ -83,7 +83,9 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isOnGround) waypointProgress = null;
             simConnect.RequestDataOnSimObject(
                 this,
-                isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
+                isOnGround || simConnect.IsFenix
+                ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER
+                : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
         }
 
         public override void Process(ExtendedSimConnect simConnect, PositionData data)
@@ -94,13 +96,13 @@ namespace Controlzmo.Systems.PilotMonitoring
                 else
                     return;
             var current = new GeoCoordinate(data.latitude, data.longitude);
-//Console.Error.WriteLine($"**---** current {current}");
+//Console.WriteLine($"**---** current {current}");
             var firstPassed = (OfpWaypoint?)null;
             foreach (var entry in waypointProgress)
             {
                 var distance = current.GetDistanceTo(entry.Key.position) / 1852;
                 var isClosing = distance < entry.Value.distance;
-//Console.Error.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
+//Console.WriteLine($"   **---** {entry.Key} distance {distance} closing? {isClosing}");
                 if (firstPassed == null && !isClosing && entry.Value.isClosing && distance < 3.5)
                     firstPassed = entry.Key;
                 entry.Value.isClosing = isClosing;

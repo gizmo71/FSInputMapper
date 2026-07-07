@@ -9,8 +9,7 @@ using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuVsPulled : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
@@ -21,13 +20,14 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
+            else if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)");
             else
                 simConnect.SendEvent(this);
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuVsPushed : ISettable<bool>, IEvent
     {
         private readonly JetBridgeSender sender;
@@ -38,13 +38,14 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_PUSH_COMMAND)");
+            else if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)"); //TODO: also 50 (>L:MSATR_FCGP_PITCH_WHEEL) to level off?
             else
                 simConnect.SendEvent(this);
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class PushPullFcuVs : AbstractButtonShortLongPress<UrsaMinorFighterR>
     {
         private readonly FcuVsPulled pull;
@@ -55,19 +56,12 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuVsInc : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_VS_INC";
-    }
+    public class FcuVsInc : IEvent { public string SimEvent() => "A32NX.FCU_VS_INC"; }
 
     [Component]
-    public class FcuVsDec : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_VS_DEC";
-    }
+    public class FcuVsDec : IEvent { public string SimEvent() => "A32NX.FCU_VS_DEC"; }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuVsDelta : ISettable<Int16>
     {
         private readonly FcuVsInc inc;
@@ -75,15 +69,15 @@ namespace Controlzmo.Systems.FlightControlUnit
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
 
-        private Int32 fenixAdjustment = 0;
+        private Int32 lvarAdjustment = 0;
 
         public string GetId() => "DISABLEDfcuVsDelta";
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix) {
-                Interlocked.Add(ref fenixAdjustment, value);
-                sender.Execute(simConnect, ExecuteFenix);
+            if (simConnect.IsFenix || simConnect.IsAtr) {
+                Interlocked.Add(ref lvarAdjustment, value);
+                sender.Execute(simConnect, ExecuteLvar);
             }
             else
             {
@@ -101,28 +95,37 @@ namespace Controlzmo.Systems.FlightControlUnit
 //TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
         }
 
-        private String? ExecuteFenix(ExtendedSimConnect simConnect)
+        private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var toSend = Interlocked.Exchange(ref fenixAdjustment, 0);
+            var lvar = simConnect.IsAtr ? "MSATR_FCGP_PITCH_WHEEL_DELTA" : "E_FCU_VS";
+            var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:E_FCU_VS) {Math.Abs(toSend)} {op} (>L:E_FCU_VS)";
+            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuVsRepeatingDoublePress : AbstractRepeatingDoublePress
     {
         private readonly FcuVsDelta delta;
         private readonly FcuTrackFpaToggled toggle;
+        private readonly JetBridgeSender sender;
 
         protected override void UpAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, +1);
         protected override void DownAction(ExtendedSimConnect? simConnect) => delta.SetInSim(simConnect!, -1);
-        protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, false);
+
+        protected override void BothAction(ExtendedSimConnect? simConnect)
+        {
+            if (simConnect == null)
+                ;
+            else if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_IAS)");
+            else
+                toggle.SetInSim(simConnect, false);
+        }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class IncOrToggleFcuVs : RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>
     {
         [Property]
@@ -132,8 +135,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             => AbstractRepeatingDoublePress.Direction.Up;
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class DecOrToggleFcuVs : RepeatingDoublePressButton<UrsaMinorFighterR, FcuVsRepeatingDoublePress>
     {
         [Property]
