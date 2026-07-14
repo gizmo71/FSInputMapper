@@ -1,6 +1,4 @@
 ﻿using Controlzmo.GameControllers;
-using Controlzmo.Systems.JetBridge;
-using CoreDX.vJoy.Wrapper;
 using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -55,55 +53,5 @@ namespace Controlzmo.Systems.Controls
         private readonly RudderTrimResetEvent _event;
         public int GetButton() => UrsaMinorThrottle.BUTTON_RUDDER_TRIM_RESET;
         public virtual void OnPress(ExtendedSimConnect sc) => sc.SendEvent(_event);
-    }
-
-    [Component, RequiredArgsConstructor]
-    public partial class RudderTrimKnob
-    {
-        private readonly JetBridgeSender _sender;
-        private readonly VirtualJoy vJoy;
-        internal const uint LEFT = 0;
-        internal const uint CENTRE = 1;
-        internal const uint RIGHT = 2;
-
-        internal void Set(ExtendedSimConnect sc, uint value)
-        {
-            if (sc.IsIniBuilds)
-                _sender.Execute(sc, $"{value} (>L:XMLVAR_RUDDERTRIM_SWITCH_1)");
-            else if (sc.IsFenix && false)
-// Fenix
-//TODO: S_FC_RUDDER_TRIM doesn't work - still needs repeated setting :-(
-// RUDDER_TRIM_SET (and _EX1) don't seem to work either. :-(
-// L:N_FC_RUDDER_TRIM_DECIMAL can't be meaningfully set.
-                _sender.Execute(sc, $"{value} (>L:S_FC_RUDDER_TRIM)");
-            else {
-                var controller = vJoy.getController();
-Console.WriteLine($"Sending RT for {value}");
-                PressOrRelease(value == LEFT)(controller, VJoyButton.RUDDER_TRIM_LEFT);
-                PressOrRelease(value == RIGHT)(controller, VJoyButton.RUDDER_TRIM_RIGHT);
-            }
-        }
-
-        private ButtonAction PressOrRelease(bool isPress) => isPress ? IVJoyControllerExtensions.PressButton : IVJoyControllerExtensions.ReleaseButton;
-        private delegate bool ButtonAction(IVJoyController controller, VJoyButton button);
-    }
-
-    [Component, RequiredArgsConstructor]
-    public partial class RudderTrimLeft : IButtonCallback<UrsaMinorThrottle>
-    {
-        private readonly RudderTrimKnob knob;
-        public int GetButton() => UrsaMinorThrottle.BUTTON_RUDDER_TRIM_LEFT;
-        public virtual void OnPress(ExtendedSimConnect sc) => knob.Set(sc, RudderTrimKnob.LEFT);
-        public virtual void OnRelease(ExtendedSimConnect sc) => knob.Set(sc, RudderTrimKnob.CENTRE);
-    }
-
-
-    [Component, RequiredArgsConstructor]
-    public partial class RudderTrimRight : IButtonCallback<UrsaMinorThrottle>
-    {
-        private readonly RudderTrimKnob knob;
-        public int GetButton() => UrsaMinorThrottle.BUTTON_RUDDER_TRIM_RIGHT;
-        public virtual void OnPress(ExtendedSimConnect sc) => knob.Set(sc, RudderTrimKnob.RIGHT);
-        public virtual void OnRelease(ExtendedSimConnect sc) => knob.Set(sc, RudderTrimKnob.CENTRE);
     }
 }
