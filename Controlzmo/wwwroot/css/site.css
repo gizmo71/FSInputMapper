@@ -70,7 +70,7 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
-table {
+table.panel {
     margin-left: auto;
     margin-right: auto;
     margin-top: 2ex;
@@ -80,11 +80,19 @@ table {
     background-color: aliceblue;
 }
 
-td {
+table:not(.not-right) td {
     text-align: right;
 }
 
-th {
+table.not-right td {
+    text-align: center;
+}
+
+table.explicit-grid td {
+    border: 1px dashed gray;
+}
+
+table:not(.not-right) th {
     text-align: left;
     padding-right: 2em;
 }

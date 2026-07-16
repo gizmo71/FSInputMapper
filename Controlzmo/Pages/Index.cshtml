@@ -5,14 +5,14 @@
 
 <div id="tabs">
     <ul class="tab-menu">
-        <li><a href="#tabs-efis-radar-atc-radio">EFIS, Radar, Radio</a></li>
+        <li><a href="#tabs-quick">EFIS, Radar, Radio</a></li>
         <li>&mdash;</li>
         <li><a href="#tabs-sops">SOP/Log</a></li>
         <li>&mdash;</li>
         <li><a href="#tabs-debug">Debug</a></li>
     </ul>
     <div class="gridContainer">
-        <div id="tabs-efis-radar-atc-radio">
+        <div id="tabs-quick">
             <div style="float: right;">
                 <input id="toSpeedV1" is="v-speed" placeholder="V1" class="sendText vspeed" />
                 <br />
@@ -32,7 +32,7 @@
                     }
                 }
         </div>
-        <table style="font-size: larger">
+        <table style="font-size: larger" class="panel">
             <tr style="font-size: smaller;">
                 <td>
                     <select id="leftEfisNdMode" class="sendText">
@@ -62,7 +62,6 @@
                     </select>
                 </td>
                 <th><label for="leftEfisNdRange">Range</label></th>
-                <td rowspan="2" class="tableCaption">Captain</td>
             </tr>
             <tr style="font-size: smaller;">
                 <th>
@@ -84,7 +83,7 @@
                 <td><button id="chrono1press" class="holdButton">Chrono</button></td>
             </tr>
         </table>
-        <table style="font-size: larger">
+        <table style="font-size: larger" class="panel">
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
                     <input type="radio" name="radarSys" class="sendRadio" id="radarSys1" value="0" />
@@ -102,7 +101,7 @@
                 <td class="tableCaption">Radar</td>
             </tr>
         </table>
-        <table style="font-size: larger">
+        <table style="font-size: larger" class="panel">
             <tr style="font-size: smaller;">
                 <td style="line-height: 1;">
                     <input type="radio" name="comtx" id="com1tx" class="sendRadio" value="1" />
@@ -135,56 +134,70 @@
                 <input id="com3standby" type="number" size="7" min="118.0" max="136.975" step="0.005" pattern="1[1-3]\d\.\d(\d[05]?)?" class="sendText" />
                 -->
         </table>
-        <table style="font-size: larger">
+        <table class="panel not-right">
             <tr>
-                <td style="text-align: center;">
-                    <button id="apuMasterPress" class="sendButton">Master</button>
-                    <br />
-                    <button id="apuStartPress" class="sendButton">Start</button>
-                </td>
                 <td class="tableCaption">
                     APU
                 </td>
                 <td>
-                    <input type="checkbox" name="seatBeltSign" class="sendBoolean" id="seatBeltSign" />
-                    <label for="seatBeltSign">Seat Belts</label><br />
+                    <button id="apuMasterPress" class="sendButton">Master</button>
+                    <br />
+                    <button id="apuStartPress" class="sendButton">Start</button>
+                </td>
+                <td>
+                    TBC Yellow Electric Pump
                 </td>
             </tr>
         </table>
-        <table style="font-size: larger;">
-            <tr style="font-size: smaller;">
+        <table style="clear: left;" class="panel not-right explicit-grid">
+            <tr>
                 <td>
+                    <label for="lightsStrobe">Strobe</label>
+                    <br />
                     <select id="lightsStrobe" class="sendText">
                         <option value="on">On</option>
                         <option value="auto">Auto</option>
                         <option value="off">Off</option>
                     </select>
-                    <label for="lightsStrobe">Strobe</label>
-                    &nbsp;
-                    <input type="checkbox" name="beaconLight" class="sendBoolean" id="beaconLight" />
+                <td>
                     <label for="beaconLight">Beacon</label>
-                    &nbsp;
-                    <input type="checkbox" name="wingIceLight" class="sendBoolean" id="wingIceLight" />
+                    <br />
+                    <input type="checkbox" name="beaconLight" class="sendBoolean" id="beaconLight" />
+                </td>
+                <td>
                     <label for="wingIceLight">Wing</label>
-                    &nbsp;
-                    <input type="checkbox" name="lightsLogoNav" class="sendBoolean" id="lightsLogoNav" />
+                    <br />
+                    <input type="checkbox" name="wingIceLight" class="sendBoolean" id="wingIceLight" />
+                </td>
+                <td>
                     <label for="lightsLogoNav">Nav</label>
+                    <br />
+                    <input type="checkbox" name="lightsLogoNav" class="sendBoolean" id="lightsLogoNav" />
+                </td>
+                <td rowspan="2">
+                    <label for="seatBeltSign">Seat<br />Belts</label><br />
+                    <input type="checkbox" name="seatBeltSign" class="sendBoolean" id="seatBeltSign" />
                 </td>
             </tr>
-            <tr style="font-size: smaller;">
+            <tr>
                 <td>
-                    <input type="checkbox" name="lightsRunwayTurnoff" class="sendBoolean" id="lightsRunwayTurnoff" />
                     <label for="lightsRunwayTurnoff">Turnoff</label>
-                    &nbsp;&nbsp;
-                    <input type="checkbox" name="landingLight" class="sendBoolean" id="landingLight" />
+                    <br />
+                    <input type="checkbox" name="lightsRunwayTurnoff" class="sendBoolean" id="lightsRunwayTurnoff" />
+                </td>
+                <td colspan="2">
                     <label for="landingLight">Landing</label>
-                    &nbsp;&nbsp;
+                    <br />
+                    <input type="checkbox" name="landingLight" class="sendBoolean" id="landingLight" />
+                </td>
+                <td>
+                    <label for="lightsNose">Nose</label>
+                    <br />
                     <select id="lightsNose" class="sendText">
                         <option value="takeoff">TO</option>
                         <option value="taxi">Taxi</option>
                         <option value="off">Off</option>
                     </select>
-                    <label for="lightsNose">Nose</label>
                 </td>
             </tr>
         </table>
