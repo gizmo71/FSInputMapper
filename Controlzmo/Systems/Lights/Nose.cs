@@ -1,26 +1,53 @@
-﻿using System;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
 {
-    [Component]
-    public class LandingLightSetEvent : IEvent
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct NoseLightData
     {
-        public string SimEvent() => "LANDING_LIGHTS_SET";
+        [SimVar("L:S_OH_EXT_LT_NOSE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenix;
+        [SimVar("L:INI_TAXI_LIGHT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 ini;
+        [SimVar("L:MSATR_ELTS_TAXI_TO", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 atr;
+//TODO: FBW also needs one of the LIGHT LANDING ON/LIGHT LANDING indices to combine them
+        [SimVar("LIGHT TAXI", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 standard;
     }
 
     [Component]
+    public class LandingLightSetEvent : IEvent { public string SimEvent() => "LANDING_LIGHTS_SET"; }
+
+    [Component]
     [RequiredArgsConstructor]
-    public partial class NoseLightSystem : ISettable<string?>
+    public partial class NoseLightSystem : DataListener<NoseLightData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly LandingLightSetEvent landingLightEvent;
         private readonly TaxiLightSetEvent taxiLightEvent;
         private readonly JetBridgeSender sender;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public string GetId() => "lightsNose";
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect sc, NoseLightData data)
+        {
+            string position;
+            if (sc.IsFenix)
+                position = data.fenix == 0 ? "off" : (data.fenix == 1 ? "taxi" : "takeoff");
+//TODO: all the others, and make reusable maps
+            else
+                position = data.standard == 0 ? "off" : "taxi";
+            hub.Clients.All.SetFromSim(GetId(), position);
+        }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {

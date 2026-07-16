@@ -21,23 +21,15 @@ namespace Controlzmo.Systems.Apu
         public Int32 isApuBleedOnIni;
         [SimVar("ABSOLUTE TIME", "seconds", SIMCONNECT_DATATYPE.FLOAT64, 3.5f)]
         public Double nowSeconds;
-        // For LVFR-Horizon hack...
-        [SimVar("APU SWITCH", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 msfsApuSwitch;
-        [SimVar("BLEED AIR APU", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 msfsBleedAirApu;
     };
-        
-    [Component] public class ApuBleedSourceSetEvent : IEvent { public string SimEvent() => "APU_BLEED_AIR_SOURCE_SET"; }
 
     [Component, RequiredArgsConstructor]
     public partial class ApuBleedMonitor : DataListener<ApuBleedData>, IOnSimStarted
     {
         private readonly Speech speech;
         private readonly JetBridgeSender sender;
-        private readonly ApuMasterOn master;
-        private readonly ApuAvail avail;
-        private readonly ApuBleedSourceSetEvent apuBleedSourceSet;
+        private readonly ApuMasterButton masterButton;
+        private readonly ApuStartButton startButton;
 
         private Double? apuBleedOnAfter = null;
 
@@ -48,28 +40,21 @@ namespace Controlzmo.Systems.Apu
             if (simConnect.IsFenix) data.isApuBleedOn = data.isApuBleedOnFenix;
             if (simConnect.IsIniBuilds) data.isApuBleedOn = data.isApuBleedOnIni;
 
-            if (master.IsOn && avail.IsAvail)
+            if (masterButton.IsOn && startButton.IsAvail)
             {
                 if (data.isApuBleedOn == 0)
                 {
                     if (apuBleedOnAfter == null)
-                        apuBleedOnAfter = data.nowSeconds + 60.0;
+                        apuBleedOnAfter = data.nowSeconds + 6/*0.0*/;
                     else if (data.nowSeconds > apuBleedOnAfter)
                         setBleed(simConnect, true);
                 }
                 else
                     apuBleedOnAfter = null;
             }
-            else if (!master.IsOn && (avail.IsAvail || simConnect.IsA380X) && data.isApuBleedOn == 1)
+            else if (!startButton.IsAvail && (startButton.IsAvail || simConnect.IsA380X) && data.isApuBleedOn == 1)
             {
                 setBleed(simConnect, false);
-            }
-//else hubContext.Clients.All.Speak($"A-P-U bleed {data.isApuBleedOn} master {data.isApuMasterOn} a veil {data.isApuAvail} on after {apuBleedOnAfter != null}");
-
-            if (simConnect.IsHorizonLvfr) {
-                var desired = data.msfsApuSwitch == 1 && data.isApuBleedOn == 1 ? 1 : 0;
-                if (desired != data.msfsBleedAirApu)
-                    simConnect.SendEvent(apuBleedSourceSet, data.isApuBleedOn);
             }
         }
         
@@ -77,7 +62,6 @@ namespace Controlzmo.Systems.Apu
         {
             String? lvar = null;
             if (simConnect.IsFBW) {
-if (simConnect.IsHorizonLvfr) simConnect.SendEvent(apuBleedSourceSet, isDemanded ? 1 : 0);
                 lvar = "A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON";
             } else if (simConnect.IsFenix)
                 lvar = "S_OH_PNEUMATIC_APU_BLEED";

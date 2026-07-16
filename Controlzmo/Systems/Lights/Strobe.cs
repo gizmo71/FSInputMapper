@@ -1,25 +1,52 @@
-﻿using System;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
+using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
 {
-    [Component]
-    public class StrobeLightSystem : ISettable<string?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct StrobeLightData
+    {
+        [SimVar("L:STROBE_0_Auto", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fbwAuto;
+        [SimVar("L:LIGHTING_STROBE_0", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fbwOn;
+        [SimVar("L:S_OH_EXT_LT_STROBE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenix;
+        [SimVar("L:INI_STROBE_LIGHT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 ini;
+        [SimVar("L:MSATR_ELTS_STROBE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 atr;
+        [SimVar("LIGHT STROBE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 standardSwitch;
+        [SimVar("LIGHT STROBE ON", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 standardOrOn;
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class StrobeLightSystem : DataListener<StrobeLightData>, IRequestDataOnOpen, ISettable<string?>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly JetBridgeSender sender;
 
-        public StrobeLightSystem(IServiceProvider sp)
-        {
-            hub = sp.GetRequiredService<IHubContext<ControlzmoHub, IControlzmoHub>>();
-            sender = sp.GetRequiredService<JetBridgeSender>();
-        }
-
         public string GetId() => "lightsStrobe";
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect sc, StrobeLightData data)
+        {
+            string position;
+            if (sc.IsFenix)
+                position = data.fenix == 2 ? "on" : (data.fenix == 1 ? "auto" : "off");
+//TODO: all the others, and reuse the maps from below...
+            else
+                position = data.standardOrOn != 0 ? "on" : (data.standardSwitch != 0 ? "auto" : "off");
+            hub.Clients.All.SetFromSim(GetId(), position);
+        }
 
         public void SetInSim(ExtendedSimConnect simConnect, string? position)
         {

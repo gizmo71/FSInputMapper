@@ -42,7 +42,7 @@
                         <option selected>Arc</option>
                         <option>Plan</option>
                         <option>Eng</option> <!-- A330 special -->
-                        </select>
+                    </select>
                 </td>
                 <th><label for="leftEfisNdMode">Mode</label></th>
                 <td>
@@ -136,53 +136,56 @@
                 -->
         </table>
         <table style="font-size: larger">
-            <tr style="font-size: smaller;">
-                <td style="line-height: 1;">
-                    <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficThreat" value="0" />
-                    <label for="tcasTrafficThreat">Thrt</label><br />
-                    <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficAll" value="1" />
-                    <label for="tcasTrafficAll">All</label><br />
-                    <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficAbove" value="2" />
-                    <label for="tcasTrafficAbove">Abv</label><br />
-                    <input type="radio" name="tcasTraffic" class="sendRadio" id="tcasTrafficBelow" value="3" />
-                    <label for="tcasTrafficBelow">Blw</label>
+            <tr>
+                <td style="text-align: center;">
+                    <button id="apuMasterPress" class="sendButton">Master</button>
+                    <br />
+                    <button id="apuStartPress" class="sendButton">Start</button>
                 </td>
-                <th>Traffic</th>
-                <td style="line-height: 1;">
-                    <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeStandby" value="0" />
-                    <label for="tcasModeStandby">Stby</label><br />
-                    <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeTA" value="1" />
-                    <label for="tcasModeTA">TA</label><br />
-                    <input type="radio" name="tcasMode" class="sendRadio" id="tcasModeRA" value="2" />
-                    <label for="tcasModeRA">TA/RA</label>
+                <td class="tableCaption">
+                    APU
                 </td>
-                <th>TCAS</th>
-                <td class="tableCaption">TCAS</td>
+                <td>
+                    <input type="checkbox" name="seatBeltSign" class="sendBoolean" id="seatBeltSign" />
+                    <label for="seatBeltSign">Seat Belts</label><br />
+                </td>
             </tr>
         </table>
         <table style="font-size: larger;">
-            <tr style="font-size: smaller; line-height: 1;">
-                <td rowspan="2" style="line-height: 1;">
-                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeStandby" value="0" />
-                    <label for="transponderModeStandby">Stby</label><br />
-                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeAuto" value="1" />
-                    <label for="transponderModeAuto">Auto</label><br />
-                    <input type="radio" name="transponderMode" class="sendRadio" id="transponderModeOn" value="2" />
-                    <label for="transponderModeOn">On</label>
-                </td>
-                <th rowspan="2">ATC</th>
+            <tr style="font-size: smaller;">
                 <td>
-                    <input type="checkbox" id="altRptg" class="sendBoolean" />
-                    <label for="altRptg">Alt<br />Rptg</label>
+                    <select id="lightsStrobe" class="sendText">
+                        <option value="on">On</option>
+                        <option value="auto">Auto</option>
+                        <option value="off">Off</option>
+                    </select>
+                    <label for="lightsStrobe">Strobe</label>
+                    &nbsp;
+                    <input type="checkbox" name="beaconLight" class="sendBoolean" id="beaconLight" />
+                    <label for="beaconLight">Beacon</label>
+                    &nbsp;
+                    <input type="checkbox" name="wingIceLight" class="sendBoolean" id="wingIceLight" />
+                    <label for="wingIceLight">Wing</label>
+                    &nbsp;
+                    <input type="checkbox" name="lightsLogoNav" class="sendBoolean" id="lightsLogoNav" />
+                    <label for="lightsLogoNav">Nav</label>
                 </td>
-                <td rowspan="3" class="tableCaption">ATC</td>
             </tr>
-            <tr style="font-size: smaller; line-height: 1;">
-                <td><input type="button" id="squawkIdent" value="Ident" class="sendButton" /></td>
-            </tr>
-            <tr style="font-size: smaller; line-height: 1;">
-                <th colspan="2"><label for="xpndrCode">Transponder Code</label></th>
-                <td><input id="xpndrCode" is="squawk-code" size="4" maxlength="4" class="sendText" onclick="this.select()" /></td>
+            <tr style="font-size: smaller;">
+                <td>
+                    <input type="checkbox" name="lightsRunwayTurnoff" class="sendBoolean" id="lightsRunwayTurnoff" />
+                    <label for="lightsRunwayTurnoff">Turnoff</label>
+                    &nbsp;&nbsp;
+                    <input type="checkbox" name="landingLight" class="sendBoolean" id="landingLight" />
+                    <label for="landingLight">Landing</label>
+                    &nbsp;&nbsp;
+                    <select id="lightsNose" class="sendText">
+                        <option value="takeoff">TO</option>
+                        <option value="taxi">Taxi</option>
+                        <option value="off">Off</option>
+                    </select>
+                    <label for="lightsNose">Nose</label>
+                </td>
             </tr>
         </table>
     </div>
@@ -243,6 +246,7 @@ F5/F6 remove/insert (before current) waypoint
         <div id="landingRateWidgit" style="margin: 10px;">
             Rate <input id="landingRate" size="10" /> AGL <input id="landingAgl" size="10" />
         </div>
+        <textarea cols="38" rows="6" id="camera"></textarea>
     </div>
   </div>
 </div>
