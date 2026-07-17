@@ -77,6 +77,7 @@ namespace Controlzmo
             {
                 endpoints.MapRazorPages();
                 endpoints.MapHub<ControlzmoHub>("/hub/connectzmo");
+                endpoints.MapHub<TestyHub>("/hub/testy");
             });
 
             app.ApplicationServices.GetServices<CreateOnStartup>();
