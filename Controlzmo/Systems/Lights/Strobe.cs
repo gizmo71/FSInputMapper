@@ -53,7 +53,12 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, string? position)
         {
-            if (simConnect.IsFBW) {
+            if (simConnect.IsA380X)
+            {
+                var code = position switch { "on" => 0, "auto" => 1, _ => 2 };
+                sender.Execute(simConnect, $"{code} (>B:LIGHTING_STROBE_0_SET)");
+            }
+            else if (simConnect.IsFBW) {
                 var auto = position == "auto" ? 1 : 0;
                 var set = position != "off" ? 1 : 0;
                 var value = position switch { "on" => 0, "auto" => 1, "off" => 2, _ => throw new ArgumentException($"Unknown strobe position {position}") };

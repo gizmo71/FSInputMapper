@@ -61,10 +61,7 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
             if (simConnect.IsA380X)
-            {
-                int code = value ? 1 : 0;
-                sender.Execute(simConnect, $"{code} (>L:LIGHTING_LANDING_2) 2 {code} (>K:2:LANDING_LIGHTS_SET)");
-            }
+                sender.Execute(simConnect, $"{(value ? 1 : 0)} (>B:LIGHTING_LANDING_2_SET)");
             else if (simConnect.IsFBW)
             {
                 /*TODO: int code = value ? 0 : 2;
