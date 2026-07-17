@@ -25,6 +25,8 @@ namespace Controlzmo.Systems.Atc
             }
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "0 (>L:S_EFB_VISIBLE_FO) 0 (>L:S_EFB_CHARGING_CABLE_FO) 0 (>L:S_WINDOW_BLINDS_FO) 1.0 (>L:A_MIP_LIGHTING_FLOOD_MAIN)");
+            else if (simConnect.IsFBW && ! simConnect.IsA380X)
+                sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE)");
             else if (simConnect.IsIniBuilds)
             {
                 sender.Execute(simConnect, "2 (>L:INI_TCAS_STBY_STATE)");
