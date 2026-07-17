@@ -32,25 +32,28 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, SeatBeltSignData data)
         {
-            bool value;
+            bool _current;
             if (sc.IsFenix)
-                value = data.fenix == 1;
+                _current = data.fenix == 1;
             else if (sc.IsA330)
-                value = data.ini == 1;
+                _current = data.ini == 1;
             else if (sc.IsIniBuilds)
-                value = data.ini != 2;
+                _current = data.ini != 2;
             else
-                value = data.standard == 1;
-            hub.Clients.All.SetFromSim(GetId(), value);
+                _current = data.standard == 1;
+            hub.Clients.All.SetFromSim(GetId(), _current);
         }
-
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
             string? action = null;
             if (simConnect.IsFBW)
+            {
                 action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
+                if (simConnect.IsA380X)
+                    sender.Execute(simConnect, $"{2 - desiredValue * 2} (>L:XMLVAR_SWITCH_OVHD_INTLT_SEATBELT_Position)");
+            }
             else if (simConnect.IsFenix)
                 action = $"{desiredValue} (>L:S_OH_SIGNS)";
             else if (simConnect.IsAtr)
