@@ -42,7 +42,12 @@ namespace Controlzmo.Systems.Lights
             string position;
             if (sc.IsFenix)
                 position = data.fenix == 2 ? "on" : (data.fenix == 1 ? "auto" : "off");
-//TODO: all the others, and reuse the maps from below...
+            else if (sc.IsIniBuilds)
+                position = data.ini switch { 0 => "on", 1 => "auto", _ => "off" };
+            else if (sc.IsAtr)
+                position = data.atr switch { 1 => "on", _ => "off" };
+            else if (sc.IsFBW)
+                position = data.fbwOn != 0 ? "on" : (data.fbwAuto != 0 ? "auto" : "off");
             else
                 position = data.standardOrOn != 0 ? "on" : (data.standardSwitch != 0 ? "auto" : "off");
             hub.Clients.All.SetFromSim(GetId(), position);
