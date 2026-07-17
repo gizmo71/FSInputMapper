@@ -25,7 +25,7 @@ namespace Controlzmo.Systems.Lights
         public int fenixLeft;
         [SimVar("L:S_OH_EXT_LT_LANDING_R", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int fenixRight;
-        [SimVar("LMSATR_ELTS_LDG_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        [SimVar("L:MSATR_ELTS_LDG_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int atrLeft;
         [SimVar("L:MSATR_ELTS_LDG_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int atrRight;
