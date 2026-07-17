@@ -58,7 +58,7 @@ namespace Controlzmo.Systems.Lights
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            uint state = value ? 1u : 0u;
+            var state = value ? 1u : 0u;
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{state} (>L:S_OH_EXT_LT_NAV_LOGO)");
             else if (simConnect.IsIniBuilds)
@@ -67,8 +67,12 @@ namespace Controlzmo.Systems.Lights
                 sender.Execute(simConnect, $"{state} (>L:MSATR_ELTS_NAV) {state} (>L:MSATR_ELTS_LOGO)");
             else
             {
-                simConnect.SendEvent(setLogoLightsEvent, state);
                 simConnect.SendEvent(setNavLightsEvent, state);
+//TODO: do we actually need to split the logo light out properly anyway because of the ATR?
+                if (simConnect.IsA380X)
+                    sender.Execute(simConnect, $"{2u - state} (>B:LIGHTING_LOGO_0_SET)");
+                else
+                    simConnect.SendEvent(setLogoLightsEvent, state);
             }
         }
     }
