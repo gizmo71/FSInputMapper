@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Controlzmo.SimConnectzmo
 {
     [Component, RequiredArgsConstructor]
-    public partial class InputEvents : IOnAircraftLoaded, ISettable<string?>
+    public partial class InputEvents : IOnAircraftLoaded, IOnSimStarted, ISettable<string?>
     {
         private readonly ILogger<InputEvents> log;
 
@@ -31,6 +31,8 @@ namespace Controlzmo.SimConnectzmo
             simConnect.EnumerateInputEvents(REQUEST.EnumerateInputEvents);
             log.LogCritical($"Asked for input events 1 => {simConnect.GetLastSentPacketID()}");
         }
+
+        public void OnStarted(ExtendedSimConnect simConnect) => OnAircraftLoaded(simConnect);
 
         internal void OnRecvEnumerateInputEvents(ExtendedSimConnect sc, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS data)
         {
