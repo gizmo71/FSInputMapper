@@ -12,10 +12,8 @@ namespace Controlzmo.Systems.Lights
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct StrobeLightData
     {
-        [SimVar("L:STROBE_0_Auto", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 fbwAuto;
         [SimVar("L:LIGHTING_STROBE_0", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 fbwOn;
+        public Int32 fbw;
         [SimVar("L:S_OH_EXT_LT_STROBE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 fenix;
         [SimVar("L:INI_STROBE_LIGHT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
@@ -47,7 +45,7 @@ namespace Controlzmo.Systems.Lights
             else if (sc.IsAtr)
                 position = data.atr switch { 1 => "on", _ => "off" };
             else if (sc.IsFBW)
-                position = data.fbwOn != 0 ? "on" : (data.fbwAuto != 0 ? "auto" : "off");
+                position = data.fbw switch { 0 => "on", 1 => "auto", _ => "off" };
             else
                 position = data.standardOrOn != 0 ? "on" : (data.standardSwitch != 0 ? "auto" : "off");
             hub.Clients.All.SetFromSim(GetId(), position);

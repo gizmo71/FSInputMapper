@@ -18,7 +18,8 @@ namespace Controlzmo.Systems.Lights
         public Int32 ini;
         [SimVar("L:MSATR_ELTS_TAXI_TO", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 atr;
-//TODO: FBW also needs one of the LIGHT LANDING ON/LIGHT LANDING indices to combine them
+        [SimVar("L:LIGHTING_LANDING_1", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fbw;
         [SimVar("LIGHT TAXI", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standard;
     }
@@ -43,7 +44,12 @@ namespace Controlzmo.Systems.Lights
             string position;
             if (sc.IsFenix)
                 position = data.fenix == 0 ? "off" : (data.fenix == 1 ? "taxi" : "takeoff");
-//TODO: all the others, and make reusable maps
+            else if (sc.IsIniBuilds)
+                position = data.ini switch { 0 => "takeoff", 1 => "taxi", _ => "off" };
+            else if (sc.IsAtr)
+                position = data.atr == 1 ? "taxi" : "off";
+            else if (sc.IsFBW)
+                position = data.fbw switch { 0 => "takeoff", 1 => "taxi", _ => "off" };
             else
                 position = data.standard == 0 ? "off" : "taxi";
             hub.Clients.All.SetFromSim(GetId(), position);

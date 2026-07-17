@@ -11,26 +11,24 @@ namespace Controlzmo.Systems.Lights
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingLightData
     {
-/*FBW is a hideous mess...
-        // 2 retracted, 1 off, 0 on
         [SimVar("L:LIGHTING_LANDING_2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int landingSwitchLeft;
+        public int fbwLeft;
         [SimVar("L:LIGHTING_LANDING_3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int landingSwitchRight;
-        [SimVar("L:LANDING_2_RETRACTED", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftRetracted;
-        [SimVar("L:LANDING_3_RETRACTED", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightRetracted;
-        // Technically the circuits shouldn't come on until the lights are fully extended.
-        // Can't quite make this work like the in-game panel switches.
-        [SimVar("CIRCUIT SWITCH ON:18", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftCircuit;
-        [SimVar("CIRCUIT SWITCH ON:19", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightCircuit;*/
+        public int fbwRight;
+        [SimVar("L:A320_LANDING_LIGHT_SWITCH_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int iniLeft;
+        [SimVar("L:A320_LANDING_LIGHT_SWITCH_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int iniRight;
+        [SimVar("L:INI_LANDING_LIGHT_SWITCH", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int ini;
         [SimVar("L:S_OH_EXT_LT_LANDING_L", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int fenixLeft;
         [SimVar("L:S_OH_EXT_LT_LANDING_R", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int fenixRight;
+        [SimVar("LMSATR_ELTS_LDG_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int atrLeft;
+        [SimVar("L:MSATR_ELTS_LDG_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int atrRight;
     }
 
     [Component, RequiredArgsConstructor]
@@ -44,19 +42,32 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, LandingLightData data)
         {
-            bool value;
+            var value = false;
             if (sc.IsFenix)
                 value = data.fenixLeft == 2 && data.fenixRight == 2;
-            else
-//TODO: all the others, and make reusable maps
-                value = false;
+            else if (sc.IsA380X)
+                value = data.fbwLeft != 0;
+            else if (sc.IsFBW)
+                value = data.fbwLeft == 0 && data.fbwRight == 0;
+            else if (sc.IsIni321 || sc.IsIni320)
+                value = data.iniLeft == 0 && data.iniRight == 0;
+            else if (sc.IsIniBuilds)
+                value = data.ini != 0;
+            else if (sc.IsAtr)
+                value = data.atrLeft == 1 && data.atrRight == 1;
             hub.Clients.All.SetFromSim(GetId(), value);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
         {
-            if (simConnect.IsFBW) {
-                /*int code = value ? 0 : 2;
+            if (simConnect.IsA380X)
+            {
+                int code = value ? 1 : 0;
+                sender.Execute(simConnect, $"{code} (>L:LIGHTING_LANDING_2) 2 {code} (>K:2:LANDING_LIGHTS_SET)");
+            }
+            else if (simConnect.IsFBW)
+            {
+                /*TODO: int code = value ? 0 : 2;
                 int retracted = value ? 0 : 1;
                 int circuit = value ? 1 : 0;
                 simConnect.SendDataOnSimObject(new LandingLightData() {
