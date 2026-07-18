@@ -18,6 +18,8 @@ namespace Controlzmo.Systems.Radar
         public Int32 radarSysFenix;
         [SimVar("L:INI_WX_SYS_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 radarSysIni;
+        [SimVar("L:MSATR_WXR_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 atr; // 4 = off, 3 = stby, 2 = wx
     };
 
     [Component, RequiredArgsConstructor]
@@ -34,6 +36,7 @@ namespace Controlzmo.Systems.Radar
         {
             if (simConnect.IsFenix) data.radarSys = data.radarSysFenix;
             else if (simConnect.IsIniBuilds) data.radarSys = data.radarSysIni;
+            else if (simConnect.IsAtr) data.radarSys = data.atr switch { 2 => 0, 3 => 2, _ => 1 };
             hub.Clients.All.SetFromSim(GetId(), data.radarSys);
 
             if (simConnect.IsIni321) //TODO: and ini A320neo, at least in 2024?
@@ -47,7 +50,8 @@ namespace Controlzmo.Systems.Radar
         public void SetInSim(ExtendedSimConnect simConnect, string? posString)
         {
             var code = Int16.Parse(posString!);
-            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = code, radarSysFenix = code, radarSysIni = code });
+            var atrCode = code switch { 0 => 2, 2 => 3, _ => 4 };
+            simConnect.SendDataOnSimObject(new RadarSysData() { radarSys = code, radarSysFenix = code, radarSysIni = code, atr = atrCode });
         }
     }
 
@@ -76,6 +80,7 @@ namespace Controlzmo.Systems.Radar
         {
             if (simConnect.IsFenix) data.pwsSwitch = data.pwsSwitchFenix;
             else if (simConnect.IsIniBuilds) data.pwsSwitch = 1 - data.pwsSwitchIni;
+            else if (simConnect.IsAtr) data.pwsSwitch = 0;
             hub.Clients.All.SetFromSim(GetId(), data.pwsSwitch == 1);
         }
 
