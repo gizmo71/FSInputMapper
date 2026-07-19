@@ -77,10 +77,6 @@ System.Console.WriteLine($"-> {value} led to {command}");
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct BaroData
     {
-        [SimVar("KOHLSMAN SETTING MB", "Millibars", SIMCONNECT_DATATYPE.FLOAT32, 0.1f)]
-        public float kohlsmanMB;
-        [SimVar("KOHLSMAN SETTING HG", "inHg", SIMCONNECT_DATATYPE.FLOAT32, 0.001f)]
-        public float kohlsmanHg;
         [SimVar("L:XMLVAR_Baro1_Mode", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1Mode; // Bit 0: 1 QNH, 0 QFE; Bit 1: 2 standard, otherwise as bit 1
         [SimVar("L:I_FCU_EFIS1_QNH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
@@ -89,8 +85,6 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public Int32 baro1Units; // InHg if 0, otherwise hPa
         [SimVar("L:A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1A32nx; // 2 is InHG, 1 if hPa, 0 is Std
-        [SimVar("L:A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE", "number", SIMCONNECT_DATATYPE.FLOAT32, 0.01f)]
-        public float displayedA32nx;
         [SimVar("L:S_FCU_EFIS1_BARO_MODE", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1UnitsFenix; // 0 InHg, 1 hPa
     }
@@ -98,7 +92,6 @@ System.Console.WriteLine($"-> {value} led to {command}");
     [Component, RequiredArgsConstructor]
     public partial class BaroDisplay : DataListener<BaroData>, IRequestDataOnOpen
     {
-        private readonly SerialPico serial;
         [Property]
         private Boolean _isStd;
         [Property]
@@ -117,24 +110,12 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 data.baro1Units = data.baro1A32nx == 2 ? 0 : 1;
                 data.baro1Mode = data.baro1A32nx == 0 ? 3 : 1;
-//TODO: at some point make "displayed" the 'default' and work the others on top of it...
-                data.kohlsmanHg = data.kohlsmanMB = data.displayedA32nx;
             }
             else if (simConnect.IsIniBuilds)
                 data.baro1Mode |= 1;
 
-            string composite = "SStd ";
             _isInHg = data.baro1Units == 0;
-            if ((data.baro1Mode & 2) == 0)
-            {
-                var value = _isInHg ? data.kohlsmanHg * 100 : data.kohlsmanMB;
-                composite = ((data.baro1Mode & 1) == 1 ? "N" : "F") + $"{value,4:0}";
-                _isStd = false;
-            }
-            else
-                _isStd = true;
-
-            serial.SendLine($"baro={composite}");
+            _isStd = (data.baro1Mode & 2) != 0;
         }
     }
 
