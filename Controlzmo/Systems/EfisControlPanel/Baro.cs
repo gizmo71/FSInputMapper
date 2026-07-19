@@ -1,6 +1,5 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.Hubs;
-using Controlzmo.Serial;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
