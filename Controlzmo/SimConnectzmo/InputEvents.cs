@@ -1,5 +1,4 @@
-﻿using Controlzmo.GameControllers;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -27,7 +26,9 @@ namespace Controlzmo.SimConnectzmo
 
         public void OnAircraftLoaded(ExtendedSimConnect simConnect)
         {
-            all.Clear();
+            lock (all) {
+                all.Clear();
+            }
             simConnect.EnumerateInputEvents(REQUEST.EnumerateInputEvents);
             log.LogCritical($"Asked for input events 1 => {simConnect.GetLastSentPacketID()}");
         }
@@ -40,13 +41,15 @@ namespace Controlzmo.SimConnectzmo
             for (int i = 0; i < data.dwArraySize; ++i)
             {
                 var rgData = (SIMCONNECT_INPUT_EVENT_DESCRIPTOR) data.rgData[i];
-                try
-                {
-                    all.Add(rgData.Name, rgData);
-                }
-                catch (ArgumentException e)
-                {
-                    // Whatever, we end up with two lots in rapid succession, let's just not care...
+                lock (all) {
+                    try
+                    {
+                        all.Add(rgData.Name, rgData);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        // Whatever, we end up with two lots in rapid succession, let's just not care...
+                    }
                 }
             }
         }
