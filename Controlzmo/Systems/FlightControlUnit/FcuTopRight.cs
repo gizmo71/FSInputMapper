@@ -1,5 +1,4 @@
-﻿using Controlzmo.Serial;
-using Lombok.NET;
+﻿using Lombok.NET;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
@@ -26,7 +25,6 @@ namespace Controlzmo.Systems.FlightControlUnit
     [RequiredArgsConstructor]
     public partial class FcuDisplayTopRight : DataListener<FcuTopRightData>, IRequestDataOnOpen
     {
-        private readonly SerialPico serial;
         private readonly IServiceProvider serviceProvider;
 
         private bool isTrkFpa = false;
@@ -44,7 +42,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             isTrkFpa = data.isTrkFpaMode == 1;
 
             var line1 = "ALT \x4LVL/CH\x5 " + (isTrkFpa ? "FPA" : "V/S");
-            serial.SendLine($"fcuTR={line1}");
+            //TODO: show somewhere?
 
             foreach (var listener in serviceProvider.GetServices<ITrkFpaListener>()) {
                 simConnect.RequestDataOnSimObject(listener, SIMCONNECT_CLIENT_DATA_PERIOD.NEVER);

@@ -1,5 +1,4 @@
-﻿using Controlzmo.Serial;
-using Lombok.NET;
+﻿using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -19,11 +18,9 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isMachIni;
     };
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuDisplayTopLeft : DataListener<FcuTopLeftData>, ITrkFpaListener
     {
-        private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
@@ -38,7 +35,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             var speedMachLabel = data.isMach == 1 ? " MACH" : "SPD  ";
             var hdgTrkLabel = trkFpaHolder.IsTrkFpa ? "  TRK" : "HDG  ";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
-            serial.SendLine($"fcuTL={line1}");
+            //TODO: show somewhere...
         }
     }
 }

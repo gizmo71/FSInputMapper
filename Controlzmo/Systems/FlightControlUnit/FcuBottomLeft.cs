@@ -1,5 +1,4 @@
-﻿using Controlzmo.Serial;
-using Lombok.NET;
+﻿using Lombok.NET;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
@@ -53,7 +52,6 @@ namespace Controlzmo.Systems.FlightControlUnit
     [Component, RequiredArgsConstructor]
     public partial class FcuDisplayBottomLeft : DataListener<FcuBottomLeftData>, IRequestDataOnOpen
     {
-        private readonly SerialPico serial;
         private readonly FcuDisplayTopRight trkFpaHolder;
         private readonly FcuToast toast;
 
@@ -88,7 +86,6 @@ namespace Controlzmo.Systems.FlightControlUnit
             var heading = data.isHeadingDashes == 1 ? "---" : $"{data.selectedHeading!:000}";
             var headingDot = data.isManagedHeading == 1 ? '\x1' : ' ';
             var line2 = $"{Speed(data)} {speedDot}  {heading}   {headingDot} ";
-            serial.SendLine($"fcuBL={line2}");
             toast.Left = line2;
         }
 
