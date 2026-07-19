@@ -39,6 +39,8 @@ namespace Controlzmo.Systems.Lights
                 _current = data.ini == 1;
             else if (sc.IsIniBuilds)
                 _current = data.ini != 2;
+            else if (sc.IsAtr)
+                _current = data.atr == 1;
             else
                 _current = data.standard == 1;
             hub.Clients.All.SetFromSim(GetId(), _current);
