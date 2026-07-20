@@ -154,20 +154,11 @@
                 <td>
                     <label for="lightsStrobe">Strobe</label>
                     <br />
-                    <select id="lightsStrobe" class="sendText">
-                        <option value="on">On</option>
-                        <option value="auto">Auto</option>
-                        <option value="off">Off</option>
-                    </select>
+                    <input type="checkbox" name="lightsStrobe" class="sendBoolean" id="lightsStrobe" />
                 <td>
                     <label for="beaconLight">Beacon</label>
                     <br />
                     <input type="checkbox" name="beaconLight" class="sendBoolean" id="beaconLight" />
-                </td>
-                <td>
-                    <label for="wingIceLight">Wing</label>
-                    <br />
-                    <input type="checkbox" name="wingIceLight" class="sendBoolean" id="wingIceLight" />
                 </td>
                 <td>
                     <label for="lightsLogoNav">Nav</label>
@@ -181,23 +172,19 @@
             </tr>
             <tr>
                 <td>
-                    <label for="lightsRunwayTurnoff">Turnoff</label>
-                    <br />
-                    <input type="checkbox" name="lightsRunwayTurnoff" class="sendBoolean" id="lightsRunwayTurnoff" />
-                </td>
-                <td colspan="2">
                     <label for="landingLight">Landing</label>
                     <br />
                     <input type="checkbox" name="landingLight" class="sendBoolean" id="landingLight" />
                 </td>
                 <td>
-                    <label for="lightsNose">Nose</label>
+                    <label for="lightsTaxi">Taxi</label>
                     <br />
-                    <select id="lightsNose" class="sendText">
-                        <option value="takeoff">TO</option>
-                        <option value="taxi">Taxi</option>
-                        <option value="off">Off</option>
-                    </select>
+                    <input type="checkbox" name="lightsTaxi" class="sendBoolean" id="lightsTaxi" />
+                </td>
+                <td>
+                    <label for="wingIceLight">Wing</label>
+                    <br />
+                    <input type="checkbox" name="wingIceLight" class="sendBoolean" id="wingIceLight" />
                 </td>
             </tr>
         </table>

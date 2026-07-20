@@ -27,7 +27,7 @@ namespace Controlzmo.Systems.Lights
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class StrobeLightSystem : DataListener<StrobeLightData>, IRequestDataOnOpen, ISettable<string?>
+    public partial class StrobeLightSystem : DataListener<StrobeLightData>, IRequestDataOnOpen, ISettable<bool>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly JetBridgeSender sender;
@@ -37,50 +37,38 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, StrobeLightData data)
         {
-            string position;
             if (sc.IsFenix)
-                position = data.fenix == 2 ? "on" : (data.fenix == 1 ? "auto" : "off");
+                data.standardSwitch = data.fenix == 2 ? 1 : 0;
             else if (sc.IsIniBuilds)
-                position = data.ini switch { 0 => "on", 1 => "auto", _ => "off" };
+                data.standardSwitch = data.ini == 0 ? 1: 0;
             else if (sc.IsAtr)
-                position = data.atr switch { 1 => "on", _ => "off" };
+                data.standardSwitch = data.atr == 1 ? 1 : 0;
             else if (sc.IsFBW)
-                position = data.fbw switch { 0 => "on", 1 => "auto", _ => "off" };
-            else
-                position = data.standardOrOn != 0 ? "on" : (data.standardSwitch != 0 ? "auto" : "off");
-            hub.Clients.All.SetFromSim(GetId(), position);
+                data.standardSwitch = data.fbw == 0 ? 1 : 0;
+            else if (data.standardOrOn != 0)
+                data.standardSwitch = 1;
+            hub.Clients.All.SetFromSim(GetId(), data.standardSwitch != 0);
         }
 
-        public void SetInSim(ExtendedSimConnect simConnect, string? position)
+        public void SetInSim(ExtendedSimConnect simConnect, bool isOn)
         {
             if (simConnect.IsA380X)
+                sender.Execute(simConnect, $"{(isOn ? 0 : 2)} (>B:LIGHTING_STROBE_0_SET)");
+            else if (simConnect.IsFBW)
             {
-                var code = position switch { "on" => 0, "auto" => 1, _ => 2 };
-                sender.Execute(simConnect, $"{code} (>B:LIGHTING_STROBE_0_SET)");
-            }
-            else if (simConnect.IsFBW) {
-                var auto = position == "auto" ? 1 : 0;
-                var set = position != "off" ? 1 : 0;
-                var value = position switch { "on" => 0, "auto" => 1, "off" => 2, _ => throw new ArgumentException($"Unknown strobe position {position}") };
+                var set = isOn ? 1 : 0;
+                var auto = set;
+                var value = isOn ? 0 : 2;
                 sender.Execute(simConnect, $"{auto} (>L:STROBE_0_Auto) {set} 0 r (>K:2:STROBES_SET) {value} (>L:LIGHTING_STROBE_0)");
             }
             else if (simConnect.IsFenix)
-            {
-                var code = position switch { "on" => 2, "auto" => 1, _ => 0 };
-                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_STROBE)");
-            }
+                sender.Execute(simConnect, $"{(isOn ? 2 : 0)} (>L:S_OH_EXT_LT_STROBE)");
             else if (simConnect.IsIniBuilds)
-            {
-                var code = position switch { "on" => 0, "auto" => 1, _ => 2 };
-                sender.Execute(simConnect, $"{code} (>L:INI_STROBE_LIGHT_SWITCH)");
-            }
+                sender.Execute(simConnect, $"{(isOn ? 0 : 2)} (>L:INI_STROBE_LIGHT_SWITCH)");
             else if (simConnect.IsAtr)
-                sender.Execute(simConnect, $"{(position == "on" ? 1 : 0)} (>L:MSATR_ELTS_STROBE)");
+                sender.Execute(simConnect, $"{(isOn ? 1 : 0)} (>L:MSATR_ELTS_STROBE)");
             else
-            {
-                var code = position == "on" ? 1 : 0;
-                sender.Execute(simConnect, $"{code} (>K:STROBES_SET)");
-            }
+                sender.Execute(simConnect, $"{(isOn ? 1 : 0)} (>K:STROBES_SET)");
         }
     }
 }
