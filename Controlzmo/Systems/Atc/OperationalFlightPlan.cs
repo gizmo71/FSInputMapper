@@ -17,7 +17,7 @@ namespace Controlzmo.Systems.Atc
         public readonly Double minFOB;
         public readonly Double planFOB;
 
-        public OfpWaypoint(XmlElement node)
+        internal OfpWaypoint(XmlElement node)
         {
             Name = node.SelectSingleNode("./name")?.InnerText ?? "?";
             Ident = node.SelectSingleNode("./ident")?.InnerText ?? "?";
@@ -71,5 +71,12 @@ try {
 } catch (Exception ex) { /*Console.Error.WriteLine($"***---*** Bugger {ex}");*/ }
             return fixes;
         }
+
+/*
+TODO: V1 speeds, specifically for aircraft which don't populate LVars like the ATR and iniBuilds
+Suggested use is to plug this into the "setup aircraft" button, and write the findings in L:AIRLINER_Vx_SPEED
+In the XML, we're looking for //tlr/takeoff, and within that, ./conditions/planned_runway, then find that in ./runway/indentifier and get speeds_v1/vr/v2.
+Can we rely on those LVars being 0 and only write to them if they are?
+*/
     }
 }
