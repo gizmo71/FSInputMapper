@@ -12,6 +12,7 @@ namespace Controlzmo.Systems.Atc
     {
         private readonly JetBridgeSender sender;
         private readonly Com1VolumeSetEvent volume;
+        private readonly OperationalFlightPlan ofp;
 
         public string GetId() => "initAircraftState";
 
@@ -22,9 +23,6 @@ namespace Controlzmo.Systems.Atc
             {
                 sender.Execute(simConnect, "1 (>L:MSATR_MICROPHONE_LEFT_HIDDEN) 1 (>L:MSATR_MICROPHONE_RIGHT_HIDDEN)");
                 sender.Execute(simConnect, "1 (>L:XMLVAR_YOKEHIDDEN1) 1 (>L:XMLVAR_YOKEHIDDEN2)");
-// According to t'internet, at 22t, on a non-limiting runway V1=VR/V2 are 111/114 or 120/123 in icing
-// Can we read them from SimBrief if calculated?
-                //TODO: weight sensitive? sender.Execute(simConnect, "104 (>L:AIRLINER_V1_SPEED) 104 (>L:AIRLINER_VR_SPEED) 110 (>L:AIRLINER_V2_SPEED)");
             }
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, "0 (>L:S_EFB_VISIBLE_FO) 0 (>L:S_EFB_CHARGING_CABLE_FO) 0 (>L:S_WINDOW_BLINDS_FO) 1.0 (>L:A_MIP_LIGHTING_FLOOD_MAIN)");
@@ -33,9 +31,8 @@ namespace Controlzmo.Systems.Atc
             else if (simConnect.IsFBW)
                 sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE)");
             else if (simConnect.IsIniBuilds)
-            {
                 sender.Execute(simConnect, "2 (>L:INI_TCAS_STBY_STATE)");
-            }
+            ofp.ReadVSpeeds(simConnect);
         }
     }
 }
