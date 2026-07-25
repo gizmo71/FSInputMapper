@@ -27,7 +27,6 @@ class ComFrequency extends HTMLInputElement {
 }
 customElements.define('com-frequency', ComFrequency, { extends: "input" });
 
-
 class VSpeed extends HTMLInputElement {
     constructor() {
         super();
@@ -63,6 +62,11 @@ function errorHandler(err) {
 }
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").withAutomaticReconnect().build();
+
+connection.on("SetColour", function (name, newValue) {
+    var jqInput = $("#" + name);
+    jqInput.css('color', newValue);
+});
 
 connection.on("SetFromSim", function (name, newValue) {
     var jqInput = $("#" + name).add($('input[type="radio"][name="' + name + '"]'));

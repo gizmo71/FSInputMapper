@@ -30,7 +30,7 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_SIDE_RED;
         public void OnPress(ExtendedSimConnect simConnect)
         {
-            if (state.Current == CameraState.CHASE) {
+            if (state.Current == CameraState.CHASE || state.Current == CameraState.UNKNOWN) {
                 _logger.LogWarning($"Requesting cockpit for {state.Current}");
                 state.Current = CameraState.COCKPIT;
             }  else if (state.Current == CameraState.COCKPIT || state.Current == CameraState.WORLD_MAP || state.Current == CameraState.SHOWCASE) {

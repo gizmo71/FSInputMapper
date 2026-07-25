@@ -19,8 +19,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender sender;
         public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_HAT_UP;
-        public virtual void OnPress(ExtendedSimConnect sc) => sender.Execute(sc, "1 (>L:A32NX_BTN_UP)");
-        public virtual void OnRelease(ExtendedSimConnect sc) => sender.Execute(sc, "0 (>L:A32NX_BTN_UP)");
+        public virtual void OnPress(ExtendedSimConnect sc) => Set(sc, 1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => Set(sc, 0);
+        private void Set(ExtendedSimConnect sc, int value) => sender.Execute(sc, $"{value} (>L:{(sc.IsAtr ? "MSATR_EFIS_PROC_UP_1" : "A32NX_BTN_UP")})");
     }
 
     [Component, RequiredArgsConstructor]
@@ -28,8 +29,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender sender;
         public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_HAT_DOWN;
-        public virtual void OnPress(ExtendedSimConnect sc) => sender.Execute(sc, "1 (>L:A32NX_BTN_DOWN)");
-        public virtual void OnRelease(ExtendedSimConnect sc) => sender.Execute(sc, "0 (>L:A32NX_BTN_DOWN)");
+        public virtual void OnPress(ExtendedSimConnect sc) => Set(sc, 1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => Set(sc, 0);
+        private void Set(ExtendedSimConnect sc, int value) => sender.Execute(sc, $"{value} (>L:{(sc.IsAtr ? "MSATR_EFIS_PROC_DN_1" : "A32NX_BTN_DOWN")})");
     }
 
     [Component, RequiredArgsConstructor]
@@ -37,8 +39,9 @@ namespace Controlzmo.Systems.PilotMonitoring
     {
         private readonly JetBridgeSender sender;
         public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_HAT_FORE;
-        public virtual void OnPress(ExtendedSimConnect sc) => sender.Execute(sc, "1 (>L:A32NX_BTN_CHECK_RH)");
-        public virtual void OnRelease(ExtendedSimConnect sc) => sender.Execute(sc, "0 (>L:A32NX_BTN_CHECK_RH)");
+        public virtual void OnPress(ExtendedSimConnect sc) => Set(sc, 1);
+        public virtual void OnRelease(ExtendedSimConnect sc) => Set(sc, 0);
+        private void Set(ExtendedSimConnect sc, int value) => sender.Execute(sc, $"{value} (>L:{(sc.IsAtr ? "MSATR_EFIS_PROC_VAL_1" : "A32NX_BTN_CHECK_RH")})");
     }
 
     [Component, RequiredArgsConstructor]

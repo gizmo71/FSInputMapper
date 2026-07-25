@@ -3,6 +3,8 @@ using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
 
+/*TODO: can we somehow disconnect the tiller in the ATR once on the take off roll, and leave it off until after landing?
+  L:MSATR_Switch_NW_STEERING_cover and L:MSATR_NW_STEERING are implicated... there are some B: events, too. */
 namespace Controlzmo.Systems.Controls
 {
     [Component] public class TillerEvent : IEvent { public string SimEvent() => "AXIS_STEERING_SET"; }

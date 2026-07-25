@@ -1,5 +1,4 @@
-﻿using Controlzmo.GameControllers;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
@@ -10,7 +9,7 @@ using System.Collections.Generic;
 namespace Controlzmo.SimConnectzmo
 {
     [Component, RequiredArgsConstructor]
-    public partial class InputEvents : IOnAircraftLoaded, ISettable<string?>
+    public partial class InputEvents : IOnAircraftLoaded, IOnSimStarted, ISettable<string?>
     {
         private readonly ILogger<InputEvents> log;
 
@@ -27,10 +26,14 @@ namespace Controlzmo.SimConnectzmo
 
         public void OnAircraftLoaded(ExtendedSimConnect simConnect)
         {
-            all.Clear();
+            lock (all) {
+                all.Clear();
+            }
             simConnect.EnumerateInputEvents(REQUEST.EnumerateInputEvents);
             log.LogCritical($"Asked for input events 1 => {simConnect.GetLastSentPacketID()}");
         }
+
+        public void OnStarted(ExtendedSimConnect simConnect) => OnAircraftLoaded(simConnect);
 
         internal void OnRecvEnumerateInputEvents(ExtendedSimConnect sc, SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS data)
         {
@@ -38,13 +41,15 @@ namespace Controlzmo.SimConnectzmo
             for (int i = 0; i < data.dwArraySize; ++i)
             {
                 var rgData = (SIMCONNECT_INPUT_EVENT_DESCRIPTOR) data.rgData[i];
-                try
-                {
-                    all.Add(rgData.Name, rgData);
-                }
-                catch (ArgumentException e)
-                {
-                    // Whatever, we end up with two lots in rapid succession, let's just not care...
+                lock (all) {
+                    try
+                    {
+                        all.Add(rgData.Name, rgData);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        // Whatever, we end up with two lots in rapid succession, let's just not care...
+                    }
                 }
             }
         }

@@ -10,8 +10,6 @@ namespace Controlzmo.GameControllers
     public enum VJoyButton : uint
     {
 // These are the numbers we send and are listed in the in-game controller mappings; the actual numbers in the control mapping exports are one lower.
-        RUDDER_TRIM_LEFT = 20,
-        RUDDER_TRIM_RIGHT = 21,
         //INSTRUMENT_VIEW_NEXT = 89,
         INSTRUMENT_VIEW_10 = 90,
         INSTRUMENT_VIEW_1 = 91,

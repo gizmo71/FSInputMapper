@@ -96,7 +96,7 @@ Console.WriteLine($"Normalised {normalised}");
         internal virtual double StartClimb() => 0.67;
         internal virtual double EndClimb() => 0.71;
         internal virtual double StartFlex() => 0.84;
-        internal virtual double EndFlex() => 0.865;
+        internal abstract double EndFlex();
     }
 
     [Component, RequiredArgsConstructor]
@@ -108,6 +108,7 @@ Console.WriteLine($"Normalised {normalised}");
         internal override double StartRevIdle() => 0.179;
         internal override double StartIdle() => 0.285;
         internal override double EndIdle() => 0.310;
+        internal override double EndFlex() => 0.865;
     }
 
     [Component, RequiredArgsConstructor]
@@ -119,5 +120,6 @@ Console.WriteLine($"Normalised {normalised}");
         internal override double StartRevIdle() => 0.130;
         internal override double StartIdle() => 0.260;
         internal override double EndIdle() => 0.285;
+        internal override double EndFlex() => 0.868;
     }
 }

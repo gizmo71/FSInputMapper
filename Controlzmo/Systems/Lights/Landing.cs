@@ -1,75 +1,106 @@
-﻿using System.Runtime.InteropServices;
-using Controlzmo.Hubs;
+﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingLightData
     {
-        // 2 retracted, 1 off, 0 on
+        [SimVar("LIGHT LANDING:2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int a339;
         [SimVar("L:LIGHTING_LANDING_2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int landingSwitchLeft;
+        public int fbwLeft;
         [SimVar("L:LIGHTING_LANDING_3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int landingSwitchRight;
-        [SimVar("L:LANDING_2_RETRACTED", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftRetracted;
-        [SimVar("L:LANDING_3_RETRACTED", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightRetracted;
-        // Technically the circuits shouldn't come on until the lights are fully extended.
-        // Can't quite make this work like the in-game panel switches.
-        [SimVar("CIRCUIT SWITCH ON:18", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int leftCircuit;
-        [SimVar("CIRCUIT SWITCH ON:19", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int rightCircuit;
-    };
+        public int fbwRight;
+        [SimVar("L:A320_LANDING_LIGHT_SWITCH_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int iniLeft;
+        [SimVar("L:A320_LANDING_LIGHT_SWITCH_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int iniRight;
+        [SimVar("L:INI_LANDING_LIGHT_SWITCH", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int ini;
+        [SimVar("L:S_OH_EXT_LT_LANDING_L", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int fenixLeft;
+        [SimVar("L:S_OH_EXT_LT_LANDING_R", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int fenixRight;
+        [SimVar("L:MSATR_ELTS_LDG_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int atrLeft;
+        [SimVar("L:MSATR_ELTS_LDG_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int atrRight;
+    }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class LandingLightSystem : ISettable<bool>, IData<LandingLightData>
+    [Component, RequiredArgsConstructor]
+    public partial class LandingLightSystem : DataListener<LandingLightData>, IRequestDataOnOpen, ISettable<bool>
     {
         private readonly JetBridgeSender sender;
+        private readonly LightState state;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public string GetId() => "lightsLanding";
+        public string GetId() => "landingLight";
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
 
-        public void SetInSim(ExtendedSimConnect simConnect, bool value)
+        public override void Process(ExtendedSimConnect sc, LandingLightData data)
         {
-            if (simConnect.IsFBW) {
-                int code = value ? 0 : 2;
-                int retracted = value ? 0 : 1;
-                int circuit = value ? 1 : 0;
-                simConnect.SendDataOnSimObject(new LandingLightData() {
-                    landingSwitchLeft = code,
-                    landingSwitchRight = code,
-                    leftRetracted = retracted,
-                    rightRetracted = retracted,
-                    leftCircuit = circuit,
-                    rightCircuit = circuit,
-                });
+            var value = false;
+            if (sc.IsFenix)
+                value = data.fenixLeft == 2 && data.fenixRight == 2;
+            else if (sc.IsA380X)
+                value = data.fbwLeft != 0;
+            else if (sc.IsA339)
+                value = data.a339 == 1;
+            else if (sc.IsFBW)
+                value = data.fbwLeft == 0 && data.fbwRight == 0;
+            else if (sc.IsIni321 || sc.IsIni320)
+                value = data.iniLeft == 0 && data.iniRight == 0;
+            else if (sc.IsIniBuilds)
+                value = data.ini != 0;
+            else if (sc.IsAtr)
+                value = data.atrLeft == 1 && data.atrRight == 1;
+            hub.Clients.All.SetFromSim(GetId(), state.IsLandingOn = value);
+        }
+
+        public void SetInSim(ExtendedSimConnect simConnect, bool isOn)
+        {
+            if (simConnect.IsA380X)
+            {
+                var landingCode = isOn ? 1 : 0;
+                var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
+                sender.Execute(simConnect, $"{landingCode} (>B:LIGHTING_LANDING_2_SET) {noseCode} (>B:LIGHTING_LANDING_1_SET)");
+            }
+            else if (simConnect.IsA339)
+            {
+                var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
+                sender.Execute(simConnect, $"{(isOn ? 1 : 0)} d 3 r (>K:2:LANDING_LIGHTS_SET) 2 r (>K:2:LANDING_LIGHTS_SET) {noseCode} (>B:LIGHTING_LANDING_1_SET)");
+            }
+            else if (simConnect.IsFBW)
+            {
+                var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
+                sender.Execute(simConnect, $"{(isOn ? 0 : 2)} d (>B:LIGHTING_LANDING_2_SET) (>B:LIGHTING_LANDING_3_SET) {noseCode} (>B:LIGHTING_LANDING_1_SET)");
             }
             else if (simConnect.IsFenix)
             {
-                int code = value ? 2 : 0;
-                sender.Execute(simConnect, $"{code} (>L:S_OH_EXT_LT_LANDING_L) {code} (>L:S_OH_EXT_LT_LANDING_R) {code} (>L:S_OH_EXT_LT_LANDING_BOTH) ");
-            }
-            else if (simConnect.IsIni330)
-            {
-                int code = value ? 1 : 0;
-                sender.Execute(simConnect, $"{code} (>L:INI_LANDING_LIGHT_SWITCH)");
+                var landingCode = isOn ? 2u : 0u;
+                var noseCode = state.IsTaxiOn ? (isOn ? 2u : 1u) : 0u;
+                sender.Execute(simConnect, $"{landingCode} (>L:S_OH_EXT_LT_LANDING_L) {landingCode} (>L:S_OH_EXT_LT_LANDING_R) {noseCode} (>L:S_OH_EXT_LT_NOSE)");
             }
             else if (simConnect.IsIniBuilds)
             {
-                int code = value ? 0 : 2;
-                sender.Execute(simConnect, $"{code} (>L:A320_LANDING_LIGHT_SWITCH_LEFT) {code} (>L:A320_LANDING_LIGHT_SWITCH_RIGHT)");
+                var landingCode = isOn ? 0u : 2u;
+                if (simConnect.IsIni330) landingCode = 1 - landingCode / 2;
+                var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
+                var mainRpn = simConnect.IsIni330 ? "(>L:INI_LANDING_LIGHT_SWITCH)" : "d (>L:A320_LANDING_LIGHT_SWITCH_LEFT) (>L:A320_LANDING_LIGHT_SWITCH_RIGHT)";
+                sender.Execute(simConnect, $"{landingCode} {mainRpn} {noseCode} (>L:INI_TAXI_LIGHT_SWITCH)");
             }
             else if (simConnect.IsAtr)
             {
-                int code = value ? 1 : 0;
+                int code = isOn ? 1 : 0;
                 sender.Execute(simConnect, $"{code} (>L:MSATR_ELTS_LDG_LEFT) {code} (>L:MSATR_ELTS_LDG_RIGHT)");
             }
+            state.IsLandingOn = isOn;
         }
     }
 }

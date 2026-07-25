@@ -1,6 +1,7 @@
 ﻿using Controlzmo.GameControllers;
 using Lombok.NET;
 using SimConnectzmo;
+using System;
 
 namespace Controlzmo.Views
 {
@@ -13,7 +14,11 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
 
         public virtual void OnPress(ExtendedSimConnect simConnect) {
-            if (state.Current != CameraState.COCKPIT) return;
+            if (state.Current != CameraState.COCKPIT)
+            {
+                Console.Error.WriteLine($"Wrong camera state for MCDU view {state.Current}");
+                return;
+            }
 
             var data = new CameraViewData() { viewType = 2, viewIndex = 0 };
 

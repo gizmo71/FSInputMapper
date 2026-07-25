@@ -1,53 +1,46 @@
-﻿using Controlzmo.GameControllers;
-using Controlzmo.Hubs;
-using Controlzmo.Systems.JetBridge;
+﻿using Controlzmo.Hubs;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
 {
-    [Component, RequiredArgsConstructor]
-    public partial class WingIceLight : ISettable<bool?>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct WingIceLightData
     {
-        private readonly JetBridgeSender sender;
+        [SimVar("L:S_OH_EXT_LT_WING", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 fenix;
+        [SimVar("LIGHT WING", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 standard;
+    };
+
+    [Component]
+    public class ToggleWingLightsEvent : IEvent { public string SimEvent() => "TOGGLE_WING_LIGHTS"; }
+
+    [Component, RequiredArgsConstructor]
+    public partial class WingIceLight : DataListener<WingIceLightData>, IRequestDataOnOpen, ISettable<bool?>
+    {
+        private readonly ToggleWingLightsEvent toggleEvent;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private bool? _current = null;
 
         public string GetId() => "wingIceLight";
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+
+        public override void Process(ExtendedSimConnect sc, WingIceLightData data)
+        {
+            if (sc.IsFenix)
+                data.standard = data.fenix;
+            hub.Clients.All.SetFromSim(GetId(), _current = data.standard != 0);
+        }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
-            var desiredValue = value == true ? 1 : 0;
-            sender.Execute(simConnect, simConnect.IsFenix ?
-                $"{desiredValue} (>L:S_OH_EXT_LT_WING)" :
-                $"(A:LIGHT WING, Bool) {desiredValue} != if{{ 0 (>K:TOGGLE_WING_LIGHTS) }}");
-
-// Yes, this "works"... It locks out all other camera control by default.
-            if (value == true)
-                simConnect.CameraAcquire("Gizmocam");
-            else if (value == false)
-                simConnect.CameraRelease("Gizmocam");
-        }
-    }
-
-    [Component]
-    public partial class TestDaOutputs : IAxisCallback<T16000mHotas>
-    {
-        public int GetAxis() => T16000mHotas.AXIS_WHEEL;
-
-        public void OnChange(ExtendedSimConnect simConnect, double old, double @new)
-        {
-Console.WriteLine($"**--** @new {@new - 0.5}");
-            SIMCONNECT_DATA_CAMERA data = new SIMCONNECT_DATA_CAMERA {
-                PositionReferential = SIMCONNECT_POSITION_REFERENTIAL.EYEPOINT,
-                // x is left/right, with + being left(!)
-                // y is up/down, with + being up
-                // z is fore/aft with + being fore
-                // Note that the eyepoint in the Fenix is actually where the pilot's bum sits, and in the A330 it's in the cabin!
-                Position = new SIMCONNECT_DATA_XYZ { x = 0.0, y = 0.0, z = 15.0 * (@new - 0.5) },
-            };
-            SIMCONNECT_CAMERA_DATA_MASK mask = SIMCONNECT_CAMERA_DATA_MASK.POSITION;
-            //simConnect.CameraSet(data, (uint)mask);
+            if (value == null || _current == value) return;
+            simConnect.SendEvent(toggleEvent);
         }
     }
 }
