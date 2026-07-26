@@ -4,6 +4,7 @@ using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
@@ -35,7 +36,7 @@ namespace Controlzmo.Systems.Lights
             bool _current;
             if (sc.IsFenix)
                 _current = data.fenix == 1;
-            else if (sc.IsA330)
+            else if (sc.IsIni330 || sc.IsIni337)
                 _current = data.ini == 1;
             else if (sc.IsIniBuilds)
                 _current = data.ini != 2;
@@ -51,11 +52,7 @@ namespace Controlzmo.Systems.Lights
             var desiredValue = value == true ? 1 : 0;
             string? action = null;
             if (simConnect.IsFBW)
-            {
                 action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
-                if (simConnect.IsA380X)
-                    sender.Execute(simConnect, $"{2 - desiredValue * 2} (>L:XMLVAR_SWITCH_OVHD_INTLT_SEATBELT_Position)");
-            }
             else if (simConnect.IsFenix)
                 action = $"{desiredValue} (>L:S_OH_SIGNS)";
             else if (simConnect.IsAtr)
@@ -69,6 +66,9 @@ namespace Controlzmo.Systems.Lights
 
             if (action != null)
                 sender.Execute(simConnect, action);
+
+            if (simConnect.IsA380X || simConnect.IsA339)
+                sender.Execute(simConnect, $"{2 - desiredValue * 2} (>L:XMLVAR_SWITCH_OVHD_INTLT_SEATBELT_Position)");
         }
     }
 }
