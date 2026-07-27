@@ -19,19 +19,24 @@ namespace Controlzmo.Systems.Atc
         public void SetInSim(ExtendedSimConnect simConnect, string? value)
         {
             simConnect.SendEvent(volume, 100);
+
             if (simConnect.IsAtr)
             {
                 sender.Execute(simConnect, "1 (>L:MSATR_MICROPHONE_LEFT_HIDDEN) 1 (>L:MSATR_MICROPHONE_RIGHT_HIDDEN)");
                 sender.Execute(simConnect, "1 (>L:XMLVAR_YOKEHIDDEN1) 1 (>L:XMLVAR_YOKEHIDDEN2)");
             }
             else if (simConnect.IsFenix)
+            {
                 sender.Execute(simConnect, "0 (>L:S_EFB_VISIBLE_FO) 0 (>L:S_EFB_CHARGING_CABLE_FO) 0 (>L:S_WINDOW_BLINDS_FO) 1.0 (>L:A_MIP_LIGHTING_FLOOD_MAIN)");
+                sender.Execute(simConnect, "2 (>L:S_XPDR_OPERATION)");
+            }
             else if (simConnect.IsA380X)
                 sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE) 1 (>L:A380X_RMP_1_VHF_TX_1)");
             else if (simConnect.IsFBW)
                 sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "2 (>L:INI_TCAS_STBY_STATE)");
+
             ofp.ReadVSpeeds(simConnect);
         }
     }
