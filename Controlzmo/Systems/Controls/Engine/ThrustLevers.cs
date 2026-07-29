@@ -35,6 +35,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly EngineDataListener data;
         private readonly TlAirbus airbusMapper;
         private readonly TlGeneric genericMapper;
+        private readonly IdleGate idleGate;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
@@ -63,6 +64,7 @@ Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit
                 normalised = normalised * 2 - 1;
 Console.WriteLine($"Normalised {normalised}");
             }
+            idleGate.MaybeMap(ref normalised);
             _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
             var raw = (Int32) (16384 * normalised);
