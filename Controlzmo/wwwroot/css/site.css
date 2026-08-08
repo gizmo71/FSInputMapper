@@ -118,6 +118,10 @@ ul.tab-menu li {
     user-select: none;
 }
 
+.darkButton {
+    background-color: dimgrey;
+}
+
 @media (min-width: 1500px) {
     .gridContainer {
         display: grid;

@@ -37,7 +37,7 @@ namespace Controlzmo.Systems.Apu
         private Boolean _isOn;
 
         public string GetId() => "apuMasterPress";
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, ApuMasterData data) {
             if (simConnect.IsFenix)
@@ -96,7 +96,7 @@ namespace Controlzmo.Systems.Apu
         private Boolean _isAvail;
 
         public string GetId() => "apuStartPress";
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, ApuStartData data) {
             if (simConnect.IsFenix)

@@ -63,9 +63,10 @@ function errorHandler(err) {
 
 var connection = new signalR.HubConnectionBuilder().withUrl("/hub/connectzmo").withAutomaticReconnect().build();
 
-connection.on("SetColour", function (name, newValue) {
+connection.on("SetColour", function (name, fg, bg) {
     var jqInput = $("#" + name);
-    jqInput.css('color', newValue);
+    jqInput.css('color', fg ?? '');
+    jqInput.css('background-color', bg ?? '');
 });
 
 connection.on("SetFromSim", function (name, newValue) {

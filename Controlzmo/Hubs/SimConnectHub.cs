@@ -14,7 +14,7 @@ namespace Controlzmo.Hubs
     public partial interface IControlzmoHub
     {
         public Task SetFromSim(string name, object? value);
-        public Task SetColour(string name, string colour);
+        public Task SetColour(string name, string? fg = null, string? bg = null);
         public Task UpdateLandingRate(int? fpm, int? agl, string colour);
         public Task Toast(string id, string text);
     }
