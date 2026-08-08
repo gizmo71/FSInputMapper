@@ -108,8 +108,8 @@ Console.WriteLine($"Normalised {normalised}");
         public override int GetAxis() => UrsaMinorThrottle.AXIS_THRUST_LEFT;
         internal override double EndRevFull() => 0.060; // This one doesn't report it's whole travel :-(
         internal override double StartRevIdle() => 0.179;
-        internal override double StartIdle() => 0.285;
-        internal override double EndIdle() => 0.310;
+        internal override double StartIdle() => 0.274;
+        internal override double EndIdle() => 0.295;
         internal override double EndFlex() => 0.865;
     }
 
