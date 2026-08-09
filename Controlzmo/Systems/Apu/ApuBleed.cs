@@ -16,6 +16,8 @@ namespace Controlzmo.Systems.Apu
     {
         [SimVar("L:A32NX_OVHD_PNEU_APU_BLEED_PB_IS_ON", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuBleedOn;
+        [SimVar("L:A32NX_OVHD_PNEU_APU_BLEED_PB_HAS_FAULT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isApuBleedFault;
         [SimVar("L:S_OH_PNEUMATIC_APU_BLEED", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuBleedOnFenix;
         [SimVar("L:I_OH_PNEUMATIC_APU_BLEED_U", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
@@ -36,11 +38,10 @@ namespace Controlzmo.Systems.Apu
         public void OnStarted(ExtendedSimConnect simConnect) => simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
 
         public override void Process(ExtendedSimConnect simConnect, ApuBleedData data) {
-            var isFault = false;
-            if (simConnect.IsFenix) { data.isApuBleedOn = data.isApuBleedOnFenix; isFault = data.isApuBleedFaultFenix != 0; }
-            if (simConnect.IsIniBuilds) data.isApuBleedOn = data.isApuBleedOnIni;
+            if (simConnect.IsFenix) { data.isApuBleedOn = data.isApuBleedOnFenix; data.isApuBleedFault = data.isApuBleedFaultFenix; }
+            else if (simConnect.IsIniBuilds) { data.isApuBleedOn = data.isApuBleedOnIni; data.isApuBleedFault = 0; }
             string colour = "black";
-            if (isFault) colour = "red";
+            if (data.isApuBleedFault != 0) colour = "red";
             else if (data.isApuBleedOn != 0) colour = "blue";
             hub.Clients.All.SetColour(GetId(), colour);
         }
