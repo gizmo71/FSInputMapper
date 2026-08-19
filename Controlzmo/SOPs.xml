@@ -39,7 +39,7 @@
 	<Airline callsign="^(?:speed[- ]?bird|shuttle|griffin)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">&uarr;Departure within &pm;10m</Text>
-		<Text type=".*">Start #1 first, 1m between, warm up (after 90m)</Text>
+		<Text type=".*">60s between starts, #1 first; warm up (after 90m)</Text>
 		<Text type=".*">OETD (4m); MTOW checked</Text>
 		<Text type=".*">Stabilised approach, MLW checked</Text>
 		<Text type=".*">Cool down; OETA (1m)</Text>
@@ -62,7 +62,7 @@
 	</Airline>
 	<Airline callsign="^(eurowings|black[- ]?pearl)$"> <!-- vEWG -->
 		<Text type=".*">Preparation 15m-10h, air time counts</Text>
-		<Text type=".*">Start #1 first, 5s between; warm up</Text>
+		<Text type=".*">5s between starts, #1 first; warm up</Text>
 		<Text type="A.[^3].">&uarr;Departure/arrival within &pm;30m</Text>
 		<Text type="A.3.">&uarr;Departure/arrival within &pm;15m</Text>
 		<Text type="A.[^3].">OETA (10s)</Text>
@@ -72,7 +72,7 @@
 	</Airline>
 	<Airline callsign="^(alpine|easy|top[- ]?swiss)$"> <!-- vEZY -->
 		<Text type=".*">Preparation 20-50 minutes, block time counts</Text>
-		<Text type=".*">Start #1 first, 30s between; OETD, warm up</Text>
+		<Text type=".*">30s between start, #1 first; OETD, warm up</Text>
 		<Text type=".*">OETA (5s); cool down</Text>
 		<Text type=".*">Taxi in/out time &gt;200% of expectation requires review</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
@@ -129,7 +129,7 @@
 		<Text type=".*">&udarr; Departure &pm;15 minutes of scheduled</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">1m between starts; OETD (1m); warm up</Text>
+		<Text type=".*">60s between starts; OETD (1m); warm up</Text>
 		<Text type=".*">OETA (1m); cool down</Text>
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
@@ -189,7 +189,7 @@
 		<Text type="A320|A21N">Preparation 25m to 2h</Text>
 		<Text type="AT76">Preparation 15m to 45m</Text>
 		<Text type=".*">&udarr; Departure/Arrival &pm;15/&pm;16 minutes of scheduled</Text>
-		<Text type=".*">1m between starts; warm up</Text>
+		<Text type=".*">60s between starts; warm up</Text>
 		<Text type="AT76">Start #2 first</Text>
 		<Text type="A320|A21N">Departure pitch 6/7-15/16°; MTOW checked</Text>
 		<Text type=".*">Cool down</Text>
@@ -200,9 +200,9 @@
 	</Airline>
 	<Airline callsign="^qatari$"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
-		<Text type="A(3[235].|21N)">Start #1 first, 2s between</Text>
-		<Text type="A3[01].">Start #2 first, 2s between</Text>
-		<Text type="A3[48].">Start #1->#4, 1s between</Text>
+		<Text type="A(3[235].|21N)">2s between starts, #1 first</Text>
+		<Text type="A3[01].">2s between starts, #2 first</Text>
+		<Text type="A3[48].">1s between starts, #1->#4, </Text>
 		<Text type=".*">Warm up; cool down</Text>
 		<Text type="A3[035].|A31[0-6]">Must have fuel &ge;3.6T on landing</Text>
 		<Text type="A(3[12].|21N)">Must have fuel &ge;1.8T on landing</Text>
@@ -213,7 +213,7 @@
 	<Airline callsign="^(ryan[- ]?air)$"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
-		<Text type=".*">1m between starts; warm up; cool down</Text>
+		<Text type=".*">60s between starts; warm up; cool down</Text>
 		<Text type=".*">Must have 1T&le;fuel&le;5T on landing</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 1000fpm</Text>
 	</Airline>
@@ -229,7 +229,7 @@
 	</Airline>
 	<Airline callsign="^spirit[ -]?wings$"> <!-- vSpirit -->
 		<Text type=".*">Preparation 15-60 minutes, air time counts</Text>
-		<Text type=".*">Start #1 first, 30s between</Text>
+		<Text type=".*">30s between starts</Text>
 		<Text type=".*">OETD (1m); OETA (1m)</Text>
 		<Text type="A2[01]N">Warm up (5m), cool down (5m)</Text>
 		<Text type="A3(19|20|21)">Warm up, cool down</Text>
