@@ -39,6 +39,7 @@ namespace Controlzmo.Systems.Atc
         private readonly bool isLocalSops;
         private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
         private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex secondsBetweenStartsRegex = new Regex(@"(?<!\d)(\d+)s between starts", RegexOptions.IgnoreCase);
         private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00[FS]?$", RegexOptions.IgnoreCase);
         private readonly static int DEFAULT_ENGINE_WAIT_MINUTES = 3;
 
@@ -47,7 +48,9 @@ namespace Controlzmo.Systems.Atc
         [Property]
         private int _cooldownMinutes;
         [Property]
-        private string _callsign;
+        private int _secondsBetweenStarts;
+        [Property]
+        private string _callsign = "";
 
         public AtcAirlineListener(IHubContext<ControlzmoHub, IControlzmoHub> hub)
         {
@@ -90,8 +93,9 @@ namespace Controlzmo.Systems.Atc
                 else
                     foreach (var node in nodes!)
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
-                WarmupMinutes = Minutes(warmupRegex, sops);
-                CooldownMinutes = Minutes(cooldownRegex, sops);
+                WarmupMinutes = NumberOr(warmupRegex, DEFAULT_ENGINE_WAIT_MINUTES, sops);
+                CooldownMinutes = NumberOr(cooldownRegex, DEFAULT_ENGINE_WAIT_MINUTES, sops);
+                SecondsBetweenStarts = NumberOr(secondsBetweenStartsRegex, 60, sops);
             }
             catch (Exception e)
             {
@@ -106,10 +110,11 @@ namespace Controlzmo.Systems.Atc
             await hub.Clients.All.SetFromSim("simInfo", extra);
         }
 
-        private int Minutes(Regex regex, String sops)
+        private int NumberOr(Regex regex, int defaultValue, String sops)
         {
             var match = regex.Match(sops);
-            return match.Success ? (match.Groups[1].Value == "" ? DEFAULT_ENGINE_WAIT_MINUTES: int.Parse(match.Groups[1].Value)) : 1;
+            var matchedValue = match.Success ? match.Groups[1].Value : "";
+            return matchedValue == "" ? defaultValue : int.Parse(matchedValue);
         }
 
         private async Task<XmlDocument> loadXml()

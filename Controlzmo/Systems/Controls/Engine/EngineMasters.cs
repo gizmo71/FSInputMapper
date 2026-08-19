@@ -1,5 +1,6 @@
 ﻿using Controlzmo.GameControllers;
 using Controlzmo.SimConnectzmo;
+using Controlzmo.Systems.Atc;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
@@ -19,6 +20,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly FuelSystemValveOpenEvent fuelSystemValveOpen;
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
+        private readonly AtcAirlineListener sops;
 
         internal void perform(ExtendedSimConnect sc, Boolean isLeft, Boolean isOn)
         {
@@ -52,13 +54,13 @@ namespace Controlzmo.Systems.Controls.Engine
             var delay = 1;
             for (var engine = first; engine <= last; ++engine) {
                 DelayedEngineMasterCommand(sc, isOn ? fuelSystemValveOpen : fuelSystemValveClose, engine, delay);
-                delay += 3000;
+                delay += (isOn ? sops.SecondsBetweenStarts + 1 : 2) * 1000; // Assumes at most two engines...
             }
         }
 
-        private void DelayedEngineMasterCommand(ExtendedSimConnect sc, IEvent _event, uint engine, int delay)
+        private void DelayedEngineMasterCommand(ExtendedSimConnect sc, IEvent _event, uint engine, int msDelay)
         {
-            var timer = new Timer(delay);
+            var timer = new Timer(msDelay);
             timer.AutoReset = false;
             timer.Elapsed += (object? source, ElapsedEventArgs e) => {
                 sc.SendEventEx1(_event, engine);
