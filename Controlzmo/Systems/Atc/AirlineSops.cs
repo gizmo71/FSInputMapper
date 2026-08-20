@@ -93,9 +93,9 @@ namespace Controlzmo.Systems.Atc
                 else
                     foreach (var node in nodes!)
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
-                WarmupMinutes = NumberOr(warmupRegex, DEFAULT_ENGINE_WAIT_MINUTES, sops);
-                CooldownMinutes = NumberOr(cooldownRegex, DEFAULT_ENGINE_WAIT_MINUTES, sops);
-                SecondsBetweenStarts = NumberOr(secondsBetweenStartsRegex, 60, sops);
+                WarmupMinutes = NumberOr(warmupRegex, DEFAULT_ENGINE_WAIT_MINUTES, 1, sops);
+                CooldownMinutes = NumberOr(cooldownRegex, DEFAULT_ENGINE_WAIT_MINUTES, 1, sops);
+                SecondsBetweenStarts = NumberOr(secondsBetweenStartsRegex, 1, 1, sops);
             }
             catch (Exception e)
             {
@@ -110,10 +110,11 @@ namespace Controlzmo.Systems.Atc
             await hub.Clients.All.SetFromSim("simInfo", extra);
         }
 
-        private int NumberOr(Regex regex, int defaultValue, String sops)
+        private int NumberOr(Regex regex, int defaultValue, int notFoundValue, String sops)
         {
             var match = regex.Match(sops);
-            var matchedValue = match.Success ? match.Groups[1].Value : "";
+            if (!match.Success) return notFoundValue;
+            var matchedValue = match.Groups[1].Value;
             return matchedValue == "" ? defaultValue : int.Parse(matchedValue);
         }
 
