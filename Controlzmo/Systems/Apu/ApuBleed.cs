@@ -1,6 +1,5 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
-using Controlzmo.Systems.PilotMonitoring;
 using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
