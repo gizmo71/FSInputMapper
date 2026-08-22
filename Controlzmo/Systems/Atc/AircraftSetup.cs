@@ -1,7 +1,9 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
 
 namespace Controlzmo.Systems.Atc
 {
@@ -22,8 +24,20 @@ namespace Controlzmo.Systems.Atc
 
             if (simConnect.IsAtr)
             {
-                sender.Execute(simConnect, "1 (>L:MSATR_MICROPHONE_LEFT_HIDDEN) 1 (>L:MSATR_MICROPHONE_RIGHT_HIDDEN)");
-                sender.Execute(simConnect, "1 (>L:XMLVAR_YOKEHIDDEN1) 1 (>L:XMLVAR_YOKEHIDDEN2)");
+                var atrToggleStorm = "(>B:LIGHTING_LIGHTING_SWITCH_STORM_TOGGLE)"; // Bump this to make integrated panel lights work (known bug)
+                sender.Execute(simConnect, atrToggleStorm);
+                for (var i = 0; i++ < 2; ) {
+                    sender.Execute(simConnect, $"1 (>L:MSATR_MICROPHONE_{(i == 1 ? "LEFT" : "RIGHT")}_HIDDEN) 1 (>L:XMLVAR_YOKEHIDDEN{i})");
+                }
+                BoundedSet(simConnect, false, "L:MSATR_ILTS_DOME", 1); // 0 bright, 1 dim, 2 off
+                // 5 is off, 4 is minimum, down to 0 as brightest
+                BoundedSet(simConnect, false, "L:MSATR_ILTS_MIP_PED_KNOB", 4);
+                BoundedSet(simConnect, false, "L:MSATR_ILTS_OVHD_KNOB", 4);
+                // These are 0 off, 5 minimum, 100 brightest
+                BoundedSet(simConnect, true, "L:MSATR_ILTS_READING_CPT", 5);
+                BoundedSet(simConnect, true, "L:MSATR_ILTS_CONSOLE_CPT", 5);
+                BoundedSet(simConnect, true, "L:MSATR_ILTS_FLOOD_KNOB", 5);
+                sender.Execute(simConnect, atrToggleStorm);
             }
             else if (simConnect.IsFenix)
             {
@@ -38,6 +52,11 @@ namespace Controlzmo.Systems.Atc
                 sender.Execute(simConnect, "2 (>L:INI_TCAS_STBY_STATE)");
 
             ofp.ReadVSpeeds(simConnect);
+        }
+
+        private void BoundedSet(ExtendedSimConnect sc, bool isMinimum, string var, int value)
+        {
+            sender.Execute(sc, $"{value} ({var}) {(isMinimum ? "max" : "min")} (>{var})");
         }
     }
 }
