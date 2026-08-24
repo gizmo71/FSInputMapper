@@ -124,15 +124,11 @@
 		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
 		<Text type=".*">&darr; 600fpm</Text>
 	</Airline>
-	<Airline callsign="^(jet[ -]?star(?:[ -]asia)?|orange[ -]?liner)$">
-		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">&udarr; Departure &pm;15 minutes of scheduled</Text>
-		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
-		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">60s between starts; OETD (1m); warm up</Text>
-		<Text type=".*">OETA (1m); cool down</Text>
-		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
-		<Text type=".*">Rejected 600fpm</Text>
+	<Airline callsign="^(qantas|q[- ]?link|jet[ -]?star)$">
+		<Text type=".*">Preparation 10-60 minutes, ? time counts</Text> <!-- Turboprops get 5m-60m -->
+		<Text type=".*">5s between starts; warm up</Text>
+		<Text type=".*">Cool down</Text>
+		<Text type=".*">Rejected 800fpm (points loss at 2g)</Text>
 	</Airline>
 	<Airline callsign="^(aerolane|lan[- ].*|paraguaya|tam)$"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
