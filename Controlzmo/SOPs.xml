@@ -125,7 +125,7 @@
 		<Text type=".*">&darr; 600fpm</Text>
 	</Airline>
 	<Airline callsign="^(qantas|q[- ]?link|jet[ -]?star)$">
-		<Text type=".*">Preparation 10-60 minutes, ? time counts</Text> <!-- Turboprops get 5m-60m -->
+		<Text type=".*">Preparation 10-60 minutes, block time counts</Text> <!-- Turboprops get 5m-60m -->
 		<Text type=".*">5s between starts; warm up</Text>
 		<Text type=".*">Cool down</Text>
 		<Text type=".*">Rejected 800fpm (points loss at 2g)</Text>
