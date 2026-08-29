@@ -50,10 +50,8 @@ namespace Controlzmo.Systems.Lights
         public void SetInSim(ExtendedSimConnect simConnect, bool? value)
         {
             var desiredValue = value == true ? 1 : 0;
-            string? action = null;
-            if (simConnect.IsFBW)
-                action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
-            else if (simConnect.IsFenix)
+            string? action = "(A:CABIN SEATBELTS ALERT SWITCH,Bool) " + desiredValue + " != if{ (>K:CABIN_SEATBELTS_ALERT_SWITCH_TOGGLE) }";
+            if (simConnect.IsFenix)
                 action = $"{desiredValue} (>L:S_OH_SIGNS)";
             else if (simConnect.IsAtr)
                 action = $"{desiredValue} (>L:MSATR_CABS_SEAT_BELTS)";
@@ -63,9 +61,10 @@ namespace Controlzmo.Systems.Lights
                 if (simConnect.IsIni330) desiredValue = 1 - (desiredValue / 2);
                 action = $"{desiredValue} (>L:INI_SEATBELTS_SWITCH)";
             }
+            else if (simConnect.IsHorizonB789)
+                action = $"{desiredValue * 2 } (>B:AIRLINER_KNOB_SEATBELTS_Set)";
 
-            if (action != null)
-                sender.Execute(simConnect, action);
+            sender.Execute(simConnect, action);
 
             if (simConnect.IsA380X || simConnect.IsA339)
                 sender.Execute(simConnect, $"{2 - desiredValue * 2} (>L:XMLVAR_SWITCH_OVHD_INTLT_SEATBELT_Position)");
