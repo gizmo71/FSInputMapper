@@ -19,7 +19,11 @@ namespace Controlzmo.Systems.Lights
         [SimVar("L:MSATR_ELTS_TAXI_TO", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 atr;
         [SimVar("L:LIGHTING_LANDING_1", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public Int32 fbw;
+        public Int32 fbwAndB78x;
+        [SimVar("L:LIGHTING_LANDING_2", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 b78xLeft;
+        [SimVar("L:LIGHTING_LANDING_3", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 b78xRight;
         [SimVar("LIGHT TAXI", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standard;
         [SimVar("L:S_OH_EXT_LT_RWY_TURNOFF", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
@@ -50,8 +54,10 @@ namespace Controlzmo.Systems.Lights
                 data.standard = data.ini < 2 && data.iniTurnoff == 1 ? 1 : 0;
             else if (sc.IsAtr)
                 data.standard = data.atr == 1 ? 1 : 0;
-            else if (sc.IsFBW)
-                data.standard = data.fbw < 2 && data.fbwTurnoffLeft == 1 && data.fbwTurnoffRight == 1 ? 1 : 0;
+            else if (sc.IsFBW || sc.IsHorizonB789)
+                data.standard = data.fbwAndB78x < 2 && data.fbwTurnoffLeft == 1 && data.fbwTurnoffRight == 1 ? 1 : 0;
+            //else if (sc.IsHorizonB789)
+            //    data.standard = data.fbwAndB78x != 0 && data.b78xLeft != 0 && data.b78xRight != 0 ? 1 : 0;
             hub.Clients.All.SetFromSim(GetId(), state.IsTaxiOn = (data.standard == 1));
         }
 
@@ -61,6 +67,8 @@ namespace Controlzmo.Systems.Lights
             uint turnoffCode = isOn ? 1u : 0u;
             if (simConnect.IsFBW)
                 sender.Execute(simConnect, $"{turnoffCode} d 3 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET)");
+            else if (simConnect.IsHorizonB789)
+                sender.Execute(simConnect, $"{turnoffCode} d d 1 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET) 3 r (>K:2:TAXI_LIGHTS_SET)");
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{turnoffCode} (>L:S_OH_EXT_LT_RWY_TURNOFF)");
             else if (simConnect.IsIniBuilds)
