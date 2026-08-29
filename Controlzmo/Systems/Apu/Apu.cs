@@ -25,6 +25,8 @@ namespace Controlzmo.Systems.Apu
         public Int32 isApuFaultFenix;
         [SimVar("L:INI_APU_MASTER_FAULT", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuFaultIni; // Not sure this can ever be set!
+        [SimVar("L:XMLVAR_APU_StarterKnob_Pos", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 b787switch; // 0 off, 1 on, 2 start
     };
 
     [Component, RequiredArgsConstructor]
@@ -50,6 +52,10 @@ namespace Controlzmo.Systems.Apu
                 data.isApuFault = data.isApuFaultIni;
                 data.isApuMasterOn = data.isApuMasterOnIni;
             }
+            else if (simConnect.IsHorizonB789)
+            {
+                data.isApuMasterOn = data.b787switch > 0 ? 1 :0;
+            }
             _isOn = data.isApuMasterOn == 1 && data.isApuFault == 0;
             string colour = "black";
             if (data.isApuFault != 0) colour = "red";
@@ -64,6 +70,8 @@ namespace Controlzmo.Systems.Apu
                 sender.Execute(simConnect, "1 (L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON, Bool) - (>L:A32NX_OVHD_APU_MASTER_SW_PB_IS_ON)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "(L:INI_APU_MASTER_SWITCH_CMD) ! (>L:INI_APU_MASTER_SWITCH_CMD)");
+            else if (simConnect.IsHorizonB789) // Toggles on/off but doesn't start
+                sender.Execute(simConnect, "(L:XMLVAR_APU_StarterKnob_Pos) ! (>B:ELECTRICAL_APU_STARTER_Set)");
         }
     }
 
@@ -84,6 +92,10 @@ namespace Controlzmo.Systems.Apu
         public Int32 isApuAvailFenix;
         [SimVar("L:INI_APU_AVAILABLE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isApuAvailIni;
+        [SimVar("L:XMLVAR_APU_StarterKnob_Pos", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 b787switch;
+        [SimVar("APU PCT RPM", "percent", SIMCONNECT_DATATYPE.INT32, 4f)]
+        public Int32 b787rpm;
     }
 
     [Component, RequiredArgsConstructor]
@@ -109,6 +121,11 @@ namespace Controlzmo.Systems.Apu
                 data.isApuAvail = data.isApuAvailIni;
                 data.isApuStartOn = data.isApuStartOnIni * (data.apuN1 < 95 ? 1 : 0);
             }
+            else if (simConnect.IsHorizonB789)
+            {
+                data.isApuAvail = data.b787rpm > 95 ? 1 :0;
+                data.isApuStartOn = data.b787switch > 0 && data.b787rpm >= 5 && data.isApuAvail == 0 ? 1 :0;
+            }
             _isAvail = data.isApuAvail == 1;
             string colour = "black";
             if (_isAvail) colour = "green";
@@ -123,6 +140,8 @@ namespace Controlzmo.Systems.Apu
                 sender.Execute(simConnect, "(L:A32NX_OVHD_APU_START_PB_IS_AVAILABLE, Bool) if { 1 (>L:A32NX_OVHD_APU_START_PB_IS_ON, Bool) }");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_APU_START_BUTTON_CMD)");
+            else if (simConnect.IsHorizonB789)
+                sender.Execute(simConnect, "2 (>B:ELECTRICAL_APU_STARTER_Set)");
         }
     }
 }
