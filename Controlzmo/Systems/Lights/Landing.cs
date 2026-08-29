@@ -13,10 +13,12 @@ namespace Controlzmo.Systems.Lights
     {
         [SimVar("LIGHT LANDING:2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int a339;
+        [SimVar("L:LIGHTING_LANDING_1", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int b789Centre;
         [SimVar("L:LIGHTING_LANDING_2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fbwLeft;
+        public int fbwLeft; // Also B78x
         [SimVar("L:LIGHTING_LANDING_3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fbwRight;
+        public int fbwRight; // Also B78x
         [SimVar("L:A320_LANDING_LIGHT_SWITCH_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int iniLeft;
         [SimVar("L:A320_LANDING_LIGHT_SWITCH_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
@@ -54,6 +56,8 @@ namespace Controlzmo.Systems.Lights
                 value = data.a339 == 1;
             else if (sc.IsFBW)
                 value = data.fbwLeft == 0 && data.fbwRight == 0;
+            else if (sc.IsHorizonB789)
+                value = data.fbwLeft != 0 && data.fbwRight != 0 && data.b789Centre != 0;
             else if (sc.IsIni321 || sc.IsIni320)
                 value = data.iniLeft == 0 && data.iniRight == 0;
             else if (sc.IsIniBuilds)
@@ -80,6 +84,11 @@ namespace Controlzmo.Systems.Lights
             {
                 var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
                 sender.Execute(simConnect, $"{(isOn ? 0 : 2)} d (>B:LIGHTING_LANDING_2_SET) (>B:LIGHTING_LANDING_3_SET) {noseCode} (>B:LIGHTING_LANDING_1_SET)");
+            }
+            else if (simConnect.IsHorizonB789)
+            {
+                var landingCode = isOn ? 1 : 0;
+                sender.Execute(simConnect, $"{landingCode} d d 1 r (>K:2:LANDING_LIGHTS_SET) 2 r (>K:2:LANDING_LIGHTS_SET) 3 r (>K:2:LANDING_LIGHTS_SET)");
             }
             else if (simConnect.IsFenix)
             {
