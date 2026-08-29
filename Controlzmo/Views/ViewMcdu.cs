@@ -37,6 +37,8 @@ namespace Controlzmo.Views
                 data.viewIndex = 3;
             else if (simConnect.IsAsoboB38M)
                 data.viewIndex = 1;
+            else if (simConnect.IsHorizonB789)
+                data.viewIndex = 2;
             else
                  return;
 
