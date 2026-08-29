@@ -22,13 +22,20 @@ namespace Controlzmo.Systems.Atc
         {
             simConnect.SendEvent(volume, 100);
 
+            if (simConnect.IsAtr || simConnect.IsHorizonB789)
+            {
+                for (var i = 0; i++ < 2; ) {
+                    var command = $"1 (>L:XMLVAR_YOKEHIDDEN{i})";
+                    if (simConnect.IsAtr)
+                        command += $" 1 (>L:MSATR_MICROPHONE_{(i == 1 ? "LEFT" : "RIGHT")}_HIDDEN)";
+                    sender.Execute(simConnect, command);
+                }
+            }
+
             if (simConnect.IsAtr)
             {
                 var atrToggleStorm = "(>B:LIGHTING_LIGHTING_SWITCH_STORM_TOGGLE)"; // Bump this to make integrated panel lights work (known bug)
                 sender.Execute(simConnect, atrToggleStorm);
-                for (var i = 0; i++ < 2; ) {
-                    sender.Execute(simConnect, $"1 (>L:MSATR_MICROPHONE_{(i == 1 ? "LEFT" : "RIGHT")}_HIDDEN) 1 (>L:XMLVAR_YOKEHIDDEN{i})");
-                }
                 BoundedSet(simConnect, false, "L:MSATR_ILTS_DOME", 1); // 0 bright, 1 dim, 2 off
                 // 5 is off, 4 is minimum, down to 0 as brightest
                 BoundedSet(simConnect, false, "L:MSATR_ILTS_MIP_PED_KNOB", 4);
