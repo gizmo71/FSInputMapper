@@ -23,9 +23,15 @@ namespace Controlzmo.Systems.Spoilers
     {
         private readonly SpoilerArmOffEvent armOffEvent;
         private readonly SpoilerArmOnEvent armOnEvent;
+        private readonly Speedbrakes speedbrakes;
         public int GetButton() => UrsaMinorThrottle.BUTTON_GROUND_SPOILERS_ARM;
         public void OnPress(ExtendedSimConnect simConnect) => simConnect.SendEvent(armOnEvent);
-        public void OnRelease(ExtendedSimConnect simConnect) => simConnect.SendEvent(armOffEvent);
+
+        public void OnRelease(ExtendedSimConnect simConnect) {
+            simConnect.SendEvent(armOffEvent);
+            // Note this this won't work properly unless the reversers are already stowed.
+            if (simConnect.IsHorizonB789) speedbrakes.OnChange(simConnect, 1, 0);
+        }
     }
 
     [Component, RequiredArgsConstructor]
