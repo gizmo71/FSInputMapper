@@ -45,9 +45,7 @@ namespace Controlzmo.Systems.Controls
             var bottom = points.Where(point => point.Item1 <= raw).Last();
             var top = points.Where(point => point.Item1 >= raw).First();
             var inputRange = top.Item1 - bottom.Item1;
-            var outputRange = top.Item2 - bottom.Item2;
-            var mapped = bottom == top ? bottom.Item2 : (raw - bottom.Item1) / inputRange * outputRange + bottom.Item2;
-            return mapped;
+            return Double.Lerp(bottom.Item2, top.Item2, bottom == top ? 0.5 : (raw - bottom.Item1) / inputRange);
         }
 
         private const double NO_POSITION = -1;
