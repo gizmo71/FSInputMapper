@@ -35,7 +35,7 @@ namespace Controlzmo.Views
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 12 ? 13 : 12;
             else if (simConnect.IsAtr)
                 data.viewIndex = 3;
-            else if (simConnect.IsHorizonB789) // Second is actually the radio panel
+            else if (simConnect.IsB78x) // Second is actually the radio panel
                 data.viewIndex = view.Current.viewType == 2 && view.Current.viewIndex == 2 ? 4 : 2;
             else if (simConnect.IsAsoboB38M)
                 data.viewIndex = 1;

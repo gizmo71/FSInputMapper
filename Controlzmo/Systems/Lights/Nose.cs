@@ -54,7 +54,7 @@ namespace Controlzmo.Systems.Lights
                 data.standard = data.ini < 2 && data.iniTurnoff == 1 ? 1 : 0;
             else if (sc.IsAtr)
                 data.standard = data.atr == 1 ? 1 : 0;
-            else if (sc.IsFBW || sc.IsHorizonB789)
+            else if (sc.IsFBW || sc.IsB78x)
                 data.standard = data.fbwAndB78x < 2 && data.fbwTurnoffLeft == 1 && data.fbwTurnoffRight == 1 ? 1 : 0;
             //else if (sc.IsHorizonB789)
             //    data.standard = data.fbwAndB78x != 0 && data.b78xLeft != 0 && data.b78xRight != 0 ? 1 : 0;
@@ -67,7 +67,7 @@ namespace Controlzmo.Systems.Lights
             uint turnoffCode = isOn ? 1u : 0u;
             if (simConnect.IsFBW)
                 sender.Execute(simConnect, $"{turnoffCode} d 3 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET)");
-            else if (simConnect.IsHorizonB789)
+            else if (simConnect.IsB78x)
                 sender.Execute(simConnect, $"{turnoffCode} d d 1 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET) 3 r (>K:2:TAXI_LIGHTS_SET)");
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{turnoffCode} (>L:S_OH_EXT_LT_RWY_TURNOFF)");

@@ -61,7 +61,7 @@ namespace Controlzmo.Systems.Lights
                 if (simConnect.IsIni330) desiredValue = 1 - (desiredValue / 2);
                 action = $"{desiredValue} (>L:INI_SEATBELTS_SWITCH)";
             }
-            else if (simConnect.IsHorizonB789)
+            else if (simConnect.IsB78x)
                 action = $"{desiredValue * 2 } (>B:AIRLINER_KNOB_SEATBELTS_Set)";
 
             sender.Execute(simConnect, action);

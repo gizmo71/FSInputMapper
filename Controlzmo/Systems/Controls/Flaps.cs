@@ -26,7 +26,7 @@ namespace Controlzmo.Systems.Controls
             }
             else
             {
-                if (sc.IsHorizonB789) @new = MapDreamliner(@new);
+                if (sc.IsB78x) @new = MapDreamliner(@new);
                 sc.SendEvent(_event, (int)(@new * 32767 - 16383));
             }
         }

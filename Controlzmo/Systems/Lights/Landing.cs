@@ -56,7 +56,7 @@ namespace Controlzmo.Systems.Lights
                 value = data.a339 == 1;
             else if (sc.IsFBW)
                 value = data.fbwLeft == 0 && data.fbwRight == 0;
-            else if (sc.IsHorizonB789)
+            else if (sc.IsB78x)
                 value = data.fbwLeft != 0 && data.fbwRight != 0 && data.b789Centre != 0;
             else if (sc.IsIni321 || sc.IsIni320)
                 value = data.iniLeft == 0 && data.iniRight == 0;
@@ -85,7 +85,7 @@ namespace Controlzmo.Systems.Lights
                 var noseCode = state.IsTaxiOn ? (isOn ? 0u : 1u) : 2u;
                 sender.Execute(simConnect, $"{(isOn ? 0 : 2)} d (>B:LIGHTING_LANDING_2_SET) (>B:LIGHTING_LANDING_3_SET) {noseCode} (>B:LIGHTING_LANDING_1_SET)");
             }
-            else if (simConnect.IsHorizonB789)
+            else if (simConnect.IsB78x)
             {
                 var landingCode = isOn ? 1 : 0;
                 sender.Execute(simConnect, $"{landingCode} d d 1 r (>K:2:LANDING_LIGHTS_SET) 2 r (>K:2:LANDING_LIGHTS_SET) 3 r (>K:2:LANDING_LIGHTS_SET)");

@@ -30,7 +30,7 @@ namespace Controlzmo.Systems.Spoilers
         public void OnRelease(ExtendedSimConnect simConnect) {
             simConnect.SendEvent(armOffEvent);
             // Note this this won't work properly unless the reversers are already stowed.
-            if (simConnect.IsHorizonB789) speedbrakes.OnChange(simConnect, 1, 0);
+            if (simConnect.IsB78x) speedbrakes.OnChange(simConnect, 1, 0);
         }
     }
 

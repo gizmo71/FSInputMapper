@@ -22,7 +22,7 @@ namespace Controlzmo.Systems.Atc
         {
             simConnect.SendEvent(volume, 100);
 
-            if (simConnect.IsAtr || simConnect.IsHorizonB789)
+            if (simConnect.IsAtr || simConnect.IsB78x)
             {
                 for (var i = 0; i++ < 2; ) {
                     var command = $"1 (>L:XMLVAR_YOKEHIDDEN{i})";
