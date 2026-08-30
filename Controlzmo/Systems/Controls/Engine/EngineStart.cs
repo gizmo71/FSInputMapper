@@ -14,6 +14,8 @@ namespace Controlzmo.Systems.Controls.Engine
         private void Action(ExtendedSimConnect sc, int engine, int value) {
             if (sc.IsAtr)
                 sender.Execute(sc, $"{value} (>L:MSATR_ENGS_START{engine})");
+            else if (sc.IsHorizonB789 && value == 1)
+                sender.Execute(sc, $"1 (>B:ENGINE_STARTER_{engine}_Set)");
         }
     }
 
