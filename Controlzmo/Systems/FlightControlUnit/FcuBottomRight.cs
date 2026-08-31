@@ -85,7 +85,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             string vs;
             if (data.vsState == 0)
                 vs = "-----";
-            else if (trkFpaHolder.IsTrkFpa)
+            else if (trkFpaHolder.IsFpa)
                 vs = $"{data.fpaSelected!:+#0.0;-#0.0} ";
             else
                 vs = $"{data.vsSelected / 100:+00;-00}oo";

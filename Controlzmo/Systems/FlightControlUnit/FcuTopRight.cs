@@ -17,31 +17,38 @@ namespace Controlzmo.Systems.FlightControlUnit
         public Int32 isTrkFpaModeFenix;
         [SimVar("L:INI_TRACK_FPA_STATE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isTrkFpaModeIni;
+        // Boeings do then invididually
+        [SimVar("L:XMLVAR_TRK_MODE_ACTIVE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isTrkB787;
+        [SimVar("L:XMLVAR_FPA_MODE_ACTIVE", "bool", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isFpaB787;
     };
 
     interface ITrkFpaListener : IRequestDataOnOpen { }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuDisplayTopRight : DataListener<FcuTopRightData>, IRequestDataOnOpen
     {
         private readonly IServiceProvider serviceProvider;
 
-        private bool isTrkFpa = false;
-        public bool IsTrkFpa { get => isTrkFpa; }
+        [Property]
+        private bool _isTrk = false;
+        [Property]
+        private bool _isFpa = false;
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect simConnect, FcuTopRightData data)
         {
-            // Normalise to FBW.
+            // Normalise to 787
             if (simConnect.IsFenix)
-                data.isTrkFpaMode = data.isTrkFpaModeFenix;
+                data.isTrkB787 = data.isFpaB787 = data.isTrkFpaModeFenix;
             else if (simConnect.IsIniBuilds)
-                data.isTrkFpaMode = data.isTrkFpaModeIni;
-            isTrkFpa = data.isTrkFpaMode == 1;
+                data.isTrkB787 = data.isFpaB787 = data.isTrkFpaModeIni;
+            _isTrk = data.isTrkB787 == 1;
+            _isFpa = data.isFpaB787 == 1;
 
-            var line1 = "ALT \x4LVL/CH\x5 " + (isTrkFpa ? "FPA" : "V/S");
+            var line1 = "ALT \x4LVL/CH\x5 " + (_isFpa ? "FPA" : "V/S");
             //TODO: show somewhere?
 
             foreach (var listener in serviceProvider.GetServices<ITrkFpaListener>()) {

@@ -40,7 +40,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             _isMach = data.isMach == 1;
 
             var speedMachLabel = _isMach ? " MACH" : "SPD  ";
-            var hdgTrkLabel = trkFpaHolder.IsTrkFpa ? "  TRK" : "HDG  ";
+            var hdgTrkLabel = trkFpaHolder.IsTrk ? "  TRK" : "HDG  ";
             var line1 = $"{speedMachLabel}  {hdgTrkLabel} LAT";
             //TODO: show somewhere...
         }

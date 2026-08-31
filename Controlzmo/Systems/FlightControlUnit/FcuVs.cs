@@ -10,11 +10,11 @@ using System.Threading;
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component, RequiredArgsConstructor]
-    public partial class FcuVsPulled : ISettable<bool>, IEvent
+    public partial class FcuVsPulled : IEvent
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PULL";
-        public string GetId() => "DISABLEDfcuVsPulled";
+
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) ++ (>L:S_FCU_VERTICAL_SPEED)");
@@ -22,24 +22,28 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "1 (>L:AP9_BUTTON)");
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>B:AUTOPILOT_VS_MODE_ON)");
             else
                 simConnect.SendEvent(this);
         }
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class FcuVsPushed : ISettable<bool>, IEvent
+    public partial class FcuVsPushed : IEvent
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_VS_PUSH";
-        public string GetId() => "DISABLEDfcuVsPushed";
+
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_VERTICAL_SPEED) -- (>L:S_FCU_VERTICAL_SPEED)");
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_FCU_PUSH_COMMAND)");
             else if (simConnect.IsAtr)
-                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS)"); //TODO: also 50 (>L:MSATR_FCGP_PITCH_WHEEL) to level off?
+                sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS) 50 (>L:MSATR_FCGP_PITCH_WHEEL)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>B:AUTOPILOT_VS_MODE_ON) 0 (>L:WT_AP_FPA_Target:1, degree) 1 0 (>K:2:AP_VS_VAR_SET_ENGLISH)");
             else
                 simConnect.SendEvent(this);
         }
@@ -62,20 +66,19 @@ namespace Controlzmo.Systems.FlightControlUnit
     public class FcuVsDec : IEvent { public string SimEvent() => "A32NX.FCU_VS_DEC"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class FcuVsDelta : ISettable<Int16>
+    public partial class FcuVsDelta
     {
         private readonly FcuVsInc inc;
         private readonly FcuVsDec dec;
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
+        private readonly FcuDisplayTopRight trkFpaHolder;
 
         private Int32 lvarAdjustment = 0;
 
-        public string GetId() => "DISABLEDfcuVsDelta";
-
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr) {
+            if (simConnect.IsFenix || simConnect.IsAtr || simConnect.IsB78x) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -92,15 +95,19 @@ namespace Controlzmo.Systems.FlightControlUnit
                     value -= (short)Math.Sign(value);
                 }
             }
-//TODO: in the real FCU, when turning quickly, it takes *two* clicks to change by 100 ft/min V/S.
         }
 
         private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var lvar = simConnect.IsAtr ? "MSATR_FCGP_PITCH_WHEEL_DELTA" : "E_FCU_VS";
             var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
-            var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
+            if (toSend == 0) return null;
+
+            if (simConnect.IsB78x)
+                return trkFpaHolder.IsFpa
+                    ? $"(L:WT_AP_FPA_Target:1, degree) 0.1 {toSend} * + 9.9 min -9.9 max (>L:WT_AP_FPA_Target:1, degree)"
+                    : $"1 (A:AUTOPILOT VERTICAL HOLD VAR:1, feet per minute) 100 {toSend} * + (>K:2:AP_VS_VAR_SET_ENGLISH)";
+            var lvar = simConnect.IsAtr ? "MSATR_FCGP_PITCH_WHEEL_DELTA" : "E_FCU_VS";
+            return $"(L:{lvar}) {toSend} + (>L:{lvar})";
         }
     }
 

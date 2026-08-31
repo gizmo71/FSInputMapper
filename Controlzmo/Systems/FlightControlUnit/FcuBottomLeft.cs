@@ -74,7 +74,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                 data.isManagedSpeed = data.isManagedSpeedIni;
                 data.selectedSpeed = data.isSpeedDashedIni == 1 ? 0 : data.selectedSpeedIni;
                 data.isHeadingDashes = data.isHeadingDashesIni;
-                data.selectedHeading = trkFpaHolder.IsTrkFpa ? data.selectedTrackIni : data.selectedHeadingIni;
+                data.selectedHeading = trkFpaHolder.IsTrk ? data.selectedTrackIni : data.selectedHeadingIni;
                 data.isManagedHeading = data.isManagedHeadingIni;
             }
             else
