@@ -1,5 +1,4 @@
 ﻿using Controlzmo.GameControllers;
-using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
@@ -10,13 +9,11 @@ using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuSpeedMachToggled : ISettable<bool>, IEvent
+    [Component, RequiredArgsConstructor]
+    public partial class FcuSpeedMachToggled : IEvent
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_SPD_MACH_TOGGLE_PUSH";
-        public string GetId() => "DISABLEDspeedMachToggled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
         {
             if (simConnect.IsFenix)
@@ -33,13 +30,11 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuSpeedPulled : ISettable<bool>, IEvent
+    [Component, RequiredArgsConstructor]
+    public partial class FcuSpeedPulled : IEvent
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_SPD_PULL";
-        public string GetId() => "DISABLEDfcuSpeedPulled";
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
         {
             if (simConnect.IsFenix)
@@ -53,13 +48,11 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuSpeedPushed : ISettable<bool>, IEvent
+    [Component, RequiredArgsConstructor]
+    public partial class FcuSpeedPushed : IEvent
     {
         private readonly JetBridgeSender sender;
         public string SimEvent() => "A32NX.FCU_SPD_PUSH";
-        public string GetId() => "DISABLEDfcuSpeedPushed";
         public void SetInSim(ExtendedSimConnect simConnect, bool _)
         {
             if (simConnect.IsFenix)
@@ -68,13 +61,14 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_SPEED_BUTTON)");
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>H:AS01B_FMC_1_AP_SPEED_INTERVENTION)"); //TODO verify - should open or close speed window when in VNAV
             else
                 simConnect.SendEvent(this);
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class PushPullFcuSpeed : AbstractButtonShortLongPress<UrsaMinorFighterR>
     {
         private readonly FcuSpeedPulled pull;
@@ -90,8 +84,7 @@ namespace Controlzmo.Systems.FlightControlUnit
     [Component]
     public class FcuSpeedDec : IEvent { public string SimEvent() => "A32NX.FCU_SPD_DEC"; }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuSpeedDelta
     {
         private readonly FcuSpeedInc inc;
@@ -140,8 +133,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class FcuSpeedRepeatingDoublePress : AbstractRepeatingDoublePress
     {
         private readonly FcuSpeedDelta delta;
@@ -152,8 +144,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         protected override void BothAction(ExtendedSimConnect? simConnect) => toggle.SetInSim(simConnect!, false);
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class IncOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>
     {
         [Property]
@@ -163,8 +154,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             => AbstractRepeatingDoublePress.Direction.Up;
     }
 
-    [Component]
-    [RequiredArgsConstructor]
+    [Component, RequiredArgsConstructor]
     public partial class DecOrToggleFcuSpeed : RepeatingDoublePressButton<UrsaMinorFighterR, FcuSpeedRepeatingDoublePress>
     {
         [Property]
