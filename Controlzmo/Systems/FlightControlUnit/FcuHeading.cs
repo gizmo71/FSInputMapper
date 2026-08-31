@@ -6,7 +6,6 @@ using Lombok.NET;
 using SimConnectzmo;
 using System;
 using System.ComponentModel;
-using System.Reflection;
 using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
@@ -84,7 +83,7 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr) {
+            if (simConnect.IsFenix || simConnect.IsAtr || simConnect.IsB78x) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -105,17 +104,21 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            string lvar = "E_FCU_HEADING";
+            string read = "L:E_FCU_HEADING", write = read;
             string extra = "";
             if (simConnect.IsAtr)
             {
-                lvar = "MSATR_SEL_HDG";
+                read = write = "L:MSATR_SEL_HDG";
                 extra = " 1 (>L:MSATR_SEL_HDG_CHANGED)";
             }
+            else if (simConnect.IsB78x)
+            {
+                read = "A:AUTOPILOT HEADING LOCK DIR:1, degrees";
+                write = "K:2:HEADING_BUG_SET";
+            }
 
-                var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
-            var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} dnor (>L:{lvar}){extra}";
+            var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
+            return toSend == 0 ? null : $"({read}) {toSend} + dnor (>{write}){extra}";
         }
     }
 
@@ -134,7 +137,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             if (simConnect?.IsAtr == true)
                 sender.Execute(simConnect, "1 (>L:MSATR_SEL_HDG_SYNC)");
             else
-                toggle.SetInSim(simConnect!, true);
+                toggle.Toggle(simConnect!, true);
         }
     }
 

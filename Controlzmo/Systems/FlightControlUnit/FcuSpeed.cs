@@ -26,6 +26,8 @@ namespace Controlzmo.Systems.FlightControlUnit
             }
             else if (simConnect.IsIniBuilds)
                 sender.Execute(simConnect, "1 (>L:INI_SPD_MACH_BUTTON)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "1 (>B:AUTOPILOT_SPEEDTOGGLE_MODE_Set)");
             else
                 simConnect.SendEvent(this);
         }
@@ -90,20 +92,19 @@ namespace Controlzmo.Systems.FlightControlUnit
 
     [Component]
     [RequiredArgsConstructor]
-    public partial class FcuSpeedDelta : ISettable<Int16>
+    public partial class FcuSpeedDelta
     {
         private readonly FcuSpeedInc inc;
         private readonly FcuSpeedDec dec;
         private readonly JetBridgeSender sender;
         private readonly InputEvents inputEvents;
+        private readonly FcuDisplayTopLeft fcu;
 
         private Int32 lvarAdjustment = 0;
 
-        public string GetId() => "DISABLEDfcuSpeedDelta";
-
         public void SetInSim(ExtendedSimConnect simConnect, Int16 value)
         {
-            if (simConnect.IsFenix || simConnect.IsAtr) {
+            if (simConnect.IsFenix || simConnect.IsAtr || simConnect.IsB78x) {
                 Interlocked.Add(ref lvarAdjustment, value);
                 sender.Execute(simConnect, ExecuteLvar);
             }
@@ -115,7 +116,7 @@ namespace Controlzmo.Systems.FlightControlUnit
                         inputEvents.Send(simConnect, "AIRLINER_MCU_SPEED", (double) Math.Sign(value));
                     else if (simConnect.IsIniBuilds)
                         inputEvents.Send(simConnect, "INSTRUMENT_FCU_SPD_KNOB", (double) Math.Sign(value));
-                    else
+                    else // FBW and derivatives
                         simConnect.SendEvent(value < 0 ? dec : inc);
                     value -= (short) Math.Sign(value);
                 }
@@ -124,10 +125,18 @@ namespace Controlzmo.Systems.FlightControlUnit
 
         private String? ExecuteLvar(ExtendedSimConnect simConnect)
         {
-            var lvar = simConnect.IsAtr ? "MSATR_FGCP_TGT_DELTA" : "E_FCU_SPEED";
             var toSend = Interlocked.Exchange(ref lvarAdjustment, 0);
+            if (toSend == 0) return null;
+
+            if (simConnect.IsB78x)
+                if (fcu.IsMach)
+                    return $$"""{{toSend}} sp0 1  (A:AUTOPILOT MACH HOLD VAR:1, mach) 100 * l0 + (>K:2:AP_MACH_VAR_SET)""";
+                else
+                    return $$"""{{toSend}} sp0 1 (A:AUTOPILOT AIRSPEED HOLD VAR:1, knots) l0 + (>K:2:AP_SPD_VAR_SET)""";
+
+            var lvar = simConnect.IsAtr ? "MSATR_FGCP_TGT_DELTA" : "E_FCU_SPEED";
             var op = toSend < 0 ? "-" : "+";
-            return toSend == 0 ? null : $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
+            return $"(L:{lvar}) {Math.Abs(toSend)} {op} (>L:{lvar})";
         }
     }
 

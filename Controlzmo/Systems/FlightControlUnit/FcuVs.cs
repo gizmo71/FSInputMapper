@@ -121,7 +121,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_IAS)");
             else
-                toggle.SetInSim(simConnect, false);
+                toggle.Toggle(simConnect, false);
         }
     }
 
