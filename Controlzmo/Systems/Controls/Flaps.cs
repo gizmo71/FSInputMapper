@@ -26,21 +26,22 @@ namespace Controlzmo.Systems.Controls
             }
             else
             {
-                if (sc.IsB78x) @new = MapDreamliner(@new);
+                if (sc.IsB78x) @new = MapDreamliner(@new, sc.IsKuroB788);
                 sc.SendEvent(_event, (int)(@new * 32767 - 16383));
             }
         }
 
-        private double MapDreamliner(double raw)
+        private double MapDreamliner(double raw, bool is8)
         {
-            // 787-9/10 - what about 8 (has fewer positions)?
-            // Expressed as a %, UP=0 1=11.11 5=22.22 10=33.33 15=44.44 17=55.56 18=66.67 20=77.78 25=88.89 30=100
+            // Expessed as a percentage... UP=0 to 30=100
+            // 787-9/10: 1=11.11 5=22.22 10=33.33 15=44.44 17=55.56 18=66.67 20=77.78 25=88.89
+            // 787-8: 1=16.67 5=33.33 15=50 20=66.67 25=83.33 -- has a bug where the handle positions don't match the systems and we can't get past 18!
             (double, double)[] points = [
-                (0.0, 0.0),
-                (0.305, 0.2222),
-                (0.5, 0.5566),
-                (0.75, 0.8889),
-                (1.0, 1.0)
+                (0.0, 0.0), // Up
+                (0.305, is8 ? .3333 : .2222), // 5
+                (0.5, is8 ? .5 : .5566), // 17, or 15 for the -8 (which says 10!)
+                (0.75, is8 ? .8333 : .8889), // 25 (which says 17 anyway!)
+                (1.0, 1.0) // (-8 says 18!)
             ];
             var bottom = points.Where(point => point.Item1 <= raw).Last();
             var top = points.Where(point => point.Item1 >= raw).First();
