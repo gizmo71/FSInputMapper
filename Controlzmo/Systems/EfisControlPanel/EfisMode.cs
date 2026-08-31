@@ -128,6 +128,12 @@ namespace Controlzmo.Systems.EfisControlPanel
         private readonly JetBridgeSender sender;
         public override int GetButton() => UrsaMinorFighterR.BUTTON_MINI_STICK_PRESS;
         public override void OnLongPress(ExtendedSimConnect simConnect) => sender.Execute(simConnect, "1 (>L:MSATR_EFIS_PERF_1)");
-        public override void OnShortPress(ExtendedSimConnect simConnect) => sender.Execute(simConnect, "1 (>L:MSATR_EFIS_SYS_1)");
+        public override void OnShortPress(ExtendedSimConnect simConnect)
+        {
+            if (simConnect.IsAtr)
+                sender.Execute(simConnect, "1 (>L:MSATR_EFIS_SYS_1)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>H:AS01B_MFD_1_AUTOPILOT_CTR)");
+        }
     }
 }
