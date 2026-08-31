@@ -113,6 +113,7 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
             else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
         }
+
         public override void Process(ExtendedSimConnect simConnect, A380xEfisRangeData data)
         {
             int old = data.standard == 0 ? data.oans : data.standard + 4;
@@ -124,25 +125,28 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
-            if (simConnect.IsAtr)
-            {
-                sender.Execute(simConnect, $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)");
-                return;
-            }
-
-            var lvar = "A32NX_EFIS_L_ND_RANGE";
-            var min = 0;
-            var max = 5; //TODO: does the A330 support 6 like the A380X does?
+            string? command = null;
             if (simConnect.IsA380X)
             {
                 delta = op == "++" ? 1 : -1;
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-                return;
             }
-            else if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
-            else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
-            else if (simConnect.IsIniBuilds) lvar = "INI_MAP_RANGE_CAPT_SWITCH";
-            sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
+            else if (simConnect.IsAtr)
+                command = $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)";
+            else if (simConnect.IsB78x)
+                command =$"(>H:AS01B_MFD_1_Range_{(op == "++" ? "INC" : "DEC")})";
+            else
+            {
+                var lvar = "A32NX_EFIS_L_ND_RANGE";
+                var min = 0;
+                var max = 5;
+                if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_RANGE";
+                else if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_ZOOM";
+                else if (simConnect.IsIniBuilds) lvar = "INI_MAP_RANGE_CAPT_SWITCH";
+                sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
+            }
+
+            if (command != null) sender.Execute(simConnect, command);
         }
     }
 }
