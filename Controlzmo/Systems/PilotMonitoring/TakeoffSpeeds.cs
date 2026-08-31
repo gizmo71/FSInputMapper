@@ -96,7 +96,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (data.kias < 49) {
                 wasAbove80 = wasAboveVR = false;
                 // Some aircraft do this for us.
-                wasAboveV1 = simConnect.IsA380X || simConnect.IsIni330 || simConnect.IsIni337 || simConnect.IsA339;
+                wasAboveV1 = simConnect.IsA380X || simConnect.IsIni330 || simConnect.IsIni337 || simConnect.IsA339 || simConnect.IsB78x;
                 hubContext.Clients.All.SetFromSim(v1Setter.GetId(), data.v1);
                 hubContext.Clients.All.SetFromSim(vrSetter.GetId(), data.vr);
                 hubContext.Clients.All.SetFromSim(v2Setter.GetId(), data.v2);
