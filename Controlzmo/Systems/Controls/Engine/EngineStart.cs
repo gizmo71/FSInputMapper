@@ -15,7 +15,7 @@ namespace Controlzmo.Systems.Controls.Engine
             if (sc.IsAtr)
                 sender.Execute(sc, $"{value} (>L:MSATR_ENGS_START{engine})");
             else if (sc.IsB78x && value == 1)
-                sender.Execute(sc, $"1 (>B:ENGINE_STARTER_{engine}_Set)");
+                sender.Execute(sc, $"(>B:ENGINE_TOGA_{engine}_Toggle)");
         }
     }
 
