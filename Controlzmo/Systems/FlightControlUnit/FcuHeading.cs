@@ -10,17 +10,15 @@ using System.Threading;
 
 namespace Controlzmo.Systems.FlightControlUnit
 {
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuHeadingPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
+    [Component, RequiredArgsConstructor]
+    public partial class FcuHeadingPulled : IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
 
         public int GetButton() => UrsaMinorFighterR.BUTTON_LEFT_BASE_NEAR_DOWN;
         public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
-
         public string SimEvent() => "A32NX.FCU_HDG_PULL";
-        public string GetId() => "DISABLEDfcuHeadingPulled";
+
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) ++ (>L:S_FCU_HEADING)");
@@ -28,14 +26,15 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_HEADING_BUTTON)");
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_HDG)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>B:AUTOPILOT_Heading_Mode_Toggle)");
             else
                 simConnect.SendEvent(this);
         }
     }
 
-    [Component]
-    [RequiredArgsConstructor]
-    public partial class FcuHeadingPushed : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
+    [Component, RequiredArgsConstructor]
+    public partial class FcuHeadingPushed : IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
 
@@ -43,7 +42,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
 
         public string SimEvent() => "A32NX.FCU_HDG_PUSH";
-        public string GetId() => "DISABLEDfcuHeadingPushed";
+
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
                 sender.Execute(simConnect, "(L:S_FCU_HEADING) -- (>L:S_FCU_HEADING)");
@@ -51,6 +50,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "1 (>L:INI_FCU_MANAGED_HEADING_BUTTON)");
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_NAV)");
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>B:AUTOPILOT_LNAV_Mode_Toggle)");
             else
                 simConnect.SendEvent(this);
         }
