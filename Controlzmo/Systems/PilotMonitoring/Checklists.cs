@@ -11,7 +11,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         private readonly JetBridgeSender sender;
         public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_HAT_PRESS;
         public virtual void OnPress(ExtendedSimConnect sc) => sender.Execute(sc, "1 (>L:A32NX_BTN_CL)");
-        public virtual void OnRelease(ExtendedSimConnect sc) => sender.Execute(sc, "0 (>L:A32NX_BTN_CL)");
+        public virtual void OnRelease(ExtendedSimConnect sc) => sender.Execute(sc, sc.IsB78x ? "(>B:AIRLINER_CHKL_1_PUSH)" : "0 (>L:A32NX_BTN_CL)");
     }
 
     [Component, RequiredArgsConstructor]
