@@ -1,4 +1,5 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.SimConnectzmo;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using SimConnectzmo;
@@ -11,6 +12,7 @@ namespace Controlzmo.Systems.Controls.Engine
         double Map(double input, AbstractThrustLever tl);
     }
 
+//TODO: seems that B789 RR don't work - would the non-EX1 versions help?
     [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
     [Component] public class Throttle3Event : IEvent { public string SimEvent() => "THROTTLE3_AXIS_SET_EX1"; }
@@ -36,6 +38,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly TlAirbus airbusMapper;
         private readonly TlGeneric genericMapper;
         private readonly IdleGate idleGate;
+        private readonly InputEvents inputEvents;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
@@ -55,11 +58,17 @@ namespace Controlzmo.Systems.Controls.Engine
             {
                 normalised = genericMapper.Map(@new, tl);
                 if (normalised < 0) {
+                    if (sc.IsB78x)
+                    {
+                        inputEvents.Send(sc, $"ENGINE_THROTTLE_REVERSER_{tl.LeverNumber}", -normalised);
+                        return;
+                    }
                     normalised = normalised * data.ThrottleLowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
 Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit}");
                     sc.SendEvent(tl.LeverNumber == 1 ? rev1on : rev2on);
                 }
-                else
+//TODO: stop sending these constantly...
+                else if (!sc.IsB78x)
                     sc.SendEvent(tl.LeverNumber == 1 ? rev1off : rev2off);
                 normalised = normalised * 2 - 1;
 Console.WriteLine($"Normalised {normalised}");
