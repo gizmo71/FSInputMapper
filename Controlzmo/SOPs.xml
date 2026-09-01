@@ -168,7 +168,7 @@
 		<Text type=".*">Multiple flight bonus</Text>
 	</Airline>
 	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$">
-		<Text type=".*">Preparation 15m-2h, air time counts</Text>
+		<Text type=".*">Preparation 15m-2h, block time counts</Text>
 		<Text type=".*">5s between starts</Text>
 		<Text type="A319|A32[01]|A2[01]N|A388|B748">Warm up; cool down</Text>
 		<Text type="A33[23]|A35.">Warm up (5m); cool down (5m)</Text>
