@@ -43,7 +43,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_VS) 50 (>L:MSATR_FCGP_PITCH_WHEEL)");
             else if (simConnect.IsB78x)
-                sender.Execute(simConnect, "(>B:AUTOPILOT_VS_MODE_ON) 0 (>L:WT_AP_FPA_Target:1, degree) 1 0 (>K:2:AP_VS_VAR_SET_ENGLISH)");
+                sender.Execute(simConnect, "1 (>L:AP_ALT_HOLD_ACTIVE) 0 (>L:AP_VS_ACTIVE)"); // Might be a B: event, too...
             else
                 simConnect.SendEvent(this);
         }
