@@ -421,9 +421,10 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         public bool IsIniBuilds { get => IsIni320 || IsIni321 || IsIni330 || IsIni337 || IsIni400M || IsIni310; }
         public bool IsAsoboB38M { get => aircraftFile.StartsWith("ASOBO_B737MAX\\PRESETS\\ASOBO\\B737MAX8_"); }
         public bool IsB748 { get => aircraftFile.Equals("ASOBO_B747_8I") || aircraftFile.StartsWith("ASOBO_B747_8I\\PRESETS\\MICROSOFT\\B_B747_8_"); }
-        public bool IsB78x { get => IsKuroB788 || IsxHorizonB789; }
+        public bool IsB78x { get => IsKuroB788 || IsHorizonB789 | IsAsoboB78X; }
         public bool IsKuroB788 { get => aircraftFile.Equals("KURO_B787_8"); }
-        public bool IsxHorizonB789 { get => aircraftFile.StartsWith("HORIZONSIM_B787_9_"); }
+        public bool IsHorizonB789 { get => aircraftFile.StartsWith("HORIZONSIM_B787_9_"); }
+        public bool IsAsoboB78X { get => aircraftFile.Equals("ASOBO_B787_10"); }
 
         private void OnSimIsRunning()
         {
