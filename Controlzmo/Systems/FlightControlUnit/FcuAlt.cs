@@ -11,15 +11,13 @@ using System.Threading;
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component, RequiredArgsConstructor]
-    public partial class FcuAltPulled : ISettable<bool>, IEvent, IButtonCallback<UrsaMinorFighterR>
+    public partial class FcuAltPulled : IEvent, IButtonCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
 
         public int GetButton() => UrsaMinorFighterR.BUTTON_RIGHT_BASE_NEAR_DOWN;
         public void OnPress(ExtendedSimConnect sc) => SetInSim(sc, true);
-
         public string SimEvent() => "A32NX.FCU_ALT_PULL";
-        public string GetId() => "DISABLEDfcuAltPulled";
 
         public void SetInSim(ExtendedSimConnect simConnect, bool _) {
             if (simConnect.IsFenix)
@@ -29,7 +27,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_ALT)");
             else if (simConnect.IsB78x)
-                sender.Execute(simConnect, "(>B:AUTOPILOT_FLC_BUTTON_ON)");
+                sender.Execute(simConnect, "(>B:AUTOPILOT_ALTITUDE_SYNC_PUSH)");
             else
                 simConnect.SendEvent(this);
         }
@@ -59,16 +57,10 @@ namespace Controlzmo.Systems.FlightControlUnit
     }
 
     [Component]
-    public class FcuAltInc : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_ALT_INC";
-    }
+    public class FcuAltInc : IEvent { public string SimEvent() => "A32NX.FCU_ALT_INC"; }
 
     [Component]
-    public class FcultDec : IEvent
-    {
-        public string SimEvent() => "A32NX.FCU_ALT_DEC";
-    }
+    public class FcultDec : IEvent { public string SimEvent() => "A32NX.FCU_ALT_DEC"; }
 
     [Component, RequiredArgsConstructor]
     public partial class FcuAltDelta

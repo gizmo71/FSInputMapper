@@ -43,6 +43,8 @@ namespace Controlzmo.Systems.FlightControlUnit
                 sender.Execute(simConnect, "1 (>L:INI_FCU_SELECTED_SPEED_BUTTON)");
             else if (simConnect.IsAtr)
                 /*TODO: find out what it's for... sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL_LONG)")*/;
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(>B:AUTOPILOT_FLC_BUTTON_ON)");
             else
                 simConnect.SendEvent(this);
         }
@@ -62,7 +64,7 @@ namespace Controlzmo.Systems.FlightControlUnit
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, "1 (>L:MSATR_FGCP_SPEED_TGT_SEL)");
             else if (simConnect.IsB78x)
-                sender.Execute(simConnect, "(>H:AS01B_FMC_1_AP_SPEED_INTERVENTION)"); //TODO verify - should open or close speed window when in VNAV
+                sender.Execute(simConnect, "(>B:AUTOPILOT_SPEEDMACH_MODE_PUSH)");
             else
                 simConnect.SendEvent(this);
         }
