@@ -25,25 +25,25 @@ namespace Controlzmo.Systems.Controls.Engine
         internal void perform(ExtendedSimConnect sc, Boolean isLeft, Boolean isOn)
         {
             var value = isOn ? 1u : 0u;
+            var engineId = isLeft ? 1 : 2;
 
             if (sc.IsFenix)
             {
-                var engineId = isLeft ? 1 : 2;
                 sender.Execute(sc, $"{value} (>L:S_ENG_MASTER_{engineId})");
                 return;
             }
             else if (sc.IsIni330 || sc.IsIni321) // Maybe also other INIs? Obviously not the A400...
             {
-                var engineId = isLeft ? 1 : 2;
                 sender.Execute(sc, $"{value} (>L:INI_MIXTURE_RATIO{engineId}_HANDLE)");
                 return;
             }
             else if (sc.IsAtr)
             {
-                var engineId = isLeft ? 1 : 2;
                 inputEvents.Send(sc, $"ENGINE_FUEL_LEVER_MIXTURE_{engineId}", value * 1.0);
                 return;
             }
+            else if (sc.IsB78x)
+                inputEvents.Send(sc, $"ENGINE_STARTER_{engineId}", value * 1.0);
 
 /*TODO: the A400M has three positions for each switch, "off", "feather" (used during startup), and "run" (one AVAIL has been shown).
   We should go to "feather" initially (as we do, in fact), but then automatically switch to "run" once it's "up".
