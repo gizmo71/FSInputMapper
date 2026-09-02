@@ -22,18 +22,14 @@ namespace Controlzmo.Systems.Atc
         {
             simConnect.SendEvent(volume, 100);
 
-            if (simConnect.IsAtr || simConnect.IsB78x)
+            if (simConnect.IsB78x)
             {
-                for (var i = 0; i++ < 2; ) {
-                    var command = $"1 (>L:XMLVAR_YOKEHIDDEN{i})";
-                    if (simConnect.IsAtr)
-                        command += $" 1 (>L:MSATR_MICROPHONE_{(i == 1 ? "LEFT" : "RIGHT")}_HIDDEN)";
-                    sender.Execute(simConnect, command);
-                }
+                sender.Execute(simConnect, "(>B:ELECTRICAL_EMERLIGHTS_COVER_CLOSE)");
+                LeftAndRight(simConnect, index => $"1 (>L:XMLVAR_YOKEHIDDEN{index})");
             }
-
-            if (simConnect.IsAtr)
+            else if (simConnect.IsAtr)
             {
+                LeftAndRight(simConnect, index => $" 1 (>L:MSATR_MICROPHONE_{(index == 1 ? "LEFT" : "RIGHT")}_HIDDEN)");
                 var atrToggleStorm = "(>B:LIGHTING_LIGHTING_SWITCH_STORM_TOGGLE)"; // Bump this to make integrated panel lights work (known bug)
                 sender.Execute(simConnect, atrToggleStorm);
                 BoundedSet(simConnect, false, "L:MSATR_ILTS_DOME", 1); // 0 bright, 1 dim, 2 off
@@ -59,6 +55,12 @@ namespace Controlzmo.Systems.Atc
                 sender.Execute(simConnect, "2 (>L:INI_TCAS_STBY_STATE)");
 
             ofp.ReadVSpeeds(simConnect);
+        }
+
+        private void LeftAndRight(ExtendedSimConnect sc, Func<int, string> generateCommand)
+        {
+            for (var i = 0; i++ < 2; )
+                sender.Execute(sc, generateCommand(i));
         }
 
         private void BoundedSet(ExtendedSimConnect sc, bool isMinimum, string var, int value)
