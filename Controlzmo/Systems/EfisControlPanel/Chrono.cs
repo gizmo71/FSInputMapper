@@ -31,6 +31,8 @@ namespace Controlzmo.Systems.EfisControlPanel
                 sender.Execute(simConnect, $"1 (>L:INI_CPT_CHRONO_BUTTON)");
             else if (simConnect.IsAtr && isPressed)
                 sender.Execute(simConnect, $"1 (>L:MSATR_CLCK_CHRONO_1)");
+            else if (simConnect.IsB78x && isPressed)
+                sender.Execute(simConnect, $"(>B:AIRLINER_CLOCK_PUSH)");
             else if (simConnect.IsFBW && isPressed)
                 simConnect.SendEvent(e);
         }
