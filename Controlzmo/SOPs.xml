@@ -117,12 +117,13 @@
 		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected 700fpm</Text>
 	</Airline>
-	<Airline callsign="^(jbu|jet[- ]?blue)$"> <!-- vJBU -->
-		<Text type=".*">Preparation 10-50 minutes, block time counts</Text>
+	<Airline callsign="^(jbu|jet[- ]?blue)$"> <!-- vJBU - now sadly part of FVAA -->
+		<Text type=".*">Preparation 15-60 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;30%/45 minutes of scheduled requires review</Text>
-		<Text type=".*">30s between starts; OETD; OETA</Text>
-		<Text type=".*">Must have fuel &ge;1500kg on landing</Text>
-		<Text type=".*">&darr; 600fpm</Text>
+		<Text type=".*">30s between starts; warm up (5m); OETD</Text>
+		<Text type=".*">OETA (2m)</Text>
+		<Text type=".*">1000'/200' stability gate</Text>
+		<Text type=".*">Rejected 500fpm; Invalidated 600fpm</Text>
 	</Airline>
 	<Airline callsign="^(qantas|q[- ]?link|jet[ -]?star)$">
 		<Text type=".*">Preparation 10-60 minutes, block time counts</Text> <!-- Turboprops get 5m-60m -->
