@@ -105,7 +105,7 @@ namespace Controlzmo.Systems.PilotMonitoring
                 bool isSpoilers = data.spoilersLeft > MIN_SPOILER_DEPLOYMENT && data.spoilersRight > MIN_SPOILER_DEPLOYMENT;
                 if (isSpoilers)
                 {
-                    speech.Say("Spoilers!");
+                    speech.Say(simConnect.IsBoeing ? "Speedbrakes up" : "Spoilers!");
                     wasSpoilers = true;
                 }
             }

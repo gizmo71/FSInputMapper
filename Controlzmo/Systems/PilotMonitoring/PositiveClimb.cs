@@ -46,8 +46,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         {
             if (data.feetPerMinute > 450)
             {
-//TODO: use "rate" not "climb" for Boeings...
-                speech.Say("positive climb");
+                speech.Say($"positive {(simConnect.IsBoeing ? "rate" : "climb")}");
                 simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
             }
         }
