@@ -425,6 +425,7 @@ _logging!.LogDebug($"Received {e} for {String.Join(", ", notifications)}: {Conve
         public bool IsKuroB788 { get => aircraftFile.Equals("KURO_B787_8"); }
         public bool IsHorizonB789 { get => aircraftFile.StartsWith("HORIZONSIM_B787_9_"); }
         public bool IsAsoboB78X { get => aircraftFile.Equals("ASOBO_B787_10"); }
+        public bool IsBoeing { get => IsB78x || IsB748 || IsAsoboB38M; }
 
         private void OnSimIsRunning()
         {
