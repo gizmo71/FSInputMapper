@@ -96,13 +96,14 @@
 	</Airline>
 	<Airline callsign="^(air[- ]?india|red[- ]?knight|express[- ]india|vistara|allied)$"> <!-- Air India -->
 		<Text type=".*">Preparation 10-45 minutes, block time counts</Text>
-		<Text type=".*">45s between starts; OETD (3m)</Text>
+		<Text type="A...">45s between starts; OETD (3m)</Text>
 		<Text type=".*">&uarr;Departure/arrival time &pm;15m</Text>
 		<Text type=".*">&darr;Above MTOW/MLW</Text>
-		<Text type=".*">Cool down; OETA (3m)</Text>
+		<Text type=".*">Cool down</Text>
+		<Text type="B...">OETA (3m)</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
 		<Text type=".*">Taxi times &gt;150% of average/maximum → review</Text>
-		<Text type=".*">&uarr;Flap 3 landing</Text>
+		<Text type="A...">&uarr;Flap 3 landing</Text>
 		<Text type=".*">Must have fuel above SimBrief final reserve on landing</Text>
 		<Text type=".*">1000'/200' stability gates</Text>
 		<Text type=".*">Rejected/Invalidated 600fpm</Text>
