@@ -178,13 +178,14 @@
 	</Airline>
 	<Airline callsign="^(?:lufthansa|city[ -]air|hansaline)$">
 		<Text type=".*">Preparation 15m-2h, block time counts</Text>
-		<Text type=".*">5s between starts</Text>
-		<Text type="A319|A32[01]|A2[01]N|A388|B748">Warm up; cool down</Text>
+		<Text type="A...">5s between starts</Text>
+		<Text type="B...">10s between starts</Text>
+		<Text type="A319|A32[01]|A2[01]N|A388|B...">Warm up; cool down</Text>
 		<Text type="A33[23]|A35.">Warm up (5m); cool down (5m)</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled requires review</Text>
 		<Text type="A388">Must have fuel &ge;2800kg on landing</Text>
 		<Text type="A319|A32[01]|A2[01]N">Must have fuel &ge;1200kg on landing</Text>
-		<Text type="A33[23]|A35.|B748">Must have fuel &ge;2300kg on landing</Text>
+		<Text type="A33[23]|A35.|B7..">Must have fuel &ge;2300kg on landing</Text>
 		<Text type="A388|A340">Must have fuel &ge;2800kg on landing</Text>
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Invalidated 500/600fpm or 2.33/2.6G</Text>
