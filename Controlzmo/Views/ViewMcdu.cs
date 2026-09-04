@@ -14,7 +14,7 @@ namespace Controlzmo.Views
         public int GetButton() => T16000mHotas.BUTTON_FRONT_LEFT_RED;
 
         public virtual void OnPress(ExtendedSimConnect simConnect) {
-            if (state.Current != CameraState.COCKPIT)
+            if (state.Current != CameraState.COCKPIT && state.Current != CameraState.UNKNOWN)
             {
                 Console.Error.WriteLine($"Wrong camera state for MCDU view {state.Current}");
                 return;
