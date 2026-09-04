@@ -37,7 +37,7 @@ namespace Controlzmo.Systems.Atc
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
-        private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m(?:, after \d+m)?\))?", RegexOptions.IgnoreCase);
         private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
         private readonly static Regex secondsBetweenStartsRegex = new Regex(@"(?<!\d)(\d+)s between starts", RegexOptions.IgnoreCase);
         private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00[FS]?$", RegexOptions.IgnoreCase);

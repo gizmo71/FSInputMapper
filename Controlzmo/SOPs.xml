@@ -39,10 +39,14 @@
 	<Airline callsign="^(?:speed[- ]?bird|shuttle|griffin)$"> <!-- vBAW -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type=".*">&uarr;Departure within &pm;10m</Text>
-		<Text type=".*">60s between starts, #1 first; warm up (after 90m)</Text>
+		<Text type=".*">60s between starts</Text>
+		<Text type="A...">#1 first; warm up (after 90m)</Text>
+		<Text type="B...">Warm up (5m, after 90m)</Text>
 		<Text type=".*">OETD (4m); MTOW checked</Text>
 		<Text type=".*">Stabilised approach, MLW checked</Text>
-		<Text type=".*">Cool down; OETA (1m)</Text>
+		<Text type=".*">OETA (1m)</Text>
+		<Text type="A...">Cool down</Text>
+		<Text type="B...">Cool down (5m)</Text>
 		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">Flight time &gt;20%/20 minutes of scheduled → review</Text>
 		<Text type=".*">Pushback fuel -500/+1500kg of planned</Text>
