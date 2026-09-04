@@ -15,6 +15,7 @@ namespace Controlzmo.Systems.Atc
         private readonly JetBridgeSender sender;
         private readonly Com1VolumeSetEvent volume;
         private readonly OperationalFlightPlan ofp;
+        private Func<int, string> HideYokes = index => $"1 (>L:XMLVAR_YOKEHIDDEN{index})";
 
         public string GetId() => "initAircraftState";
 
@@ -25,10 +26,11 @@ namespace Controlzmo.Systems.Atc
             if (simConnect.IsB78x)
             {
                 sender.Execute(simConnect, "(>B:ELECTRICAL_EMERLIGHTS_COVER_CLOSE)");
-                LeftAndRight(simConnect, index => $"1 (>L:XMLVAR_YOKEHIDDEN{index})");
+                LeftAndRight(simConnect, HideYokes);
             }
             else if (simConnect.IsAtr)
             {
+                LeftAndRight(simConnect, HideYokes);
                 LeftAndRight(simConnect, index => $" 1 (>L:MSATR_MICROPHONE_{(index == 1 ? "LEFT" : "RIGHT")}_HIDDEN)");
                 var atrToggleStorm = "(>B:LIGHTING_LIGHTING_SWITCH_STORM_TOGGLE)"; // Bump this to make integrated panel lights work (known bug)
                 sender.Execute(simConnect, atrToggleStorm);
