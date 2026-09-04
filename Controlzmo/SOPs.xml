@@ -137,10 +137,13 @@
 	</Airline>
 	<Airline callsign="^(aerolane|lan[- ].*|paraguaya|tam)$"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
-		<Text type=".*">Start #1 first; OETD (5m)</Text>
+		<Text type="A...">Start #1 first; OETD (5m)</Text>
+		<Text type="B...">Start #2 first; OETD (5m)</Text>
 		<Text type="A3..">Warm up</Text>
-		<Text type="A2.N">Warm up (5m)</Text>
-		<Text type=".*">Cool down</Text> <!-- rules wrong OETA (5m) -->
+		<Text type="A2.N|B...">Warm up (5m)</Text>
+		<Text type="A...">Cool down</Text>
+		<!-- rules wrong OETA (5m) -->
+		<Text type="B...">Cool down (5m)</Text>
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
 		<Text type=".*">Rejected &gt;500fpm; Rejected &gt;600fpm</Text>
 	</Airline>
