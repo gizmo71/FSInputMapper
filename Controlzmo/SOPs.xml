@@ -139,7 +139,7 @@
 	<Airline callsign="^(aerolane|lan[- ].*|paraguaya|tam)$"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A...">Start #1 first; OETD (5m)</Text>
-		<Text type="B...">Start #2 first; OETD (5m)</Text>
+		<Text type="B...">Start #2 (5s between) first; OETD (5m)</Text>
 		<Text type="A3..">Warm up</Text>
 		<Text type="A2.N|B...">Warm up (5m)</Text>
 		<Text type="A...">Cool down</Text>
