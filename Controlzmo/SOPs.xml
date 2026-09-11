@@ -84,6 +84,26 @@
 		<Text type=".*">Fuel &ge;1.5T on landing (contestable exceptions)</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 999fpm</Text>
 	</Airline>
+	<!-- Gulf Skies - some callsigns have specific rules -->
+	<!-- 3 flights in one day for extra points  -->
+	<Airline callsign="^(?:mazoon)$">
+		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
+		<Text type=".*">5m between starts(?), warm up</Text>
+		<Text type=".*">&udarr; Departure &pm;25m/30m</Text>
+		<Text type=".*">&uarr; Arrival &pm;15m</Text>
+		<Text type=".*">Cool down</Text>
+		<Text type=".*">Fuel &ge;1.5T on landing</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 800fpm</Text>
+	</Airline>
+	<Airline callsign="^(?:saudia)$">
+		<Text type=".*">Preparation 20-40 minutes block time counts</Text>
+		<Text type=".*">20s between starts, warm up (70s)</Text>
+		<!-- Is it really 5m between starts for Air Arabia?! -->
+		<Text type=".*">&uarr;Step climb</Text>
+		<Text type=".*">Cool down (70s)</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 800fpm</Text>
+		<Text type="AT[47].">Fuel &ge;1.2T on landing</Text>
+	</Airline>
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, block time counts</Text>
 		<Text type=".*">Flight time &gt;20%/30m of scheduled → review</Text>
@@ -139,7 +159,7 @@
 	<Airline callsign="^(aerolane|lan[- ].*|paraguaya|tam)$"> <!-- LATAM -->
 		<Text type=".*">Preparation 20-40 minutes, block time counts</Text>
 		<Text type="A...">Start #1 first; OETD (5m)</Text>
-		<Text type="B...">Start #2 (5s between) first; OETD (5m)</Text>
+		<Text type="B...">Start #2 first; OETD (5m)</Text>
 		<Text type="A3..">Warm up</Text>
 		<Text type="A2.N|B...">Warm up (5m)</Text>
 		<Text type="A...">Cool down</Text>
