@@ -59,7 +59,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             }
             else if (running == engines && isArmed)
             {
-                warmAt = data.now + atcAirline.WarmupMinutes * 60.0;
+                warmAt = data.now + atcAirline.WarmupSeconds;
                 chronoButton.PressAndRelease(simConnect);
                 isArmed = false;
             }

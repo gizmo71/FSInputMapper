@@ -154,7 +154,7 @@ namespace Controlzmo.Systems.PilotMonitoring
         public override void Process(ExtendedSimConnect simConnect, EngineCooldownData data)
         {
             if (coolAt == null)
-                coolAt = data.now + atcAirline.CooldownMinutes * 60.0 + SLACK;
+                coolAt = data.now + atcAirline.CooldownSeconds + SLACK;
             else if (data.now >= coolAt)
             {
                 chronoButton.PressAndRelease(simConnect);

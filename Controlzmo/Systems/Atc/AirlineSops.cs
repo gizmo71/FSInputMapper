@@ -37,16 +37,16 @@ namespace Controlzmo.Systems.Atc
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
         private readonly bool isLocalSops;
-        private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)m(?:, after \d+m)?\))?", RegexOptions.IgnoreCase);
-        private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)m\))?", RegexOptions.IgnoreCase);
-        private readonly static Regex secondsBetweenStartsRegex = new Regex(@"(?<!\d)(\d+)s between starts", RegexOptions.IgnoreCase);
+        private readonly static Regex warmupRegex = new Regex(@"warm up(?: \((\d)([ms])(?:, after \d+m)?\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex cooldownRegex = new Regex(@"cool down(?: \((\d)([ms])\))?", RegexOptions.IgnoreCase);
+        private readonly static Regex secondsBetweenStartsRegex = new Regex(@"(?<!\d)(\d+)(s) between starts", RegexOptions.IgnoreCase);
         private readonly static Regex atrRegex = new Regex(@"^([47])2-(6)00[FS]?$", RegexOptions.IgnoreCase);
         private readonly static int DEFAULT_ENGINE_WAIT_MINUTES = 3;
 
         [Property]
-        private int _warmupMinutes;
+        private int _warmupSeconds;
         [Property]
-        private int _cooldownMinutes;
+        private int _cooldownSeconds;
         [Property]
         private int _secondsBetweenStarts;
         [Property]
@@ -67,7 +67,7 @@ namespace Controlzmo.Systems.Atc
 
         public override async void Process(ExtendedSimConnect simConnect, AtcAirlineData data)
         {
-            WarmupMinutes = CooldownMinutes = DEFAULT_ENGINE_WAIT_MINUTES;
+            WarmupSeconds = CooldownSeconds = DEFAULT_ENGINE_WAIT_MINUTES * 60;
             var icaoCode = Regex.Replace(data.model.ToUpper(), @"^ATCCOM\.AC_MODEL[ _](.*)\.0\.TEXT$", @"$1");
             var aircraftCfg = simConnect.AircraftFile.ToLower();
             // Some of them have the wrong ICAO code or even no model at all. :-(
@@ -93,9 +93,9 @@ namespace Controlzmo.Systems.Atc
                 else
                     foreach (var node in nodes!)
                         sops += $"\n\u2022 {(node as XmlElement)?.InnerText}";
-                WarmupMinutes = NumberOr(warmupRegex, DEFAULT_ENGINE_WAIT_MINUTES, 1, sops);
-                CooldownMinutes = NumberOr(cooldownRegex, DEFAULT_ENGINE_WAIT_MINUTES, 1, sops);
-                SecondsBetweenStarts = NumberOr(secondsBetweenStartsRegex, 1, 1, sops);
+                WarmupSeconds = SecondsOr(warmupRegex, DEFAULT_ENGINE_WAIT_MINUTES * 60, 1, sops);
+                CooldownSeconds = SecondsOr(cooldownRegex, DEFAULT_ENGINE_WAIT_MINUTES * 60, 1, sops);
+                SecondsBetweenStarts = SecondsOr(secondsBetweenStartsRegex, 1, 1, sops);
             }
             catch (Exception e)
             {
@@ -110,12 +110,13 @@ namespace Controlzmo.Systems.Atc
             await hub.Clients.All.SetFromSim("simInfo", extra);
         }
 
-        private int NumberOr(Regex regex, int defaultValue, int notFoundValue, String sops)
+        private int SecondsOr(Regex regex, int defaultValue, int notFoundValue, String sops)
         {
             var match = regex.Match(sops);
             if (!match.Success) return notFoundValue;
             var matchedValue = match.Groups[1].Value;
-            return matchedValue == "" ? defaultValue : int.Parse(matchedValue);
+            var matchedUnit = match.Groups[2].Value;
+            return matchedValue == "" ? defaultValue : int.Parse(matchedValue) * (matchedUnit == "m" ? 60 : 1);
         }
 
         private async Task<XmlDocument> loadXml()
