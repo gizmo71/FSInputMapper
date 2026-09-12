@@ -1,7 +1,6 @@
 ﻿using Controlzmo.Hubs;
 using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
-using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
 
