@@ -99,18 +99,17 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
             else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
-            // Note that "increase" means "zoom in", which actually DECREASES the range
         }
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
             string? command = null;
             if (simConnect.IsAtr)
-                command = $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)";
+                command = $"1 (>L:MSATR_EFIS_RNG_{IncOrDec(op)}_1)";
             else if (simConnect.IsB78x)
-                command =$"(>H:AS01B_MFD_1_Range_{(op == "++" ? "INC" : "DEC")})";
+                command =$"(>H:AS01B_MFD_1_Range_{IncOrDec(op)})";
             else if (simConnect.IsA380X)
-                command =$"(>K:A32NX.FCU_EFIS_L_RANGE_{(op == "++" ? "DEC" : "INC")})";
+                command =$"(>K:A32NX.FCU_EFIS_L_RANGE_{IncOrDec(op)})";
             else
             {
                 var lvar = "A32NX_EFIS_L_ND_RANGE";
@@ -124,5 +123,7 @@ namespace Controlzmo.Systems.EfisControlPanel
 
             if (command != null) sender.Execute(simConnect, command);
         }
+
+        private string IncOrDec(string op) => op == "++" ? "INC" : "DEC";
     }
 }
