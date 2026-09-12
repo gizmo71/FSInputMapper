@@ -13,8 +13,8 @@ namespace Controlzmo.Systems.EfisControlPanel
 {
     public interface IEfisRangeData
     {
-        public Int32 RangeCode { get; set; } // Generic/old A32NX; A380X: values are A32NX+1, and 0 means use OANS range instead
-        public Int32 RangeA32nx {  get; set; } // A32NX: 2^code*10 = miles
+        public Int32 RangeCode { get; set; } // Generic/old A32NX; A380X: values are A32NX+1, and 0 means use OANS range instead - read only in A380X
+        public Int32 RangeA32nx { get; set; } // A32NX: 2^code*10 = miles
         public Int32 OansRange { get; set; } // In Zoom, this goes from 0 (most zoomed in) to 4 (least, which is just "under" range 10)
         public Int32 RangeFenix { get; set; } // 0 for 10 to 5 for 320 (same as A32NX)
         public Int32 RangeIni { get; set; } // (same as A32NX and Fenix)
@@ -88,23 +88,10 @@ namespace Controlzmo.Systems.EfisControlPanel
         public LeftEfisRange(IServiceProvider serviceProvider) : base(serviceProvider, "left") { }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public partial struct A380xEfisRangeData
-    {
-        [Property]
-        [SimVar("L:A32NX_EFIS_L_ND_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 standard;
-        [Property]
-        [SimVar("L:A32NX_EFIS_L_OANS_RANGE", "number", SIMCONNECT_DATATYPE.INT32, 0f)]
-        public Int32 oans;
-    };
-
     [Component, RequiredArgsConstructor]
-    public partial class EfisStickRange : DataListener<A380xEfisRangeData>, IAxisCallback<UrsaMinorFighterR>
+    public partial class EfisStickRange : IAxisCallback<UrsaMinorFighterR>
     {
         private readonly JetBridgeSender sender;
-
-        private int delta;
 
         public int GetAxis() => UrsaMinorFighterR.AXIS_MINI_STICK_Y;
 
@@ -112,29 +99,18 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             if (old >= 0.25 && @new < 0.25) Move(simConnect, "--");
             else if (old <= 0.75 && @new > 0.75) Move(simConnect,"++");
-        }
-
-        public override void Process(ExtendedSimConnect simConnect, A380xEfisRangeData data)
-        {
-            int old = data.standard == 0 ? data.oans : data.standard + 4;
-            int @new = Math.Max(Math.Min(old + delta, 11), 0);
-            data.standard = Math.Max(0, @new - 4);
-            data.oans = Math.Min(4, @new);
-            simConnect.SendDataOnSimObject(data);
+            // Note that "increase" means "zoom in", which actually DECREASES the range
         }
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
             string? command = null;
-            if (simConnect.IsA380X)
-            {
-                delta = op == "++" ? 1 : -1;
-                simConnect.RequestDataOnSimObject(this, SIMCONNECT_CLIENT_DATA_PERIOD.ONCE);
-            }
-            else if (simConnect.IsAtr)
+            if (simConnect.IsAtr)
                 command = $"1 (>L:MSATR_EFIS_RNG_{(op == "++" ? "INC" : "DEC")}_1)";
             else if (simConnect.IsB78x)
                 command =$"(>H:AS01B_MFD_1_Range_{(op == "++" ? "INC" : "DEC")})";
+            else if (simConnect.IsA380X)
+                command =$"(>K:A32NX.FCU_EFIS_L_RANGE_{(op == "++" ? "DEC" : "INC")})";
             else
             {
                 var lvar = "A32NX_EFIS_L_ND_RANGE";

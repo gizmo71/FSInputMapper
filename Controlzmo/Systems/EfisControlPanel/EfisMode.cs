@@ -15,7 +15,6 @@ namespace Controlzmo.Systems.EfisControlPanel
     public interface IEfisModeData
     {
         public UInt32 Mode { get; set; }
-        public UInt32 ModeA32nx { get; set; }
         public UInt32 ModeFenix { get; set; }
         public UInt32 ModeIni { get; set; }
         public UInt32 ModeAtr { get; set; }
@@ -53,7 +52,6 @@ namespace Controlzmo.Systems.EfisControlPanel
         {
             var map = ModeMap;
             if (simConnect.IsFenix) data.Mode = data.ModeFenix;
-            if (simConnect.IsA32NX) data.Mode = data.ModeA32nx;
             else if (simConnect.IsIniBuilds) data.Mode = data.ModeIni;
             else if (simConnect.IsAtr) { data.Mode = data.ModeAtr; map = ModeMapAtr; }
             hub.Clients.All.SetFromSim(id, map[data.Mode]);
@@ -66,17 +64,15 @@ namespace Controlzmo.Systems.EfisControlPanel
             if (label == "Eng" && !simConnect.IsA330)
                 return;
             var value = ModeMap.Inverse[label!];
-            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeA32nx = value, ModeFenix = value, ModeIni = value });
+            simConnect.SendDataOnSimObject(new T() { Mode = value, ModeFenix = value, ModeIni = value });
         }
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public partial struct LeftEfisModeData : IEfisModeData
     {
-        [Property, SimVar("L:A32NX_EFIS_L_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _mode;
         [Property, SimVar("L:A32NX_FCU_EFIS_L_EFIS_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
-        public UInt32 _modeA32nx;
+        public UInt32 _mode; // Output only?
         [Property, SimVar("L:S_FCU_EFIS1_ND_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public UInt32 _modeFenix;
         [Property, SimVar("L:INI_MAP_MODE_CAPT_SWITCH", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
@@ -106,19 +102,24 @@ namespace Controlzmo.Systems.EfisControlPanel
 
         private void Move(ExtendedSimConnect simConnect, string op)
         {
+            string command;
             if (simConnect.IsAtr)
             {
                 op = op.Substring(0, 1);
-                sender.Execute(simConnect, $"(L:MSATR_EFIS_STAT_PAGE_1) 0 == if{{ 1 {op} (>L:MSATR_EFIS_FORMAT_1_DELTA) }} els{{ 1 (>L:MSATR_EFIS_ND_1) }}");
-                return;
+                command = $"(L:MSATR_EFIS_STAT_PAGE_1) 0 == if{{ 1 {op} (>L:MSATR_EFIS_FORMAT_1_DELTA) }} els{{ 1 (>L:MSATR_EFIS_ND_1) }}";
             }
-            var lvar = "A32NX_EFIS_L_ND_MODE";
-            if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
-            if (simConnect.IsA32NX || simConnect.IsA339) lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";
-            else if (simConnect.IsIniBuilds) lvar = "INI_MAP_MODE_CAPT_SWITCH";
-            var min = 0;
-            var max = simConnect.IsA330 ? 5 : 4;
-            sender.Execute(simConnect, $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})");
+            else if (simConnect.IsA380X)
+                command = $"(>K:A32NX.FCU_EFIS_L_MODE_{(op == "--" ? "DEC" : "INC")})";
+            else
+            {
+                var lvar = "A32NX_FCU_EFIS_L_EFIS_MODE";
+                if (simConnect.IsFenix) lvar = "S_FCU_EFIS1_ND_MODE";
+                else if (simConnect.IsIniBuilds) lvar = "INI_MAP_MODE_CAPT_SWITCH";
+                var min = 0;
+                var max = simConnect.IsA330 ? 5 : 4;
+                command = $"(L:{lvar}) {op} {min} max {max} min (>L:{lvar})";
+            }
+            sender.Execute(simConnect, command);
         }
     }
 
