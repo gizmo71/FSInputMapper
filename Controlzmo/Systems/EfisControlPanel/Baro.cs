@@ -11,7 +11,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-//TODO: A380 has pre-set of baro during STD.
+//TODO: A380 has pre-set of baro during STD. And is now completely buggered. :-(
 namespace Controlzmo.Systems.EfisControlPanel
 {
     [Component, RequiredArgsConstructor]
@@ -146,8 +146,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 var command = @"(L:XMLVAR_Baro1_Mode) 2 & 0 != if{ 2 } els{ 1 } (L:XMLVAR_Baro1_Mode) ^ (>L:XMLVAR_Baro1_Mode)";
                 if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) -- (>L:S_FCU_EFIS1_BARO_STD)";
-                else if (sc.IsA380X) command = "(>H:A380X_EFIS_CP_BARO_PULL_1)"; // Yes, Pull
-                else if (sc.IsA32NX || sc!.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
+                else if (sc.IsFBW) command = "(>K:A32NX.FCU_EFIS_L_BARO_PUSH)";
                 else if (sc.IsIniBuilds) command = @"1 (>L:INI_1_ALTIMETER_PUSH_COMMAND)";
                 else if (sc.IsB78x) command = "(L:XMLVAR_BARO1_FORCEDTOSTD) if{ (>B:AUTOPILOT_AUTOPILOT_Push_STD_1_Toggle) }";
                 sender.Execute(sc, command);
@@ -204,8 +203,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
         {
             var command = @"(L:XMLVAR_Baro1_Mode) 2 | (>L:XMLVAR_Baro1_Mode)";
             if (sc.IsFenix) command = "(L:S_FCU_EFIS1_BARO_STD) ++ (>L:S_FCU_EFIS1_BARO_STD)";
-            else if (sc.IsA380X) command = "(>H:A380X_EFIS_CP_BARO_PUSH_1)"; // Yes, Push!
-            else if (sc.IsA32NX || sc.IsA339) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
+            else if (sc.IsFBW) command = "(>K:A32NX.FCU_EFIS_L_BARO_PULL)";
             else if (sc.IsIniBuilds) command = "1 (>L:INI_1_ALTIMETER_PULL_COMMAND)";
             else if (sc.IsAtr) command = "1 (>L:MSATR_BARO_STD_1)";
             else if (sc.IsB78x) command = "(L:XMLVAR_BARO1_FORCEDTOSTD) ! if{ (>B:AUTOPILOT_AUTOPILOT_Push_STD_1_Toggle) }";
