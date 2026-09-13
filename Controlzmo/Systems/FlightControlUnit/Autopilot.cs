@@ -3,7 +3,6 @@ using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
 
-//TODO: no longer does anything in the A380X - "off" works but not "on"
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component] public class AutopilotOnEvent : IEvent { public string SimEvent() => "AUTOPILOT_ON"; }
