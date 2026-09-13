@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-//TODO: A380 has pre-set of baro during STD. And is now completely buggered. :-(
 namespace Controlzmo.Systems.EfisControlPanel
 {
     [Component, RequiredArgsConstructor]
@@ -84,6 +83,8 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public Int32 baro1Units; // InHg if 0, otherwise hPa
         [SimVar("L:A32NX_FCU_EFIS_L_DISPLAY_BARO_VALUE_MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1A32nx; // 2 is InHG, 1 if hPa, 0 is Std
+        [SimVar("L:A32NX_FCU_EFIS_L_BARO_IS_INHG", "number", SIMCONNECT_DATATYPE.INT32, 0.4f)]
+        public Int32 baro1UnitsA380x; // 1 is InHG, 0 if hPa
         [SimVar("L:S_FCU_EFIS1_BARO_MODE", "", SIMCONNECT_DATATYPE.INT32, 0.4f)]
         public Int32 baro1UnitsFenix; // 0 InHg, 1 hPa
     }
@@ -104,6 +105,10 @@ System.Console.WriteLine($"-> {value} led to {command}");
             {
                 data.baro1Mode = data.baro1ModeFenix == 1 ? 1 : 3;
                 data.baro1Units = data.baro1UnitsFenix;
+            }
+            else if (simConnect.IsA380X)
+            {
+                data.baro1Units = data.baro1UnitsA380x == 0 ? 1 : 0;
             }
             else if (simConnect.IsA32NX || simConnect.IsA339)
             {
@@ -222,8 +227,10 @@ System.Console.WriteLine($"-> {value} led to {command}");
         public virtual void OnPress(ExtendedSimConnect sc) {
             var lvar = "XMLVar_Baro_Selector_HPA_1";
             if (sc.IsFenix) lvar = "S_FCU_EFIS1_BARO_MODE";
-            else if (sc.IsA32NX || sc!.IsA339) lvar = "A32NX_FCU_EFIS_L_BARO_IS_INHG";
+            else if (sc.IsFBW) lvar = "A32NX_FCU_EFIS_L_BARO_IS_INHG";
             sender.Execute(sc, $"1 (L:{lvar}) - (>L:{lvar})");
+            if (sc.IsFBW)
+                sender.Execute(sc, $"(L:{lvar}) (>L:A32NX_FCU_EFIS_R_BARO_IS_INHG)");
         }
     }
     [Component] public class A32nxBaroInc : IEvent { public string SimEvent() => "A32NX.FCU_EFIS_L_BARO_INC"; }
@@ -284,7 +291,7 @@ System.Console.WriteLine($"-> {value} led to {command}");
             if (sc!.IsAtr)
                 return $"(L:MSATR_BARO_1_DELTA) {toSend} + (>L:MSATR_BARO_1_DELTA)";
 
-            if (sc!.IsA32NX || sc!.IsA339)
+            if (sc!.IsFBW)
             {
                 for (int i = Math.Abs(toSend); i > 0; --i)
                     sc!.SendEvent(toSend < 0 ? a32nxDec : a32nxInc);
