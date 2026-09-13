@@ -3,6 +3,7 @@ using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using SimConnectzmo;
 
+//TODO: no longer does anything in the A380X - "off" works but not "on"
 namespace Controlzmo.Systems.FlightControlUnit
 {
     [Component] public class AutopilotOnEvent : IEvent { public string SimEvent() => "AUTOPILOT_ON"; }
@@ -16,7 +17,7 @@ namespace Controlzmo.Systems.FlightControlUnit
         public int GetButton() => UrsaMinorFighterR.BUTTON_SMALLER_ROUND;
 
         public void OnPress(ExtendedSimConnect sc) {
-            if (sc.IsA32NX || sc.IsA339)
+            if (sc.IsA32NX || sc.IsA339 || sc.IsA380X)
                 sender.Execute(sc, "(L:A32NX_AUTOPILOT_1_ACTIVE) if{ (>K:A32NX.FCU_AP_2_PUSH) } els{ (>K:A32NX.FCU_AP_1_PUSH) }");
             else if (sc.IsIni330 || sc.IsIni321)
                 sender.Execute(sc, "1 (L:INI_ap1_on) if{ (>L:INI_AP2_BUTTON) } els{ (>L:INI_AP1_BUTTON) }");
