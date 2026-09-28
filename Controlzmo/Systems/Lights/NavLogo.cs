@@ -65,6 +65,8 @@ namespace Controlzmo.Systems.Lights
                 sender.Execute(simConnect, $"{2u - state} (>L:INI_LOGO_LIGHT_SWITCH)");
             else if (simConnect.IsAtr)
                 sender.Execute(simConnect, $"{state} (>L:MSATR_ELTS_NAV) {state} (>L:MSATR_ELTS_LOGO)");
+            else if (simConnect.IsA32NX)
+                sender.Execute(simConnect, $"{state} (>L:A32NX_LIGHTS_NAV_LOGO)");
             else
             {
                 simConnect.SendEvent(setNavLightsEvent, state);
