@@ -88,7 +88,7 @@
 	<!-- 3 flights in one day for extra points  -->
 	<Airline callsign="^(?:mazoon)$">
 		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
-		<Text type=".*">5m between starts(?), warm up</Text>
+		<Text type=".*">5m between starts; OETD (3m); warm up</Text>
 		<Text type=".*">&udarr; Departure &pm;25m/30m</Text>
 		<Text type=".*">&uarr; Arrival &pm;15m</Text>
 		<Text type=".*">Cool down</Text>
