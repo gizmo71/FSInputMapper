@@ -210,7 +210,7 @@
 		<Text type="A33[23]|A35.|B7..">Must have fuel &ge;2300kg on landing</Text>
 		<Text type="A388|A340">Must have fuel &ge;2800kg on landing</Text>
 		<Text type=".*">Fully stablised at 1000ft AGL</Text>
-		<Text type=".*">Invalidated 500/600fpm or 2.33/2.6G</Text>
+		<Text type=".*">Rejected 2G</Text>
 	</Airline>
 	<Airline callsign="^new[ -]?zealand$">
 		<Text type=".*">Block time counts</Text>
