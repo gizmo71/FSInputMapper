@@ -1,18 +1,45 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.Hubs;
 using Controlzmo.SimConnectzmo;
 using Lombok.NET;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Controls.Engine
 {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct ThrottleData
+    {
+        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_1", "position 16k", SIMCONNECT_DATATYPE.INT32, 12f)]
+        public Int32 pos1;
+        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_2", "position 16k", SIMCONNECT_DATATYPE.INT32, 12f)]
+        public Int32 pos2;
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class ThrottlePos : DataListener<ThrottleData>, IRequestDataOnOpen
+    {
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+
+        public override void Process(ExtendedSimConnect simConnect, ThrottleData data)
+        {
+            if (!simConnect.IsB78x) return;
+            hub.Clients.All.SetFromSim("tla1sim", data.pos1);
+            hub.Clients.All.SetFromSim("tla2sim", data.pos2);
+        }
+    }
+
     internal interface TlMapper
     {
         double Map(double input, AbstractThrustLever tl);
     }
 
-//TODO: seems that B789 RR don't work - would the non-EX1 versions help?
     [Component] public class Throttle1Event : IEvent { public string SimEvent() => "THROTTLE1_AXIS_SET_EX1"; }
     [Component] public class Throttle2Event : IEvent { public string SimEvent() => "THROTTLE2_AXIS_SET_EX1"; }
     [Component] public class Throttle3Event : IEvent { public string SimEvent() => "THROTTLE3_AXIS_SET_EX1"; }
@@ -39,6 +66,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly TlGeneric genericMapper;
         private readonly IdleGate idleGate;
         private readonly InputEvents inputEvents;
+        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
@@ -78,6 +106,8 @@ Console.WriteLine($"Normalised {normalised}");
 
             var raw = (Int32) (16384 * normalised);
             Set(sc, raw, bitmap);
+//TODO: only when disconnecting...
+            hub.Clients.All.SetFromSim($"tla{tl.LeverNumber}phys", raw);
         }
 
         private void Set(ExtendedSimConnect sc, Int32 raw, int bitmap)
