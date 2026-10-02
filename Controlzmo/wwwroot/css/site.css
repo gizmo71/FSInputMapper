@@ -92,9 +92,21 @@ table.explicit-grid td {
     border: 1px dashed gray;
 }
 
-table:not(.not-right) th {
+table:not(.not-right, .tlagrid) th {
     text-align: left;
     padding-right: 2em;
+}
+
+table.tlagrid {
+    float: left;
+}
+
+.tlagrid th {
+    text-align: center !important;
+}
+
+.tlagrid input {
+    width: 6ch;
 }
 
 .lcdDisplay {
