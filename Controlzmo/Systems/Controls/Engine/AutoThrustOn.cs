@@ -1,11 +1,13 @@
 ﻿using Controlzmo.GameControllers;
+using Controlzmo.SimConnectzmo;
+using Controlzmo.Systems.JetBridge;
 using Lombok.NET;
 using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
-using System.Runtime.InteropServices;
 using System;
-using Controlzmo.SimConnectzmo;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Controls.Engine
 {
@@ -33,6 +35,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly ILogger<AutothrottleArmedDataListener> _logger;
         private readonly InputEvents inputEvents;
         private readonly AtrPowerMode atrPowerMode;
+        private readonly JetBridgeSender sender;
 
         public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_LEFT;
 
@@ -41,6 +44,8 @@ namespace Controlzmo.Systems.Controls.Engine
             _logger.LogDebug("User has asked to arm autothrust");
             if (simConnect.IsAtr)
                 atrPowerMode.Manipulate(simConnect, -1);
+            else if (simConnect.IsB78x)
+                sender.Execute(simConnect, "(L:AS01B_AUTO_THROTTLE_ARM_STATE) ! if{ (>K:AUTO_THROTTLE_ARM) } els{ (>B:AUTOPILOT_IAS_MODE_ON) }");
             else if (simConnect.IsAsoboB38M)
                 inputEvents.Send(simConnect, "FCC_AUTOTHROTTLE", 1.0);
             else
