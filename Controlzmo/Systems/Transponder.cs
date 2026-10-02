@@ -152,7 +152,7 @@ Console.Error.WriteLine($"Is Alt Reporting on? {data.isAltRptgOn == 1}");
  * But we don't see any changes here. :-( */
         [SimVar("TCAS MODE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standard; // 0 off, 1 xpndr, 2 TA only, 3 TA/RA
-    };
+    }
 
     [Component]
     public class TcasMode : DataListener<TcasModeData>, IRequestDataOnOpen, ISettable<string?>
