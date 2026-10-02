@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Controls.Engine
@@ -14,25 +16,56 @@ namespace Controlzmo.Systems.Controls.Engine
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct ThrottleData
     {
-        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_1", "position 16k", SIMCONNECT_DATATYPE.INT32, 12f)]
+        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_1", "position 32k", SIMCONNECT_DATATYPE.INT32, 16f)]
         public Int32 pos1;
-        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_2", "position 16k", SIMCONNECT_DATATYPE.INT32, 12f)]
+        [SimVar("L:WT_Virtual_Throttle_Lever_Pos_2", "position 32k", SIMCONNECT_DATATYPE.INT32, 16f)]
         public Int32 pos2;
     }
 
     [Component, RequiredArgsConstructor]
-    public partial class ThrottlePos : DataListener<ThrottleData>, IRequestDataOnOpen
+    public partial class ThrottlePos : DataListener<ThrottleData>
     {
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
+        private volatile bool isManualSync = false;
+        private IDictionary<int, Sender> queued = new ConcurrentDictionary<int, Sender>();
+
+        internal void DisconnectForManualSync(ExtendedSimConnect simConnect) {
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.VISUAL_FRAME);
+            isManualSync = true;
+        }
+
+        internal void Reconnect(ExtendedSimConnect simConnect) {
+            isManualSync = false;
+            simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
+            SetUi("tla1sim", null);
+            SetUi("tla2sim", null);
+            SetUi("tla1phys", null);
+            SetUi("tla2phys", null);
+            foreach (var send in queued.Values) { send(); Console.Error.WriteLine("...--->>> sent sent q <<<---..."); }
+            queued.Clear();
+        }
 
         public override void Process(ExtendedSimConnect simConnect, ThrottleData data)
         {
-            if (!simConnect.IsB78x) return;
-            hub.Clients.All.SetFromSim("tla1sim", data.pos1);
-            hub.Clients.All.SetFromSim("tla2sim", data.pos2);
+            SetUi("tla1sim", data.pos1);
+            SetUi("tla2sim", data.pos2);
         }
+
+        internal void ReportOrSend(int tlNumber, int rawValue, Sender send)
+        {
+            if (isManualSync)
+            {
+                SetUi($"tla{tlNumber}phys", rawValue + 16384);
+                queued[tlNumber] = send;
+            }
+            else
+                send();
+        }
+
+        private void SetUi(string field, int? rawValue) => hub.Clients.All.SetFromSim(field, $"{rawValue / 327.67:000}" ?? "");
+
+        internal delegate void Sender();
     }
 
     internal interface TlMapper
@@ -50,13 +83,28 @@ namespace Controlzmo.Systems.Controls.Engine
     [Component] public class Reverse2OffEvent : IEvent { public string SimEvent() => "SET_THROTTLE2_REVERSE_THRUST_OFF"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class SetThrustLevers
+    public partial class ThrustLeversSetter
     {
-        private readonly ILogger<SetThrustLevers> _logger;
         private readonly Throttle1Event set1;
         private readonly Throttle2Event set2;
         private readonly Throttle3Event set3;
         private readonly Throttle4Event set4;
+        private readonly SimConnectHolder holder;
+
+        internal void Set(Int32 raw, int bitmap)
+        {
+            var sc = holder.SimConnect;
+            if ((bitmap & 1) != 0) sc!.SendEvent(set1, raw);
+            if ((bitmap & 2) != 0) sc!.SendEvent(set2, raw);
+            if ((bitmap & 4) != 0) sc!.SendEvent(set3, raw);
+            if ((bitmap & 8) != 0) sc!.SendEvent(set4, raw);
+        }
+    }
+
+    [Component, RequiredArgsConstructor]
+    public partial class SetThrustLevers
+    {
+        private readonly ILogger<SetThrustLevers> _logger;
         private readonly Reverse1OnEvent rev1on;
         private readonly Reverse1OffEvent rev1off;
         private readonly Reverse2OnEvent rev2on;
@@ -66,7 +114,8 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly TlGeneric genericMapper;
         private readonly IdleGate idleGate;
         private readonly InputEvents inputEvents;
-        private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
+        private readonly ThrottlePos posListener;
+        private readonly ThrustLeversSetter setter;
 
         internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
         {
@@ -105,17 +154,7 @@ Console.WriteLine($"Normalised {normalised}");
             _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
             var raw = (Int32) (16384 * normalised);
-            Set(sc, raw, bitmap);
-//TODO: only when disconnecting...
-            hub.Clients.All.SetFromSim($"tla{tl.LeverNumber}phys", raw);
-        }
-
-        private void Set(ExtendedSimConnect sc, Int32 raw, int bitmap)
-        {
-            if ((bitmap & 1) != 0) sc.SendEvent(set1, raw);
-            if ((bitmap & 2) != 0) sc.SendEvent(set2, raw);
-            if ((bitmap & 4) != 0) sc.SendEvent(set3, raw);
-            if ((bitmap & 8) != 0) sc.SendEvent(set4, raw);
+            posListener.ReportOrSend(tl.LeverNumber, raw, () => setter.Set(raw, bitmap));
         }
     }
 

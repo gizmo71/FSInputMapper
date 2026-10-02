@@ -20,7 +20,7 @@ namespace Controlzmo.Systems.Autothrust
         public virtual void OnPress(ExtendedSimConnect simConnect)
         {
             if (simConnect.IsB78x) //TODO: or indeed anything else which needs TLA matching on disconnect
-                /*TODO start posListener*/; //TODO: disconnect physical thrust levers are start reporting TLA to UI...
+                posListener.DisconnectForManualSync(simConnect);
             else if (simConnect.IsAtr)
                 atrPowerMode.Manipulate(simConnect, 1);
             else
@@ -32,7 +32,7 @@ namespace Controlzmo.Systems.Autothrust
             if (simConnect.IsB78x)
             {
                 sender.Execute(simConnect, "(L:AS01B_AUTO_THROTTLE_ARM_STATE) if{ (>K:AUTO_THROTTLE_ARM) }");
-                //TODO: stop posListener
+                posListener.Reconnect(simConnect);
             }
         }
     }
