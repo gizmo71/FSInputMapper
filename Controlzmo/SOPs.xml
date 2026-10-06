@@ -6,6 +6,9 @@
 	<!ENTITY darr "&#8595;">
 	<!ENTITY ge "&#x2265;">
 	<!ENTITY le "&#x2264;">
+	<!ENTITY cs-salamair "mazoon">
+	<!ENTITY cs-arabia "(?:arabia(?: maroc|egypt)?|nawras)">
+	<!ENTITY cs-gs-others "(?:|saudia|bangladesh|emirates|etihad|adeal|flynas|gulf[- ]?air|jazeera|kuwaiti|oman[- ]?air|riyadh|srilankan)">
 ]>
 <!-- All FBW: 'flybywire_a320_neo' -->
 <SOPs>
@@ -59,7 +62,7 @@
 		<Text type=".*">Arrival: flaps not before 5000agl/15nm, gear 2500agl/7.5nm</Text>
 		<Text type=".*">Rejected 650fpm; Invalidated 750fpm</Text>
 	</Airline>
-	<Airline callsign="^delta$"> <!-- Virtual Delta -->
+	<Airline callsign="^delta$">
 		<Text type=".*">Preparation 10-60 minutes, air time counts</Text>
 		<Text type=".*">5s between starts; warm up; cool down</Text>
 		<Text type=".*">Invalidated 700fpm</Text>
@@ -85,26 +88,34 @@
 		<Text type=".*">Rejected 600fpm; Invalidated 999fpm</Text>
 	</Airline>
 	<!-- Gulf Skies - some callsigns have specific rules -->
-	<!-- 3 flights in one day for extra points  -->
-	<Airline callsign="^(?:mazoon)$">
-		<Text type=".*">Preparation 10-40 minutes, block time counts</Text>
+	<Airline callsign="^&cs-salamair;$">
+		<Text type=".*">Preparation 10-40 minutes</Text>
 		<Text type=".*">5m between starts; OETD (3m); warm up</Text>
 		<Text type=".*">&udarr; Departure &pm;25m/30m</Text>
 		<Text type=".*">&uarr; Arrival &pm;15m</Text>
-		<Text type=".*">Cool down</Text>
+		<Text type=".*">OETA (2m); cool down</Text>
 		<Text type=".*">Fuel &ge;1.5T on landing</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 800fpm</Text>
-		<Text type=".*">Excessive taxi times get reviewed</Text>
 	</Airline>
-	<Airline callsign="^(?:saudia|arabia(?: maroc|egypt)?|bangladesh|emirates|etihad|adeal|flynas|gulf[- ]?air|jazeera|kuwaiti|oman[- ]?air|riyadh|srilankan)$">
-		<Text type=".*">Preparation 20-40 minutes block time counts</Text>
-		<Text type=".*">20s between starts, warm up (70s)</Text>
-		<!-- Is it really 5m between starts for Air Arabia?! -->
-		<Text type=".*">&uarr;Step climb</Text>
+	<Airline callsign="^&cs-arabia;$">
+		<Text type=".*">Preparation 20-40 minutes</Text>
+		<!-- Very long start gap code for 5m OETD = 5 point bonus? -->
+		<Text type=".*">5m between starts; warm up (70s)</Text>
+		<Text type=".*">Fuel &ge;1.5T on landing</Text>
 		<Text type=".*">Cool down (70s)</Text>
+	</Airline>
+	<Airline callsign="^&cs-gs-others;$">
+		<Text type=".*">Preparation 20-40 minutes</Text>
+		<Text type=".*">20s between starts, warm up (70s)</Text>
+		<Text type=".*">Cool down (70s)</Text>
+	</Airline>
+	<Airline callsign="^(?:&cs-salamair;|&cs-arabia;|&cs-gs-others;)$">
+		<Text type=".*">Block time counts</Text>
+		<Text type=".*">&uarr;Step climb</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 800fpm</Text>
 		<Text type="AT[47].">Fuel &ge;1.2T on landing</Text>
 		<Text type=".*">Excessive taxi times get reviewed</Text>
+		<Text type=".*">Multiple (3+) flight bonus</Text>
 	</Airline>
 	<Airline callsign="^(?:airfrans|air[ -]?hop|klm|city|france[ -]?soleil|transavia|martin[ -]?air)$">
 		<Text type=".*">Preparation 20-120 minutes, block time counts</Text>
