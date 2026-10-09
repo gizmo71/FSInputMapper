@@ -241,7 +241,7 @@
 		<Text type=".*">Pauses over 50% in flight rejected</Text>
 		<Text type=".*">Review at 800fpm; Rejected 1000fpm</Text>
 	</Airline>
-	<Airline callsign="^qatari$"> <!-- a.k.a. Oryx -->
+	<Airline callsign="^(qatari|rwandair)$"> <!-- a.k.a. Oryx -->
 		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
 		<Text type="A(3[235].|21N)">2s between starts, #1 first</Text>
 		<Text type="A3[01].|B7[78].">2s between starts, #2 first</Text>
