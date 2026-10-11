@@ -15,6 +15,7 @@ namespace Controlzmo.Systems.Autothrust
         private readonly AtrPowerMode atrPowerMode;
         private readonly JetBridgeSender sender;
         private readonly ThrottlePos posListener;
+        private readonly AutoThrustArmed armed;
 
         public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_RIGHT;
         public virtual void OnPress(ExtendedSimConnect simConnect)
@@ -31,7 +32,8 @@ namespace Controlzmo.Systems.Autothrust
         {
             if (simConnect.IsB78x)
             {
-                sender.Execute(simConnect, "(L:AS01B_AUTO_THROTTLE_ARM_STATE) if{ (>K:AUTO_THROTTLE_ARM) }");
+                if (armed.IsArmed)
+                    sender.Execute(simConnect, "(>K:AUTO_THROTTLE_ARM)");
                 posListener.Reconnect(simConnect);
             }
         }

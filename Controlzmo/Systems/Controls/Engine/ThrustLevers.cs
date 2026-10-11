@@ -20,6 +20,8 @@ namespace Controlzmo.Systems.Controls.Engine
         public Int32 pos1;
         [SimVar("L:WT_Virtual_Throttle_Lever_Pos_2", "position 32k", SIMCONNECT_DATATYPE.INT32, 16f)]
         public Int32 pos2;
+        [SimVar("L:AS01B_AUTO_THROTTLE_ARM_STATE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public Int32 isAutoArmed;
     }
 
     [Component, RequiredArgsConstructor]
@@ -28,6 +30,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         private volatile bool isManualSync = false;
+
         private IDictionary<int, Sender> queued = new ConcurrentDictionary<int, Sender>();
 
         internal void DisconnectForManualSync(ExtendedSimConnect simConnect) {
@@ -38,18 +41,17 @@ namespace Controlzmo.Systems.Controls.Engine
         internal void Reconnect(ExtendedSimConnect simConnect) {
             isManualSync = false;
             simConnect.RequestDataOnSimObject(this, SIMCONNECT_PERIOD.NEVER);
-            SetUi("tla1sim", null);
-            SetUi("tla2sim", null);
+            SetUi("tlasim", null);
             SetUi("tla1phys", null);
             SetUi("tla2phys", null);
-            foreach (var send in queued.Values) { send(); Console.Error.WriteLine("...--->>> sent sent q <<<---..."); }
+            foreach (var send in queued.Values)
+                send();
             queued.Clear();
         }
 
         public override void Process(ExtendedSimConnect simConnect, ThrottleData data)
         {
-            SetUi("tla1sim", data.pos1);
-            SetUi("tla2sim", data.pos2);
+            SetUi("tlasim", (data.pos1 + data.pos2) / 2);
         }
 
         internal void ReportOrSend(int tlNumber, int rawValue, Sender send)
@@ -63,7 +65,7 @@ namespace Controlzmo.Systems.Controls.Engine
                 send();
         }
 
-        private void SetUi(string field, int? rawValue) => hub.Clients.All.SetFromSim(field, $"{rawValue / 327.67:000}" ?? "");
+        private void SetUi(string field, int? rawValue) => hub.Clients.All.SetFromSim(field, 100.0 - (double?) rawValue / 327.67);
 
         internal delegate void Sender();
     }
@@ -141,17 +143,17 @@ namespace Controlzmo.Systems.Controls.Engine
                         return;
                     }
                     normalised = normalised * data.ThrottleLowerLimit; // Looks like we still need a tiny bit of slack, too. :-(
-Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit}");
+//Console.WriteLine($"Rev Value {normalised}  lower limt { data.ThrottleLowerLimit}");
                     sc.SendEvent(tl.LeverNumber == 1 ? rev1on : rev2on);
                 }
 //TODO: stop sending these constantly...
                 else if (!sc.IsB78x)
                     sc.SendEvent(tl.LeverNumber == 1 ? rev1off : rev2off);
                 normalised = normalised * 2 - 1;
-Console.WriteLine($"Normalised {normalised}");
+//Console.WriteLine($"Normalised {normalised}");
             }
             idleGate.MaybeMap(ref normalised);
-            _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
+//_logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
             var raw = (Int32) (16384 * normalised);
             posListener.ReportOrSend(tl.LeverNumber, raw, () => setter.Set(raw, bitmap));

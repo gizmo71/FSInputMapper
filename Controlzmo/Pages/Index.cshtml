@@ -135,16 +135,11 @@
                 -->
         </table>
         <table class="panel tlagrid">
-            <tr><th>TLA</th><th>1</th><th>2</th></tr>
+            <tr><th>Ph1</th><th>Sim</th><th>Ph2</th></tr>
             <tr>
-                <th>Sim</th>
-                <td><input id="tla1sim" value="" readonly /></td>
-                <td><input id="tla2sim" value="" readonly /></td>
-            </tr>
-            <tr>
-                <th>Phys</th>
-                <td><input id="tla1phys" value="" readonly /></td>
-                <td><input id="tla2phys" value="" readonly /></td>
+                <td><input id="tla1phys" type="range" value="" disabled /></td>
+                <td><input id="tlasim" type="range" value="" disabled /></td>
+                <td><input id="tla2phys" type="range" value="" disabled /></td>
             </tr>
             </table>
         <table class="panel not-right">
@@ -168,7 +163,7 @@
                 </td>
             </tr>
         </table>
-        <table style="clear: left;" class="panel not-right explicit-grid">
+        <table class="panel not-right explicit-grid">
             <tr>
                 <td>
                     <label for="lightsStrobe">Strobe</label>

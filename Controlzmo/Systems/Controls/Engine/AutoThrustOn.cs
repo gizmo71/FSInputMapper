@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Controls.Engine
@@ -36,6 +35,7 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly InputEvents inputEvents;
         private readonly AtrPowerMode atrPowerMode;
         private readonly JetBridgeSender sender;
+        private readonly AutoThrustArmed armed;
 
         public int GetButton() => UrsaMinorThrottle.BUTTON_AUTOTHRUST_DISCONNECT_LEFT;
 
@@ -45,7 +45,7 @@ namespace Controlzmo.Systems.Controls.Engine
             if (simConnect.IsAtr)
                 atrPowerMode.Manipulate(simConnect, -1);
             else if (simConnect.IsB78x)
-                sender.Execute(simConnect, "(L:AS01B_AUTO_THROTTLE_ARM_STATE) ! if{ (>K:AUTO_THROTTLE_ARM) } els{ (>B:AUTOPILOT_IAS_MODE_ON) }");
+                sender.Execute(simConnect, armed.IsArmed ? "(>B:AUTOPILOT_IAS_MODE_ON)" : "(>K:AUTO_THROTTLE_ARM)");
             else if (simConnect.IsAsoboB38M)
                 inputEvents.Send(simConnect, "FCC_AUTOTHROTTLE", 1.0);
             else

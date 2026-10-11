@@ -105,8 +105,10 @@ table.tlagrid {
     text-align: center !important;
 }
 
-.tlagrid input {
-    width: 4ch;
+.tlagrid input[type="range"] {
+    writing-mode: vertical-rl;
+    /* Doesn't work in old Chrome on S7Edge :-(   direction: ltr;*/
+    height: 60px;
 }
 
 .lcdDisplay {
