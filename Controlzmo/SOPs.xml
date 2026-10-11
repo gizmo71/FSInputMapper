@@ -290,6 +290,11 @@
 		<Text type=".*">Must have fuel &ge;1300kg on landing</Text>
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
+	<Airline callsign="^(united)$">
+		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
+		<Text type=".*">Warm up; cool down</Text>
+		<Text type=".*">Rejected 800fpm/3G</Text>
+	</Airline>
 	<Airline callsign="^(?:ayline|channex|eurotrans|french[ -]post|kapow|sparrowhawk|tomjet|zap)$"> <!-- Titan Virtual -->
 		<Text type=".*">Preparation 20-60 minutes, block time counts</Text>
 		<Text type=".*">5s between starts; warm up; cool down</Text>
