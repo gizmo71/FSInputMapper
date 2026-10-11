@@ -79,7 +79,11 @@ connection.on("SetFromSim", function (name, newValue) {
             jqInput = jqInput.filter(function () { return this.value == newValue; });
             jqInput.prop('checked', true);
         } else {
-            jqInput.prop('value', newValue);
+console.log(`My newValue for ${name} is ${newValue}`);
+            if (newValue == null)
+                jqInput.prop('disabled', true);
+            else
+                jqInput.prop('value', newValue);
         }
     }
     jqInput.prop('disabled', newValue == null);
