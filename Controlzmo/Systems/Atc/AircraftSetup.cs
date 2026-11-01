@@ -46,7 +46,7 @@ namespace Controlzmo.Systems.Atc
             else if (simConnect.IsFenix)
             {
                 sender.Execute(simConnect, "0 (>L:S_EFB_VISIBLE_FO) 0 (>L:S_EFB_CHARGING_CABLE_FO) 0 (>L:S_WINDOW_BLINDS_FO) 1.0 (>L:A_MIP_LIGHTING_FLOOD_MAIN)");
-                sender.Execute(simConnect, "2 (>L:S_XPDR_OPERATION)");
+                sender.Execute(simConnect, "2 (>L:S_XPDR_OPERATION) 0 (>L:S_COCKPIT_DOOR) 1 (>L:S_XPDR_MODE)");
             }
             else if (simConnect.IsA380X)
                 sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE) 1 (>L:A380X_RMP_1_VHF_TX_1)");
