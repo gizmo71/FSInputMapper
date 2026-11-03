@@ -253,11 +253,16 @@
 		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
-	<Airline callsign="^(pakistan)$"> <!-- TODO: Add the others -->
+	<Airline callsign="^(pakistan|air[- ]?blue|okaab|air[- ]?sial|air[- ]?south)$">
 		<Text type=".*">Preparation 10 to 45 minutes, ? time counts</Text>
-		<Text type=".*">2s between starts, #1 first</Text>
+		<Text type="A310|AT[47].|B78.">2s between starts, #2 first</Text>
+		<Text type="A32.|A21N">2s between starts, #1 first</Text>
 		<Text type=".*">Warm up; cool down</Text>
-		<Text type=".*">Must have fuel &ge;1.3T on landing</Text>
+		<Text type="A310|B78.">Must have fuel &ge;3.6T on landing</Text>
+		<Text type="A32.|A21N">Must have fuel &ge;1.3T on landing</Text>
+		<Text type="AT[47].">Must have fuel &ge;300kg on landing</Text>
+		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
+		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
 	<Airline callsign="^(ryan[- ]?air)$"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
