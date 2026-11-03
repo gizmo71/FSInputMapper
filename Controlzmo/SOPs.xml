@@ -253,6 +253,12 @@
 		<Text type=".*">Flight time &gt;20%/35 minutes of scheduled requires review</Text>
 		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
+	<Airline callsign="^(pakistan)$"> <!-- TODO: Add the others -->
+		<Text type=".*">Preparation 10 to 45 minutes, ? time counts</Text>
+		<Text type=".*">2s between starts, #1 first</Text>
+		<Text type=".*">Warm up; cool down</Text>
+		<Text type=".*">Must have fuel &ge;1.3T on landing</Text>
+	</Airline>
 	<Airline callsign="^(ryan[- ]?air)$"> <!-- vRYR -->
 		<Text aircraft=".*">Preparation 20-40 minutes, air time counts</Text>
 		<Text type=".*">Flight time above 20%/35 minutes of scheduled invalidated</Text>
