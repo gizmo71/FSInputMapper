@@ -41,7 +41,8 @@ namespace Controlzmo.Systems.PilotMonitoring
                     where = $"{where}/{_waypoint.Ident}";
                 var now = DateTime.UtcNow.ToString("HHmm");
                 var newLine = $"{now} {where}: FU {Tons(_waypoint.fuelUsed)}\u00A0(p)\n\tFOB {Tons(data.kgOnBoard)}\u00A0(a) [{diff:+#.00;-#.00;=}] {Tons(_waypoint.planFOB)}\u00A0(p) {Tons(_waypoint.minFOB)}\u00A0(m)";
-                printer.Print(newLine, 35);
+                if (!simConnect.IsFenix)
+                    printer.Print(newLine, 35);
                 log[log.Length - 1] = newLine;
                 hubContext.Clients.All.SetFromSim("fuelLog", String.Join('\n', log));
             }
@@ -83,9 +84,7 @@ namespace Controlzmo.Systems.PilotMonitoring
             if (isOnGround) waypointProgress = null;
             simConnect.RequestDataOnSimObject(
                 this,
-                isOnGround || simConnect.IsFenix
-                ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER
-                : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
+                isOnGround ? SIMCONNECT_CLIENT_DATA_PERIOD.NEVER : SIMCONNECT_CLIENT_DATA_PERIOD.SECOND);
         }
 
         public override void Process(ExtendedSimConnect simConnect, PositionData data)
