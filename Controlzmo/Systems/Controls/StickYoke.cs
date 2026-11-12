@@ -15,15 +15,16 @@ namespace Controlzmo.Systems.Controls
         private readonly SetAileronsEvent _event;
         private readonly AxisSetter setter;
         public int GetAxis() => UrsaMinorFighterR.AXIS_ROLL;
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.505);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.505, 0.01);
     }
 
     [Component, RequiredArgsConstructor]
     public partial class AileronsTm : IAxisCallback<TmSkyYoke>
     {
-        private readonly Ailerons stick;
+        private readonly SetAileronsEvent _event;
+        private readonly AxisSetter setter;
         public int GetAxis() => TmSkyYoke.AXIS_ROLL;
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => stick.OnChange(sc, old, @new);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.507, 0.002);
     }
 
     [Component] public class SetElevatorsEvent : IEvent { public string SimEvent() => "AXIS_ELEVATOR_SET"; }
@@ -34,15 +35,16 @@ namespace Controlzmo.Systems.Controls
         private readonly SetElevatorsEvent _event;
         private readonly AxisSetter setter;
         public int GetAxis() => UrsaMinorFighterR.AXIS_PITCH;
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.5);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.5, 0.01);
     }
 
     [Component, RequiredArgsConstructor]
     public partial class ElevatorsTm : IAxisCallback<TmSkyYoke>
     {
-        private readonly Elevators stick;
+        private readonly SetElevatorsEvent _event;
+        private readonly AxisSetter setter;
         public int GetAxis() => TmSkyYoke.AXIS_PITCH;
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => stick.OnChange(sc, old, @new);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.SetAvoidingCentreRepetition(sc, _event, old, @new, 0.499, 0.002);
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]

@@ -18,16 +18,16 @@ namespace Controlzmo.Systems.Controls
             sc.SendEvent(@event, mapped);
         }
 
-        internal void SetAvoidingCentreRepetition(ExtendedSimConnect sc, IEvent @event, double previous, double value, double centre)
+        internal void SetAvoidingCentreRepetition(ExtendedSimConnect sc, IEvent @event, double previous, double value, double centre, double slack)
         {
             previous = adjust(previous, centre);
             value = adjust(value, centre);
 //Console.WriteLine($"{previous:0.0000}/{adjust(previous, centre):0.0000}->{value:0.0000}/{adjust(value, centre):0.0000} with {centre}");
-            if (!isCentre(previous) || !isCentre(value))
+            if (!isCentre(previous, slack) || !isCentre(value, slack))
                 Set(sc, @event, value);
         }
 
         private double adjust(double value, double centre) => value < centre ? 0.5 * value / centre : 1 - (1 - value) / (1 - centre) * 0.5;
-        private bool isCentre(double value) => value > 0.49 && value < 0.51;
+        private bool isCentre(double value, double slack) => value > (0.5 - slack) && value < (0.5 + slack);
     }
 }
