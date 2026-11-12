@@ -302,7 +302,7 @@
 		<Text type=".*">Rejected 600fpm</Text>
 	</Airline>
 	<Airline callsign="^(united)$">
-		<Text type=".*">Preparation 20-60 minutes, air time counts</Text>
+		<Text type=".*">Preparation 20-60 minutes, block time counts</Text>
 		<Text type=".*">Warm up; cool down</Text>
 		<Text type=".*">Rejected 800fpm/3G</Text>
 	</Airline>
