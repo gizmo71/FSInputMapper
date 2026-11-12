@@ -7,7 +7,7 @@ namespace Controlzmo.GameControllers
     [Component]
     public class TmSkyYoke : GameController<TmSkyYoke>
     {
-        public TmSkyYoke(IServiceProvider sp) : base(sp, 24, 6, 1) { }
+        public TmSkyYoke(IServiceProvider sp) : base(sp, 24, 7, 1) { }
 
         public override ushort Vendor() => 1103;
         public override ushort Product() => 10245;
@@ -47,18 +47,21 @@ namespace Controlzmo.GameControllers
         public static readonly int AXIS_MINI_STICK_X = 3;
         /// <summary>0 fore->1 aft</summary>
         public static readonly int AXIS_MINI_STICK_Y = 4;
-        /// <summary>0 left full->0.5 neither->1 right full - they are not independent</summary>
-        public static readonly int AXIS_TRIGGERS = 5;
+        // Note that you have to use the TM drivers to be able to split the triggers into independent axes
+        /// <summary>0 unpressed->1 fully pressed</summary>
+        public static readonly int AXIS_TRIGGER_R = 5;
+        /// <summary>0 unpressed->1 fully pressed</summary>
+        public static readonly int AXIS_TRIGGER_6 = 6;
 
         public static readonly int SWITCH_HAT = 0;
 
         protected override void OnUpdate(ExtendedSimConnect simConnect) {
-            /*for (int i = 0; i < axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    _log.LogDebug($"SkyYoke: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
             for (int i = 0; i < this.buttonsOld.Length; ++i)
                 if (buttonsOld[i] != buttonsNew[i])
                     _log.LogDebug($"SkyYoke: button {i} now {buttonsNew[i]}");
+            /*for (int i = 0; i < axesOld.Length; ++i)
+                if (axesOld[i] != axesNew[i])
+                    _log.LogDebug($"SkyYoke: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
             for (int i = 0; i < this.switchesOld.Length; ++i)
                 if (switchesOld[i] != switchesNew[i])
                     _log.LogDebug($"SkyYoke: switch {i} now {switchesNew[i]}");*/
