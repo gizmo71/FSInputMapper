@@ -24,7 +24,9 @@ namespace Controlzmo.Systems.Atc
 
             if (simConnect.IsB78x)
             {
-                sender.Execute(simConnect, "(>B:ELECTRICAL_EMERLIGHTS_COVER_CLOSE)");
+                sender.Execute(simConnect, "(>B:ELECTRICAL_EMERLIGHTS_COVER_CLOSE) (>B:AIRLINER_ATC_MODE_TA)");
+                // Annoyingly the master control is pressable but doesn't work
+                sender.Execute(simConnect, "25 (>B:LIGHTING_GLARESHIELD_1_Set) 25 (>B:LIGHTING_CABIN_1_Set) 25 (>B:LIGHTING_PANEL_4_Set)");
                 LeftAndRight(simConnect, HideYokes);
             }
             else if (simConnect.IsAtr)
