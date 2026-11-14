@@ -251,7 +251,7 @@
 		<Text type=".*">Rejected 600fpm; Invalidated 900fpm</Text>
 	</Airline>
 	<Airline callsign="^(pakistan|air[- ]?blue|okaab|air[- ]?sial|air[- ]?south)$">
-		<Text type=".*">Preparation 10 to 45 minutes, ? time counts</Text>
+		<Text type=".*">Preparation 10 to 45 minutes, air time counts</Text>
 		<Text type="A310|AT[47].|B78.">2s between starts, #2 first</Text>
 		<Text type="A32.|A21N">2s between starts, #1 first</Text>
 		<Text type=".*">Warm up; cool down</Text>
