@@ -55,7 +55,7 @@ namespace Controlzmo.Systems.Atc
             else if (simConnect.IsFBW)
                 sender.Execute(simConnect, "2 (>L:A32NX_TRANSPONDER_MODE)");
             else if (simConnect.IsIniBuilds && !simConnect.IsIni321)
-                sender.Execute(simConnect, "1 (>L:INI_TCAS_MODE_PEDESTAL)");
+                sender.Execute(simConnect, "1 (>L:INI_TCAS_MODE_PEDESTAL) 2 (>L:INI_TCAS_STBY_STATE)");
 
             ofp.ReadVSpeeds(simConnect);
         }
