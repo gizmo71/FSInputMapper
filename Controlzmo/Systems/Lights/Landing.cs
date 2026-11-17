@@ -4,6 +4,8 @@ using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
@@ -47,42 +49,31 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, LandingLightData data)
         {
-            bool? value = null;
+            IEnumerable<bool?> subValues = [];
             if (sc.IsFenix)
-            {
-                //TODO: disable if inconsistent
-                bool[] lights = { data.fenixLeft == 2 && data.fenixRight == 2 };
-                value = lights[0] ^ lights[1] ? null : lights[0];
-            }
+                subValues = new int[] { data.fenixLeft, data.fenixRight }.Select(FromFenixSwitch);
             else if (sc.IsA380X)
-                value = data.fbwLeft != 0;
+                subValues = [ data.fbwLeft != 0 ];
             else if (sc.IsA339)
-                value = data.a339 == 1;
+                subValues = [ data.a339 == 1 ];
             else if (sc.IsFBW)
-            {
-//TODO: disable if inconsistent
-                value = data.fbwLeft == 0 && data.fbwRight == 0;
-            }
+                subValues = [ data.fbwLeft != 0, data.fbwRight != 0 ];
             else if (sc.IsB78x)
-            {
-//TODO: disable if inconsistent
-                value = data.fbwLeft != 0 && data.fbwRight != 0 && data.b789Centre != 0;
-            }
+                subValues = [ data.fbwLeft != 0, data.fbwRight != 0, data.b789Centre != 0 ];
             else if (sc.IsIni321 || sc.IsIni320)
-            {
-//TODO: disable if inconsistent
-                value = data.iniLeft == 0 && data.iniRight == 0;
-            }
+                subValues = new int[] { data.iniLeft, data.iniRight }.Select(FromIniSwitch);
             else if (sc.IsIniBuilds)
-                value = data.ini != 0;
+                subValues = [ data.ini != 0 ];
             else if (sc.IsAtr)
-            {
-//TODO: disable if inconsistent
-                value = data.atrLeft == 1 && data.atrRight == 1;
-            }
+                subValues = [ data.atrLeft == 1, data.atrRight == 1 ];
+            var allDsitinctValues = subValues.Distinct().ToArray();
+            bool? value = allDsitinctValues.Count() == 1 ? allDsitinctValues[0] : null;
             if (value != null) state.IsLandingOn = (bool)value;
             hub.Clients.All.SetFromSim(GetId(), value);
         }
+
+        private static bool? FromFenixSwitch(int raw) => raw switch { 0 => (bool?) false, 2 => true, _ => null };
+        private static bool? FromIniSwitch(int raw) => raw switch { 2 => (bool?) false, 0 => true, _ => null };
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isOn)
         {
