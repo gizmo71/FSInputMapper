@@ -4,6 +4,7 @@ using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
@@ -44,16 +45,16 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, LogoNavData data)
         {
-            bool value;
+            IEnumerable<bool?> subValues = [];
             if (sc.IsFenix)
-                value = data.fenix == 1;
+                subValues = [data.fenix == 1];
             else if (sc.IsIniBuilds)
-                value = data.ini == 1;
+                subValues = [data.ini == 1];
             else if (sc.IsAtr)
-                value = data.atrLogo == 1 && data.atrNav == 1;
+                subValues = [data.atrLogo == 1, data.atrNav == 1];
             else
-                value = data.logo == 1 && data.nav == 1;
-            hub.Clients.All.SetFromSim(GetId(), value);
+                subValues = [data.logo == 1, data.nav == 1];
+            hub.Clients.All.SetFromSim(GetId(), subValues.SingleDistinctValueOrNull());
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool value)
