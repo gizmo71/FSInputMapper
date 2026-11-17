@@ -12,6 +12,7 @@ namespace Controlzmo.GameControllers
         public override ushort Product() => PRODUCT_ID;
 
         public static readonly ushort PRODUCT_ID = 0xB920;
+
         public static readonly int BUTTON_ENG_MASTER_LEFT_ON = 0;
         public static readonly int BUTTON_ENG_MASTER_LEFT_OFF = 1;
         public static readonly int BUTTON_ENG_MASTER_RIGHT_ON = 2;
@@ -69,17 +70,6 @@ namespace Controlzmo.GameControllers
         /// <summary>0 is retracted, ~0.3 is 1, 0.5 is 2, 0.75 is 3, 1 is full</summary>
         public static readonly int AXIS_FLAPS = 7;
 
-        protected override void OnUpdate(ExtendedSimConnect simConnect)
-        {
-            /*for (int i = 0; i < axesOld.Length; ++i)
-                if (axesOld[i] != axesNew[i])
-                    Console.Error.WriteLine($"UMT: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
-            for (int i = 0; i < this.buttonsOld.Length; ++i)
-                if (buttonsOld[i] != buttonsNew[i])
-                    Console.Error.WriteLine($"UMT: button {i} now {buttonsNew[i]}");
-            for (int i = 0; i < this.switchesOld.Length; ++i)
-                if (switchesOld[i] != switchesNew[i])
-                    Console.Error.WriteLine($"UMT: switch {i} now {switchesNew[i]}");*/
-        }
+        protected override void OnUpdate(ExtendedSimConnect simConnect) { }
     }
 }
