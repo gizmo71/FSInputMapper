@@ -43,33 +43,44 @@ namespace Controlzmo.Systems.Lights
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public string GetId() => "landingLight";
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect sc, LandingLightData data)
         {
             bool? value = null;
             if (sc.IsFenix)
-//TODO: disable if inconsistent
-                value = data.fenixLeft == 2 && data.fenixRight == 2;
+            {
+                //TODO: disable if inconsistent
+                bool[] lights = { data.fenixLeft == 2 && data.fenixRight == 2 };
+                value = lights[0] ^ lights[1] ? null : lights[0];
+            }
             else if (sc.IsA380X)
                 value = data.fbwLeft != 0;
             else if (sc.IsA339)
                 value = data.a339 == 1;
             else if (sc.IsFBW)
+            {
 //TODO: disable if inconsistent
                 value = data.fbwLeft == 0 && data.fbwRight == 0;
+            }
             else if (sc.IsB78x)
+            {
 //TODO: disable if inconsistent
                 value = data.fbwLeft != 0 && data.fbwRight != 0 && data.b789Centre != 0;
+            }
             else if (sc.IsIni321 || sc.IsIni320)
+            {
 //TODO: disable if inconsistent
                 value = data.iniLeft == 0 && data.iniRight == 0;
+            }
             else if (sc.IsIniBuilds)
                 value = data.ini != 0;
             else if (sc.IsAtr)
+            {
 //TODO: disable if inconsistent
                 value = data.atrLeft == 1 && data.atrRight == 1;
-            state.IsLandingOn = value == true;
+            }
+            if (value != null) state.IsLandingOn = (bool)value;
             hub.Clients.All.SetFromSim(GetId(), value);
         }
 
