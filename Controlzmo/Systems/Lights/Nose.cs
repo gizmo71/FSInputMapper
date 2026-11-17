@@ -44,21 +44,31 @@ namespace Controlzmo.Systems.Lights
         private readonly IHubContext<ControlzmoHub, IControlzmoHub> hub;
 
         public string GetId() => "lightsTaxi";
-        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.SECOND;
+        public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
         public override void Process(ExtendedSimConnect sc, TaxiLightData data)
         {
+            bool enabled = true;
             if (sc.IsFenix)
-                data.standard = data.fenix > 0 && data.fenixTurnoff == 1 ? 1 : 0;
+            {
+                enabled = !(data.fenix > 0 ^ data.fenixTurnoff == 1);
+                data.standard = data.fenixTurnoff;
+            }
             else if (sc.IsIniBuilds)
-                data.standard = data.ini < 2 && data.iniTurnoff == 1 ? 1 : 0;
+            {
+                enabled = !(data.ini < 2 ^ data.iniTurnoff == 1);
+                data.standard = data.iniTurnoff;
+            }
             else if (sc.IsAtr)
                 data.standard = data.atr == 1 ? 1 : 0;
             else if (sc.IsFBW || sc.IsB78x)
+            {
+///TODO: enablement
                 data.standard = data.fbwAndB78x < 2 && data.fbwTurnoffLeft == 1 && data.fbwTurnoffRight == 1 ? 1 : 0;
+            }
             //else if (sc.IsHorizonB789)
             //    data.standard = data.fbwAndB78x != 0 && data.b78xLeft != 0 && data.b78xRight != 0 ? 1 : 0;
-            hub.Clients.All.SetFromSim(GetId(), state.IsTaxiOn = (data.standard == 1));
+            hub.Clients.All.SetFromSim(GetId(), enabled ? state.IsTaxiOn = (data.standard == 1) : null);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isOn)

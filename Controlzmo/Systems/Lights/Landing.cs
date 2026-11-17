@@ -47,24 +47,30 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, LandingLightData data)
         {
-            var value = false;
+            bool? value = null;
             if (sc.IsFenix)
+//TODO: disable if inconsistent
                 value = data.fenixLeft == 2 && data.fenixRight == 2;
             else if (sc.IsA380X)
                 value = data.fbwLeft != 0;
             else if (sc.IsA339)
                 value = data.a339 == 1;
             else if (sc.IsFBW)
+//TODO: disable if inconsistent
                 value = data.fbwLeft == 0 && data.fbwRight == 0;
             else if (sc.IsB78x)
+//TODO: disable if inconsistent
                 value = data.fbwLeft != 0 && data.fbwRight != 0 && data.b789Centre != 0;
             else if (sc.IsIni321 || sc.IsIni320)
+//TODO: disable if inconsistent
                 value = data.iniLeft == 0 && data.iniRight == 0;
             else if (sc.IsIniBuilds)
                 value = data.ini != 0;
             else if (sc.IsAtr)
+//TODO: disable if inconsistent
                 value = data.atrLeft == 1 && data.atrRight == 1;
-            hub.Clients.All.SetFromSim(GetId(), state.IsLandingOn = value);
+            state.IsLandingOn = value == true;
+            hub.Clients.All.SetFromSim(GetId(), value);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isOn)
