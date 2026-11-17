@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Controlzmo.Systems.Lights
@@ -26,14 +27,14 @@ namespace Controlzmo.Systems.Lights
         public Int32 b78xRight;
         [SimVar("LIGHT TAXI", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 standard;
-        [SimVar("L:S_OH_EXT_LT_RWY_TURNOFF", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fenixTurnoff;
-        [SimVar("L:INI_TURNOFF_LIGHT_SWITCH", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int iniTurnoff;
         [SimVar("LIGHT TAXI:2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int fbwTurnoffLeft;
         [SimVar("LIGHT TAXI:3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int fbwTurnoffRight;
+        [SimVar("L:S_OH_EXT_LT_RWY_TURNOFF", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int fenixTurnoff;
+        [SimVar("L:INI_TURNOFF_LIGHT_SWITCH", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
+        public int iniTurnoff;
     }
 
     [Component, RequiredArgsConstructor]
@@ -48,27 +49,22 @@ namespace Controlzmo.Systems.Lights
 
         public override void Process(ExtendedSimConnect sc, TaxiLightData data)
         {
-            bool enabled = true;
+            IEnumerable<bool?> subValues = [];
             if (sc.IsFenix)
-            {
-                enabled = !(data.fenix > 0 ^ data.fenixTurnoff == 1);
-                data.standard = data.fenixTurnoff;
-            }
+                subValues = [data.fenix > 0, data.fenixTurnoff == 1];
             else if (sc.IsIniBuilds)
-            {
-                enabled = !(data.ini < 2 ^ data.iniTurnoff == 1);
-                data.standard = data.iniTurnoff;
-            }
+                subValues = [data.ini < 2, data.iniTurnoff == 1];
             else if (sc.IsAtr)
-                data.standard = data.atr == 1 ? 1 : 0;
-            else if (sc.IsFBW || sc.IsB78x)
-            {
-///TODO: enablement
-                data.standard = data.fbwAndB78x < 2 && data.fbwTurnoffLeft == 1 && data.fbwTurnoffRight == 1 ? 1 : 0;
-            }
-            //else if (sc.IsHorizonB789)
-            //    data.standard = data.fbwAndB78x != 0 && data.b78xLeft != 0 && data.b78xRight != 0 ? 1 : 0;
-            hub.Clients.All.SetFromSim(GetId(), enabled ? state.IsTaxiOn = (data.standard == 1) : null);
+                subValues = [data.atr == 1];
+            else if (sc.IsFBW)
+                subValues = [data.fbwAndB78x < 2, data.fbwTurnoffLeft == 1, data.fbwTurnoffRight == 1];
+            else if (sc.IsB78x)
+                subValues = [data.standard == 1, data.fbwTurnoffLeft == 1, data.fbwTurnoffRight == 1];
+            else
+                subValues = [data.standard == 1];
+            bool? value = subValues.SingleDistinctValueOrNull();
+            if (value != null) state.IsTaxiOn = (bool)value;
+            hub.Clients.All.SetFromSim(GetId(), value);
         }
 
         public void SetInSim(ExtendedSimConnect simConnect, bool isOn)
@@ -77,7 +73,7 @@ namespace Controlzmo.Systems.Lights
             uint turnoffCode = isOn ? 1u : 0u;
             if (simConnect.IsFBW)
                 sender.Execute(simConnect, $"{turnoffCode} d 3 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET)");
-            else if (simConnect.IsB78x)
+            else if (simConnect.IsB78x) // But actually index 1 is the nose lights, so this is all of them
                 sender.Execute(simConnect, $"{turnoffCode} d d 1 r (>K:2:TAXI_LIGHTS_SET) 2 r (>K:2:TAXI_LIGHTS_SET) 3 r (>K:2:TAXI_LIGHTS_SET)");
             else if (simConnect.IsFenix)
                 sender.Execute(simConnect, $"{turnoffCode} (>L:S_OH_EXT_LT_RWY_TURNOFF)");

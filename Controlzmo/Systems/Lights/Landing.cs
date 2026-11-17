@@ -4,6 +4,7 @@ using Lombok.NET;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.FlightSimulator.SimConnect;
 using SimConnectzmo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -53,21 +54,20 @@ namespace Controlzmo.Systems.Lights
             if (sc.IsFenix)
                 subValues = new int[] { data.fenixLeft, data.fenixRight }.Select(FromFenixSwitch);
             else if (sc.IsA380X)
-                subValues = [ data.fbwLeft != 0 ];
+                subValues = [data.fbwLeft != 0];
             else if (sc.IsA339)
-                subValues = [ data.a339 == 1 ];
+                subValues = [data.a339 == 1];
             else if (sc.IsFBW)
-                subValues = [ data.fbwLeft != 0, data.fbwRight != 0 ];
+                subValues = [data.fbwLeft != 0, data.fbwRight != 0];
             else if (sc.IsB78x)
-                subValues = [ data.fbwLeft != 0, data.fbwRight != 0, data.b789Centre != 0 ];
+                subValues = [data.fbwLeft != 0, data.fbwRight != 0, data.b789Centre != 0];
             else if (sc.IsIni321 || sc.IsIni320)
                 subValues = new int[] { data.iniLeft, data.iniRight }.Select(FromIniSwitch);
             else if (sc.IsIniBuilds)
-                subValues = [ data.ini != 0 ];
+                subValues = [data.ini != 0];
             else if (sc.IsAtr)
-                subValues = [ data.atrLeft == 1, data.atrRight == 1 ];
-            var allDsitinctValues = subValues.Distinct().ToArray();
-            bool? value = allDsitinctValues.Count() == 1 ? allDsitinctValues[0] : null;
+                subValues = [data.atrLeft == 1, data.atrRight == 1];
+            bool? value = subValues.SingleDistinctValueOrNull();
             if (value != null) state.IsLandingOn = (bool)value;
             hub.Clients.All.SetFromSim(GetId(), value);
         }
