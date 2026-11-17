@@ -7,37 +7,37 @@ namespace Controlzmo.Systems.Controls
     [Component] public class SetRudderEvent : IEvent { public string SimEvent() => "AXIS_RUDDER_SET"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class Rudder : IAxisCallback<T16000mHotas>
+    public partial class Rudder : IAxisCallback<OrionPedals>
     {
         private readonly SetRudderEvent _event;
         private readonly AxisSetter setter;
-        public int GetAxis() => T16000mHotas.AXIS_RUDDER_PEDALS;
+        public int GetAxis() => OrionPedals.AXIS_RUDDER;
         public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.Set(sc, _event, @new);
     }
 
     [Component] public class SetBrakeLeftEvent : IEvent { public string SimEvent() => "AXIS_LEFT_BRAKE_SET"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class LeftToeBrake : IAxisCallback<T16000mHotas>
+    public partial class LeftToeBrake : IAxisCallback<OrionPedals>
     {
         private readonly SetBrakeLeftEvent _event;
         private readonly AxisSetter setter;
 
-        public int GetAxis() => T16000mHotas.AXIS_TOE_BRAKE_LEFT;
+        public int GetAxis() => OrionPedals.AXIS_BRAKE_LEFT;
 
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.Set(sc, _event, @new);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.Set(sc, _event, 1 - @new);
     }
 
     [Component] public class SetBrakeRightEvent : IEvent { public string SimEvent() => "AXIS_RIGHT_BRAKE_SET"; }
 
     [Component, RequiredArgsConstructor]
-    public partial class RightToeBrake : IAxisCallback<T16000mHotas>
+    public partial class RightToeBrake : IAxisCallback<OrionPedals>
     {
         private readonly SetBrakeRightEvent _event;
         private readonly AxisSetter setter;
 
-        public int GetAxis() => T16000mHotas.AXIS_TOE_BRAKE_RIGHT;
+        public int GetAxis() => OrionPedals.AXIS_BRAKE_RIGHT;
 
-        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.Set(sc, _event, @new);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setter.Set(sc, _event, 1 - @new);
     }
 }

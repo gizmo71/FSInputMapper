@@ -13,19 +13,19 @@ namespace Controlzmo.GameControllers
 
         public static readonly ushort PRODUCT_ID = 0xBEF0;
 
-        /// <summary>0 is max reverse, 1 is TOGA</summary>
-        public static readonly int AXIS_THRUST_LEFT = 1;
-        /// <summary>Same range as <see cref="AXIS_THRUST_1"/></summary>
-        public static readonly int AXIS_THRUST_RIGHT = 2;
-        /// <summary>0 is retracted, 1 is full</summary>
-        public static readonly int AXIS_SPEEDBRAKES = 3;
+        /// <summary>0 is no brake, 1 is full</summary>
+        public static readonly int AXIS_BRAKE_RIGHT = 0;
+        /// <summary>0 is no brake, 1 is full</summary>
+        public static readonly int AXIS_BRAKE_LEFT = 1;
+        /// <summary>0 is left, 1 is right; centre is exactly 0.5</summary>
+        public static readonly int AXIS_RUDDER = 2;
 
         protected override void OnUpdate(ExtendedSimConnect simConnect)
         {
-            for (int i = 0; i < axesOld.Length; ++i)
+            /*for (int i = 0; i < axesOld.Length; ++i)
                 if (axesOld[i] != axesNew[i])
                     Console.Error.WriteLine($"UMT: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
-            /*for (int i = 0; i < this.buttonsOld.Length; ++i)
+            for (int i = 0; i < this.buttonsOld.Length; ++i)
                 if (buttonsOld[i] != buttonsNew[i])
                     Console.Error.WriteLine($"UMT: button {i} now {buttonsNew[i]}");
             for (int i = 0; i < this.switchesOld.Length; ++i)
