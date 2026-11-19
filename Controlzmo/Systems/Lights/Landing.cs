@@ -19,9 +19,9 @@ namespace Controlzmo.Systems.Lights
         [SimVar("L:LIGHTING_LANDING_1", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int b789Centre;
         [SimVar("L:LIGHTING_LANDING_2", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fbwLeft; // Also B78x
+        public int fbw787Left;
         [SimVar("L:LIGHTING_LANDING_3", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
-        public int fbwRight; // Also B78x
+        public int fbw787Right;
         [SimVar("L:A320_LANDING_LIGHT_SWITCH_LEFT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public int iniLeft;
         [SimVar("L:A320_LANDING_LIGHT_SWITCH_RIGHT", "Number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
@@ -54,13 +54,13 @@ namespace Controlzmo.Systems.Lights
             if (sc.IsFenix)
                 subValues = new int[] { data.fenixLeft, data.fenixRight }.Select(FromFenixSwitch);
             else if (sc.IsA380X)
-                subValues = [data.fbwLeft != 0];
+                subValues = [data.fbw787Left != 0];
             else if (sc.IsA339)
                 subValues = [data.a339 == 1];
             else if (sc.IsFBW)
-                subValues = [data.fbwLeft != 0, data.fbwRight != 0];
+                subValues = [data.fbw787Left != 0, data.fbw787Right != 0];
             else if (sc.IsB78x)
-                subValues = [data.fbwLeft != 0, data.fbwRight != 0, data.b789Centre != 0];
+                subValues = [data.fbw787Left != 0, data.fbw787Right != 0, data.b789Centre != 0];
             else if (sc.IsIni321 || sc.IsIni320)
                 subValues = new int[] { data.iniLeft, data.iniRight }.Select(FromIniSwitch);
             else if (sc.IsIniBuilds)
