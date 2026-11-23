@@ -7,7 +7,7 @@
 	<!ENTITY ge "&#x2265;">
 	<!ENTITY le "&#x2264;">
 	<!ENTITY cs-salamair "mazoon">
-	<!ENTITY cs-arabia "(?:arabia(?: maroc|egypt)?|nawras)">
+	<!ENTITY cs-arabia "(?:arabia(?: (?:maroc|egypt))?|nawras)">
 	<!ENTITY cs-gs-others "(?:|saudia|bangladesh|emirates|etihad|adeal|flynas|gulf[- ]?air|jazeera|kuwaiti|oman[- ]?air|riyadh|srilankan)">
 ]>
 <!-- All FBW: 'flybywire_a320_neo' -->
