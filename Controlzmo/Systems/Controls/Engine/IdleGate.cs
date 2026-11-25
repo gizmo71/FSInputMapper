@@ -11,6 +11,10 @@ namespace Controlzmo.Systems.Controls.Engine
     {
         [SimVar("L:MSATR_ENG_IDLE_GATE", "number", SIMCONNECT_DATATYPE.INT32, 0.5f)]
         public Int32 isFlightIdle;
+        [SimVar("L:MSATR_THR_LEVER1_POS", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.01f)]
+        public Double tl1pos;
+        [SimVar("L:MSATR_THR_LEVER1_POS", "number", SIMCONNECT_DATATYPE.FLOAT64, 0.01f)]
+        public Double tl2pos;
     };
 
     [Component, RequiredArgsConstructor]
@@ -26,7 +30,12 @@ namespace Controlzmo.Systems.Controls.Engine
 
         public SIMCONNECT_PERIOD GetInitialRequestPeriod() => SIMCONNECT_PERIOD.VISUAL_FRAME;
 
-        public override void Process(ExtendedSimConnect simConnect, IdleGateData data) => _isFlightIdle = data.isFlightIdle == 1 && simConnect.IsAtr;
+        public override void Process(ExtendedSimConnect simConnect, IdleGateData data) {
+            _isFlightIdle = data.isFlightIdle == 1 && simConnect.IsAtr;
+Console.WriteLine($"ATR power levers -- 1 {data.tl1pos} -- 2 {data.tl2pos}");
+// According to the fake FMAs:
+// before? ?-110 ground idle, ~148 = flight idle 262-283 = notch 334-354 = ramp 400-420 = max
+        }
 
         internal void MaybeMap(ref double normalised)
         {
