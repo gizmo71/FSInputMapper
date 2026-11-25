@@ -295,7 +295,7 @@ Console.WriteLine($"**--** @new {@new - 0.5}");
                 //public double Fov;
             };
             SIMCONNECT_CAMERA_DATA_MASK mask = SIMCONNECT_CAMERA_DATA_MASK.POSITION;
-            //simConnect.CameraSet(data, (uint)mask);
+            simConnect.CameraSet(data, (uint)mask);
         }
     }
 }
