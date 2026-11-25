@@ -1,5 +1,4 @@
 ﻿using SimConnectzmo;
-using System;
 
 namespace Controlzmo.Systems.Controls
 {
