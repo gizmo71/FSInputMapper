@@ -294,6 +294,7 @@ Console.WriteLine($"**--** @new {@new - 0.5}");
                 //public uint RotationReferentialObjectId;
                 //public double Fov;
             };
+// Data mask values: NONE (not useful!), POSITION, ROTATION, TARGETED, FOV; REFERENTIAL is not supplied and is probably implied
             SIMCONNECT_CAMERA_DATA_MASK mask = SIMCONNECT_CAMERA_DATA_MASK.POSITION;
             simConnect.CameraSet(data, (uint)mask);
         }
