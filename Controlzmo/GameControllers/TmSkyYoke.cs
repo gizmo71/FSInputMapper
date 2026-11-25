@@ -55,18 +55,21 @@ namespace Controlzmo.GameControllers
 
         public static readonly int SWITCH_HAT = 0;
 
+#pragma warning disable CS0162 // Unreachable code detected
         protected override void OnUpdate(ExtendedSimConnect simConnect) {
-/*
+if (false)
             for (int i = 0; i < axesOld.Length; ++i)
                 if (axesOld[i] != axesNew[i])
                     _log.LogDebug($"SkyYoke: axes[{i}] {axesOld[i]} -> {axesNew[i]}");
+if (false)
             for (int i = 0; i < this.buttonsOld.Length; ++i)
                 if (buttonsOld[i] != buttonsNew[i])
                     _log.LogDebug($"SkyYoke: button {i} now {buttonsNew[i]}");
-            for (int i = 0; i < this.switchesOld.Length; ++i)
+if (false)
+                for (int i = 0; i < this.switchesOld.Length; ++i)
                 if (switchesOld[i] != switchesNew[i])
                     _log.LogDebug($"SkyYoke: switch {i} now {switchesNew[i]}");
-*/
         }
+#pragma warning restore CS0162 // Unreachable code detected
     }
 }
