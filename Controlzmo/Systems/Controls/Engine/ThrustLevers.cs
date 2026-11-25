@@ -119,10 +119,8 @@ namespace Controlzmo.Systems.Controls.Engine
         private readonly ThrottlePos posListener;
         private readonly ThrustLeversSetter setter;
 
-        internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new)
+        internal void ConvertAndSet(ExtendedSimConnect sc, AbstractThrustLever tl, double @new, double old)
         {
-            @new = 1 - @new; // Make -1 full reverse and 1 firewalled.
-
             int bitmap = 0b1111; // If in doubt, set them all!
             if (data.NumberOfEngines > 2) // Assume four, but sort of works for three too.
                 bitmap = tl.LeverNumber == 1 ? 0b0011 : 0b1100;
@@ -153,7 +151,7 @@ namespace Controlzmo.Systems.Controls.Engine
 //Console.WriteLine($"Normalised {normalised}");
             }
             idleGate.MaybeMap(ref normalised);
-//_logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
+if (false) _logger.LogTrace($"-->>--\t\t{1 - @new} -> {normalised}");
 
             var raw = (Int32) (16384 * normalised);
             posListener.ReportOrSend(tl.LeverNumber, raw, () => setter.Set(raw, bitmap));
@@ -169,7 +167,7 @@ namespace Controlzmo.Systems.Controls.Engine
         internal int LeverNumber {  get => thrustLeverNumber; }
 
         abstract public int GetAxis();
-        public void OnChange(ExtendedSimConnect sc, double _, double @new) => setTLs.ConvertAndSet(sc, this, 1 - @new);
+        public void OnChange(ExtendedSimConnect sc, double old, double @new) => setTLs.ConvertAndSet(sc, this, @new, old);
 // Right hand lever appears to not start to come out of full reverse until left lever is at about 0.05
         internal abstract double EndRevFull();
         internal abstract double StartRevIdle();
