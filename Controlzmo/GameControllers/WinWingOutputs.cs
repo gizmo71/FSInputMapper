@@ -3,7 +3,6 @@ using SimConnectzmo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ServiceModel.Syndication;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using WebSocketSharp;
@@ -62,10 +61,13 @@ namespace Controlzmo.GameControllers
             for (int i = 1; i <= 2; ++i)
                 SendLed($"Vibration {i} Percentage", percent.ToString());
         }
-//TODO: Other LEDs: "Backlight Percentage", "LED Percentage" (no idea what it does!), "LCD Percentage"
+        //TODO: Other LEDs: "Backlight Percentage", "LED Percentage" (no idea what it does!), "LCD Percentage"
+
+        internal void SetStickLight(double v) => Send(UrsaMinorFighterR.PRODUCT_ID, "Stick", "led", "Backlight", $"{(int)(v * 255)}");
+        internal void SetStickVibe(double v) => Send(UrsaMinorFighterR.PRODUCT_ID, "Stick", "led", "Vibration", $"{(int)(v * 255)}");
     }
 
-    [Component, RequiredArgsConstructor]
+    [/*Component, */RequiredArgsConstructor]
     public partial class TestDaOutputs : IAxisCallback<T16000mHotas>
     {
         private readonly UrsaMinorOutputs output;
@@ -78,7 +80,8 @@ namespace Controlzmo.GameControllers
             //output.SetVibrations((byte) percent);
 //TODO: does the stick really not have vibration or backlight supported?
 // Ah, they only support the Airbus stick, not the Fighter one. :-(
-            output.Send(UrsaMinorFighterR.PRODUCT_ID, "Led", "led", "bar", "body");
+            //output.Send(UrsaMinorFighterR.PRODUCT_ID, "Led", "led", "bar", "body");
+            //output.SetStickLight(@new);
         }
     }
 }
