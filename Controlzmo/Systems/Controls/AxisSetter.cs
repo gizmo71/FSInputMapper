@@ -26,7 +26,11 @@ namespace Controlzmo.Systems.Controls
                 Set(sc, @event, value);
         }
 
-        private double adjust(double value, double centre) => value < centre ? 0.5 * value / centre : 1 - (1 - value) / (1 - centre) * 0.5;
+        private double adjust(double value, double centre) {
+            if (isCentre(value, centre)) return 0.5;
+            return value < centre ? 0.5 * value / centre : 1 - (1 - value) / (1 - centre) * 0.5;
+        }
+
         private bool isCentre(double value, double slack) => value > (0.5 - slack) && value < (0.5 + slack);
     }
 }
