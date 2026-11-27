@@ -266,10 +266,11 @@ What do we do with camera defintions? 2 of 2, size 10268 with 39
     [Component, RequiredArgsConstructor]
     public partial class ExperimentalCameraToggle : IButtonCallback<TmFerrariGamepad>
     {
+        private static String CAMERA_NAME = "Gizmocam";
         public int GetButton() => TmFerrariGamepad.BUTTON_LEFT_STICK;
         // This locks out all other camera control by default.
-        public void OnPress(ExtendedSimConnect simConnect) => simConnect.CameraAcquire("Gizmocam");
-        public void OnRelease(ExtendedSimConnect simConnect) => simConnect.CameraRelease("Gizmocam");
+        public void OnPress(ExtendedSimConnect simConnect) => simConnect.CameraAcquire(CAMERA_NAME);
+        public void OnRelease(ExtendedSimConnect simConnect) => simConnect.CameraRelease(CAMERA_NAME);
     }
 
     [Component]
