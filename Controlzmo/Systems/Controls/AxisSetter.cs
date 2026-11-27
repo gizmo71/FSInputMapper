@@ -21,7 +21,7 @@ namespace Controlzmo.Systems.Controls
         {
             var previous = adjust(old, centre, slack);
             var value = adjust(@new, centre, slack);
-//Console.WriteLine($"{old:0.0000}/{previous:0.0000}->{@new:0.0000}/{value:0.0000} with {centre}");
+//System.Console.WriteLine($"{old:0.0000}/{previous:0.0000}->{@new:0.0000}/{value:0.0000} with {centre}");
             if (previous != value)
                 Set(sc, @event, value);
         }
